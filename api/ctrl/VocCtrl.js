@@ -1,8 +1,12 @@
 module.exports = {
 
-    index : function (request){
-        prototype.PATH = '/';
-
-        request.reply('ahoj')
+    index : {
+        path : '/',
+        handler : function (request){
+            request.reply('ahoj');
+        }
+    } ,
+    ahoj : function (request){
+        request.reply('ahoj');
     }
 }

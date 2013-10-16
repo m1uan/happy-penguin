@@ -40,24 +40,33 @@ function connectCtrl(ctrlpath, file){
 
         var shandler = module[name];
         //console.log('register' + file + '/' + name);
-        if(typeof shandler === 'function'){
+        if(typeof shandler === 'object'){
             var connect = ctrlname + '/' + name;
-            console.log('register:' + connect);
+
+
+            if(!shandler.hasOwnProperty('path')){
+                shandler.path = connect;
+            }
+
+            if(!shandler.hasOwnProperty('method')){
+                shandler.method = 'GET';
+            }
 
             var superhello = {
-                handler: shandler
+                handler: shandler.handler
             };
 
             var setRoute = {
-                path : connect,
+                method : shandler.method,
+                path : shandler.path,
                 config : superhello
             };
 
-            setRoute.method = superhello.hasOwnProperty('METHOD') ? superhello.METHOD : 'GET';
-            setRoute.path = superhello.hasOwnProperty('PATH') ? superhello.PATH : connect;
-
+            console.log('route ' + setRoute.method + ' ' + setRoute.path)
             // Add the route
             server.addRoute(setRoute);
+        } else {
+            console.error('unknow route ' + name + ' in ' + filePath);
         }
 
     }
