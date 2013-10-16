@@ -2,7 +2,7 @@ var Hapi = require('hapi')
     , fs = require('fs');
 
 // Create a server with a host, port, and options
-var server = new Hapi.Server('localhost', 3000);
+var server = new Hapi.Server('localhost', 8080);
 
 // Define the route
 var hello = {
