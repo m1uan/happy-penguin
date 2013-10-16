@@ -1,8 +1,7 @@
-var Hapi = require('hapi')
-    , fs = require('fs');
+var Hapi = require('hapi');
 
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP;
-var port      = process.env.OPENSHIFT_NODEJS_PORT || 8000;
+var port      = 8080;
 
 console.log('starting');
 
