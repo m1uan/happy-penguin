@@ -1,6 +1,6 @@
 var Hapi = require('hapi'),
     fs = require('fs'),
-    test = require('./api/ctrl/VocCtrl.js');
+    test = require('./api/ctrl/IndexCtrl.js');
 
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP;
 var port      = 8080;
@@ -20,6 +20,7 @@ var hello = {
 
 
 var DEF_CTRL = "Ctrl.js";
+var DEF_METHODS = ['_get', '_post', '_delete', '_put'];
 
 function connectCtrl(ctrlpath, file){
     var filePath = './' + ctrlpath + '/' + file;
@@ -32,45 +33,61 @@ function connectCtrl(ctrlpath, file){
         console.info('controller found:' + filePath);
     }
 
-    var module = require(filePath);
+    var ctrlWithHandlers = require(filePath);
 
-    var ctrlname = '/' + (file.split(DEF_CTRL)[0]).toLowerCase();
-
-    for(var name in module){
-
-        var shandler = module[name];
-        //console.log('register' + file + '/' + name);
-        if(typeof shandler === 'object'){
-            var connect = ctrlname + '/' + name;
+    var ctrlname = (file.split(DEF_CTRL)[0]).toLowerCase();
+    var handlerPath = ctrlname != 'index' ?  '/' + ctrlname + '/' : '/';
 
 
-            if(!shandler.hasOwnProperty('path')){
-                shandler.path = connect;
+    for(var handlerName in ctrlWithHandlers){
+        var handlerObject = ctrlWithHandlers[handlerName];
+        if(typeof handlerObject === 'function'){
+            for(var methodIdx = 0; methodIdx <= DEF_METHODS.length; methodIdx++){
+                if(methodIdx == DEF_METHODS.length) {
+                    console.error('unknow method for handler ' + handlerName);
+
+                    var handlerMethods = '';
+                    DEF_METHODS.forEach(function(idx, val) {handlerMethods+=idx + ' '});
+                    console.info('possible methods for handler:'+handlerMethods);
+                    console.info('like: ' + handlerName+DEF_METHODS[0]);
+                    break;
+                }
+                var methodType = DEF_METHODS[methodIdx];
+                if(handlerName.indexOf(methodType) != -1){
+                    var handlerNameFinal = handlerName.split(methodType)[0];
+                    if(handlerNameFinal != 'index'){
+                        handlerPath += handlerNameFinal;
+                        registerRoute(methodType, handlerPath + '/', handlerObject) ;
+                    }
+                    registerRoute(methodType, handlerPath, handlerObject) ;
+                    break;
+                }
             }
-
-            if(!shandler.hasOwnProperty('method')){
-                shandler.method = 'GET';
-            }
-
-            var superhello = {
-                handler: shandler.handler
-            };
-
-            var setRoute = {
-                method : shandler.method,
-                path : shandler.path,
-                config : superhello
-            };
-
-            console.log('route ' + setRoute.method + ' ' + setRoute.path)
-            // Add the route
-            server.addRoute(setRoute);
         } else {
-            console.error('unknow route ' + name + ' in ' + filePath);
+            console.error('unknow route ' + handlerName + ' in ' + filePath);
         }
+
+
 
     }
 
+}
+
+function registerRoute(methodType, handlerPath, shandler){
+    //console.log('register' + file + '/' + name);
+    var config_handler = {
+        handler: shandler
+    };
+
+    var setRoute = {
+        method : methodType.substr(1),
+        path : handlerPath,
+        config : config_handler
+    };
+
+    console.log('route ' + setRoute.method + ' ' + setRoute.path)
+    // Add the route
+    server.addRoute(setRoute);
 }
 
 
