@@ -4,8 +4,10 @@ var Hapi = require('hapi')
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP;
 var port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
+console.log('starting');
+
 // Create a server with a host, port, and options
-var server = new Hapi.Server(ipaddress, port);
+var server = new Hapi.Server();
 
 // Define the route
 var hello = {
@@ -22,5 +24,6 @@ server.addRoute({
     config : hello
 });
 
+console.log(ipaddress + ':' +port);
 // Start the server
 server.start();
