@@ -7,16 +7,20 @@ var port      = 8080;
 
 console.log('starting');
 
-// Create a server with a host, port, and options
-var server = new Hapi.Server(ipaddress, port);
-
-// Define the route
-var hello = {
-    handler: function (request) {
-
-        request.reply({ greeting: 'hello world' });
+var options = {
+    views: {
+        engines: { jade: 'jade' },
+        path: __dirname + '/views',
+        compileOptions: {
+            pretty: true
+        }
     }
 };
+
+// Create a server with a host, port, and options
+var server = new Hapi.Server(ipaddress, port, options);
+
+
 
 
 var DEF_CTRL = "Ctrl.js";
