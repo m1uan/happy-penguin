@@ -86,7 +86,7 @@ function registerRoute(methodType, handlerPath, shandler){
     var setRoute = {
         method : methodType.substr(1),
         path : handlerPath,
-        config : config_handler
+        handler : shandler
     };
 
     console.log('route ' + setRoute.method + ' ' + setRoute.path)
@@ -107,7 +107,7 @@ fs.exists(ctrlpath, function(exists){
 
 
 });
-
+require('./passport.js').initialize(Hapi, server);
 console.log(ipaddress + ':' +port);
 // Start the server
 server.start();
