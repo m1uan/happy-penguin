@@ -48,12 +48,16 @@ function connectCtrl(ctrlpath, file){
                 handler: shandler
             };
 
-            // Add the route
-            server.addRoute({
-                method : 'GET',
+            var setRoute = {
                 path : connect,
                 config : superhello
-            });
+            };
+
+            setRoute.method = superhello.hasOwnProperty('METHOD') ? superhello.METHOD : 'GET';
+            setRoute.path = superhello.hasOwnProperty('PATH') ? superhello.PATH : connect;
+
+            // Add the route
+            server.addRoute(setRoute);
         }
 
     }
