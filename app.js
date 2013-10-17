@@ -22,6 +22,16 @@ var hello = {
 var DEF_CTRL = "Ctrl.js";
 var DEF_METHODS = ['_get', '_post', '_delete', '_put'];
 
+
+
+try{
+    server.config_local = require('./config/local.js');
+} catch(err){
+    server.config_local = null;
+    Log.warn('you can add you personal local setting');
+}
+
+
 function connectCtrl(ctrlpath, file){
     var filePath = './' + ctrlpath + '/' + file;
 
@@ -42,27 +52,13 @@ function connectCtrl(ctrlpath, file){
     for(var handlerName in ctrlWithHandlers){
         var handlerObject = ctrlWithHandlers[handlerName];
         if(typeof handlerObject === 'function'){
-            for(var methodIdx = 0; methodIdx <= DEF_METHODS.length; methodIdx++){
-                if(methodIdx == DEF_METHODS.length) {
-                    console.error('unknow method for handler ' + handlerName);
 
-                    var handlerMethods = '';
-                    DEF_METHODS.forEach(function(idx, val) {handlerMethods+=idx + ' '});
-                    console.info('possible methods for handler:'+handlerMethods);
-                    console.info('like: ' + handlerName+DEF_METHODS[0]);
-                    break;
-                }
-                var methodType = DEF_METHODS[methodIdx];
-                if(handlerName.indexOf(methodType) != -1){
-                    var handlerNameFinal = handlerName.split(methodType)[0];
-                    if(handlerNameFinal != 'index'){
-                        handlerPath += handlerNameFinal;
-                        registerRoute(methodType, handlerPath + '/', handlerObject) ;
-                    }
-                    registerRoute(methodType, handlerPath, handlerObject) ;
-                    break;
-                }
+            if(handlerName == '$init'){
+                handlerObject(server, Hapi);
+            } else {
+                getMethodAndRegisterRoute(handlerObject, handlerName, handlerPath);
             }
+
         } else {
             console.error('unknow route ' + handlerName + ' in ' + filePath);
         }
@@ -71,6 +67,35 @@ function connectCtrl(ctrlpath, file){
 
     }
 
+}
+
+function getMethodAndRegisterRoute(handlerObject, handlerName, handlerPath) {
+    for (var methodIdx = 0; methodIdx <= DEF_METHODS.length; methodIdx++) {
+        if (methodIdx == DEF_METHODS.length) {
+            console.error('unknow method for handler ' + handlerName);
+
+            var handlerMethods = '';
+            DEF_METHODS.forEach(function (idx, val) {
+                handlerMethods += idx + ' '
+            });
+            console.info('possible methods for handler:' + handlerMethods);
+            console.info('like: ' + handlerName + DEF_METHODS[0]);
+            break;
+        }
+
+
+        var methodType = DEF_METHODS[methodIdx];
+        if (handlerName.indexOf(methodType) != -1) {
+            var handlerNameFinal = handlerName.split(methodType)[0];
+            if (handlerNameFinal != 'index') {
+                handlerPath += handlerNameFinal;
+                registerRoute(methodType, handlerPath + '/', handlerObject);
+            }
+            registerRoute(methodType, handlerPath, handlerObject);
+            break;
+        }
+    }
+    return {methodIdx: methodIdx, handlerMethods: handlerMethods, methodType: methodType, handlerNameFinal: handlerNameFinal};
 }
 
 function registerRoute(methodType, handlerPath, shandler){
