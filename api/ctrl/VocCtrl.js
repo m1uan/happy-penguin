@@ -32,9 +32,47 @@ module.exports = {
 
     },
     index_get : function (request){
-            request.reply('index_get');
+
+        var sql = 'SELECT word.word as word1cs, w2.word as word2en, word.lang, w2.lang, image.image from word '
+            + ' LEFT JOIN word w2 on word.link = w2.link '
+            + ' LEFT JOIN image on word.link=image.link '
+            +' WHERE word.lang= $1 AND w2.lang= $2 '
+            +' AND word.link > 10 AND word.link < 20';
+
+        console.log(sql)  ;
+        pgclient.query(sql, ['cs', 'en'], function(err, data){
+            //console.log(data);
+            //cb(err, {words: data.rows});
+            request.reply(data.rows);
+        });
+
+
+//        wordsControler.getWord('cs','en', function(err, data){
+//
+//        });
+
+
     },
     ahoj_get : function (request){
         request.reply('ahoj_get');
     }
+
+
+//    ,wordsControler : function(){
+//      function getWord(lang1, lang2, cb){
+//          var sql = 'SELECT word.word as word1cs, w2.word as word2en, word.lang, w2.lang, image.image from word ' +
+//              + ' LEFT JOIN word w2 on word.link = w2.link ' +
+//              + ' LEFT JOIN image on word.link=image.link ' +
+//              +' WHERE word.lang= $1 AND w2.lang= $2 ' +
+//              +' AND word.link > 10 AND word.link < 20';
+//
+//          //console.log(sql)  ;
+//          pgclient.query(sql, [lang1, lang2], function(err, data){
+//              //console.log(data);
+//              cb(err, {words: data.rows});
+//
+//          });
+//      }
+//    }
+
 }
