@@ -1,3 +1,4 @@
+
 -- psql -d voc4u -f initdata/init.sql
 drop table word;
 drop table image;
@@ -29,8 +30,50 @@ CREATE TABLE image (
     PRIMARY KEY(link)
 );
 
+-- select link,word,'w' as type, lang from word where link > 10 and link < 15 union select link,image,'i' as type, '' as lang from image where link > 10 and link < 15;
+-- link |                                 word                                 | type | lang
+--------+----------------------------------------------------------------------+------+------
+--   13 | comprobar                                                            | w    | es
+--   11 | Kuchen                                                               | w    | de
+--   11 | cake                                                                 | w    | en
+--   14 | šachy                                                                | w    | cs
+--   13 | check                                                                | w    | en
+--   11 | dort                                                                 | w    | cs
+--   12 | povídat                                                              | w    | cs
+--   11 | ANd9GcTnI4XGBKnmfsg9Y3UFZS4mKmbkPQvsgb7wFUQdX2hMcDqaNzVy8vLor-A0.jpg | i    |
+--   14 | ANd9GcT5wkG5QlniXGD3Fl3RjXhcu7iRpbaOqz-JBwkXAfhA0qlrLacivxNSyIY9.jpg | i    |
+--   14 | ajedrez                                                              | w    | es
+--   12 | charlar                                                              | w    | es
+--   13 | überprüfen                                                           | w    | de
+--   14 | Schach                                                               | w    | de
+--   11 | pastel                                                               | w    | es
+--   13 | kontrola                                                             | w    | cs
+--   12 | chat                                                                 | w    | en
+--   14 | chess                                                                | w    | en
+--   12 | Chat                                                                 | w    | de
+--   13 | ANd9GcRWsY8XhHZrS2lL4EipJvYhg73vzD9EJ6msDQMkb_mStIrOhXkhkwB91znY.jpg | i    |
+
+--select word.word as word1cs, w2.word as word2en, word.lang, w2.lang, image.image from word left join word w2 on word.link = w2.link left join image on word.link=image.link where word.lang='cs' and w2.lang='en' and word.link > 10 and word.link < 25;
+--    word1cs     |    word2en     | lang | lang |                                 image
+------------------+----------------+------+------+------------------------------------------------------------------------
+-- dort           | cake           | cs   | en   | ANd9GcTnI4XGBKnmfsg9Y3UFZS4mKmbkPQvsgb7wFUQdX2hMcDqaNzVy8vLor-A0.jpg
+-- povídat        | chat           | cs   | en   |
+-- kontrola       | check          | cs   | en   | ANd9GcRWsY8XhHZrS2lL4EipJvYhg73vzD9EJ6msDQMkb_mStIrOhXkhkwB91znY.jpg
+-- šachy          | chess          | cs   | en   | ANd9GcT5wkG5QlniXGD3Fl3RjXhcu7iRpbaOqz-JBwkXAfhA0qlrLacivxNSyIY9.jpg
+-- studený nápoj  | cold drink     | cs   | en   | ANd9GcQrPe-LSWKmy4riNjShg1VRjB1ZSomFZHWm1znb0AWW778zhf-qJuCucls.jpg
+-- Tak pojď!      | Come on!       | cs   | en   |
+-- komunikovat    | communicate    | cs   | en   | ANd9GcTdtmoB6Us_0c2XrTR8gT8XesXWHNIBCLJRwdZQ8ugXXq-M_b1eiHjyNh4eeQ.jpg
+-- počítačové hry | computer games | cs   | en   | ANd9GcREWPc7HNRkA-plQCdcPsOTb9_fq0YT1l5wSdYsJyydyRJRj_2TPJfulKw.jpg
+-- nekonečný      | endless        | cs   | en   |
+-- promiňte       | excuse me      | cs   | en   |
+-- květiny        | flowers        | cs   | en   | ANd9GcQKIPPp_Uw7rurvt5J_5sC5NxUTbtZ6m4Oj947WDshvY9ta_EU4m91Vq8o.jpg
+-- předpověď      | forecast       | cs   | en   | ANd9GcSCOmvFvTWi3IV0Pd2z_5qoUvG6yqdbzDbb-N6J2Gl5GVxPHu1GXKXr_J2d.jpg
+-- historie       | history        | cs   | en   |
+-- tlumočník      | interpreter    | cs   | en   |
+--(14 rows)
 
 -- http://tools.perceptus.ca/text-wiz.php
+BEGIN;
 
 INSERT INTO link (lid) VALUES ('1');
 INSERT INTO link (lid) VALUES ('2');
@@ -953,7 +996,7 @@ INSERT INTO word (link,word,lang) VALUES ('300','Jakou to má barvu?','cs');
 INSERT INTO word (link,word,lang) VALUES ('301','stihnout letadlo','cs');
 INSERT INTO word (link,word,lang) VALUES ('302','jak dlouho?','cs');
 INSERT INTO word (link,word,lang) VALUES ('303','je čas jít','cs');
-INSERT INTO word (link,word,lang) VALUES ('304','příští','es');
+INSERT INTO word (link,word,lang) VALUES ('304','příští','cs');
 
 INSERT INTO word (link,word,lang) VALUES ('1','während','de');
 INSERT INTO word (link,word,lang) VALUES ('2','junge','de');
@@ -1303,7 +1346,6 @@ INSERT INTO word (link,word,lang) VALUES ('40','Russian','en');
 INSERT INTO word (link,word,lang) VALUES ('41','slowly','en');
 INSERT INTO word (link,word,lang) VALUES ('42','ticket machine','en');
 INSERT INTO word (link,word,lang) VALUES ('43','tractor','en');
-INSERT INTO word (link,word,lang) VALUES ('44',"TV's broken",'en');
 INSERT INTO word (link,word,lang) VALUES ('45','use','en');
 INSERT INTO word (link,word,lang) VALUES ('46','web','en');
 INSERT INTO word (link,word,lang) VALUES ('47','website','en');
@@ -1325,7 +1367,6 @@ INSERT INTO word (link,word,lang) VALUES ('62','crash','en');
 INSERT INTO word (link,word,lang) VALUES ('63','crime','en');
 INSERT INTO word (link,word,lang) VALUES ('64','dangerous','en');
 INSERT INTO word (link,word,lang) VALUES ('65','did','en');
-INSERT INTO word (link,word,lang) VALUES ('66',"didn't",'en');
 INSERT INTO word (link,word,lang) VALUES ('67','end','en');
 INSERT INTO word (link,word,lang) VALUES ('68','enormous','en');
 INSERT INTO word (link,word,lang) VALUES ('69','escape','en');
@@ -1543,14 +1584,12 @@ INSERT INTO word (link,word,lang) VALUES ('280','youth hostel','en');
 INSERT INTO word (link,word,lang) VALUES ('281','all over the world','en');
 INSERT INTO word (link,word,lang) VALUES ('282','department of defense','en');
 INSERT INTO word (link,word,lang) VALUES ('283','','en');
-INSERT INTO word (link,word,lang) VALUES ('284',"it doesn't work",'en');
 INSERT INTO word (link,word,lang) VALUES ('285',' bitte.','en');
 INSERT INTO word (link,word,lang) VALUES ('286','wait a minute','en');
 INSERT INTO word (link,word,lang) VALUES ('287','at the same time','en');
 INSERT INTO word (link,word,lang) VALUES ('288','change my mind','en');
 INSERT INTO word (link,word,lang) VALUES ('289','in the middle of','en');
 INSERT INTO word (link,word,lang) VALUES ('290','on his way from ... to','en');
-INSERT INTO word (link,word,lang) VALUES ('291',"What's going on?",'en');
 INSERT INTO word (link,word,lang) VALUES ('292','feel at home','en');
 INSERT INTO word (link,word,lang) VALUES ('293',' bitte.','en');
 INSERT INTO word (link,word,lang) VALUES ('295','next to the bank','en');
@@ -1646,9 +1685,11 @@ INSERT INTO image (link,image) VALUES ('271','ANd9GcSYly6cJtcy-RasL_NnfaP4bonGxa
 INSERT INTO image (link,image) VALUES ('272','ANd9GcQ26F-ZVO1Rh990IFikq9GyEuv9Iqa2alw-jU0ZLpCxtbqAfET8WTzzoKc.jpg');
 INSERT INTO image (link,image) VALUES ('275','ANd9GcTSo-mKiorgrff0-QFcSHLEaclOcrC-ADy8UzQBaGbdR-8t0oPwcABRWW9Z.jpg');
 INSERT INTO image (link,image) VALUES ('276','ANd9GcTbymPU1nk0-5iK-WdAiXgo2AdnmuMzpTd7P25ikIsnF2q4-fB-5Ygw1c4T.jpg');
-
+COMMIT;
 
 
 GRANT ALL ON link TO voc4u;
 GRANT ALL ON word TO voc4u;
 GRANT ALL ON image TO voc4u;
+
+SELECT pg_size_pretty(pg_database_size('geekdb'));
