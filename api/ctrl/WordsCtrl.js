@@ -35,12 +35,28 @@ module.exports = {
     },
     index_get : function (request){
 
+
+        //console.log(request.getParam('l2'));
         wordsEngine.getWordsWithImages(pgclient, ['cs', 'en'], 1, function(err, words){
             request.reply(err ? err : words);
         });
     },
-    ahoj_get : function (request){
-        request.reply('ahoj_get');
+    lesson_get : function (request){
+        //console.log(request.getParam('l2'));
+        //  http://localhost:8080/words/lesson/2/de/cs
+        if(request.params.params && request.params.params.length > 0){
+            var langs = request.params.params.split('/');
+            var lesson = langs.shift();
+
+            console.log(langs);
+            console.log(lesson);
+
+            wordsEngine.getWordsWithImages(pgclient, langs, lesson, function(err, words){
+                request.reply(err ? err : words);
+            });
+        } else {
+            request.reply('format : /lesson/lang1/lang2/{lang3?}');
+        }
     }
 
 
