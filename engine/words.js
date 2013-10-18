@@ -55,18 +55,19 @@ module.exports.getImages = function(pgClient, linkFrom, linkTo, cb) {
 
 
 module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
-    async.parallel([
-        function(callback){
-            module.exports.getWords(pgClient, langs[0], lesson, function(words){
-                callback(null, words);
-            });
-        },
-        function(callback){
-            module.exports.getWords(pgClient, langs[1], lesson, function(words){
-                callback(null, words);
-            });
-        }
-    ],
+    var asyncLangsLoad = [];
+
+    langs.forEach(function(val, idx){
+        console.log(val);
+        asyncLangsLoad.push(function(callback){
+           module.exports.getWords(pgClient, val, lesson, function(words){
+               callback(null, words);
+           });
+       });
+    });
+
+
+    async.parallel(asyncLangsLoad,
 // optional callback
         function(err, results){
             var learnWordFist = results[0][0];
