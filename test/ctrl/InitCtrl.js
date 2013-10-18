@@ -1,5 +1,5 @@
 var assert = require("assert"),
-    vocCtrl = require('../../api/ctrl/VocCtrl.js');
+    vocCtrl = require('../../api/ctrl/WordsCtrl.js');
 
 describe('Array', function(){
     describe('#indexOf()', function(){

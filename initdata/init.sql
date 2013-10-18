@@ -1692,4 +1692,4 @@ GRANT ALL ON link TO voc4u;
 GRANT ALL ON word TO voc4u;
 GRANT ALL ON image TO voc4u;
 
-SELECT pg_size_pretty(pg_database_size('geekdb'));
+SELECT pg_size_pretty(pg_database_size('voc4u'));
