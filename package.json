@@ -27,7 +27,8 @@
     "jade": "~0.35.0",
     "hapi": "~1.14.0",
     "mega": "~0.2.0",
-    "pg": "~2.7.0"
+    "pg": "~2.7.0",
+    "async": "~0.2.9"
   },
   "devDependencies": {},
   "bundleDependencies": [],

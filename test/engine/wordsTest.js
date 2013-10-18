@@ -37,7 +37,7 @@ describe('getWords', function(){
 
         }),
         it('should return several rows', function(cb){
-            words.getWords(pgClient, 'cs', 1, function(rows){
+            words.getWords(pgClient, 'en', 1, function(rows){
                 assert(rows);
                 rows.length.should.be.eql(words.lessonSize);
                 var rows0 = rows[0];
@@ -45,9 +45,21 @@ describe('getWords', function(){
                 rows0.should.have.property('word');
                 rows0.should.have.property('history');
                 rows0.should.have.property('lang');
+                rows0.lang.should.eql('en');
                 cb();
             })
 
         })
+    });
+
+    describe('getImages(lesson)', function(){
+        it('get images from lesson 1', function(cb){
+            words.getImages(pgClient, 1, 8, function(err, rows){
+                console.error(err);
+                assert(rows);
+                cb();
+            });
+        });
+
     });
 })
