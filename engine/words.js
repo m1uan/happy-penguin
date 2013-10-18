@@ -1,3 +1,5 @@
+var async = require('async');
+
 module.exports.lessonSize = 8;
 
 
@@ -49,4 +51,32 @@ module.exports.getImages = function(pgClient, linkFrom, linkTo, cb) {
 
 
     });
+}
+
+
+module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
+    async.parallel([
+        function(callback){
+            module.exports.getWords(pgClient, langs[0], lesson, function(words){
+                callback(null, words);
+            });
+        },
+        function(callback){
+            module.exports.getWords(pgClient, langs[1], lesson, function(words){
+                callback(null, words);
+            });
+        }
+    ],
+// optional callback
+        function(err, results){
+            var learnWordFist = results[0][0];
+            var learnWordLast = results[0][results[0].length-1];
+            module.exports.getImages(pgClient, learnWordFist.link, learnWordLast.link, function(err, images){
+                results.push(images);
+                cb(err, results);
+            });
+
+
+
+        });
 }

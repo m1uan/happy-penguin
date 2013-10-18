@@ -35,33 +35,8 @@ module.exports = {
     },
     index_get : function (request){
 
-        async.parallel([
-            function(callback){
-                wordsEngine.getWords(pgclient, 'cs', 1, function(words){
-                    callback(null, words);
-                });
-            },
-            function(callback){
-                wordsEngine.getWords(pgclient, 'en', 1, function(words){
-                    callback(null, words);
-                });
-            }
-        ],
-// optional callback
-        function(err, results){
-            var learnWordFist = results[0][0];
-            var learnWordLast = results[0][results[0].length-1];
-            wordsEngine.getImages(pgclient, learnWordFist.link, learnWordLast.link, function(err, images){
-                if(err){
-                    console.error(err);
-                }
-
-                results.push(images);
-                request.reply(results);
-            });
-
-
-
+        wordsEngine.getWordsWithImages(pgclient, ['cs', 'en'], 1, function(err, words){
+            request.reply(err ? err : words);
         });
     },
     ahoj_get : function (request){
