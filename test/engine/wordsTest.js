@@ -1,6 +1,7 @@
 var assert = require("assert"),
     words = require('../../engine/words.js'),
-    pg = require('pg');
+    pg = require('pg'),
+    should = require('should');
 
 var pgClient = null;
 var dbuser = 'voc4u';
@@ -28,9 +29,22 @@ describe('getWords', function(){
 
 
     describe('getWords(cs)', function(){
-        it('should return -1 when the value is not present', function(cb){
+        it('should return null because wrong lesson index', function(cb){
+            words.getWords(pgClient, 'cs', 0, function(rows){
+                assert(rows == null);
+                cb();
+            })
+
+        }),
+        it('should return several rows', function(cb){
             words.getWords(pgClient, 'cs', 1, function(rows){
                 assert(rows);
+                rows.length.should.be.eql(words.lessonSize);
+                var rows0 = rows[0];
+                rows0.should.have.property('link');
+                rows0.should.have.property('word');
+                rows0.should.have.property('history');
+                rows0.should.have.property('lang');
                 cb();
             })
 
