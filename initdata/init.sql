@@ -1,5 +1,8 @@
-
+-- CREATE DATABASE voc4u;
+-- CREATE USER uservoc4u WITH PASSWORD '*uservoc4u';
+-- GRANT ALL PRIVILEGES ON DATABASE voc4u TO uservoc4u;
 -- psql -d voc4u -f initdata/init.sql
+
 drop table word;
 drop table image;
 drop table link;
