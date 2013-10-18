@@ -11,8 +11,10 @@ module.exports = {
         var dbname = server.config_local.DB_NAME;
         var dbuser = server.config_local.DB_USER;
         var dbpass = server.config_local.DB_PASS;
+        var dbport = server.config_local.DB_PORT;
+        var dbhost = server.config_local.DB_HOST;
 
-        var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
+        var connection = 'postgres://'+dbuser+':'+dbpass+'@'+dbhost+':'+dbport+'/' + dbname;
         console.info('db connection: ' + connection);
         pgclient = new pg.Client(connection);
         pgclient.connect(function(err){

@@ -1,6 +1,6 @@
 var async = require('async');
 
-module.exports.lessonSize = 8;
+module.exports.lessonSize = 80;
 
 
 module.exports.getWords = function(pgClient, lang, lesson, cb) {
