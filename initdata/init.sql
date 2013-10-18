@@ -53,7 +53,7 @@ CREATE TABLE image (
 --   12 | Chat                                                                 | w    | de
 --   13 | ANd9GcRWsY8XhHZrS2lL4EipJvYhg73vzD9EJ6msDQMkb_mStIrOhXkhkwB91znY.jpg | i    |
 
---select word.word as word1cs, w2.word as word2en, word.lang, w2.lang, image.image from word left join word w2 on word.link = w2.link left join image on word.link=image.link where word.lang='cs' and w2.lang='en' and word.link > 10 and word.link < 25;
+--select word.word as word1cs, w2.word as word2en, word.lang, w2.lang, image.image from word  left join word w2 on word.link = w2.link left join image on word.link=image.link where word.lang='cs' and w2.lang='en' and word.link > 10 and word.link < 25;
 --    word1cs     |    word2en     | lang | lang |                                 image
 ------------------+----------------+------+------+------------------------------------------------------------------------
 -- dort           | cake           | cs   | en   | ANd9GcTnI4XGBKnmfsg9Y3UFZS4mKmbkPQvsgb7wFUQdX2hMcDqaNzVy8vLor-A0.jpg
