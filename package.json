@@ -29,7 +29,9 @@
     "mega": "~0.2.0",
     "travelogue": "~0.4.2",
     "passport": "~0.1.17",
-    "yar": "~0.4.0"
+    "yar": "~0.4.0",
+    "pg": "~2.7.0",
+    "async": "~0.2.9"
   },
   "devDependencies": {},
   "bundleDependencies": [],
