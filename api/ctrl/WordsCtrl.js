@@ -14,8 +14,16 @@ module.exports = {
     // get Hapi Config
     $getConfig : function(){
         return {
-
+            auth : 'passport'
+            ,test_get : {
+                auth : false
+            },lesson_get : {
+                params : '{params*}'
+            }
         }
+    },
+    test_get : function(request){
+      request.reply('heelo');
     },
     index_get : function (request){
 
