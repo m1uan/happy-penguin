@@ -1,4 +1,6 @@
 var LocalStrategy = require('passport-local').Strategy;
+var userEngine = require(process.cwd() + '/engine/user.js');
+
 module.exports = {
     initialize : function(Hapi, server) {
 
@@ -30,16 +32,22 @@ module.exports = {
             "m": "a"
         };
 
+
+
         var Passport = server.plugins.travelogue.passport;
         Passport.use(new LocalStrategy(function (username, password, done) {
+            userEngine.getUserByName(server.pgClient, username, function(err, user){
+                // Find or create user here...
+                // In production, use password hashing like bcrypt
 
-            // Find or create user here...
-            // In production, use password hashing like bcrypt
-            if (USERS.hasOwnProperty(username) && USERS[username] == password) {
-                return done(null, { username: username });
-            }
+                console.log(user);
+                if (!err && user && user.pass == password) {
+                    return done(null, user);
+                }
 
-            return done(null, false, { 'message': 'invalid credentials' });
+                return done(null, false, { 'message': 'invalid credentials' });
+            });
+
         }));
 
 

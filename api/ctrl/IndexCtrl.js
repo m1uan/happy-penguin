@@ -1,11 +1,19 @@
-
+var userEngine = require(process.cwd() + '/engine/user.js');
 var Passport = null;
 var Travelelogue = null;
 
 module.exports = {
+    /**
+     *
+     * @param server
+     * @param Hapi
+     */
     $init : function(server, Hapi){
         Travelelogue = server.plugins.travelogue;
-        Passport = server.plugins.travelogue.passport;
+        Passport = Travelelogue.passport;
+
+
+
     }
     // get Hapi Config
     ,$getConfig : function(){
