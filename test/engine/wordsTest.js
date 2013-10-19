@@ -4,8 +4,8 @@ var assert = require("assert"),
     should = require('should');
 
 var pgClient = null;
-var dbuser = 'voc4u';
-var dbpass = 'voc4u';
+var dbuser = 'uservoc4u';
+var dbpass = '*uservoc4u';
 var dbname = 'voc4u';
 
 describe('getWords', function(){
@@ -43,7 +43,7 @@ describe('getWords', function(){
                 var rows0 = rows[0];
                 rows0.should.have.property('link');
                 rows0.should.have.property('word');
-                rows0.should.have.property('history');
+                rows0.should.have.property('version');
                 rows0.should.have.property('lang');
                 rows0.lang.should.eql('en');
                 cb();
@@ -57,6 +57,26 @@ describe('getWords', function(){
             words.getImages(pgClient, 1, 8, function(err, rows){
                 console.error(err);
                 assert(rows);
+                cb();
+            });
+        });
+
+    });
+
+    describe('updateWord(lesson)', function(){
+        it('update 3 cs', function(cb){
+
+            word = {
+                link:3
+                , lang : 'cs'
+                , version : 0
+                , word : 'nazdar'
+            }
+
+            words.updateWord(pgClient, word, 1, function(err, rows){
+                console.error(err);
+                assert(rows);
+                console.log(rows);
                 cb();
             });
         });

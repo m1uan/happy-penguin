@@ -31,7 +31,7 @@ CREATE TABLE word (
     FOREIGN KEY (link) REFERENCES link (lid),
     FOREIGN KEY (usr) REFERENCES usr (id) ,
     version SMALLINT NOT NULL DEFAULT 0,
-    PRIMARY KEY(lang, link)
+    PRIMARY KEY(lang, link, version)
 );
 
 
@@ -42,7 +42,7 @@ CREATE TABLE image (
     FOREIGN KEY (link) REFERENCES link (lid),
     FOREIGN KEY (usr) REFERENCES usr (id),
     version SMALLINT NOT NULL DEFAULT 0,
-    PRIMARY KEY(link)
+    PRIMARY KEY(link, version)
 );
 
 
