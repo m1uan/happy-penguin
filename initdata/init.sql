@@ -6,21 +6,31 @@
 drop table word;
 drop table image;
 drop table link;
+drop table usr;
 
 CREATE TABLE link (
     -- link id
     lid INTEGER UNIQUE NOT NULL
 );
 
+CREATE TABLE usr (
+   id SERIAL UNIQUE NOT NULL,
+   name VARCHAR(25) NOT NULL,
+   pass VARCHAR(25) NOT NULL,
+   full_name VARCHAR(100) NOT NULL,
+   PRIMARY KEY(id, name)
+);
 
-
+INSERT INTO usr (name, pass, full_name) VALUES ('init','no password at all', 'inital');
 
 CREATE TABLE word (
     lang CHAR(2) NOT NULL,
     word TEXT NOT NULL,
-    link INTEGER,
+    link INTEGER NOT NULL,
+    usr INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY (link) REFERENCES link (lid),
-    history SMALLINT NOT NULL DEFAULT 0,
+    FOREIGN KEY (usr) REFERENCES usr (id) ,
+    version SMALLINT NOT NULL DEFAULT 0,
     PRIMARY KEY(lang, link)
 );
 
@@ -28,10 +38,14 @@ CREATE TABLE word (
 CREATE TABLE image (
     image VARCHAR(255),
     link INTEGER,
+    usr INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY (link) REFERENCES link (lid),
-    history SMALLINT NOT NULL DEFAULT 0,
+    FOREIGN KEY (usr) REFERENCES usr (id),
+    version SMALLINT NOT NULL DEFAULT 0,
     PRIMARY KEY(link)
 );
+
+
 
 -- select link,word,'w' as type, lang from word where link > 10 and link < 15 union select link,image,'i' as type, '' as lang from image where link > 10 and link < 15;
 -- link |                                 word                                 | type | lang
@@ -71,12 +85,16 @@ CREATE TABLE image (
 -- promiňte       | excuse me      | cs   | en   |
 -- květiny        | flowers        | cs   | en   | ANd9GcQKIPPp_Uw7rurvt5J_5sC5NxUTbtZ6m4Oj947WDshvY9ta_EU4m91Vq8o.jpg
 -- předpověď      | forecast       | cs   | en   | ANd9GcSCOmvFvTWi3IV0Pd2z_5qoUvG6yqdbzDbb-N6J2Gl5GVxPHu1GXKXr_J2d.jpg
--- historie       | history        | cs   | en   |
+-- historie       | version        | cs   | en   |
 -- tlumočník      | interpreter    | cs   | en   |
 --(14 rows)
 
 -- http://tools.perceptus.ca/text-wiz.php
 BEGIN;
+
+INSERT INTO usr (name, pass, full_name) VALUES ('admin','a', 'Administrator');
+INSERT INTO usr (name, pass, full_name) VALUES ('miuan','a', 'Milan Medlik');
+INSERT INTO usr (name, pass, full_name) VALUES ('klara','a', 'Klara Dvorakova');
 
 INSERT INTO link (lid) VALUES ('1');
 INSERT INTO link (lid) VALUES ('2');
@@ -1328,7 +1346,7 @@ INSERT INTO word (link,word,lang) VALUES ('19','endless','en');
 INSERT INTO word (link,word,lang) VALUES ('20','excuse me','en');
 INSERT INTO word (link,word,lang) VALUES ('21','flowers','en');
 INSERT INTO word (link,word,lang) VALUES ('22','forecast','en');
-INSERT INTO word (link,word,lang) VALUES ('23','history','en');
+INSERT INTO word (link,word,lang) VALUES ('23','version','en');
 INSERT INTO word (link,word,lang) VALUES ('24','interpreter','en');
 INSERT INTO word (link,word,lang) VALUES ('25','list','en');
 INSERT INTO word (link,word,lang) VALUES ('26','lost','en');
@@ -1691,8 +1709,9 @@ INSERT INTO image (link,image) VALUES ('276','ANd9GcTbymPU1nk0-5iK-WdAiXgo2Adnmu
 COMMIT;
 
 
-GRANT ALL ON link TO voc4u;
-GRANT ALL ON word TO voc4u;
-GRANT ALL ON image TO voc4u;
+GRANT ALL ON link TO uservoc4u;
+GRANT ALL ON usr TO uservoc4u;
+GRANT ALL ON word TO uservoc4u;
+GRANT ALL ON image TO uservoc4u;
 
 SELECT pg_size_pretty(pg_database_size('voc4u'));
