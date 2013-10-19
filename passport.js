@@ -4,7 +4,7 @@ module.exports = {
 
         var config = {
             urls: {
-                failureRedirect: '/login'
+                failureRedirect: '/login/'
             },
             excludePaths: ['/public/']
         };
@@ -41,10 +41,15 @@ module.exports = {
 
             return done(null, false, { 'message': 'invalid credentials' });
         }));
-        Passport.serializeUser(function (user, done) {
 
+
+
+        Passport.serializeUser(function (user, done) {
             done(null, user);
         });
+
+
+
         Passport.deserializeUser(function (obj, done) {
 
             done(null, obj);
@@ -58,51 +63,6 @@ module.exports = {
                 console.log(event)
             });
         }
-
-
-// addRoutes
-        server.addRoute({
-            method: 'GET',
-            path: '/index.html',
-            config: { auth: 'passport' }, // replaces ensureAuthenticated
-            handler: function (request) {
-
-                // If logged in already, redirect to /home
-                // else to /login
-                request.reply.redirect('/home');
-            }
-        });
-
-
-        server.addRoute({
-            method: 'GET',
-            path: '/login',
-            config: {
-                auth: false, // use this if your app uses other hapi auth schemes, otherwise optional
-                handler: function (request) {
-
-                    if (request.session._isAuthenticated()) {
-                        request.reply.redirect('/home');
-                    } else {
-                        var form = '<form action="/login" method="post"> <div> <label>Username:</label> <input type="text" name="username"/> </div> <div> <label>Password:</label> <input type="password" name="password"/> </div> <div> <input type="submit" value="Log In"/> </div> </form>';
-                        request.reply(form);
-                    }
-                }
-            }
-        });
-
-
-        server.addRoute({
-            method: 'GET',
-            path: '/home',
-            config: { auth: 'passport' },
-            handler: function (request) {
-
-                // If logged in already, redirect to /home
-                // else to /login
-                request.reply("ACCESS GRANTED<br/><br/><a href='/logout'>Logout</a>");
-            }
-        });
 
 
         server.addRoute({
@@ -128,45 +88,13 @@ module.exports = {
         });
 
 
-        server.addRoute({
-            method: 'GET',
-            path: '/clear',
-            config: {
-                auth: false,
-                handler: function (request) {
-
-                    request.session.reset();
-                    request.reply.redirect('/session');
-                }
-            }
-        });
 
 
-        server.addRoute({
-            method: 'GET',
-            path: '/session',
-            config: {
-                auth: false,
-                handler: function (request) {
-
-                    return request.reply("<pre>" + JSON.stringify(request.session, null, 2) + "</pre><br/><br/><a href='/login'>Login</a>");
-                }
-            }
-        });
 
 
-        server.addRoute({
-            method: 'GET',
-            path: '/logout',
-            config: {
-                auth: false,
-                handler: function (request) {
 
-                    request.session._logout();
-                    return request.reply.redirect('/');
-                }
-            }
-        });
+
+
 
 
         server.addRoute({
