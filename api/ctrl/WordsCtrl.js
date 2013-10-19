@@ -15,6 +15,7 @@ module.exports = {
     $getConfig : function(){
         return {
             auth : 'passport'
+            ,params : '{params*}'
             ,test_get : {
                 auth : false
             },lesson_get : {
