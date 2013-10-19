@@ -42,6 +42,7 @@ module.exports = {
 
                 console.log(user);
                 if (!err && user && user.pass == password) {
+                    user.pass = undefined;
                     return done(null, user);
                 }
 
@@ -53,14 +54,25 @@ module.exports = {
 
 
         Passport.serializeUser(function (user, done) {
-            done(null, user);
+            console.log('serializeUser');
+            console.log(user);
+            done(null, user.id);
         });
 
 
 
-        Passport.deserializeUser(function (obj, done) {
+        Passport.deserializeUser(function (id, done) {
+            userEngine.getUserById(server.pgClient, id, function(err, user){
+                console.log('deserializeUser');
+                console.log(user);
+                console.log(id);
+                if(err){
+                    done(null, id);
+                }else {
+                    done(null, user);
+                }
 
-            done(null, obj);
+            });
         });
 
 
