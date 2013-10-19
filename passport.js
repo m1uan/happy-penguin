@@ -27,7 +27,7 @@ module.exports = {
 
 
         var USERS = {
-            "van": "walmart"
+            "m": "a"
         };
 
         var Passport = server.plugins.travelogue.passport;
@@ -65,27 +65,7 @@ module.exports = {
         }
 
 
-        server.addRoute({
-            method: 'POST',
-            path: '/login',
-            config: {
-                validate: {
-                    payload: {
-                        username: Hapi.types.String(),
-                        password: Hapi.types.String()
-                    }
-                },
-                auth: false,
-                handler: function (request) {
 
-                    Passport.authenticate('local', {
-                        successRedirect: config.urls.successRedirect,
-                        failureRedirect: config.urls.failureRedirect,
-                        failureFlash: true
-                    })(request)
-                }
-            }
-        });
 
 
 
