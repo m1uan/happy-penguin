@@ -19,7 +19,10 @@ module.exports.getWords = function(pgClient, lang, lesson, cb) {
     var lessonStart = (lesson-1) * module.exports.lessonSize;
     var lessonEnd = lessonStart + module.exports.lessonSize;
 
-    var sql = SQL_SELECT_WORD + ' WHERE lang = $1 OFFSET $2 LIMIT $3';
+    //var sql = SQL_SELECT_WORD + ' WHERE lang = $1 OFFSET $2 LIMIT $3';
+    // changed from limit to link, otherwise after update the updated
+    // words not in words sed more
+    var sql = SQL_SELECT_WORD + ' WHERE lang = $1 AND link >= $2 AND link < $3';
 
     console.log(sql)  ;
     pgClient.query(sql, [lang, lessonStart, lessonEnd], function(err, data){

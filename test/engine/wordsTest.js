@@ -40,7 +40,7 @@ describe('getWords', function(){
         it('should return several rows', function(cb){
             words.getWords(pgClient, 'en', 1, function(rows){
                 assert(rows);
-                rows.length.should.be.eql(words.lessonSize);
+                //rows.length.should.be.eql(words.lessonSize);
                 var rows0 = rows[0];
                 rows0.should.have.property('link');
                 rows0.should.have.property('word');
@@ -130,10 +130,31 @@ describe('getWords', function(){
                 });
             }
 
+            function testInWordset(updatedRows, icb){
+                var lang = updatedRows[0].lang;
+                var link = updatedRows[0].link;
+
+                console.log('testInWordset lang,link : (' + lang + ',' + link + ')');
+                words.getWords(pgClient, lang, 1, function(rows){
+
+                    var linkNotMissing = false;
+                    // test if wordOrig have again version == 0
+                    rows.forEach(function(word, idx){
+                        if(word.link == link){
+                            linkNotMissing = true;
+                        }
+                    });
+
+                    assert(linkNotMissing, 'Word with link = ' + link + ' missing in getWords');
+                    icb(null, rows);
+                });
+            }
+
             async.waterfall([
                 getVersion
                 ,updateWord
                 , reuseWord
+                , testInWordset
             ], cb);
         });
 
