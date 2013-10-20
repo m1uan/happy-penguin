@@ -70,10 +70,6 @@ module.exports.getWordWithHistory = function(pgClient, lang, link, cb){
 }
 
 module.exports.updateWord = function(pgClient, wordForUpdate, userId, cb) {
-    updateWord(pgClient, wordForUpdate, userId, cb);
-}
-
-updateWord = function(pgClient, wordForUpdate, userId, cb) {
     if(!pgClient){
         return cb('pgClient not setup', null);
     }
@@ -82,25 +78,107 @@ updateWord = function(pgClient, wordForUpdate, userId, cb) {
         cb('wordForUpdate must contains : link, lang, word', false);
     }
 
-    function updateVersion(cb){
+    var sqlTest = 'SELECT version FROM word' +
+        ' WHERE lang = $1 AND link = $2 AND word = $3'
 
-        var updateWhere = ' WHERE lang = $1 AND link = $2'
-        var getMaxVersion = '(SELECT max(version)+1 FROM word'
+
+    function retAllVersion(err, results){
+        if(!err){
+            module.exports.getWordWithHistory(pgClient, wordForUpdate.lang, wordForUpdate.link, function(err, data){
+                cb(err, data);
+            });
+        } else {
+            cb(err, false);
+        }
+
+    }
+
+    pgClient.query(sqlTest, [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word], function(err, data){
+        if(err) {
+           cb(err, false);
+        } else if(data.rows.length == 0){
+            createNewWordAndSetNewVersionToOld(pgClient, wordForUpdate, userId, retAllVersion);
+        } else {
+
+            reuseOldVersion(pgClient, wordForUpdate, retAllVersion);
+        }
+    });
+
+}
+
+function reuseOldVersion(pgClient, wordForUpdate, cb){
+    function updateActualWordToNewVersion(cb){
+        updateVersionToWord(pgClient, wordForUpdate, cb)
+    }
+
+    function updateOldWordToVersion0(cb){
+        updateVersionToWord(pgClient, wordForUpdate, 0,  cb)
+    }
+
+    console.log(wordForUpdate);
+    async.series([
+        updateActualWordToNewVersion
+        , updateOldWordToVersion0
+    ], cb);
+}
+
+function updateVersionToWord(pgClient, wordForUpdate, version, cb){
+
+    var updateWhere = ' WHERE lang = $1 AND link = $2';
+    var getMaxVersion = '';
+
+    var sqlParams = [
+        wordForUpdate.lang,
+        wordForUpdate.link];
+
+    if(!cb){
+        cb = version;
+
+        // count version from last one
+        getMaxVersion = '(SELECT max(version)+1 FROM word'
             + updateWhere
             + ')';
-        var updateVersion = 'UPDATE word SET version = '
-            + getMaxVersion
-            + updateWhere + ' AND version = 0';
 
-        console.log(updateVersion);
+        // must be after getMaxVersion
+        updateWhere += ' AND version = 0';
+    } else {
 
-        pgClient.query(updateVersion, [wordForUpdate.lang, wordForUpdate.link], function(err, data){
-            if(err) {
-                cb(err, null);
-            } else {
-                cb(err, data);
-            }
-        });
+        // ----------------
+        // version to value
+        getMaxVersion = '$3';
+        sqlParams.push(0);
+
+
+        // specified words to update version
+        if(wordForUpdate.word){
+            updateWhere += ' AND word = $4'
+            sqlParams.push(wordForUpdate.word);
+        } else {
+            cb('you can not update specific word version without wordForUpdate.word', null);
+        }
+
+    }
+
+    var updateVersion = 'UPDATE word SET version = '
+        + getMaxVersion
+        + updateWhere;
+
+    console.log(updateVersion);
+
+    pgClient.query(updateVersion, sqlParams, function(err, data){
+        if(err) {
+            cb(err, null);
+        } else {
+            cb(err, data);
+        }
+    });
+}
+
+function createNewWordAndSetNewVersionToOld(pgClient, wordForUpdate, userId, cb) {
+
+
+    function updateUsageWord(cb){
+        updateVersionToWord(pgClient, wordForUpdate, cb)
     }
 
     function insertNew(cb){
@@ -125,19 +203,9 @@ updateWord = function(pgClient, wordForUpdate, userId, cb) {
 
 
     async.series([
-        updateVersion,
+        updateUsageWord,
         insertNew
-    ],
-        function(err, results){
-            console.log(results);
-            if(!err){
-                module.exports.getWordWithHistory(pgClient, wordForUpdate.lang, wordForUpdate.link, function(err, data){
-                    cb(err, data);
-                });
-            } else {
-                cb(err, false);
-            }
-    }) ;
+    ], cb) ;
 
 }
 

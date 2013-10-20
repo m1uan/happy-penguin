@@ -1,7 +1,8 @@
 var assert = require("assert"),
     words = require('../../engine/words.js'),
     pg = require('pg'),
-    should = require('should');
+    should = require('should')
+    , async = require('async');
 
 var pgClient = null;
 var dbuser = 'uservoc4u';
@@ -66,19 +67,74 @@ describe('getWords', function(){
     describe('updateWord(lesson)', function(){
         it('update 3 cs', function(cb){
 
-            word = {
-                link:3
-                , lang : 'cs'
-                , version : 0
-                , word : 'nazdar'
+
+
+            function getVersion(icb){
+                words.getWordWithHistory(pgClient, 'cs', 11, icb);
             }
 
-            words.updateWord(pgClient, word, 1, function(err, rows){
-                console.error(err);
-                assert(rows);
-                console.log(rows);
-                cb();
-            });
+            function updateWord(resultFromVersion, icb2){
+                var word = null;
+
+                resultFromVersion.forEach(function(val, idx){
+
+                    if(!word || word.version < val.version){
+                        word = val;
+                    }
+                });
+
+                var wordOrig = {
+                    word : word.word
+                    ,lang : word.lang
+                    ,link : word.link };
+
+                word.word += (word.version + 1);
+
+                console.log(word);
+
+                words.updateWord(pgClient, word, 2, function(err, rows){
+                    console.error(err);
+
+
+                    assert(rows);
+                    assert(rows.length == resultFromVersion.length + 1);
+
+                    // test if new word have version == 0
+                    rows.forEach(function(wordNew, idx){
+                        if(wordNew.word == word.word){
+                            assert(wordNew.version == 0, 'created new word :' + word.word + ' have not version = 0');
+                        }
+                    });
+
+                    icb2(err, rows, wordOrig);
+                });
+
+            }
+
+
+            function reuseWord(rowsFromUpdate, wordOrig, icb){
+                words.updateWord(pgClient, wordOrig, 3, function(err, rows){
+                    console.error(err);
+                    console.log(rows);
+                    assert(rows);
+                    assert(rows.length == rowsFromUpdate.length);
+
+                    // test if wordOrig have again version == 0
+                    rows.forEach(function(word, idx){
+                        if(word.word == wordOrig.word){
+                            assert(word.version == 0, 're-used word :' + word.word + ' have not version = 0');
+                        }
+                    });
+
+                    icb(err, rows);
+                });
+            }
+
+            async.waterfall([
+                getVersion
+                ,updateWord
+                , reuseWord
+            ], cb);
         });
 
     });
