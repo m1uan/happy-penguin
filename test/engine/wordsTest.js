@@ -64,7 +64,56 @@ describe('getWords', function(){
 
     });
 
+
+
+
     describe('updateWord(lesson)', function(){
+        it('update multiple word', function(cb){
+            function updateWord(wordWord, icb){
+
+
+                var word = {
+                    word : wordWord
+                    ,lang : 'cs'
+                    ,link : 12 };
+
+
+                console.log(word);
+                words.updateWord(pgClient, word, 2, function(err, rows){
+                    console.error(err);
+
+
+                    assert(rows);
+
+
+                    var finded = false;
+                    // test if new word have version == 0
+                    rows.forEach(function(wordNew, idx){
+                        if(wordNew.word == word.word){
+                            assert(wordNew.version == 0, 'created new word :' + word.word + ' have not version = 0');
+                            finded = true;
+                        }
+                    });
+                    assert(finded, 'the updated word ' +word.word+ ' missing between sets');
+                    icb(err, rows);
+                });
+
+            }
+
+
+            var ser = [];
+
+            ['+šěč', 'sp', 'dsfew',')úpů','=šč+','řžé='].forEach(function(val, idx){
+                var fun = function(cb){
+                    updateWord(val, cb);
+                }
+
+                ser.push(fun);
+            }) ;
+
+            async.series(ser,cb);
+        });
+
         it('update 3 cs', function(cb){
 
 
@@ -99,13 +148,15 @@ describe('getWords', function(){
                     assert(rows);
                     assert(rows.length == resultFromVersion.length + 1);
 
+                    var finded = false;
                     // test if new word have version == 0
                     rows.forEach(function(wordNew, idx){
                         if(wordNew.word == word.word){
                             assert(wordNew.version == 0, 'created new word :' + word.word + ' have not version = 0');
+                            finded = true;
                         }
                     });
-
+                    assert(finded, 'the updated word ' +word.word+ ' missing between sets');
                     icb2(err, rows, wordOrig);
                 });
 
