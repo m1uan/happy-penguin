@@ -43,7 +43,9 @@ module.exports.getImages = function(pgClient, linkFrom, linkTo, cb) {
         return cb('pgClient not setup', null);
     }
 
-    var sql = 'SELECT link, image, version FROM image WHERE link >= $1 and link < $2';
+    var sql = 'SELECT link, image.image as image, version FROM link' +
+        ' LEFT JOIN image ON link.image = image.iid' +
+        ' WHERE link.lid >= $1 and link.lid < $2';
 
     console.log(sql)  ;
     pgClient.query(sql, [linkFrom, linkTo], function(err, data){
