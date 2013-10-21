@@ -32,7 +32,9 @@
     "yar": "~0.4.0",
     "pg": "~2.7.0",
     "async": "~0.2.9",
-    "dropbox": "~0.10.1"
+    "dropbox": "~0.10.1",
+    "dropbox-node": "~0.4.0",
+    "dbox": "~0.6.3"
   },
   "devDependencies": {},
   "bundleDependencies": [],
