@@ -24,7 +24,9 @@ def findOrCreateFile(file) {
 
 printFileLine = { 
 splited = it.split(";");
-	w = splited[0].trim().replace("'","\\'");
+def	w = splited.size() > 0 ? splited[0] : it;
+
+w = w.trim().replace("'","\\'");
     word = [word : w, lid : count++, lang : lng];
     if( splited.size() > 1 && splited[1] != ''){
         word.file = findOrCreateFile(splited[1]);
@@ -43,8 +45,8 @@ def checkSum(file){
     return sum[0];
     }
 
-def lang = ['en'];
-def lesson = [1005];
+def lang = ['en','cs','es','pt','it', 'de'];
+def lesson = [ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
 
 lang.each{
     lng = it;
@@ -62,6 +64,9 @@ lang.each{
 
 
     new File("foo.sql").withWriter { out ->
+    out.writeLine("delete from word;");
+    out.writeLine("delete from link;");
+    out.writeLine("delete from image;");
     out.writeLine("begin;");
     out.writeLine("\n\nINSERT INTO image ( iid, md5, image ) VALUES ");
     def sqlvalues = ""; 
@@ -98,6 +103,7 @@ lang.each{
     sqlvalues = sqlvalues.substring(1) + ";";
     out.writeLine(sqlvalues);
     out.writeLine("commit;");
+    out.writeLine("SELECT pg_size_pretty(pg_database_size('voc4u'));");
     }
 
 //checkSum('img/a_broken_arm_1376385342982.jpg');
