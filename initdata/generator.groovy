@@ -24,7 +24,8 @@ def findOrCreateFile(file) {
 
 printFileLine = { 
 splited = it.split(";");
-    word = [word : splited[0].trim(), lid : count++, lang : lng];
+	w = splited[0].trim().replace("'","\\'");
+    word = [word : w, lid : count++, lang : lng];
     if( splited.size() > 1 && splited[1] != ''){
         word.file = findOrCreateFile(splited[1]);
         }
@@ -51,7 +52,7 @@ lang.each{
     lesson.each{ lsn ->
         def path = "outdatanew/${lng}/${lsn}.data";
         println path; 
-        def sed = 'sed -i \'${/^$/d;}\' ' + path;
+	def sed = 'sed -i -e :a -e \'/^\\n*$/{$d;N;ba\' -e \'}\' ' + path
         sed.execute();
         println sed;
         myFile = new File(path);
@@ -62,7 +63,7 @@ lang.each{
 
     new File("foo.sql").withWriter { out ->
     out.writeLine("begin;");
-    out.writeLine("\n\nINSERT INTO image ( id, md5, file ) VALUES ");
+    out.writeLine("\n\nINSERT INTO image ( iid, md5, image ) VALUES ");
     def sqlvalues = ""; 
     listFiles.each { file ->
         sqlvalues += ",(${file.id},'${file.md5}','${file.name}')\n";
@@ -75,7 +76,7 @@ lang.each{
     sqlvalues = ""; 
     listWords.each { word ->
         if(word.word){
-            sqlvalues += ",(${word.link},'${word.word}','${word.lang}')\n";
+            sqlvalues += ",(${word.lid}," + 'E\'' + word.word+ '\'' + ", '${word.lang}')\n";
         }
     }
 
@@ -86,8 +87,9 @@ lang.each{
     sqlvalues = ""; 
     listWords.each { word ->
         if(word.lang == 'en'){
-        sqlvalues += ",(${word.lid},'${word.word}',"
-        if(word.file) { sqlvalues += "'${word.file.id}'"}
+	w =  word.word ? 'E\'' + word.word + '\'' : "''";
+       	 sqlvalues += ",(${word.lid}," + w + ','
+        if(word.file) { sqlvalues += "${word.file.id}"}
         else {sqlvalues += "NULL"};
         sqlvalues += ")\n";
         }
