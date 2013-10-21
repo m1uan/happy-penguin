@@ -9,7 +9,7 @@ var dbuser = 'uservoc4u';
 var dbpass = '*uservoc4u';
 var dbname = 'voc4u';
 
-describe('getWords', function(){
+describe.skip('getWords', function(){
 
     before(function(){
         var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
