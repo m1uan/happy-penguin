@@ -8,7 +8,7 @@ var assert = require("assert"),
 var pgClient = null;
 var dbuser = config.DB_USER_TEST;
 var dbpass = config.DB_PASS_TEST;
-var dbname = config.DB_PASS_TEST;
+var dbname = config.DB_NAME_TEST;
 var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
 
 describe.skip('getWords', function(){

@@ -34,7 +34,8 @@
     "async": "~0.2.9",
     "dropbox": "~0.10.1",
     "dropbox-node": "~0.4.0",
-    "dbox": "~0.6.3"
+    "dbox": "~0.6.3",
+    "imagemagick": "~0.1.3"
   },
   "devDependencies": {},
   "bundleDependencies": [],

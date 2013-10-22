@@ -3,41 +3,16 @@ var assert = require("assert"),
     pg = require('pg'),
     should = require('should')
     , async = require('async')
-    ,dbox = require('dbox')
     ,config = require('../../config/local.js');
 
 var pgClient = null;
 
-function sqlMake(commands, cb){
-
-    var as = [];
-
-    commands.forEach(function(val, idx){
-        as.push(function(icb)
-        {
-            console.log(val)  ;
-            pgClient.query(val, function(err, data){
-                if(err){
-                    icb(err, null);
-                } else {
-                    icb(err, true);
-                }
-            });
-        });
-    });
+var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 
 
-    async.parallel(as,
-        function(err){
-            if(err){
-                console.log(err);
-            }
-            cb();
-    });
-}
 
 
-describe('link operations', function(){
+describe.skip('link operations', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -53,7 +28,7 @@ describe('link operations', function(){
                 return console.info('could not connect to postgres', err);
             }
 
-            sqlMake([
+            sqlMake(pgClient, [
                 "INSERT INTO image (iid,image,md5) VALUES (150000,'karel.jpg', 'karel');"
                 ,"INSERT INTO image (iid,image,md5) VALUES (150001,'karel2.jpg', 'karel2');"
                 ,"INSERT INTO link (lid,description) VALUES (160000,'descrpsdf sad fdas f');"
@@ -64,7 +39,7 @@ describe('link operations', function(){
     });
 
     after(function(cb){
-        sqlMake([
+        sqlMake(pgClient, [
             "DELETE FROM image WHERE iid = 150000;"
             ,"DELETE FROM image WHERE iid = 150001;"
             ,"DELETE FROM link WHERE lid= 160000;"
