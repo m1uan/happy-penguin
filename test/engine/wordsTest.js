@@ -2,17 +2,19 @@ var assert = require("assert"),
     words = require('../../engine/words.js'),
     pg = require('pg'),
     should = require('should')
-    , async = require('async');
+    , async = require('async')
+    ,config = require('../../config/local.js');
 
 var pgClient = null;
-var dbuser = 'uservoc4u';
-var dbpass = '*uservoc4u';
-var dbname = 'voc4u';
+var dbuser = config.DB_USER_TEST;
+var dbpass = config.DB_PASS_TEST;
+var dbname = config.DB_PASS_TEST;
+var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
 
 describe.skip('getWords', function(){
 
     before(function(){
-        var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
+
         console.info('db connection: ' + connection);
         pgClient = new pg.Client(connection);
         pgClient.connect(function(err){

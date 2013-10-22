@@ -2,7 +2,9 @@
 # https://www.openshifAt.com/developers/deploying-and-building-applications
 
 echo "ahoj"
+# /var/lib/openshift/525d8b535973caad560002dc/app-root/data/
 echo $OPENSHIFT_DATA_DIR
 echo $OPENSHIFT_REPO_DIR
 echo $OPENSHIFT_TMP_DIR
+#/tmp/
 echo $OPENSHIFT_POSTGRESQL_DB_URL
