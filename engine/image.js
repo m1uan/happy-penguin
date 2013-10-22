@@ -27,36 +27,64 @@ var generateNameInTemp = function(){
 }
 
 module.exports.saveFromUrl = function(pgClient, userId, url, cb){
-    var http = require('http');
+    var http = require('http'),
+        crypto = require('crypto');
 
     var tempName = generateNameInTemp()  +'.png';
     console.log(tempName);
     var file = fs.createWriteStream(tempName);
 
     var request = http.get(url, function(response) {
-        response.pipe(file);
-        prepareImage(tempName , function(err, resizedFile){
+        response.pipe(file, function(err){
 
-            // TODO: md5
-            // TODO: copy after md5
-            // TODO : Addd to database
-
-            var writeFile = PUBLIC_DIR +generateName()  +'.png'
-
-            var fsStream = fs.createWriteStream(writeFile);
-            fs.createReadStream(resizedFile).pipe(fsStream);
-            console.log(writeFile);
-            cb(err, true);
         });
+
+        response.on('end', function() {
+            file.end();
+            // Uncaught Error: spawn ENOENT
+            // at errnoException (child_process.js:980:11)
+            // at Process.ChildProcess._handle.onexit (child_process.js:771:34)
+            console.log('end of pipe')
+            prepareImage(tempName , function(err, resizedFile){
+
+                // TODO: md5
+                // TODO: copy after md5
+                // TODO : Addd to database
+
+                var writeFile = PUBLIC_DIR +generateName()  +'.png'
+                var md5sum = crypto.createHash('md5');
+
+
+                var fsStream = fs.createWriteStream(writeFile);
+                fs.createReadStream(resizedFile).pipe(fsStream);
+                console.log(writeFile);
+                fs.close();
+                var s = fs.ReadStream(writeFile);
+                s.on('data', function(d) {
+                    md5sum.update(d);
+                });
+
+                s.on('end', function() {
+                    var d = md5sum.digest('hex');
+                    console.log(d + '  ' + writeFile);
+                });
+                cb(err, true);
+            });
+        });
+
+
+
     });
 
 };
 
 
 function prepareImage(fileName, cb){
-
+    console.log('identyty')  ;
     function identify(icb){
+        console.log('identyty3')  ;
         im.identify(fileName, function(err, metadata){
+
             if (err) throw err;
             console.log(metadata);
             icb(null, metadata);
@@ -107,6 +135,6 @@ function prepareImage(fileName, cb){
         , resize
     ],cb);
 
-
+      //cb() ;
 
 }

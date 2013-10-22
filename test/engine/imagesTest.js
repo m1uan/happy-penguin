@@ -3,7 +3,6 @@ var assert = require("assert"),
     pg = require('pg'),
     should = require('should')
     , async = require('async')
-    ,dbox = require('dbox')
     ,config = require('../../config/local.js');
 
 var dboxClient = null;
