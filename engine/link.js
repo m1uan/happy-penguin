@@ -2,7 +2,8 @@ var  async = require('async');
 
 
 module.exports = {
-    initialize : function(server, Passport) {
+    IMAGE_DELETE : {key:'delete image'}
+    ,initialize : function(server, Passport) {
 
     }
     , update : function(pgClient, userId, link, cb){
@@ -31,7 +32,10 @@ module.exports = {
 
 
                     link.description  = row.description;
-                    link.image  = row.image;
+                    if(link.image != module.exports.IMAGE_DELETE){
+                        link.image  = row.image;
+                    }
+
 
                     icb(err, link);
                 });
@@ -56,9 +60,15 @@ module.exports = {
         }
 
         function tryUpdateOld(icb){
+            var image = null;
+
+            if(link.image !== module.exports.IMAGE_DELETE){
+                image = link.image;
+            }
+
             var sql = 'UPDATE link SET version = 0, usr = $4 WHERE lid = $1 AND image = $2 AND description = $3;';
             console.log(sql)  ;
-            pgClient.query(sql, [linkId, link.image, link.description, userId], function(err, data){
+            pgClient.query(sql, [linkId, image, link.description, userId], function(err, data){
                 if(err ){
                     icb(err || 'no insert row', false);
                 } else {
@@ -75,6 +85,12 @@ module.exports = {
             console.log('has updated');
             console.log(hasUpdated);
 
+            var image = null;
+
+            if(link.image !== module.exports.IMAGE_DELETE){
+                image = link.image;
+            }
+
             // skip insert new because have
             // been updated by tryUpdateOld
             if(hasUpdated){
@@ -85,7 +101,7 @@ module.exports = {
 
             var sql = 'INSERT INTO link (lid,image,description,usr) VALUES($1,$2,$3,$4);';
             console.log(sql)  ;
-            pgClient.query(sql, [linkId, link.image, link.description, userId], function(err, data){
+            pgClient.query(sql, [linkId, image, link.description, userId], function(err, data){
                 if(err ){
                     icb(err || 'no insert row', false);
                 } else {
@@ -134,5 +150,23 @@ module.exports = {
             }
 
         });
-    }
+    }, deleteImageAndGet : function(pgClient, userId, linkId, tables, cb){
+        if(!cb){
+            cb = tables;
+        }
+
+        var link = {
+            lid : linkId,
+            image : module.exports.IMAGE_DELETE
+        };
+
+        module.exports.update(pgClient, userId, link, function(err, data){
+            if(err){
+                cb(err, false);
+            } else {
+                module.exports.get(pgClient, linkId, tables, cb);
+            }
+
+        });
+    },
 }

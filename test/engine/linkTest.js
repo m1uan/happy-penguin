@@ -57,7 +57,7 @@ describe('link operations', function(){
                 "INSERT INTO image (iid,image,md5) VALUES (150000,'karel.jpg', 'karel');"
                 ,"INSERT INTO image (iid,image,md5) VALUES (150001,'karel2.jpg', 'karel2');"
                 ,"INSERT INTO link (lid,description) VALUES (160000,'descrpsdf sad fdas f');"
-                ,"INSERT INTO link (lid,description) VALUES (160001,'descrpsdf sad fdsafa ', 150000);"
+                ,"INSERT INTO link (lid,description,image) VALUES (160001,'descrpsdf sad fdsafa ', 150000);"
             ],cb);
 
         });
@@ -83,8 +83,8 @@ describe('link operations', function(){
             linkGet = function(icb){
                 link.get(pgClient, linkData.lid, ['image'], function(err, links){
 
-                    //console.log(links);
-                    //console.log('get');
+                    console.log(links);
+                    console.log('get');
                     if(links[0].description){
 
                         linkData.description = links[0].description + links.length;;
@@ -97,8 +97,8 @@ describe('link operations', function(){
             function linkUpdate(icb){
                 console.log(linkData);
                 link.updateAndGet(pgClient, 2, linkData, ['image'], function(err, links){
-                    //console.log(links);
-                    //console.log(err);
+                    console.log(links);
+                    console.log(err);
 
                     assert(links.length == length + 1);
                     assert(links[0].iid == linkData.image);
@@ -125,8 +125,8 @@ describe('link operations', function(){
             linkGet = function(icb){
                 link.get(pgClient, linkData.lid, ['image'], function(err, links){
 
-                    //console.log(links);
-                    //console.log('get');
+                    console.log(links);
+                    console.log('get');
                     if(links.length > 1){
 
                         linkData.description = links[1].description;
@@ -146,6 +146,50 @@ describe('link operations', function(){
 
                     assert(links.length == length);
                     assert(links[0].iid == linkData.image);
+                    assert(links[0].description == linkData.description);
+                    assert(links[0].usr == 3);
+                    icb(null);
+                });
+            }
+
+            async.series([
+                linkGet,
+                linkUpdate
+            ],cb);
+
+            //link.update(pgClient, linkData,
+        });
+
+        it('update word with previous version', function(cb){
+
+            var linkData = {lid : 160001, image : 150000, description: 'ahoj jak sa mas'}
+
+            var length = 0;
+
+            linkGet = function(icb){
+                link.get(pgClient, linkData.lid, ['image'], function(err, links){
+
+                    console.log(links);
+                    console.log('get');
+                    if(links.length > 0){
+
+                        linkData.description = links[0].description;
+                        //linkData.image = links[0].iid;
+
+                    }
+                    length = links.length;
+                    icb(null);
+                });
+            }
+
+            function linkUpdate(icb){
+                console.log(linkData);
+                link.deleteImageAndGet(pgClient, 3, linkData.lid, ['image'], function(err, links){
+                    console.log(links);
+                    console.log(err);
+
+                    assert(links.length == length+1);
+                    assert(links[0].iid == null);
                     assert(links[0].description == linkData.description);
                     assert(links[0].usr == 3);
                     icb(null);
