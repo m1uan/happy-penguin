@@ -8,7 +8,33 @@ var assert = require("assert"),
 
 var pgClient = null;
 
+function sqlMake(commands, cb){
 
+    var as = [];
+
+    commands.forEach(function(val, idx){
+        as.push(function(icb)
+        {
+            console.log(val)  ;
+            pgClient.query(val, function(err, data){
+                if(err){
+                    icb(err, null);
+                } else {
+                    icb(err, true);
+                }
+            });
+        });
+    });
+
+
+    async.parallel(as,
+        function(err){
+            if(err){
+                console.log(err);
+            }
+            cb();
+    });
+}
 
 
 describe('link operations', function(){
@@ -23,25 +49,34 @@ describe('link operations', function(){
 
         pgClient.connect(function(err){
             if(err){
-                async.series([
-                    pgClient.connect
-                ], cb);
+
                 return console.info('could not connect to postgres', err);
             }
-            cb();
+
+            sqlMake([
+                "INSERT INTO image (iid,image,md5) VALUES (150000,'karel.jpg', 'karel');"
+                ,"INSERT INTO image (iid,image,md5) VALUES (150001,'karel2.jpg', 'karel2');"
+                ,"INSERT INTO link (lid,description) VALUES (160000,'descrpsdf sad fdas f');"
+                ,"INSERT INTO link (lid,description) VALUES (160001,'descrpsdf sad fdsafa ', 150000);"
+            ],cb);
 
         });
     });
 
-    after(function(){
-
+    after(function(cb){
+        sqlMake([
+            "DELETE FROM image WHERE iid = 150000;"
+            ,"DELETE FROM image WHERE iid = 150001;"
+            ,"DELETE FROM link WHERE lid= 160000;"
+            ,"DELETE FROM link WHERE lid= 160001;"
+        ],cb);
     });
 
 
     describe('download and store images', function(){
         it('update word', function(cb){
 
-            var linkData = {lid : 108, image : 3, description: 'ahoj jak sa mas'}
+            var linkData = {lid : 160000, image : 150000, description: 'ahoj jak sa mas'}
 
             var length = 0;
 
@@ -83,7 +118,7 @@ describe('link operations', function(){
 
         it('update word with previous version', function(cb){
 
-            var linkData = {lid : 108, image : 3, description: 'ahoj jak sa mas'}
+            var linkData = {lid : 160000, image : 150000, description: 'ahoj jak sa mas'}
 
             var length = 0;
 
