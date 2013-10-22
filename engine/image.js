@@ -6,6 +6,8 @@ var config = require('../config/local.js'),
     , im = require('imagemagick')
     , async = require('async');
 
+var PUBLIC_DIR = config.DIR_DATA + ''
+
 // https://github.com/bruce/node-temp/blob/master/lib/temp.js
 var generateName = function(rawAffixes, defaultPrefix) {
     //var affixes = parseAffixes(rawAffixes, defaultPrefix);
@@ -17,19 +19,35 @@ var generateName = function(rawAffixes, defaultPrefix) {
         '-',
         (Math.random() * 0x100000000 + 1).toString(36),
         ].join('');
-    return config.DIR_TMP + name;
+    return name;
+}
+
+var generateNameInTemp = function(){
+    return config.DIR_TMP + generateName();
 }
 
 module.exports.saveFromUrl = function(pgClient, userId, url, cb){
     var http = require('http');
 
-    var tempName = generateName()  +'.png';
+    var tempName = generateNameInTemp()  +'.png';
     console.log(tempName);
     var file = fs.createWriteStream(tempName);
 
     var request = http.get(url, function(response) {
         response.pipe(file);
-        prepareImage(tempName ,cb);
+        prepareImage(tempName , function(err, resizedFile){
+
+            // TODO: md5
+            // TODO: copy after md5
+            // TODO : Addd to database
+
+            var writeFile = PUBLIC_DIR +generateName()  +'.png'
+
+            var fsStream = fs.createWriteStream(writeFile);
+            fs.createReadStream(resizedFile).pipe(fsStream);
+            console.log(writeFile);
+            cb(err, true);
+        });
     });
 
 };
@@ -76,7 +94,7 @@ function prepareImage(fileName, cb){
             if (err) throw err;
             im.identify(resizedFile, function(err, metadata){
                 console.log(metadata);
-                icb(null);
+                icb(null, resizedFile);
             });
 
         });
