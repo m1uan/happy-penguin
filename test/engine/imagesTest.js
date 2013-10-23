@@ -46,7 +46,25 @@ describe('image-dropbox', function(){
 
 
     describe('download and store images', function(){
-        it('change image history', function(cb){
+        it('link is not image', function(cb){
+            var imgfile = 'http://0.tqn.com/d/motorcycles/1/0/f/o/-/-/Dyna_Wide_Glide_flames_static_TR.jpg3';
+
+            images.saveFromUrl(pgClient, 1, 160002, imgfile, function(err, rows){
+                assert(err);
+                cb();
+            });
+        });
+
+        it.skip('wrong url', function(cb){
+            var imgfile = 'http://www.sejkonopi.com/novoklik1.jpg';
+
+            images.saveFromUrl(pgClient, 1, 160002, imgfile, function(err, rows){
+                assert(err);
+                cb();
+            });
+        });
+
+        it('upload image', function(cb){
             var imgfile = 'http://0.tqn.com/d/motorcycles/1/0/f/o/-/-/Dyna_Wide_Glide_flames_static_TR.jpg';
 
             images.saveFromUrl(pgClient, 1, 160002, imgfile, function(err, rows){
@@ -54,11 +72,11 @@ describe('image-dropbox', function(){
                 console.log(rows);
                 assert(rows.length == 2);
                 rows.forEach(function(val, idx){
-                   if(val.version == 0){
-                       assert(val.image);
-                       assert(val.iid);
-                       imageForDelete.push(val.iid);
-                   }
+                    if(val.version == 0){
+                        assert(val.image);
+                        assert(val.iid);
+                        imageForDelete.push(val.iid);
+                    }
 
                 });
 
@@ -68,7 +86,7 @@ describe('image-dropbox', function(){
             });
         });
 
-        it('change image history', function(cb){
+        it('uploat two same image', function(cb){
             var imgfile = 'http://i.ebayimg.com/00/s/NzY4WDEwMjQ=/$T2eC16Z,!ygFIjmOMCutBSL031ezpg~~48_1.JPG';
 
 

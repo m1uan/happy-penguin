@@ -32,11 +32,16 @@ var generateNameInTemp = function(){
 module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
 
     module.exports.storeUrl(pgClient, userId, url, function(err, imageId){
-        var linkConteiner = {
-            image : imageId,
-            lid : linkId};
-        //console.log(linkConteiner);
-        link.updateAndGet(pgClient,userId, linkConteiner, cb);
+        if(err){
+            cb(err, null);
+        } else {
+            var linkConteiner = {
+                image : imageId,
+                lid : linkId};
+            //console.log(linkConteiner);
+            link.updateAndGet(pgClient,userId, linkConteiner, cb);
+        }
+
     });
 }
 
@@ -49,28 +54,38 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
     console.log(tempName);
     var file = fs.createWriteStream(tempName);
 
-    var request = http.get(url, function(response) {
+    try {
+        var request = http.get(url, function(response) {
 
-        response.on('end', function() {
-            file.end();
-            // Uncaught Error: spawn ENOENT
-            // at errnoException (child_process.js:980:11)
-            // at Process.ChildProcess._handle.onexit (child_process.js:771:34)
-            console.log('end of pipe')
+            response.on('end', function() {
+                file.end();
+                // Uncaught Error: spawn ENOENT
+                // at errnoException (child_process.js:980:11)
+                // at Process.ChildProcess._handle.onexit (child_process.js:771:34)
+                console.log('end of pipe')
 
-            async.waterfall([
-                function(icb){
-                    icb(null, tempName);
-                },prepareImage
-                , countMD5AndCopy
-                , storeInDb
-            ]
-                ,cb);
+                async.waterfall([
+                    function(icb){
+                        icb(null, tempName);
+                    },prepareImage
+                    , countMD5AndCopy
+                    , storeInDb
+                ]
+                    ,cb);
 
+            });
+
+            process.on('uncaughtException', function (err) {
+                console.log(err);
+            })
+
+            response.pipe(file);
         });
+    } catch (err) {
+        // handle the error safely
+        console.log(err);
+    }
 
-        response.pipe(file);
-    });
 
 
 
@@ -174,10 +189,14 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
 function prepareImage(fileName, cb){
     console.log('prepareImage');
     function identify(icb){
-        console.log('identyty3')  ;
+        console.log('identify')  ;
         im.identify(fileName, function(err, metadata){
-
-            if (err) throw err;
+            // download file isn't image
+            if (err) {
+                //throw err;
+                icb(err, null);
+                return ;
+            }
             console.log('prepareImage:end');
             icb(null, metadata);
         });
