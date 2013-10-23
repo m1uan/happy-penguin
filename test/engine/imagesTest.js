@@ -46,7 +46,11 @@ describe('image-dropbox', function(){
 
 
     describe('test engine of image', function(){
-        it.skip('test imagemagick', function(cb){
+        it('test imagemagick', function(cb){
+            if(typeof config.imagemagick !== 'undefined' || !config.imagemagick){
+                cb();
+                return;
+            }
             var im = require('imagemagick');
             im.identify('/home/miuan/nodejs/voc4u/undefined113923-9245-d2di5n.jpg', function(err, metadata){
                 cb();

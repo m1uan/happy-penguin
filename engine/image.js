@@ -9,6 +9,14 @@ var config = require('../config/local.js'),
 
 var PUBLIC_DIR = config.DIR_DATA + ''
 
+/**
+ *  config/local:
+ *      imagemagick: true/false - switch on of imagemagick transformation
+ *      PUBLIC_DIR: public dir with images
+ *      TMP_DIR: public dir with temp
+  */
+
+
 // https://github.com/bruce/node-temp/blob/master/lib/temp.js
 var generateName = function(rawAffixes, defaultPrefix) {
     //var affixes = parseAffixes(rawAffixes, defaultPrefix);
