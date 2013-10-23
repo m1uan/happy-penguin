@@ -13,17 +13,17 @@ module.exports = {
      * @param link { image, description, lid }
      * @param cb
      */
-    , update : function(pgClient, userId, link, cb){
+    , update : function(pgClient, userId, linkData, cb){
 
-        if(!link || !link.lid){
+        if(!linkData || !linkData.lid){
             throw 'parameter link must contain property : lid';
         }
 
-        var linkId = link.lid;
+        var linkId = linkData.lid;
         var hasUpdated = false;
         function selectOld(icb){
             var sql = null;
-            if(!link.description || !link.image && link.image != ''){
+            if(!linkData.description || !linkData.image && linkData.image != ''){
                 sql = 'SELECT description, image FROM link WHERE lid = $1 AND version = 0';
             }
 
@@ -42,16 +42,16 @@ module.exports = {
 
 
 
-                    link.description  = row.description;
-                    if(link.image != module.exports.IMAGE_DELETE){
-                        link.image  = row.image;
+                    linkData.description  = row.description;
+                    if(!linkData.image){
+                        linkData.image  = row.image;
                     }
 
 
-                    icb(err, link);
+                    icb(err, linkData);
                 });
             } else {
-                icb(null, link);
+                icb(null, linkData);
             }
 
 
@@ -65,7 +65,7 @@ module.exports = {
                 if(err ){
                     icb(err || 'no update row', false);
                 } else {
-                    icb(null, link);
+                    icb(null, linkData);
                 }
             });
         }
@@ -73,13 +73,13 @@ module.exports = {
         function tryUpdateOld(icb){
             var image = null;
 
-            if(link.image !== module.exports.IMAGE_DELETE){
-                image = link.image;
+            if(linkData.image !== module.exports.IMAGE_DELETE){
+                image = linkData.image;
             }
 
             var sql = 'UPDATE link SET version = 0, usr = $4 WHERE lid = $1 AND image = $2 AND description = $3;';
             console.log(sql)  ;
-            pgClient.query(sql, [linkId, image, link.description, userId], function(err, data){
+            pgClient.query(sql, [linkId, image, linkData.description, userId], function(err, data){
                 if(err ){
                     icb(err || 'no insert row', false);
                 } else {
@@ -98,8 +98,8 @@ module.exports = {
 
             var image = null;
 
-            if(link.image !== module.exports.IMAGE_DELETE){
-                image = link.image;
+            if(linkData.image !== module.exports.IMAGE_DELETE){
+                image = linkData.image;
             }
 
             // skip insert new because have
@@ -112,11 +112,11 @@ module.exports = {
 
             var sql = 'INSERT INTO link (lid,image,description,usr) VALUES($1,$2,$3,$4);';
             console.log(sql)  ;
-            pgClient.query(sql, [linkId, image, link.description, userId], function(err, data){
+            pgClient.query(sql, [linkId, image, linkData.description, userId], function(err, data){
                 if(err ){
                     icb(err || 'no insert row', false);
                 } else {
-                    icb(null, link);
+                    icb(null, linkData);
                 }
             });
         }

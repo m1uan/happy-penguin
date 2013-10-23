@@ -49,7 +49,7 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
                     icb(null, tempName);
                 },prepareImage
                 , countMD5AndCopy
-                ,storeInDb
+                , storeInDb
                 , updateLink
             ]
                 ,cb);
@@ -69,6 +69,7 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
         var linkConteiner = {
             image : imageId,
             lid : linkId};
+        //console.log(linkConteiner);
         link.updateAndGet(pgClient,userId, linkConteiner, icb);
     }
 
