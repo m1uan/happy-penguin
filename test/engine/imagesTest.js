@@ -10,6 +10,28 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 
 var imageForDelete = [];
 
+// switch off imagemagick with configuration
+//  npm --version 1.3.11
+// node --version v0.10.20
+// cat /etc/*-release
+// DISTRIB_ID=Ubuntu
+// DISTRIB_RELEASE=12.10
+// DISTRIB_CODENAME=quantal
+// DISTRIB_DESCRIPTION="Ubuntu 12.10"
+// NAME="Ubuntu"
+// VERSION="12.10, Quantal Quetzal"
+// ID=ubuntu
+// ID_LIKE=debian
+// PRETTY_NAME="Ubuntu quantal (12.10)"
+// VERSION_ID="12.10"
+
+// uname -a
+// Linux m1uan 3.5.0-41-generic #64-Ubuntu SMP Wed Sep 11 15:40:48 UTC 2013 i686 i686 i686 GNU/Linux
+
+
+
+
+
 describe('image-dropbox', function(){
 
     before(function(cb){
