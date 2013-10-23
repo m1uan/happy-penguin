@@ -27,7 +27,21 @@ var generateNameInTemp = function(){
     return config.DIR_TMP + generateName();
 }
 
+
+
 module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
+
+    module.exports.storeUrl(pgClient, userId, url, function(err, imageId){
+        var linkConteiner = {
+            image : imageId,
+            lid : linkId};
+        //console.log(linkConteiner);
+        link.updateAndGet(pgClient,userId, linkConteiner, cb);
+    });
+}
+
+
+module.exports.storeUrl = function(pgClient, userId, url, cb){
     var http = require('http');
 
 
@@ -50,33 +64,21 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
                 },prepareImage
                 , countMD5AndCopy
                 , storeInDb
-                , updateLink
             ]
                 ,cb);
 
         });
 
         response.pipe(file);
-
-
-
-
-
     });
 
 
-    function updateLink(imageId, icb){
-        var linkConteiner = {
-            image : imageId,
-            lid : linkId};
-        //console.log(linkConteiner);
-        link.updateAndGet(pgClient,userId, linkConteiner, icb);
-    }
+
 
 
 
     function storeInDb(imgFile, mdSum, icb){
-        console.log(mdSum + '  ' + imgFile);
+        //console.log(mdSum + '  ' + imgFile);
 
         // NO STORE because already exists image with this md5sum
         if(!icb){
@@ -130,6 +132,7 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
         var crypto = require('crypto');
         var md5sum = crypto.createHash('md5');
 
+        console.log('countMD5AndCopy');
         var data = fs.readFile(resizedFile, function(err, data){
             md5sum.update(data);
             var sum = md5sum.digest('hex');
@@ -169,13 +172,13 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
 
 
 function prepareImage(fileName, cb){
-    console.log('identyty')  ;
+    console.log('prepareImage');
     function identify(icb){
         console.log('identyty3')  ;
         im.identify(fileName, function(err, metadata){
 
             if (err) throw err;
-            console.log(metadata);
+            console.log('prepareImage:end');
             icb(null, metadata);
         });
     }

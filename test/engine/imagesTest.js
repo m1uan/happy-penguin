@@ -8,6 +8,8 @@ var assert = require("assert"),
 var dboxClient = null;
 var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 
+var imageForDelete = [];
+
 describe('image-dropbox', function(){
 
     before(function(cb){
@@ -32,25 +34,57 @@ describe('image-dropbox', function(){
     });
 
     after(function(cb){
-        sqlMake(pgClient,[
+        var remove = [
             "DELETE FROM link WHERE lid = 160002;"
-            ],cb);
+        ];
+
+        imageForDelete.forEach(function(val,idx){
+            remove.push("DELETE FROM image WHERE iid =" + val);
+        })
+        sqlMake(pgClient,remove,cb);
     });
 
 
     describe('download and store images', function(){
         it('change image history', function(cb){
-            var imgfile = 'http://t2.gstatic.com/images?q=tbn:ANd9GcRr0WK-Q2t4Xxr1b6Kl7-lXdVEIh_Hj3HiDXk--Qg_0UAY0Y96P6w';
+            var imgfile = 'http://0.tqn.com/d/motorcycles/1/0/f/o/-/-/Dyna_Wide_Glide_flames_static_TR.jpg';
 
+            images.saveFromUrl(pgClient, 1, 160002, imgfile, function(err, rows){
 
+                console.log(rows);
+                assert(rows.length == 2);
+                rows.forEach(function(val, idx){
+                   if(val.version == 0){
+                       assert(val.image);
+                       assert(val.iid);
+                       imageForDelete.push(val.iid);
+                   }
 
-            images.saveFromUrl(pgClient, 1, 13, imgfile, function(err, name){
-                console.log(err);
-                console.log(name);
-                assert(err == null);
+                });
+
+                assert(err == null, err);
+
                 cb();
             });
         });
+
+        it('change image history', function(cb){
+            var imgfile = 'http://i.ebayimg.com/00/s/NzY4WDEwMjQ=/$T2eC16Z,!ygFIjmOMCutBSL031ezpg~~48_1.JPG';
+
+
+
+            images.storeUrl(pgClient, 1,imgfile, function(err, iid1){
+                images.storeUrl(pgClient, 1,imgfile, function(err, iid2){
+                    assert(iid1 == iid2, 'The same image have been store 2times');
+                    assert(err == null, err);
+
+                    imageForDelete.push(iid1);
+                    cb();
+                });
+            });
+        });
+
+
 
     });
 
