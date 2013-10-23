@@ -1,12 +1,21 @@
+
+-- psql -c "CREATE USER uservoc4u WITH PASSWORD '*uservoc4u'" postgres
+-- psql -c 'ALTER ROLE uservoc4u CREATEDB CREATEROLE INHERIT LOGIN' postgres
+-- psql -U uservoc4u -c 'CREATE DATABASE voc4u;' postgres
+-- psql -U uservoc4u -c 'ALTER DATABASE voc4u OWNER TO uservoc4u' postgres
+
 -- CREATE DATABASE voc4u;
 -- CREATE USER uservoc4u WITH PASSWORD '*uservoc4u';
 -- GRANT ALL PRIVILEGES ON DATABASE voc4u TO uservoc4u;
--- psql -d voc4u -f initdata/init.sql
+-- ALTER ROLE uservoc4u CREATEDB CREATEROLE INHERIT LOGIN;
+-- psql -U uservoc4u -d voc4u -f initdata/init.sql
+-- ALTER DATABASE name OWNER TO new_owner
 
 drop table word;
 drop table link;
 drop table image;
 drop table usr;
+
 
 CREATE TABLE usr (
    id SERIAL UNIQUE NOT NULL,
@@ -19,7 +28,7 @@ CREATE TABLE usr (
 INSERT INTO usr (name, pass, full_name) VALUES ('init','no password at all', 'inital');
 
 CREATE TABLE image (
-    iid SERIAL UNIQUE,
+    iid SERIAL NOT NULL,
     image VARCHAR(255),
     md5 VARCHAR(255),
     usr INTEGER NOT NULL DEFAULT 1,
@@ -115,5 +124,7 @@ GRANT ALL ON link TO uservoc4u;
 GRANT ALL ON usr TO uservoc4u;
 GRANT ALL ON word TO uservoc4u;
 GRANT ALL ON image TO uservoc4u;
+GRANT USAGE, SELECT ON SEQUENCE image_iid_seq TO uservoc4u;
+GRANT USAGE, SELECT ON SEQUENCE link_lid_seq TO uservoc4u;
 
 SELECT pg_size_pretty(pg_database_size('voc4u'));

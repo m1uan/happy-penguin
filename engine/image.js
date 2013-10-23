@@ -4,7 +4,8 @@
 var config = require('../config/local.js'),
     fs = require('fs')
     , im = require('imagemagick')
-    , async = require('async');
+    , async = require('async')
+    , link = require('./link.js');
 
 var PUBLIC_DIR = config.DIR_DATA + ''
 
@@ -26,18 +27,15 @@ var generateNameInTemp = function(){
     return config.DIR_TMP + generateName();
 }
 
-module.exports.saveFromUrl = function(pgClient, userId, url, cb){
-    var http = require('http'),
-        crypto = require('crypto');
+module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
+    var http = require('http');
+
 
     var tempName = generateNameInTemp()  +'.png';
     console.log(tempName);
     var file = fs.createWriteStream(tempName);
 
     var request = http.get(url, function(response) {
-        response.pipe(file, function(err){
-
-        });
 
         response.on('end', function() {
             file.end();
@@ -45,38 +43,128 @@ module.exports.saveFromUrl = function(pgClient, userId, url, cb){
             // at errnoException (child_process.js:980:11)
             // at Process.ChildProcess._handle.onexit (child_process.js:771:34)
             console.log('end of pipe')
-            prepareImage(tempName , function(err, resizedFile){
 
-                // TODO: md5
-                // TODO: copy after md5
-                // TODO : Addd to database
+            async.waterfall([
+                function(icb){
+                    icb(null, tempName);
+                },prepareImage
+                , countMD5AndCopy
+                ,storeInDb
+                , updateLink
+            ]
+                ,cb);
 
-                var writeFile = PUBLIC_DIR +generateName()  +'.png'
-                var md5sum = crypto.createHash('md5');
-
-
-                var fsStream = fs.createWriteStream(writeFile);
-                fs.createReadStream(resizedFile).pipe(fsStream);
-                console.log(writeFile);
-                fs.close();
-                var s = fs.ReadStream(writeFile);
-                s.on('data', function(d) {
-                    md5sum.update(d);
-                });
-
-                s.on('end', function() {
-                    var d = md5sum.digest('hex');
-                    console.log(d + '  ' + writeFile);
-                });
-                cb(err, true);
-            });
         });
+
+        response.pipe(file);
+
+
 
 
 
     });
 
+
+    function updateLink(imageId, icb){
+        var linkConteiner = {
+            image : imageId,
+            lid : linkId};
+        link.updateAndGet(pgClient,userId, linkConteiner, icb);
+    }
+
+
+
+    function storeInDb(imgFile, mdSum, icb){
+        console.log(mdSum + '  ' + imgFile);
+
+        // NO STORE because already exists image with this md5sum
+        if(!icb){
+            // imgFile - cointains id of IMAGE
+            mdSum(null, imgFile);
+            return;
+
+            // SKIP INSERT - because already
+        }
+
+
+        var sql = 'INSERT INTO image (image, md5, usr) VALUES ($1,$2,$3) RETURNING iid';
+        console.log(sql);
+        console.log(imgFile);
+        pgClient.query(sql,[imgFile, mdSum, userId], function(err, data){
+            if(err){
+                icb(err, null);
+                return;
+            }
+
+            console.log(data);
+            // RETURN new id of image
+            icb(null, data.rows[0].iid);
+        });
+
+    }
+
+    function isExistsSameImgWithMD5(md5, icb){
+        var sql = 'SELECT iid FROM image where md5 = $1';
+        console.log(sql);
+        pgClient.query(sql,[md5], function(err, rows){
+
+            if(err){
+                icb(err, null);
+                return;
+            }
+
+            console.log(rows);
+
+            if(rows.rows.length < 1){
+                icb(err, -1);
+            } else {
+                icb(err, rows.rows[0].iid);
+            }
+
+        });
+
+    }
+
+    function countMD5AndCopy(resizedFile, icb){
+        var crypto = require('crypto');
+        var md5sum = crypto.createHash('md5');
+
+        var data = fs.readFile(resizedFile, function(err, data){
+            md5sum.update(data);
+            var sum = md5sum.digest('hex');
+
+            isExistsSameImgWithMD5(sum, function(err, imageID){
+                if(err){
+                    icb(err, null);
+                    return;
+                }
+
+                if(imageID > 0){
+                    console.log(imageID);
+                    // image with this md5 exists use his id
+                    icb(false, imageID);
+
+                    // dont copy the file
+                    return;
+                }
+
+                // copy
+                var writeFileName = generateName() +'.png';;
+                var writeFile = PUBLIC_DIR +writeFileName
+                fs.writeFile(writeFile, data, function(err){
+                    // create new image in DB with file name and md5
+                    icb(err, writeFileName, sum);
+                });
+            });
+
+
+        });
+    }
+
 };
+
+
+
 
 
 function prepareImage(fileName, cb){

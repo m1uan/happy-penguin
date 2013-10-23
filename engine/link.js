@@ -6,7 +6,18 @@ module.exports = {
     ,initialize : function(server, Passport) {
 
     }
+    /**
+     *
+     * @param pgClient
+     * @param userId
+     * @param link { image, description, lid }
+     * @param cb
+     */
     , update : function(pgClient, userId, link, cb){
+
+        if(!link || !link.lid){
+            throw 'parameter link must contain property : lid';
+        }
 
         var linkId = link.lid;
         var hasUpdated = false;
@@ -26,7 +37,7 @@ module.exports = {
                     console.error(data);
 
                     if(err || !row){
-                        icb('error or the link dont select : ' + link.link, false);
+                        icb('error or the link dont select : ' + linkId, false);
                     }
 
 

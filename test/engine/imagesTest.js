@@ -44,8 +44,10 @@ describe('image-dropbox', function(){
 
 
 
-            images.saveFromUrl(pgClient, 1, imgfile, function(err, name){
+            images.saveFromUrl(pgClient, 1, 13, imgfile, function(err, name){
                 console.log(err);
+                console.log(name);
+                assert(err == null);
                 cb();
             });
         });
