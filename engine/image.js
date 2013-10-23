@@ -24,7 +24,9 @@ var generateName = function(rawAffixes, defaultPrefix) {
 }
 
 var generateNameInTemp = function(){
-    return config.DIR_TMP + generateName();
+    var name = config.DIR_TMP + generateName();
+    //console.log(name)  ;
+    return name;
 }
 
 
@@ -53,27 +55,22 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
     var tempName = generateNameInTemp()  +'.png';
     console.log(tempName);
     var file = fs.createWriteStream(tempName);
+    file.on('close', function(){
+        console.log('end of pipe')
+
+        async.waterfall([
+            function(icb){
+                icb(null, tempName);
+            },prepareImage
+            , countMD5AndCopy
+            , storeInDb
+        ]
+            ,cb);
+    });
 
     try {
         var request = http.get(url, function(response) {
 
-            response.on('end', function() {
-                file.end();
-                // Uncaught Error: spawn ENOENT
-                // at errnoException (child_process.js:980:11)
-                // at Process.ChildProcess._handle.onexit (child_process.js:771:34)
-                console.log('end of pipe')
-
-                async.waterfall([
-                    function(icb){
-                        icb(null, tempName);
-                    },prepareImage
-                    , countMD5AndCopy
-                    , storeInDb
-                ]
-                    ,cb);
-
-            });
 
             process.on('uncaughtException', function (err) {
                 console.log(err);
@@ -170,6 +167,7 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
                 // copy
                 var writeFileName = generateName() +'.png';;
                 var writeFile = PUBLIC_DIR +writeFileName
+                console.log(writeFile) ;
                 fs.writeFile(writeFile, data, function(err){
                     // create new image in DB with file name and md5
                     icb(err, writeFileName, sum);
@@ -189,8 +187,10 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
 function prepareImage(fileName, cb){
     console.log('prepareImage');
     function identify(icb){
-        console.log('identify')  ;
+        console.log('identify' + fileName)  ;
         im.identify(fileName, function(err, metadata){
+            console.log('prepareImage:end');
+
             // download file isn't image
             if (err) {
                 //throw err;
@@ -239,12 +239,16 @@ function prepareImage(fileName, cb){
         });
     }
 
+    if(typeof config.imagemagick === 'undefined' || config.imagemagick){
+        async.waterfall([
+            identify
+            , crop
+            , resize
+        ],cb);
+    } else {
+        cb(null, fileName);
+    }
 
-    async.waterfall([
-        identify
-        , crop
-        , resize
-    ],cb);
 
       //cb() ;
 

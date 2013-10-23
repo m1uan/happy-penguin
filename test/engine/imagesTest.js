@@ -45,14 +45,24 @@ describe('image-dropbox', function(){
     });
 
 
-    describe('download and store images', function(){
-        it('link is not image', function(cb){
-            var imgfile = 'http://0.tqn.com/d/motorcycles/1/0/f/o/-/-/Dyna_Wide_Glide_flames_static_TR.jpg3';
-
-            images.saveFromUrl(pgClient, 1, 160002, imgfile, function(err, rows){
-                assert(err);
+    describe('test engine of image', function(){
+        it.skip('test imagemagick', function(cb){
+            var im = require('imagemagick');
+            im.identify('/home/miuan/nodejs/voc4u/undefined113923-9245-d2di5n.jpg', function(err, metadata){
                 cb();
             });
+        });
+        it('link is not image', function(cb){
+            var imgfile = 'http://0.tqn.com/d/motorcycles/1/0/f/o/-/-/Dyna_Wide_Glide_flames_static_TR.jpg3';
+            // withou magick no change recogineze if real image
+            if(typeof config.imagemagick === 'undefined' || config.imagemagick){
+                images.saveFromUrl(pgClient, 1, 160002, imgfile, function(err, rows){
+                    assert(err);
+                    cb();
+                });
+            } else {
+                cb();
+            }
         });
 
         it.skip('wrong url', function(cb){
