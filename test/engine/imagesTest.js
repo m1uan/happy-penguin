@@ -28,6 +28,28 @@ var imageForDelete = [];
 // uname -a
 // Linux m1uan 3.5.0-41-generic #64-Ubuntu SMP Wed Sep 11 15:40:48 UTC 2013 i686 i686 i686 GNU/Linux
 
+// npm --version 1.3.11
+// node --version v0.10.20
+
+/* DISTRIB_ID=Ubuntu
+ DISTRIB_RELEASE=13.04
+ DISTRIB_CODENAME=raring
+ DISTRIB_DESCRIPTION="Ubuntu 13.04"
+ NAME="Ubuntu"
+ VERSION="13.04, Raring Ringtail"
+ ID=ubuntu
+ ID_LIKE=debian
+ PRETTY_NAME="Ubuntu 13.04"
+ VERSION_ID="13.04"
+ HOME_URL="http://www.ubuntu.com/"
+ SUPPORT_URL="http://help.ubuntu.com/"
+ BUG_REPORT_URL="http://bugs.launchpad.net/ubuntu/
+ */
+
+// linux pilsner.wlg.morphoss.com 3.8.0-19-generic #29-Ubuntu SMP Wed Apr 17 18:16:28 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
+
+
+
 
 
 

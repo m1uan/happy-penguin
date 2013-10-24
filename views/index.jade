@@ -5,11 +5,9 @@ html(ng-app)
         h1 hello
         div(ng-controller="WordWebCtrl")
             div#ahoj
-            div(ng-repeat="post in posts")
-                div {{post}}
-            p how are you
-                span= title
-                ?
+            div(ng-repeat="word in words")
+                div {{word.w1}} - {{word.w2}}
+
 
     script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js")
     script(src="assets/controler.js")
