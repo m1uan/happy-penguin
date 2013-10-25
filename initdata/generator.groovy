@@ -30,7 +30,12 @@ splited = it.split(";");
 def	w = splited.size() > 0 ? splited[0] : it;
 
 w = w.trim().replace("'","\\'");
-    word = [word : w, lid : count++, lang : lng];
+word = [
+word : w,
+lid : count++,
+lang : lng,
+lesson : lesson
+];
     if( splited.size() > 1 && splited[1] != ''){
         word.file = findOrCreateFile(splited[1]);
         }
@@ -49,16 +54,17 @@ def checkSum(file){
     }
 
 def lang1 = ['en','cs','es','pt','it', 'de'];
-def lesson1 = [ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
+def lessons1 = [ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
 def lang2 = ['en'];
 def lesson2 = [ 4009, 4010 ];
 def lang = ['en', 'cs', 'de'];
-def lesson = [ 2001, 2002 ];
+def lessons = [ 2001, 2002 ];
 
 lang.each{
     lng = it;
     count = 1;
-    lesson.each{ lsn ->
+    lessons.each{ lsn ->
+        lesson = lsn
         def path = "outdatanew/${lng}/${lsn}.data";
         println path; 
 	def sed = 'sed -i -e :a -e \'/^\\n*$/{$d;N;ba\' -e \'}\' ' + path
@@ -90,7 +96,7 @@ lang.each{
     out.writeLine("\n\nINSERT INTO word ( link, word, lang ) VALUES ");
     sqlvalues = ""; 
     listWords.each { word ->
-        if(word.word){
+        if(word.word && !word.word.isNumber()){
             sqlvalues += ",(${word.lid}," + 'E\'' + word.word+ '\'' + ", '${word.lang}')\n";
         }
     }
@@ -98,14 +104,15 @@ lang.each{
     sqlvalues = sqlvalues.substring(1) + ";";
     out.writeLine(sqlvalues);
     
-    out.writeLine("\n\nINSERT INTO link ( lid, description, image ) VALUES ");
+    out.writeLine("\n\nINSERT INTO link ( lid, description, image, lesson ) VALUES ");
     sqlvalues = ""; 
     listWords.each { word ->
-        if(word.lang == 'en'){
+        if(word.lang == 'en' && !word.word.isNumber()){
 	w =  word.word ? 'E\'' + word.word + '\'' : "''";
        	 sqlvalues += ",(${word.lid}," + w + ','
         if(word.file) { sqlvalues += "${word.file.id}"}
         else {sqlvalues += "NULL"};
+        sqlvalues += ",${word.lesson}"
         sqlvalues += ")\n";
         }
     }

@@ -26,7 +26,7 @@ var imageForDelete = [];
 // VERSION_ID="12.10"
 
 // uname -a
-// Linux m1uan 3.5.0-41-generic #64-Ubuntu SMP Wed Sep 11 15:40:48 UTC 2013 i686 i686 i686 GNU/Linux
+// gLinux m1uan 3.5.0-41-generic #64-Ubuntu SMP Wed Sep 11 15:40:48 UTC 2013 i686 i686 i686 GNU/Linux
 
 
 
@@ -49,7 +49,7 @@ describe('image-dropbox', function(){
             }
 
             sqlMake(pgClient,[
-                "INSERT INTO link (lid,description) VALUES (160002,'descrpsdf sad fdas f');"
+                "INSERT INTO link (lid,description,lesson) VALUES (160002,'descrpsdf sad fdas f',1);"
             ],cb);
 
         });

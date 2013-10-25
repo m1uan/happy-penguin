@@ -11,7 +11,7 @@ var dbpass = config.DB_PASS_TEST;
 var dbname = config.DB_NAME_TEST;
 var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
 
-describe.skip('getWords', function(){
+describe('getWords', function(){
 
     before(function(){
 
@@ -40,8 +40,9 @@ describe.skip('getWords', function(){
 
         }),
         it('should return several rows', function(cb){
-            words.getWords(pgClient, 'en', 1, function(rows){
+            words.getWords(pgClient, 'en', 2001, function(rows){
                 assert(rows);
+                console.log(rows) ;
                 //rows.length.should.be.eql(words.lessonSize);
                 var rows0 = rows[0];
                 rows0.should.have.property('link');
@@ -188,7 +189,7 @@ describe.skip('getWords', function(){
                 var link = updatedRows[0].link;
 
                 console.log('testInWordset lang,link : (' + lang + ',' + link + ')');
-                words.getWords(pgClient, lang, 1, function(rows){
+                words.getWords(pgClient, lang, 2001, function(rows){
 
                     var linkNotMissing = false;
                     // test if wordOrig have again version == 0

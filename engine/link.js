@@ -110,7 +110,10 @@ module.exports = {
                 return;
             }
 
-            var sql = 'INSERT INTO link (lid,image,description,usr) VALUES($1,$2,$3,$4);';
+            var sql = 'INSERT INTO link (lid,image,description,usr,lesson)' +
+                ' VALUES($1,$2,$3,$4,' +
+                '(SELECT min(lesson) FROM link WHERE lid = $1)' +
+                ');';
             console.log(sql)  ;
             pgClient.query(sql, [linkId, image, linkData.description, userId], function(err, data){
                 if(err ){

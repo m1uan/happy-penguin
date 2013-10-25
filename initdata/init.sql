@@ -44,6 +44,7 @@ CREATE TABLE link (
     description TEXT,
     image INTEGER DEFAULT NULL,
     usr INTEGER NOT NULL DEFAULT 1,
+    lesson SMALLINT NOT NULL,
     version SMALLINT NOT NULL DEFAULT 0,
     PRIMARY KEY(lid, version)
 );

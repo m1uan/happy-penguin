@@ -2,7 +2,9 @@ var async = require('async');
 
 module.exports.lessonSize = 80;
 
-var SQL_SELECT_WORD = 'SELECT link, word, lang, version FROM word '
+var SQL_SELECT_WORD = 'SELECT link, word, lang,' +
+    'word.version as version' +
+    ' FROM word '
 
 module.exports.getWords = function(pgClient, lang, lesson, cb) {
     if(!pgClient){
@@ -16,16 +18,18 @@ module.exports.getWords = function(pgClient, lang, lesson, cb) {
     }
 
 
-    var lessonStart = (lesson-1) * module.exports.lessonSize;
-    var lessonEnd = lessonStart + module.exports.lessonSize;
+    //var lessonStart = (lesson-1) * module.exports.lessonSize;
+    //var lessonEnd = lessonStart + module.exports.lessonSize;
 
     //var sql = SQL_SELECT_WORD + ' WHERE lang = $1 OFFSET $2 LIMIT $3';
     // changed from limit to link, otherwise after update the updated
     // words not in words sed more
-    var sql = SQL_SELECT_WORD + ' WHERE lang = $1 AND link >= $2 AND link < $3';
+    var sql = SQL_SELECT_WORD;
+    sql += ' JOIN link ON link.lid = word.link' ;
+    sql += ' WHERE lang = $1 AND link.lesson = $2';
 
     console.log(sql)  ;
-    pgClient.query(sql, [lang, lessonStart, lessonEnd], function(err, data){
+    pgClient.query(sql, [lang, lesson], function(err, data){
 
         if(err){
             console.log(err);
