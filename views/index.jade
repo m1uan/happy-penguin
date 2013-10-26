@@ -6,7 +6,9 @@ html(ng-app)
         div(ng-controller="WordWebCtrl")
             div#ahoj
             div(ng-repeat="word in words")
-                div {{word.w1}} - {{word.w2}}
+                div {{word.w1}} - {{word.w2}} {{word.description}}
+                    img(src="{{word.image}}")
+
 
 
     script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js")

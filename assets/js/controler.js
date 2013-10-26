@@ -15,31 +15,41 @@ function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
 
     var tempWord = [];
 
-    function addToTemp(link){
-        if(typeof link.word === 'undefined'){
-            return;
-        }
+    function addToTemp(addingWord){
+
 
         var founded = false;
         for(var twindex in tempWord){
             var tw = tempWord[twindex];
+            var link = addingWord.link || addingWord.lid;
 
-            if(tw.link == link.link){
+            // this link is not the same like in set
+            if(tw.link != link){
+                continue;
+            }
+
+            // addingWord is real word
+            if(addingWord.word){
                 if(tw.w1) {
-                    tw.w2 = link.word;
-                    tw.l2 = link.lang;
+                    tw.w2 = addingWord.word;
+                    tw.l2 = addingWord.lang;
 
                 }
                 founded = true;
                 break;
+            } else if (addingWord.image) {
+                // addingWord is image with description
+                tw.image = 'assets/img/' + addingWord.image;
+                tw.description = addingWord.description;
             }
+
         }
 
         if(!founded){
             tempWord.push({
-                w1 : link.word,
-                l1 : link.lang,
-                link : link.link
+                w1 : addingWord.word,
+                l1 : addingWord.lang,
+                link : addingWord.link
             });
 
             console.log('create:');
