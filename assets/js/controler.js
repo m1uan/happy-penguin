@@ -36,12 +36,19 @@ function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
 
                 }
                 founded = true;
-                break;
-            } else if (addingWord.image) {
+            }
+
+            if (addingWord.image) {
                 // addingWord is image with description
                 tw.image = 'assets/img/' + addingWord.image;
+
+            }
+
+            if(addingWord.description){
                 tw.description = addingWord.description;
             }
+
+            break;
 
         }
 

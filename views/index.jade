@@ -1,12 +1,19 @@
 !!!
 
 html(ng-app)
+    link(rel='stylesheet', href='/assets/css/index.css')
     body
         h1 hello
         div(ng-controller="WordWebCtrl")
             div#ahoj
             div(ng-repeat="word in words")
-                div {{word.w1}} - {{word.w2}} {{word.description}}
+                div.row
+                    div.wordcontainer
+                        div
+                            span.word {{word.w1}}
+                            span.wordspaner -
+                            span.word {{word.w2}}
+                        div.desc {{word.description}}
                     img(src="{{word.image}}")
 
 

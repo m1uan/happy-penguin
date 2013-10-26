@@ -1,0 +1,27 @@
+.row{
+    background: lightblue;
+    clear:both;
+}
+
+.row div {
+
+}
+
+.desc {
+    font-style: italic;
+
+}
+.wordcontainer {
+    float: left;
+
+}
+.wordspaner {
+    color: darkred;
+    margin-left: 10px;
+    margin-right : 10px;
+    font-size: smaller;
+}
+.word {
+    font-size: larger;
+    font-weight: bolder;
+}
