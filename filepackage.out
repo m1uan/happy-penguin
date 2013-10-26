@@ -1,0 +1,415 @@
+OpenShift-Sample-App@1.0.0
+│ /home/milan/voc4u
+│ OpenShift Sample Application
+│ https://gitub.com/openshift/origin-server
+│ http://www.openshift.com/
+├── async@0.2.9
+│   Higher-order functions and common patterns for asynchronous code
+│   https://github.com/caolan/async.git
+├─┬ dbox@0.6.3 extraneous
+│ │ NodeJS SDK for the Dropbox API
+│ │ https://github.com/sintaxi/node-dbox.git
+│ └── request@2.9.153
+│     Simplified HTTP request client.
+│     http://github.com/mikeal/request.git
+├─┬ dropbox@0.10.1 extraneous
+│ │ Client library for the Dropbox API
+│ │ https://github.com/dropbox/dropbox-js.git
+│ │ https://github.com/dropbox/dropbox-js
+│ ├── open@0.0.4
+│ │   open a file or url in the user's preferred application
+│ │   https://github.com/pwnall/node-open.git
+│ │   https://github.com/jjrdn/node-open
+│ └── xhr2@0.0.7
+│     XMLHttpRequest emulation for node.js
+│     https://github.com/pwnall/node-xhr2.git
+│     https://github.com/pwnall/xhr2
+├─┬ dropbox-node@0.4.0 extraneous
+│ │ A node.js client module for the official Dropbox API
+│ │ git://github.com/evnm/dropbox-node.git
+│ │ http://github.com/evnm/dropbox-node
+│ └── request@2.9.203
+│     Simplified HTTP request client.
+│     http://github.com/mikeal/request.git
+├─┬ hapi@1.14.0
+│ │ HTTP Server framework
+│ │ git://github.com/spumko/hapi
+│ │ http://hapijs.com
+│ ├── async@0.2.9
+│ │   Higher-order functions and common patterns for asynchronous code
+│ │   https://github.com/caolan/async.git
+│ ├─┬ boom@1.1.0
+│ │ │ HTTP-friendly error objects
+│ │ │ git://github.com/spumko/boom
+│ │ └── hoek@1.1.1
+│ │     General purpose node utilities
+│ │     git://github.com/spumko/hoek
+│ ├─┬ catbox@1.1.1
+│ │ │ Multi-strategy object caching service
+│ │ │ git://github.com/spumko/catbox
+│ │ └── hoek@1.1.1
+│ │     General purpose node utilities
+│ │     git://github.com/spumko/hoek
+│ ├─┬ confidence@0.8.1
+│ │ │ Configuration API
+│ │ │ git://github.com/spumko/confidence
+│ │ ├── boom@1.1.0
+│ │ │   HTTP-friendly error objects
+│ │ │   git://github.com/spumko/boom
+│ │ └── hoek@1.1.1
+│ │     General purpose node utilities
+│ │     git://github.com/spumko/hoek
+│ ├─┬ cryptiles@1.0.1
+│ │ │ General purpose crypto utilities
+│ │ │ git://github.com/hueniverse/cryptiles
+│ │ └── boom@1.1.0
+│ │     HTTP-friendly error objects
+│ │     git://github.com/spumko/boom
+│ ├─┬ hawk@1.1.2
+│ │ │ HTTP Hawk Authentication Scheme
+│ │ │ git://github.com/hueniverse/hawk
+│ │ ├── boom@1.1.0
+│ │ │   HTTP-friendly error objects
+│ │ │   git://github.com/spumko/boom
+│ │ ├── cryptiles@1.0.1
+│ │ │   General purpose crypto utilities
+│ │ │   git://github.com/hueniverse/cryptiles
+│ │ ├── hoek@1.1.1
+│ │ │   General purpose node utilities
+│ │ │   git://github.com/spumko/hoek
+│ │ └─┬ sntp@1.0.1
+│ │   │ SNTP Client
+│ │   │ git://github.com/hueniverse/sntp
+│ │   └── hoek@1.1.1
+│ │       General purpose node utilities
+│ │       git://github.com/spumko/hoek
+│ ├── hoek@1.1.1
+│ │   General purpose node utilities
+│ │   git://github.com/spumko/hoek
+│ ├─┬ iron@1.0.0
+│ │ │ Encapsulated tokens (encrypted and mac'ed objects)
+│ │ │ git://github.com/hueniverse/iron
+│ │ ├── boom@1.1.0
+│ │ │   HTTP-friendly error objects
+│ │ │   git://github.com/spumko/boom
+│ │ ├── cryptiles@1.0.1
+│ │ │   General purpose crypto utilities
+│ │ │   git://github.com/hueniverse/cryptiles
+│ │ └── hoek@1.1.1
+│ │     General purpose node utilities
+│ │     git://github.com/spumko/hoek
+│ ├─┬ joi@1.2.2
+│ │ │ Object schema validation
+│ │ │ git://github.com/spumko/joi
+│ │ └── hoek@1.1.1
+│ │     General purpose node utilities
+│ │     git://github.com/spumko/hoek
+│ ├── lru-cache@2.3.1
+│ │   A cache object that deletes the least-recently-used items.
+│ │   git://github.com/isaacs/node-lru-cache.git
+│ ├── mime@1.2.11
+│ │   A comprehensive library for mime-type mapping
+│ │   https://github.com/broofa/node-mime
+│ ├─┬ multiparty@2.1.9
+│ │ │ multipart/form-data parser which supports streaming
+│ │ │ git@github.com:superjoe30/node-multiparty.git
+│ │ ├── readable-stream@1.0.17
+│ │ │   An exploration of a new kind of readable streams for Node.js
+│ │ │   git://github.com/isaacs/readable-stream
+│ │ └─┬ stream-counter@0.1.0
+│ │   │ keeps track of how many bytes have been written to a stream
+│ │   │ git://github.com/superjoe30/node-stream-counter.git
+│ │   └── readable-stream@1.0.17
+│ │       An exploration of a new kind of readable streams for Node.js
+│ │       git://github.com/isaacs/readable-stream
+│ ├── negotiator@0.2.8
+│ │   HTTP content negotiation
+│ │   git://github.com/federomero/negotiator.git
+│ ├─┬ optimist@0.6.0
+│ │ │ Light-weight option parsing with an argv hash. No optstrings attached.
+│ │ │ http://github.com/substack/node-optimist.git
+│ │ ├── minimist@0.0.5
+│ │ │   parse argument options
+│ │ │   git://github.com/substack/minimist.git
+│ │ │   https://github.com/substack/minimist
+│ │ └── wordwrap@0.0.2
+│ │     Wrap those words. Show them at what columns to start and stop.
+│ │     git://github.com/substack/node-wordwrap.git
+│ ├── semver@2.0.11
+│ │   The semantic version parser used by npm.
+│ │   git://github.com/isaacs/node-semver.git
+│ └── shot@1.1.1
+│     Injects a fake HTTP request/response into a node HTTP server
+│     git://github.com/spumko/shot
+├── imagemagick@0.1.3
+│   A wrapper around the imagemagick cli
+│   http://github.com/rsms/node-imagemagick.git
+├─┬ jade@0.35.0
+│ │ Jade template engine
+│ │ git://github.com/visionmedia/jade
+│ ├── character-parser@1.2.0
+│ │   Parse JavaScript one character at a time to look for snippets in Templates.  This is not a validator, it's just designed to allow you to have sections of JavaScript delimited by brackets robustly.
+│ │   https://github.com/ForbesLindesay/character-parser.git
+│ ├── commander@2.0.0
+│ │   the complete solution for node.js command-line programs
+│ │   https://github.com/visionmedia/commander.js.git
+│ ├─┬ constantinople@1.0.2
+│ │ │ Determine whether a JavaScript expression evaluates to a constant (using UglifyJS)
+│ │ │ https://github.com/ForbesLindesay/constantinople.git
+│ │ └─┬ uglify-js@2.4.0
+│ │   │ JavaScript parser, mangler/compressor and beautifier toolkit
+│ │   │ https://github.com/mishoo/UglifyJS2.git
+│ │   │ http://lisperator.net/uglifyjs
+│ │   ├── async@0.2.9
+│ │   │   Higher-order functions and common patterns for asynchronous code
+│ │   │   https://github.com/caolan/async.git
+│ │   ├─┬ optimist@0.3.7
+│ │   │ │ Light-weight option parsing with an argv hash. No optstrings attached.
+│ │   │ │ http://github.com/substack/node-optimist.git
+│ │   │ └── wordwrap@0.0.2
+│ │   │     Wrap those words. Show them at what columns to start and stop.
+│ │   │     git://github.com/substack/node-wordwrap.git
+│ │   ├─┬ source-map@0.1.30
+│ │   │ │ Generates and consumes source maps
+│ │   │ │ http://github.com/mozilla/source-map.git
+│ │   │ │ https://github.com/mozilla/source-map
+│ │   │ └── amdefine@0.1.0
+│ │   │     Provide AMD's define() API for declaring modules in the AMD format
+│ │   │     https://github.com/jrburke/amdefine.git
+│ │   │     http://github.com/jrburke/amdefine
+│ │   └── uglify-to-browserify@1.0.1
+│ │       A transform to make UglifyJS work in browserify.
+│ │       https://github.com/ForbesLindesay/uglify-to-browserify.git
+│ ├── mkdirp@0.3.5
+│ │   Recursively mkdir, like `mkdir -p`
+│ │   http://github.com/substack/node-mkdirp.git
+│ ├─┬ monocle@1.1.50
+│ │ │ a tool for watching directories for file changes
+│ │ │ https://github.com/samccone/monocle.git
+│ │ └─┬ readdirp@0.2.5
+│ │   │ Recursive version of fs.readdir with streaming api.
+│ │   │ git://github.com/thlorenz/readdirp.git
+│ │   │ https://github.com/thlorenz/readdirp
+│ │   └─┬ minimatch@0.2.12
+│ │     │ a glob matcher in javascript
+│ │     │ git://github.com/isaacs/minimatch.git
+│ │     ├── lru-cache@2.3.1
+│ │     │   A cache object that deletes the least-recently-used items.
+│ │     │   git://github.com/isaacs/node-lru-cache.git
+│ │     └── sigmund@1.0.0
+│ │         Quick and dirty signatures for Objects.
+│ │         git://github.com/isaacs/sigmund
+│ ├─┬ transformers@2.1.0
+│ │ │ String/Data transformations for use in templating libraries, static site generators and web frameworks
+│ │ │ https://github.com/ForbesLindesay/transformers.git
+│ │ ├─┬ css@1.0.8
+│ │ │ │ CSS parser / stringifier using css-parse and css-stringify
+│ │ │ ├── css-parse@1.0.4
+│ │ │ │   CSS parser
+│ │ │ └── css-stringify@1.0.5
+│ │ │     CSS compiler
+│ │ ├─┬ promise@2.0.0
+│ │ │ │ Bare bones Promises/A+ implementation
+│ │ │ │ https://github.com/then/promise.git
+│ │ │ └── is-promise@1.0.0
+│ │ │     Test whether an object looks like a promises-a+ promise
+│ │ │     https://github.com/then/is-promise.git
+│ │ └─┬ uglify-js@2.2.5
+│ │   │ JavaScript parser, mangler/compressor and beautifier toolkit
+│ │   │ https://github.com/mishoo/UglifyJS2.git
+│ │   │ http://lisperator.net/uglifyjs
+│ │   ├─┬ optimist@0.3.7
+│ │   │ │ Light-weight option parsing with an argv hash. No optstrings attached.
+│ │   │ │ http://github.com/substack/node-optimist.git
+│ │   │ └── wordwrap@0.0.2
+│ │   │     Wrap those words. Show them at what columns to start and stop.
+│ │   │     git://github.com/substack/node-wordwrap.git
+│ │   └─┬ source-map@0.1.30
+│ │     │ Generates and consumes source maps
+│ │     │ http://github.com/mozilla/source-map.git
+│ │     │ https://github.com/mozilla/source-map
+│ │     └── amdefine@0.1.0
+│ │         Provide AMD's define() API for declaring modules in the AMD format
+│ │         https://github.com/jrburke/amdefine.git
+│ │         http://github.com/jrburke/amdefine
+│ └─┬ with@1.1.1
+│   │ Compile time `with` for strict mode JavaScript
+│   │ https://github.com/ForbesLindesay/with.git
+│   └─┬ uglify-js@2.4.0
+│     │ JavaScript parser, mangler/compressor and beautifier toolkit
+│     │ https://github.com/mishoo/UglifyJS2.git
+│     │ http://lisperator.net/uglifyjs
+│     ├── async@0.2.9
+│     │   Higher-order functions and common patterns for asynchronous code
+│     │   https://github.com/caolan/async.git
+│     ├─┬ optimist@0.3.7
+│     │ │ Light-weight option parsing with an argv hash. No optstrings attached.
+│     │ │ http://github.com/substack/node-optimist.git
+│     │ └── wordwrap@0.0.2
+│     │     Wrap those words. Show them at what columns to start and stop.
+│     │     git://github.com/substack/node-wordwrap.git
+│     ├─┬ source-map@0.1.30
+│     │ │ Generates and consumes source maps
+│     │ │ http://github.com/mozilla/source-map.git
+│     │ │ https://github.com/mozilla/source-map
+│     │ └── amdefine@0.1.0
+│     │     Provide AMD's define() API for declaring modules in the AMD format
+│     │     https://github.com/jrburke/amdefine.git
+│     │     http://github.com/jrburke/amdefine
+│     └── uglify-to-browserify@1.0.1
+│         A transform to make UglifyJS work in browserify.
+│         https://github.com/ForbesLindesay/uglify-to-browserify.git
+├─┬ mega@0.2.0
+│ │ Unofficial Node.js SDK for mega.co.nz
+│ │ https://github.com/tonistiigi/mega.git
+│ ├─┬ request@2.27.0
+│ │ │ Simplified HTTP request client.
+│ │ │ http://github.com/mikeal/request.git
+│ │ ├── aws-sign@0.3.0
+│ │ │   AWS signing. Originally pulled from LearnBoost/knox, maintained as vendor in request, now a standalone module.
+│ │ │   https://github.com/mikeal/aws-sign
+│ │ ├── cookie-jar@0.3.0
+│ │ │   Cookie Jar. Originally pulled form tobi, maintained as vendor in request, now a standalone module.
+│ │ │   https://github.com/mikeal/cookie-jar
+│ │ ├── forever-agent@0.5.0
+│ │ │   HTTP Agent that keeps socket connections alive between keep-alive requests. Formerly part of mikeal/request, now a standalone module.
+│ │ │   https://github.com/mikeal/forever-agent
+│ │ ├─┬ form-data@0.1.2
+│ │ │ │ A module to create readable "multipart/form-data" streams.  Can be used to submit forms and file uploads to other web applications.
+│ │ │ │ git://github.com/felixge/node-form-data.git
+│ │ │ ├── async@0.2.9
+│ │ │ │   Higher-order functions and common patterns for asynchronous code
+│ │ │ │   https://github.com/caolan/async.git
+│ │ │ ├─┬ combined-stream@0.0.4
+│ │ │ │ │ A stream that emits multiple other streams one after another.
+│ │ │ │ │ git://github.com/felixge/node-combined-stream.git
+│ │ │ │ │ https://github.com/felixge/node-combined-stream
+│ │ │ │ └── delayed-stream@0.0.5
+│ │ │ │     Buffers events from a stream until you are ready to handle them.
+│ │ │ │     git://github.com/felixge/node-delayed-stream.git
+│ │ │ │     https://github.com/felixge/node-delayed-stream
+│ │ │ └── mime@1.2.11
+│ │ │     A comprehensive library for mime-type mapping
+│ │ │     https://github.com/broofa/node-mime
+│ │ ├─┬ hawk@1.0.0
+│ │ │ │ HTTP Hawk Authentication Scheme
+│ │ │ │ git://github.com/hueniverse/hawk
+│ │ │ ├─┬ boom@0.4.2
+│ │ │ │ │ HTTP-friendly error objects
+│ │ │ │ │ git://github.com/spumko/boom
+│ │ │ │ └── hoek@0.9.1
+│ │ │ │     General purpose node utilities
+│ │ │ │     git://github.com/spumko/hoek
+│ │ │ ├─┬ cryptiles@0.2.2
+│ │ │ │ │ General purpose crypto utilities
+│ │ │ │ │ git://github.com/hueniverse/cryptiles
+│ │ │ │ └── boom@0.4.2
+│ │ │ │     HTTP-friendly error objects
+│ │ │ │     git://github.com/spumko/boom
+│ │ │ ├── hoek@0.9.1
+│ │ │ │   General purpose node utilities
+│ │ │ │   git://github.com/spumko/hoek
+│ │ │ └─┬ sntp@0.2.4
+│ │ │   │ SNTP Client
+│ │ │   │ git://github.com/hueniverse/sntp
+│ │ │   └── hoek@0.9.1
+│ │ │       General purpose node utilities
+│ │ │       git://github.com/spumko/hoek
+│ │ ├─┬ http-signature@0.10.0
+│ │ │ │ Reference implementation of Joyent's HTTP Signature Scheme
+│ │ │ │ git://github.com/joyent/node-http-signature.git
+│ │ │ ├── asn1@0.1.11
+│ │ │ │   Contains parsers and serializers for ASN.1 (currently BER only)
+│ │ │ │   git://github.com/mcavage/node-asn1.git
+│ │ │ ├── assert-plus@0.1.2
+│ │ │ │   Extra assertions on top of node's assert module
+│ │ │ └── ctype@0.5.2
+│ │ │     read and write binary structures and data types
+│ │ │     https://github.com/rmustacc/node-ctype
+│ │ ├── json-stringify-safe@5.0.0
+│ │ │   Like JSON.stringify, but doesn't blow up on circular refs
+│ │ │   git://github.com/isaacs/json-stringify-safe
+│ │ ├── mime@1.2.11
+│ │ │   A comprehensive library for mime-type mapping
+│ │ │   https://github.com/broofa/node-mime
+│ │ ├── node-uuid@1.4.1
+│ │ │   Rigorous implementation of RFC4122 (v1 and v4) UUIDs.
+│ │ │   https://github.com/broofa/node-uuid.git
+│ │ ├── oauth-sign@0.3.0
+│ │ │   OAuth 1 signing. Formerly a vendor lib in mikeal/request, now a standalone module.
+│ │ │   https://github.com/mikeal/oauth-sign
+│ │ ├── qs@0.6.5
+│ │ │   querystring parser
+│ │ │   git://github.com/visionmedia/node-querystring.git
+│ │ └── tunnel-agent@0.3.0
+│ │     HTTP proxy tunneling agent. Formerly part of mikeal/request, now a standalone module.
+│ │     https://github.com/mikeal/tunnel-agent
+│ ├─┬ stream-combiner@0.0.1
+│ │ │ <img src=https://secure.travis-ci.org/dominictarr/stream-combiner.png?branch=master>
+│ │ │ git://github.com/dominictarr/stream-combiner.git
+│ │ │ https://github.com/dominictarr/stream-combiner
+│ │ └── duplexer@0.0.4
+│ │     Creates a duplex stream
+│ │     git://github.com/Raynos/duplexer.git
+│ │     https://github.com/Raynos/duplexer
+│ └── through@2.1.0
+│     simplified stream contruction
+│     https://github.com/dominictarr/through.git
+│     http://github.com/dominictarr/through
+├─┬ passport@0.1.17
+│ │ Simple, unobtrusive authentication for Node.js.
+│ │ git://github.com/jaredhanson/passport.git
+│ │ http://passportjs.org/
+│ ├── pause@0.0.1
+│ │   Pause streams...
+│ └── pkginfo@0.2.3
+│     An easy way to expose properties on a module from a package.json
+│     http://github.com/indexzero/node-pkginfo.git
+├─┬ passport-local@0.1.6
+│ │ Local username and password authentication strategy for Passport.
+│ │ git://github.com/jaredhanson/passport-local.git
+│ ├─┬ passport@0.1.17
+│ │ │ Simple, unobtrusive authentication for Node.js.
+│ │ │ git://github.com/jaredhanson/passport.git
+│ │ │ http://passportjs.org/
+│ │ ├── pause@0.0.1
+│ │ │   Pause streams...
+│ │ └── pkginfo@0.2.3
+│ │     An easy way to expose properties on a module from a package.json
+│ │     http://github.com/indexzero/node-pkginfo.git
+│ └── pkginfo@0.2.3
+│     An easy way to expose properties on a module from a package.json
+│     http://github.com/indexzero/node-pkginfo.git
+├─┬ pg@2.7.0
+│ │ PostgreSQL client - pure javascript & libpq with the same API
+│ │ git://github.com/brianc/node-postgres.git
+│ │ http://github.com/brianc/node-postgres
+│ ├─┬ buffer-writer@1.0.0
+│ │ │ a fast, efficient buffer writer
+│ │ │ git://github.com/brianc/node-buffer-writer.git
+│ │ ├── async@0.2.9
+│ │ │   Higher-order functions and common patterns for asynchronous code
+│ │ │   https://github.com/caolan/async.git
+│ │ └─┬ cloned@0.0.1
+│ │   │ clones a module at the given revision
+│ │   │ git://github.com/brianc/node-require-sha.git
+│ │   └── rmdir@1.0.0
+│ │       Remove all files in the given path recursively
+│ │       https://github.com/dreamerslab/node.rmdir.git
+│ └── generic-pool@2.0.3
+│     Generic resource pooling for Node.JS
+│     http://github.com/coopernurse/node-pool.git
+├─┬ travelogue@0.4.2
+│ │ hapi passport.js integration helper
+│ │ git://github.com/spumko/travelogue.git
+│ └── passport@0.1.17
+│     Simple, unobtrusive authentication for Node.js.
+│     git://github.com/jaredhanson/passport.git
+│     http://passportjs.org/
+└─┬ yar@0.4.0
+  │ Cookie jar plugin
+  │ git://github.com/spumko/yar
+  └── node-uuid@1.4.1
+      Rigorous implementation of RFC4122 (v1 and v4) UUIDs.
+      https://github.com/broofa/node-uuid.git
+

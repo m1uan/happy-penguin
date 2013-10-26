@@ -25,7 +25,7 @@ module.exports = {
     }
     ,index_get : function (request){
 
-        request.reply("ACCESS GRANTED<br/><br/><a href='/logout/'>Logout</a>");
+        request.reply.view('index');
     }
     ,login_get : function(request){
         if (request.session._isAuthenticated()) {

@@ -1,0 +1,540 @@
+
+│ /usr/lib
+│ 
+├─┬ mocha@1.13.0
+│ │ simple, flexible, fun test framework
+│ │ git://github.com/visionmedia/mocha.git
+│ ├── commander@0.6.1
+│ │   the complete solution for node.js command-line programs
+│ │   https://github.com/visionmedia/commander.js.git
+│ ├── debug@0.7.2
+│ │   small debugging utility
+│ │   git://github.com/visionmedia/debug.git
+│ ├── diff@1.0.7
+│ │   A javascript text diff implementation.
+│ │   git://github.com/kpdecker/jsdiff.git
+│ ├─┬ glob@3.2.3
+│ │ │ a little globber
+│ │ │ git://github.com/isaacs/node-glob.git
+│ │ ├── graceful-fs@2.0.1
+│ │ │   A drop-in replacement for fs, making various improvements.
+│ │ │   git://github.com/isaacs/node-graceful-fs.git
+│ │ ├── inherits@2.0.1
+│ │ │   Browser-friendly inheritance fully compatible with standard node.js inherits()
+│ │ │   git://github.com/isaacs/inherits
+│ │ └─┬ minimatch@0.2.12
+│ │   │ a glob matcher in javascript
+│ │   │ git://github.com/isaacs/minimatch.git
+│ │   ├── lru-cache@2.3.1
+│ │   │   A cache object that deletes the least-recently-used items.
+│ │   │   git://github.com/isaacs/node-lru-cache.git
+│ │   └── sigmund@1.0.0
+│ │       Quick and dirty signatures for Objects.
+│ │       git://github.com/isaacs/sigmund
+│ ├── growl@1.7.0
+│ │   Growl unobtrusive notifications
+│ ├─┬ jade@0.26.3
+│ │ │ Jade template engine
+│ │ │ git://github.com/visionmedia/jade
+│ │ ├── commander@0.6.1
+│ │ │   the complete solution for node.js command-line programs
+│ │ │   https://github.com/visionmedia/commander.js.git
+│ │ └── mkdirp@0.3.0
+│ │     Recursively mkdir, like `mkdir -p`
+│ │     http://github.com/substack/node-mkdirp.git
+│ └── mkdirp@0.3.5
+│     Recursively mkdir, like `mkdir -p`
+│     http://github.com/substack/node-mkdirp.git
+├─┬ nodeunit@0.8.1
+│ │ Easy unit testing for node.js and the browser.
+│ │ http://github.com/caolan/nodeunit.git
+│ └─┬ tap@0.4.4
+│   │ A Test-Anything-Protocol library
+│   │ git://github.com/isaacs/node-tap.git
+│   ├── buffer-equal@0.0.0
+│   │   return whether two buffers are equal
+│   │   git://github.com/substack/node-buffer-equal.git
+│   ├── deep-equal@0.0.0
+│   │   node's assert.deepEqual algorithm
+│   │   http://github.com/substack/node-deep-equal.git
+│   ├─┬ difflet@0.2.6
+│   │ │ colorful diffs for javascript objects
+│   │ │ git://github.com/substack/difflet.git
+│   │ ├── charm@0.1.2
+│   │ │   ansi control sequences for terminal cursor hopping and colors
+│   │ │   http://github.com/substack/node-charm.git
+│   │ ├── deep-is@0.1.2
+│   │ │   node's assert.deepEqual algorithm except for NaN being equal to NaN
+│   │ │   http://github.com/thlorenz/deep-is.git
+│   │ └── traverse@0.6.6
+│   │     traverse and transform objects by visiting every node on a recursive walk
+│   │     git://github.com/substack/js-traverse.git
+│   │     https://github.com/substack/js-traverse
+│   ├─┬ glob@3.2.6
+│   │ │ a little globber
+│   │ │ git://github.com/isaacs/node-glob.git
+│   │ ├── inherits@2.0.1
+│   │ │   Browser-friendly inheritance fully compatible with standard node.js inherits()
+│   │ │   git://github.com/isaacs/inherits
+│   │ └─┬ minimatch@0.2.12
+│   │   │ a glob matcher in javascript
+│   │   │ git://github.com/isaacs/minimatch.git
+│   │   ├── lru-cache@2.3.1
+│   │   │   A cache object that deletes the least-recently-used items.
+│   │   │   git://github.com/isaacs/node-lru-cache.git
+│   │   └── sigmund@1.0.0
+│   │       Quick and dirty signatures for Objects.
+│   │       git://github.com/isaacs/sigmund
+│   ├── inherits@2.0.0
+│   │   Browser-friendly inheritance fully compatible with standard node.js inherits()
+│   │   https://github.com/isaacs/inherits
+│   ├── mkdirp@0.3.5
+│   │   Recursively mkdir, like `mkdir -p`
+│   │   http://github.com/substack/node-mkdirp.git
+│   ├─┬ nopt@2.1.2
+│   │ │ Option parsing for Node, supporting types, shorthands, etc. Used by npm.
+│   │ │ http://github.com/isaacs/nopt
+│   │ └── abbrev@1.0.4
+│   │     Like ruby's abbrev module, but in js
+│   │     http://github.com/isaacs/abbrev-js
+│   ├─┬ runforcover@0.0.2
+│   │ │ require plugin for js code coverage using bunker
+│   │ │ http://github.com/chrisdickinson/node-runforcover.git
+│   │ └─┬ bunker@0.1.2
+│   │   │ code coverage in native javascript
+│   │   │ http://github.com/substack/node-bunker.git
+│   │   └─┬ burrito@0.2.12
+│   │     │ Wrap up expressions with a trace function while walking the AST with rice and beans on the side
+│   │     │ git://github.com/substack/node-burrito.git
+│   │     ├── traverse@0.5.2
+│   │     │   Traverse and transform objects by visiting every node on a recursive walk
+│   │     │   http://github.com/substack/js-traverse.git
+│   │     └── uglify-js@1.1.1
+│   │         JavaScript parser and compressor/beautifier toolkit
+│   │         git@github.com:mishoo/UglifyJS.git
+│   ├── slide@1.1.5
+│   │   A flow control lib small enough to fit on in a slide presentation. Derived live at Oak.JS
+│   │   git://github.com/isaacs/slide-flow-control.git
+│   └── yamlish@0.0.5
+│       Parser/encoder for the yamlish format
+│       https://github.com/isaacs/yamlish
+├─┬ npm@1.3.11
+│ │ A package manager for node
+│ │ https://github.com/isaacs/npm
+│ │ https://npmjs.org/doc/
+│ ├── abbrev@1.0.4
+│ │   Like ruby's abbrev module, but in js
+│ │   http://github.com/isaacs/abbrev-js
+│ ├── ansi@0.1.2
+│ │   Advanced ANSI formatting tool for Node.js
+│ │   git://github.com/TooTallNate/ansi.js.git
+│ ├── archy@0.0.2
+│ │   render nested hierarchies `npm ls` style with unicode pipes
+│ │   git://github.com/substack/node-archy.git
+│ ├─┬ block-stream@0.0.7
+│ │ │ a stream of blocks
+│ │ │ git://github.com/isaacs/block-stream.git
+│ │ └── inherits@2.0.1
+│ │     Browser-friendly inheritance fully compatible with standard node.js inherits()
+│ │     git://github.com/isaacs/inherits
+│ ├── child-process-close@0.1.1
+│ │   Make child_process objects emit 'close' events in node v0.6 like they do in v0.8. This makes it easier to write code that works correctly on both version of node.
+│ │   git://github.com/piscisaureus/child-process-close.git
+│ ├── chmodr@0.1.0
+│ │   like `chmod -R`
+│ │   git://github.com/isaacs/chmodr.git
+│ ├── chownr@0.0.1
+│ │   like `chown -R`
+│ │   git://github.com/isaacs/chownr.git
+│ ├─┬ cmd-shim@1.0.1
+│ │ │ Used in npm for command line application support
+│ │ │ https://github.com/ForbesLindesay/cmd-shim.git
+│ │ └── mkdirp@0.3.5
+│ │     Recursively mkdir, like `mkdir -p`
+│ │     http://github.com/substack/node-mkdirp.git
+│ ├── editor@0.0.4
+│ │   launch $EDITOR in your program
+│ │   git://github.com/substack/node-editor.git
+│ │   https://github.com/substack/node-editor
+│ ├─┬ fstream@0.1.24
+│ │ │ Advanced file system stream things
+│ │ │ git://github.com/isaacs/fstream.git
+│ │ ├── graceful-fs@2.0.1
+│ │ │   A drop-in replacement for fs, making various improvements.
+│ │ │   git://github.com/isaacs/node-graceful-fs.git
+│ │ ├── inherits@2.0.1
+│ │ │   Browser-friendly inheritance fully compatible with standard node.js inherits()
+│ │ │   git://github.com/isaacs/inherits
+│ │ ├── mkdirp@0.3.5
+│ │ │   Recursively mkdir, like `mkdir -p`
+│ │ │   http://github.com/substack/node-mkdirp.git
+│ │ └── rimraf@2.2.2
+│ │     A deep deletion module for node (like `rm -rf`)
+│ │     git://github.com/isaacs/rimraf.git
+│ ├─┬ fstream-npm@0.1.5
+│ │ │ fstream class for creating npm packages
+│ │ │ git://github.com/isaacs/fstream-npm.git
+│ │ ├─┬ fstream-ignore@0.0.7
+│ │ │ │ A thing for ignoring files based on globs
+│ │ │ │ git://github.com/isaacs/fstream-ignore.git
+│ │ │ ├── fstream@0.1.24
+│ │ │ │   Advanced file system stream things
+│ │ │ │   git://github.com/isaacs/fstream.git
+│ │ │ ├── inherits@2.0.1
+│ │ │ │   Browser-friendly inheritance fully compatible with standard node.js inherits()
+│ │ │ │   git://github.com/isaacs/inherits
+│ │ │ └── minimatch@0.2.12
+│ │ │     a glob matcher in javascript
+│ │ │     git://github.com/isaacs/minimatch.git
+│ │ └── inherits@2.0.1
+│ │     Browser-friendly inheritance fully compatible with standard node.js inherits()
+│ │     git://github.com/isaacs/inherits
+│ ├── github-url-from-git@1.1.1
+│ │   Parse a github git url and return the github repo url
+│ ├─┬ glob@3.2.6
+│ │ │ a little globber
+│ │ │ git://github.com/isaacs/node-glob.git
+│ │ ├── inherits@2.0.1
+│ │ │   Browser-friendly inheritance fully compatible with standard node.js inherits()
+│ │ │   git://github.com/isaacs/inherits
+│ │ └── minimatch@0.2.12
+│ │     a glob matcher in javascript
+│ │     git://github.com/isaacs/minimatch.git
+│ ├── graceful-fs@2.0.1
+│ │   A drop-in replacement for fs, making various improvements.
+│ │   git://github.com/isaacs/node-graceful-fs.git
+│ ├── inherits@2.0.1
+│ │   Browser-friendly inheritance fully compatible with standard node.js inherits()
+│ │   git://github.com/isaacs/inherits
+│ ├── ini@1.1.0
+│ │   An ini encoder/decoder for node
+│ │   git://github.com/isaacs/ini.git
+│ ├─┬ init-package-json@0.0.11
+│ │ │ A node module to get your node module started
+│ │ │ git://github.com/isaacs/init-package-json
+│ │ ├─┬ promzard@0.2.0
+│ │ │ │ prompting wizardly
+│ │ │ │ git://github.com/isaacs/promzard
+│ │ │ └── read@1.0.5
+│ │ │     read(1) for node programs
+│ │ │     git://github.com/isaacs/read.git
+│ │ ├── read@1.0.5
+│ │ │   read(1) for node programs
+│ │ │   git://github.com/isaacs/read.git
+│ │ ├── read-package-json@1.1.3
+│ │ │   The thing npm uses to read package.json files with semantics and defaults and validation
+│ │ │   git://github.com/isaacs/read-package-json.git
+│ │ └── semver@2.1.0
+│ │     The semantic version parser used by npm.
+│ │     git://github.com/isaacs/node-semver.git
+│ ├── lockfile@0.4.2
+│ │   A very polite lock file utility, which endeavors to not litter, and to wait patiently for others.
+│ │   git://github.com/isaacs/lockfile
+│ ├── lru-cache@2.3.1
+│ │   A cache object that deletes the least-recently-used items.
+│ │   git://github.com/isaacs/node-lru-cache.git
+│ ├─┬ minimatch@0.2.12
+│ │ │ a glob matcher in javascript
+│ │ │ git://github.com/isaacs/minimatch.git
+│ │ ├── lru-cache@2.3.1
+│ │ │   A cache object that deletes the least-recently-used items.
+│ │ │   git://github.com/isaacs/node-lru-cache.git
+│ │ └── sigmund@1.0.0
+│ │     Quick and dirty signatures for Objects.
+│ │     git://github.com/isaacs/sigmund
+│ ├── mkdirp@0.3.5
+│ │   Recursively mkdir, like `mkdir -p`
+│ │   http://github.com/substack/node-mkdirp.git
+│ ├─┬ node-gyp@0.10.10
+│ │ │ Node.js native addon build tool
+│ │ │ git://github.com/TooTallNate/node-gyp.git
+│ │ ├── fstream@0.1.24
+│ │ │   Advanced file system stream things
+│ │ │   git://github.com/isaacs/fstream.git
+│ │ ├── glob@3.2.6
+│ │ │   a little globber
+│ │ │   git://github.com/isaacs/node-glob.git
+│ │ ├── graceful-fs@2.0.1
+│ │ │   A drop-in replacement for fs, making various improvements.
+│ │ │   git://github.com/isaacs/node-graceful-fs.git
+│ │ ├── minimatch@0.2.12
+│ │ │   a glob matcher in javascript
+│ │ │   git://github.com/isaacs/minimatch.git
+│ │ ├── mkdirp@0.3.5
+│ │ │   Recursively mkdir, like `mkdir -p`
+│ │ │   http://github.com/substack/node-mkdirp.git
+│ │ ├── nopt@2.1.2
+│ │ │   Option parsing for Node, supporting types, shorthands, etc. Used by npm.
+│ │ │   http://github.com/isaacs/nopt
+│ │ ├── npmlog@0.0.4
+│ │ │   logger for npm
+│ │ │   git://github.com/isaacs/npmlog.git
+│ │ ├── osenv@0.0.3
+│ │ │   Look up environment settings specific to different operating systems
+│ │ │   git://github.com/isaacs/osenv
+│ │ ├── request@2.27.0
+│ │ │   Simplified HTTP request client.
+│ │ │   http://github.com/mikeal/request.git
+│ │ ├── rimraf@2.2.2
+│ │ │   A deep deletion module for node (like `rm -rf`)
+│ │ │   git://github.com/isaacs/rimraf.git
+│ │ ├── semver@2.1.0
+│ │ │   The semantic version parser used by npm.
+│ │ │   git://github.com/isaacs/node-semver.git
+│ │ ├── tar@0.1.18
+│ │ │   tar for node
+│ │ │   git://github.com/isaacs/node-tar.git
+│ │ └── which@1.0.5
+│ │     Like which(1) unix command. Find the first instance of an executable in the PATH.
+│ │     git://github.com/isaacs/node-which.git
+│ ├─┬ nopt@2.1.2
+│ │ │ Option parsing for Node, supporting types, shorthands, etc. Used by npm.
+│ │ │ http://github.com/isaacs/nopt
+│ │ └── abbrev@1.0.4
+│ │     Like ruby's abbrev module, but in js
+│ │     http://github.com/isaacs/abbrev-js
+│ ├─┬ npm-registry-client@0.2.28
+│ │ │ Client for the npm registry
+│ │ │ git://github.com/isaacs/npm-registry-client
+│ │ ├── chownr@0.0.1
+│ │ │   like `chown -R`
+│ │ │   git://github.com/isaacs/chownr.git
+│ │ ├─┬ couch-login@0.1.18
+│ │ │ │ A module for doing logged-in requests to a couchdb server
+│ │ │ │ git://github.com/isaacs/couch-login.git
+│ │ │ └── request@2.27.0
+│ │ │     Simplified HTTP request client.
+│ │ │     http://github.com/mikeal/request.git
+│ │ ├── graceful-fs@2.0.1
+│ │ │   A drop-in replacement for fs, making various improvements.
+│ │ │   git://github.com/isaacs/node-graceful-fs.git
+│ │ ├── mkdirp@0.3.5
+│ │ │   Recursively mkdir, like `mkdir -p`
+│ │ │   http://github.com/substack/node-mkdirp.git
+│ │ ├── request@2.27.0
+│ │ │   Simplified HTTP request client.
+│ │ │   http://github.com/mikeal/request.git
+│ │ ├── retry@0.6.0
+│ │ │   Abstraction for exponential and custom retry strategies for failed operations.
+│ │ │   git://github.com/felixge/node-retry.git
+│ │ │   https://github.com/tim-kos/node-retry
+│ │ ├── rimraf@2.2.2
+│ │ │   A deep deletion module for node (like `rm -rf`)
+│ │ │   git://github.com/isaacs/rimraf.git
+│ │ ├── semver@2.1.0
+│ │ │   The semantic version parser used by npm.
+│ │ │   git://github.com/isaacs/node-semver.git
+│ │ └── slide@1.1.5
+│ │     A flow control lib small enough to fit on in a slide presentation. Derived live at Oak.JS
+│ │     git://github.com/isaacs/slide-flow-control.git
+│ ├── npm-user-validate@0.0.3
+│ │   User validations for npm
+│ │   https://github.com/robertkowalski/npm-user-validate
+│ ├─┬ npmconf@0.1.3
+│ │ │ The config thing npm uses
+│ │ │ git://github.com/isaacs/npmconf
+│ │ ├─┬ config-chain@1.1.7
+│ │ │ │ HANDLE CONFIGURATION ONCE AND FOR ALL
+│ │ │ │ https://github.com/dominictarr/config-chain.git
+│ │ │ │ http://github.com/dominictarr/config-chain
+│ │ │ ├── ini@1.1.0
+│ │ │ │   An ini encoder/decoder for node
+│ │ │ │   git://github.com/isaacs/ini.git
+│ │ │ └── proto-list@1.2.2
+│ │ │     A utility for managing a prototype chain
+│ │ │     https://github.com/isaacs/proto-list
+│ │ ├── inherits@2.0.1
+│ │ │   Browser-friendly inheritance fully compatible with standard node.js inherits()
+│ │ │   git://github.com/isaacs/inherits
+│ │ ├── ini@1.1.0
+│ │ │   An ini encoder/decoder for node
+│ │ │   git://github.com/isaacs/ini.git
+│ │ ├── mkdirp@0.3.5
+│ │ │   Recursively mkdir, like `mkdir -p`
+│ │ │   http://github.com/substack/node-mkdirp.git
+│ │ ├── nopt@2.1.2
+│ │ │   Option parsing for Node, supporting types, shorthands, etc. Used by npm.
+│ │ │   http://github.com/isaacs/nopt
+│ │ ├── once@1.1.1
+│ │ │   Run a function exactly one time
+│ │ │   git://github.com/isaacs/once
+│ │ ├── osenv@0.0.3
+│ │ │   Look up environment settings specific to different operating systems
+│ │ │   git://github.com/isaacs/osenv
+│ │ └── semver@2.1.0
+│ │     The semantic version parser used by npm.
+│ │     git://github.com/isaacs/node-semver.git
+│ ├─┬ npmlog@0.0.4
+│ │ │ logger for npm
+│ │ │ git://github.com/isaacs/npmlog.git
+│ │ └── ansi@0.1.2
+│ │     Advanced ANSI formatting tool for Node.js
+│ │     git://github.com/TooTallNate/ansi.js.git
+│ ├── once@1.1.1
+│ │   Run a function exactly one time
+│ │   git://github.com/isaacs/once
+│ ├── opener@1.3.0
+│ │   Opens stuff, like webpages and files and executables, cross-platform
+│ │   git://github.com/domenic/opener.git
+│ ├── osenv@0.0.3
+│ │   Look up environment settings specific to different operating systems
+│ │   git://github.com/isaacs/osenv
+│ ├─┬ read@1.0.5
+│ │ │ read(1) for node programs
+│ │ │ git://github.com/isaacs/read.git
+│ │ └── mute-stream@0.0.4
+│ │     Bytes go in, but they don't come out (when muted).
+│ │     git://github.com/isaacs/mute-stream
+│ ├─┬ read-installed@0.2.4
+│ │ │ Read all the installed packages in a folder, and return a tree structure with all the data.
+│ │ │ git://github.com/isaacs/read-installed
+│ │ ├── read-package-json@1.1.3
+│ │ │   The thing npm uses to read package.json files with semantics and defaults and validation
+│ │ │   git://github.com/isaacs/read-package-json.git
+│ │ ├── semver@2.1.0
+│ │ │   The semantic version parser used by npm.
+│ │ │   git://github.com/isaacs/node-semver.git
+│ │ └── slide@1.1.5
+│ │     A flow control lib small enough to fit on in a slide presentation. Derived live at Oak.JS
+│ │     git://github.com/isaacs/slide-flow-control.git
+│ ├─┬ read-package-json@1.1.3
+│ │ │ The thing npm uses to read package.json files with semantics and defaults and validation
+│ │ │ git://github.com/isaacs/read-package-json.git
+│ │ ├── glob@3.2.6
+│ │ │   a little globber
+│ │ │   git://github.com/isaacs/node-glob.git
+│ │ ├── lru-cache@2.3.1
+│ │ │   A cache object that deletes the least-recently-used items.
+│ │ │   git://github.com/isaacs/node-lru-cache.git
+│ │ └─┬ normalize-package-data@0.2.2
+│ │   │ Normalizes data that can be found in package.json files.
+│ │   │ git://github.com/meryn/normalize-package-data.git
+│ │   ├── github-url-from-git@1.1.1
+│ │   │   Parse a github git url and return the github repo url
+│ │   └── semver@2.1.0
+│ │       The semantic version parser used by npm.
+│ │       git://github.com/isaacs/node-semver.git
+│ ├─┬ request@2.27.0
+│ │ │ Simplified HTTP request client.
+│ │ │ http://github.com/mikeal/request.git
+│ │ ├── aws-sign@0.3.0
+│ │ │   AWS signing. Originally pulled from LearnBoost/knox, maintained as vendor in request, now a standalone module.
+│ │ │   https://github.com/mikeal/aws-sign
+│ │ ├── cookie-jar@0.3.0
+│ │ │   Cookie Jar. Originally pulled form tobi, maintained as vendor in request, now a standalone module.
+│ │ │   https://github.com/mikeal/cookie-jar
+│ │ ├── forever-agent@0.5.0
+│ │ │   HTTP Agent that keeps socket connections alive between keep-alive requests. Formerly part of mikeal/request, now a standalone module.
+│ │ │   https://github.com/mikeal/forever-agent
+│ │ ├─┬ form-data@0.1.1
+│ │ │ │ A module to create readable "multipart/form-data" streams.  Can be used to submit forms and file uploads to other web applications.
+│ │ │ │ git://github.com/felixge/node-form-data.git
+│ │ │ ├── async@0.2.9
+│ │ │ │   Higher-order functions and common patterns for asynchronous code
+│ │ │ │   https://github.com/caolan/async.git
+│ │ │ ├─┬ combined-stream@0.0.4
+│ │ │ │ │ A stream that emits multiple other streams one after another.
+│ │ │ │ │ git://github.com/felixge/node-combined-stream.git
+│ │ │ │ │ https://github.com/felixge/node-combined-stream
+│ │ │ │ └── delayed-stream@0.0.5
+│ │ │ │     Buffers events from a stream until you are ready to handle them.
+│ │ │ │     git://github.com/felixge/node-delayed-stream.git
+│ │ │ │     https://github.com/felixge/node-delayed-stream
+│ │ │ └── mime@1.2.11
+│ │ │     A comprehensive library for mime-type mapping
+│ │ │     https://github.com/broofa/node-mime
+│ │ ├─┬ hawk@1.0.0
+│ │ │ │ HTTP Hawk Authentication Scheme
+│ │ │ │ git://github.com/hueniverse/hawk
+│ │ │ ├─┬ boom@0.4.2
+│ │ │ │ │ HTTP-friendly error objects
+│ │ │ │ │ git://github.com/spumko/boom
+│ │ │ │ └── hoek@0.9.1
+│ │ │ │     General purpose node utilities
+│ │ │ │     git://github.com/spumko/hoek
+│ │ │ ├─┬ cryptiles@0.2.2
+│ │ │ │ │ General purpose crypto utilities
+│ │ │ │ │ git://github.com/hueniverse/cryptiles
+│ │ │ │ └── boom@0.4.2
+│ │ │ │     HTTP-friendly error objects
+│ │ │ │     git://github.com/spumko/boom
+│ │ │ ├── hoek@0.9.1
+│ │ │ │   General purpose node utilities
+│ │ │ │   git://github.com/spumko/hoek
+│ │ │ └─┬ sntp@0.2.4
+│ │ │   │ SNTP Client
+│ │ │   │ git://github.com/hueniverse/sntp
+│ │ │   └── hoek@0.9.1
+│ │ │       General purpose node utilities
+│ │ │       git://github.com/spumko/hoek
+│ │ ├─┬ http-signature@0.10.0
+│ │ │ │ Reference implementation of Joyent's HTTP Signature Scheme
+│ │ │ │ git://github.com/joyent/node-http-signature.git
+│ │ │ ├── asn1@0.1.11
+│ │ │ │   Contains parsers and serializers for ASN.1 (currently BER only)
+│ │ │ │   git://github.com/mcavage/node-asn1.git
+│ │ │ ├── assert-plus@0.1.2
+│ │ │ │   Extra assertions on top of node's assert module
+│ │ │ └── ctype@0.5.2
+│ │ │     read and write binary structures and data types
+│ │ │     https://github.com/rmustacc/node-ctype
+│ │ ├── json-stringify-safe@5.0.0
+│ │ │   Like JSON.stringify, but doesn't blow up on circular refs
+│ │ │   git://github.com/isaacs/json-stringify-safe
+│ │ ├── mime@1.2.11
+│ │ │   A comprehensive library for mime-type mapping
+│ │ │   https://github.com/broofa/node-mime
+│ │ ├── node-uuid@1.4.1
+│ │ │   Rigorous implementation of RFC4122 (v1 and v4) UUIDs.
+│ │ │   https://github.com/broofa/node-uuid.git
+│ │ ├── oauth-sign@0.3.0
+│ │ │   OAuth 1 signing. Formerly a vendor lib in mikeal/request, now a standalone module.
+│ │ │   https://github.com/mikeal/oauth-sign
+│ │ ├── qs@0.6.5
+│ │ │   querystring parser
+│ │ │   git://github.com/visionmedia/node-querystring.git
+│ │ └── tunnel-agent@0.3.0
+│ │     HTTP proxy tunneling agent. Formerly part of mikeal/request, now a standalone module.
+│ │     https://github.com/mikeal/tunnel-agent
+│ ├── retry@0.6.0
+│ │   Abstraction for exponential and custom retry strategies for failed operations.
+│ │   git://github.com/felixge/node-retry.git
+│ │   https://github.com/tim-kos/node-retry
+│ ├── rimraf@2.2.2
+│ │   A deep deletion module for node (like `rm -rf`)
+│ │   git://github.com/isaacs/rimraf.git
+│ ├── semver@2.1.0
+│ │   The semantic version parser used by npm.
+│ │   git://github.com/isaacs/node-semver.git
+│ ├─┬ sha@1.2.3
+│ │ │ Check and get file hashes
+│ │ │ https://github.com/ForbesLindesay/sha.git
+│ │ └── readable-stream@1.0.17
+│ │     An exploration of a new kind of readable streams for Node.js
+│ │     git://github.com/isaacs/readable-stream
+│ ├── slide@1.1.5
+│ │   A flow control lib small enough to fit on in a slide presentation. Derived live at Oak.JS
+│ │   git://github.com/isaacs/slide-flow-control.git
+│ ├─┬ tar@0.1.18
+│ │ │ tar for node
+│ │ │ git://github.com/isaacs/node-tar.git
+│ │ ├── block-stream@0.0.7
+│ │ │   a stream of blocks
+│ │ │   git://github.com/isaacs/block-stream.git
+│ │ ├── fstream@0.1.24
+│ │ │   Advanced file system stream things
+│ │ │   git://github.com/isaacs/fstream.git
+│ │ └── inherits@2.0.1
+│ │     Browser-friendly inheritance fully compatible with standard node.js inherits()
+│ │     git://github.com/isaacs/inherits
+│ ├── uid-number@0.0.3
+│ │   Convert a username/group name to a uid/gid number
+│ │   git://github.com/isaacs/uid-number.git
+│ └── which@1.0.5
+│     Like which(1) unix command. Find the first instance of an executable in the PATH.
+│     git://github.com/isaacs/node-which.git
+└── should@2.0.1
+    test framework agnostic BDD-style assertions
+    git://github.com/visionmedia/should.js.git
+    https://github.com/visionmedia/should.js
+
