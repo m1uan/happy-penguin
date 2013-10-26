@@ -86,27 +86,7 @@ module.exports = {
 
 
 
-        server.addRoute({
-            method: 'GET',
-            path: '/assets/{path}',
-            handler: {
-                directory: {
-                    path: './assets'
-                    , listing: false, index: true
-                }
-            }
-        });
 
-        server.addRoute({
-            method: 'GET',
-            path: '/assets/ahoj/{path}',
-            handler: {
-                directory: {
-                    path: './assets/ahoj/'
-                    , listing: false, index: true
-                }
-            }
-        });
 
 
     }

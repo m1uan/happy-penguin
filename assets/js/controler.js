@@ -50,7 +50,7 @@ function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
     }
 
 
-    $http({method: 'GET', url: '/words/lesson/1/cs/en'}).
+    $http({method: 'GET', url: '/words/lesson/2001/cs/en'}).
         success(function(data, status, headers, config) {
             tempWord = [];
 
