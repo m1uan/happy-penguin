@@ -1,6 +1,11 @@
+#ahoj {
+    margin:20px;
+}
+
 .row{
-    background: lightblue;
+    background-color: darkgray;
     clear:both;
+    margin-bottom: 1px;
 }
 
 .row div {
@@ -15,7 +20,7 @@
     float: left;
 
 }
-.wordspaner {
+.wordspaner2 {
     color: darkred;
     margin-left: 10px;
     margin-right : 10px;

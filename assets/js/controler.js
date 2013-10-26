@@ -1,4 +1,32 @@
+var app = angular.module('words',[]);
+
+app.directive('onEnter',function(){
+
+    var linkFn = function(scope,element,attrs) {
+        element.bind("keypress", function(event) {
+            if(event.which === 13) {
+                scope.$apply(function() {
+                    console.log('enter boy');
+                    scope.$eval(attrs.onEnter)
+                });
+            }
+        });
+    };
+
+    return {
+        link:linkFn
+    };
+});
+
 function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
+
+    var WORD_STATUS = {
+        CURRENT : 1 ,
+        EDITED : 2,
+        SAVING : 3,
+        SAVED : 4
+
+    };
 
     $scope.words=[
         {
@@ -7,7 +35,9 @@ function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
             w1:'ahoj',
             w2:'hello',
             link: 1,
-            image: 'blabla'
+            image: 'blabla',
+            status : WORD_STATUS.CURRENT
+
         }
     ];
 
@@ -33,6 +63,7 @@ function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
                 if(tw.w1) {
                     tw.w2 = addingWord.word;
                     tw.l2 = addingWord.lang;
+                    tw.status = WORD_STATUS.CURRENT;
 
                 }
                 founded = true;
@@ -41,18 +72,20 @@ function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
             if (addingWord.image) {
                 // addingWord is image with description
                 tw.image = 'assets/img/' + addingWord.image;
+                founded = true;
 
             }
 
             if(addingWord.description){
                 tw.description = addingWord.description;
+                founded = true;
             }
 
             break;
 
         }
 
-        if(!founded){
+        if(!founded && addingWord.word){
             tempWord.push({
                 w1 : addingWord.word,
                 l1 : addingWord.lang,
@@ -88,4 +121,8 @@ function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
             // or server returns response with an error status.
         });
 
+
+    $scope.myFunc = function(lang, lesson) {
+        alert('Submitted' + lang + lesson);
+    };
 }
