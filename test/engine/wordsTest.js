@@ -58,9 +58,14 @@ describe('getWords', function(){
 
     describe('getImages(lesson)', function(){
         it('get images from lesson 1', function(cb){
-            words.getImages(pgClient, 1, 8, function(err, rows){
+            words.getImages(pgClient, 2001, function(err, rows){
                 console.error(err);
+                //console.log(rows);
                 assert(rows);
+                assert(rows[0].lid);
+                assert(rows[0].description);
+                assert(rows[0].image);
+
                 cb();
             });
         });

@@ -42,17 +42,17 @@ module.exports.getWords = function(pgClient, lang, lesson, cb) {
 
 }
 
-module.exports.getImages = function(pgClient, linkFrom, linkTo, cb) {
+module.exports.getImages = function(pgClient, lesson, cb) {
     if(!pgClient){
         return cb('pgClient not setup', null);
     }
 
-    var sql = 'SELECT link, image.image as image, version FROM link' +
+    var sql = 'SELECT lid, description, image.image as image, version FROM link' +
         ' LEFT JOIN image ON link.image = image.iid' +
-        ' WHERE link.lid >= $1 and link.lid < $2';
+        ' WHERE link.lesson = $1';
 
     console.log(sql)  ;
-    pgClient.query(sql, [linkFrom, linkTo], function(err, data){
+    pgClient.query(sql, [lesson], function(err, data){
        if(err){
            cb(err, null);
        } else {
