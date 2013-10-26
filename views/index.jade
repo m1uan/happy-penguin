@@ -14,16 +14,17 @@ html(ng-app="words")
                     div.wordcontainer
 
                         div
-                            span {{word.link}},
+                            span.identifer.b {{word.link}}
                             span.word {{word.w1}}
-                            span.wordspaner2 -
+                            span.wordspaner -
                             span.word {{word.w2}}
                         div
+                            div.btn.btn-primary ok
                             input(id="ed_{{word.l1}}_{{word.link}}",value="{{word.w1}}",on-enter="myFunc('{{word.l1}}',{{word.link}})")
                             input(value="{{word.w2}}")
 
                         div.desc {{word.description}}
-                    img(src="{{word.image}}")
+                    img(src="{{word.image}}").imgpreview
 
 
 

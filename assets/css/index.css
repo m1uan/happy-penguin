@@ -5,7 +5,7 @@
 .row{
     background-color: darkgray;
     clear:both;
-    margin-bottom: 1px;
+    margin-bottom: 2px;
 }
 
 .row div {
@@ -18,15 +18,24 @@
 }
 .wordcontainer {
     float: left;
-
+    padding:5px;
 }
-.wordspaner2 {
+.wordspaner, .identifer {
     color: darkred;
-    margin-left: 10px;
     margin-right : 10px;
+}
+
+.wordspaner {
+    margin-left: 10px;
+
     font-size: smaller;
 }
 .word {
     font-size: larger;
     font-weight: bolder;
+}
+
+.imgpreview{
+    height:70px;
+    margin:5px;
 }
