@@ -56,6 +56,37 @@ describe('getWords', function(){
         })
     });
 
+    describe('getWordsWithImages(cs)', function(){
+            it('should return several rows', function(cb){
+                words.getWordsWithImages(pgClient, ['en','cs'], 2001, function(err, rows){
+                    //console.log(rows) ;
+                    assert(rows);
+
+                    //rows.length.should.be.eql(words.lessonSize);
+                    var rows00 = rows[0][0];
+                    rows00.should.have.property('link');
+                    rows00.should.have.property('word');
+                    rows00.should.have.property('version');
+                    rows00.should.have.property('lang');
+                    rows00.lang.should.eql('en');
+                    var rows10 = rows[1][0];
+                    rows10.should.have.property('link');
+                    rows10.should.have.property('word');
+                    rows10.should.have.property('version');
+                    rows10.should.have.property('lang');
+                    rows10.lang.should.eql('cs');
+
+                    var rows20 = rows[2][0];
+                    rows20.should.have.property('lid');
+                    rows20.should.have.property('image');
+                    rows20.should.have.property('version');
+                    rows20.should.have.property('description');
+                    cb();
+                })
+
+            })
+    });
+
     describe('getImages(lesson)', function(){
         it('get images from lesson 1', function(cb){
             words.getImages(pgClient, 2001, function(err, rows){

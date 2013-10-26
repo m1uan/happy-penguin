@@ -234,9 +234,8 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
     async.parallel(asyncLangsLoad,
 // optional callback
         function(err, results){
-            var learnWordFist = results[0][0];
-            var learnWordLast = results[0][results[0].length-1];
-            module.exports.getImages(pgClient, learnWordFist.link, learnWordLast.link, function(err, images){
+
+            module.exports.getImages(pgClient, lesson, function(err, images){
                 results.push(images);
                 cb(err, results);
             });
