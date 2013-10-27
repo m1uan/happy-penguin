@@ -8,22 +8,41 @@ html(ng-app="words")
         meta(name="viewport",content="width=device-width, initial-scale=1.0")
     body#ahoj
         h1 hello
-        div(ng-controller="WordWebCtrl")
+        div(ng-controller="WordWebCtrl").wordwebctrl
             div(ng-repeat="word in words")
-                div.row
+                div.wordrow
+                    div.identifer
+                        span.label.label-warning {{word.link}}
+                        span.btn-xs.btn-primary save
                     div.wordcontainer
+                        div.row.hide
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                            span.col-md-1.word 1
+                        div.row
+
+                            span.col-md-6.word {{word.w1}}
+
+                            span.col-md-6.word {{word.w2}}
+
+                        div.row
+                           div.col-md-6
+                                input(id="ed_{{word.l1}}_{{word.link}}",value="{{word.w1}}",on-enter="myFunc('{{word.l1}}',{{word.link}})")
+                            div.col-md-6
+                                input(value="{{word.w2}}")
 
                         div
-                            span.identifer.b {{word.link}}
-                            span.word {{word.w1}}
-                            span.wordspaner -
-                            span.word {{word.w2}}
-                        div
-                            div.btn.btn-primary ok
-                            input(id="ed_{{word.l1}}_{{word.link}}",value="{{word.w1}}",on-enter="myFunc('{{word.l1}}',{{word.link}})")
-                            input(value="{{word.w2}}")
+                            span.label.label-default {{word.description}}
 
-                        div.desc {{word.description}}
                     img(src="{{word.image}}").imgpreview
 
 

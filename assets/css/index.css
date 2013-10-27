@@ -2,13 +2,13 @@
     margin:20px;
 }
 
-.row{
+.wordrow{
     background-color: darkgray;
     clear:both;
     margin-bottom: 2px;
 }
 
-.row div {
+.wordrow div {
 
 }
 
@@ -16,11 +16,22 @@
     font-style: italic;
 
 }
+
+.identifer span {
+    padding-top : 10px;
+    padding-bottom : 10px;
+}
+
+.identifer {
+    float: left;
+    padding-top:25px;
+}
 .wordcontainer {
     float: left;
     padding:5px;
+    width:350px;
 }
-.wordspaner, .identifer {
+.wordspaner{
     color: darkred;
     margin-right : 10px;
 }
@@ -35,7 +46,8 @@
     font-weight: bolder;
 }
 
-.imgpreview{
+.imgpreview,.identifer{
     height:70px;
     margin:5px;
 }
+
