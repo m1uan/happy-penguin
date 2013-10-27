@@ -39,40 +39,30 @@ html(ng-app="words")
                     div.identifer
                         span(id="in_{{word.link}}").label.label-primary {{word.link}}
                     div.wordcontainer
-                        div.row.hide
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
-                            span.col-md-1.word 1
                         div.row
                             span(id="tv_{{word.l1}}_{{word.link}}").col-md-6.word {{word.o1}}
                             span(id="tv_{{word.l2}}_{{word.link}}").col-md-6.word {{word.o2}}
 
                         div.row
                            div.col-md-6
-                                input(id="ed_{{word.l1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(word.l1,word.link)",ng-change="checkWord(word.l1,word.link)",ng-model="word.w1")
+                                input(id="ed_{{word.l1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(word.l1,word.link)",ng-change="checkWord(word.l1,word.link)",ng-model="word.w1", ng-focus="focusWord(word.l1,word.link)")
                                 span(id="in_{{word.l1}}_{{word.link}}",ng-click="updateWord(word.l1,word.link)").label.label-danger.hide save!
                            div.col-md-6
-                                input(id="ed_{{word.l2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(word.l2,word.link)",ng-change="checkWord(word.l2,word.link)",ng-model="word.w2")
+                                input(id="ed_{{word.l2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(word.l2,word.link)",ng-change="checkWord(word.l2,word.link)",ng-model="word.w2", ng-focus="focusWord(word.l2,word.link)")
                                 span(id="in_{{word.l2}}_{{word.link}}",ng-click="updateWord(word.l2,word.link)").label.label-danger.hide save!
 
                         div
                             span.label.label-default {{word.description}}
 
                     img(src="{{word.image}}").imgpreview
-
+        div#helpers
+            span.btn.btn-xs.btn-default close x
+            div
+                iframe(src="http://slovnik.seznam.cz/cz-fr/word/?q=chleba").helpers_i#slovnik_seznam_cz
 
 
 
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
     script(src="assets/js/bootstrap.min.js")
-    script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js")
+    script(src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js")
     script(src="assets/js/controler.js")

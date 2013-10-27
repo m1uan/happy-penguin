@@ -176,11 +176,17 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
     }
 
     function getWordByLink(link){
-        $scope.words.forEach(function(w){
+
+
+        for(var idx in $scope.words){
+           var w = $scope.words[idx];
            if(w.link==link){
                return w;
            }
-        });
+           //console.log(w);
+        };
+
+        return null;
     }
 
 
@@ -206,6 +212,27 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         $('#ed_' + key2).focus();
         //alert('Submitted' + lang + lang + val);
     };
+
+
+    $scope.focusWord = function(lang, link){
+        console.log('focusWord' + link);
+        var word= getWordByLink(link);
+        console.log('focusWord' + word);
+        if(word){
+            var langTxt;
+            var wordTxt;
+            if(word.l1 != lang){
+                langTxt = word.l1 + '-' + word.l2;
+                wordTxt = word.o2;
+            } else {
+                langTxt = word.l2 + '-' + word.l1;
+                wordTxt = word.o1;
+            }
+
+            langTxt = langTxt.replace('cs','cz');
+            $('#slovnik_seznam_cz').attr('src', 'http://slovnik.seznam.cz/'+langTxt+'/word/?q=' + wordTxt);
+        }
+    }
 
     /**
      * show button save if the word is diferent like orig

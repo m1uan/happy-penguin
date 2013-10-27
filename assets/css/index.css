@@ -51,3 +51,27 @@
     margin:5px;
 }
 
+
+
+#helpers {
+    position:fixed;
+    left: 550px;
+    top: 10px;
+    width:800px;
+    height:800px;
+}
+
+#helpers div,  .helpers_i {
+    width:800px;
+    height:600px;
+
+}
+
+#helpers div {
+    overflow: hidden;
+}
+
+.helpers_i {
+    position:relative;
+    top:-50px;
+}
