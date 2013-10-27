@@ -59,6 +59,15 @@ module.exports = {
         wordsEngine.updateWord(pgClient, updateUser, request.user.id, function(err, data){
            request.reply(err || data);
         } );
+    },
+    saveimgurl_post : function(request){
+        console.log(request.payload);
+        var imageEngine = require(process.cwd() + '/engine/image.js');
+        var updateImg = request.payload;
+
+        imageEngine.saveFromUrl(pgClient, request.user.id, updateImg.link, updateImg.url, function(err, data){
+            request.reply(err || data);
+        } );
     }
 
 

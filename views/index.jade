@@ -47,18 +47,30 @@ html(ng-app="words")
                            div.col-md-6
                                 input(id="ed_{{word.l1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(word.l1,word.link)",ng-change="checkWord(word.l1,word.link)",ng-model="word.w1", ng-focus="focusWord(word.l1,word.link)")
                                 span(id="in_{{word.l1}}_{{word.link}}",ng-click="updateWord(word.l1,word.link)").label.label-danger.hide save!
+                                span(ng-click="showSeznam(word.l1,word.link)").btn.btn-xs.btn-default sl
+                                span(ng-click="showGImage(word.l1,word.link)").btn.btn-xs.btn-default gi
                            div.col-md-6
                                 input(id="ed_{{word.l2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(word.l2,word.link)",ng-change="checkWord(word.l2,word.link)",ng-model="word.w2", ng-focus="focusWord(word.l2,word.link)")
                                 span(id="in_{{word.l2}}_{{word.link}}",ng-click="updateWord(word.l2,word.link)").label.label-danger.hide save!
-
+                                span(ng-click="showSeznam(word.l2,word.link)").btn.btn-xs.btn-default sl
+                                span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
                         div
                             span.label.label-default {{word.description}}
+                        div
+                            input(id="image_url_{{word.link}}",value="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV3rY5UuajGkcyQDS_jsxrfj_WW9bL-FDuiX-ssq6CwbZYzoEX")
+                            span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary upload
 
-                    img(src="{{word.image}}").imgpreview
+
+                    img(id="image_{{word.link}}",src="{{word.image}}").imgpreview
         div#helpers
-            span.btn.btn-xs.btn-default close x
-            div
-                iframe(src="http://slovnik.seznam.cz/cz-fr/word/?q=chleba").helpers_i#slovnik_seznam_cz
+            div(ng-show="isSeznamShowed")
+                span(ng-click="isSeznamShowed=false").btn.btn-xs.btn-default close x
+                div
+                    iframe.helpers_i#slovnik_seznam_cz
+            div(ng-show="isGoogleImageShowed")
+                span(ng-click="isGoogleImageShowed=false").btn.btn-xs.btn-default close x
+                div
+                    iframe.helpers_i#google_image_com
 
 
 

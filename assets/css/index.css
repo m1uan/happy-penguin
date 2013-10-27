@@ -29,7 +29,7 @@
 .wordcontainer {
     float: left;
     padding:5px;
-    width:350px;
+    width:450px;
 }
 .wordspaner{
     color: darkred;
@@ -63,7 +63,7 @@
 
 #helpers div,  .helpers_i {
     width:800px;
-    height:600px;
+    height:300px;
 
 }
 
@@ -73,5 +73,5 @@
 
 .helpers_i {
     position:relative;
-    top:-50px;
+    top:-40px;
 }

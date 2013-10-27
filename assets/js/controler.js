@@ -19,7 +19,7 @@ app.directive('onEnter',function(){
 });
 
 function WordWebCtrl($scope, $rootScope,$http, $location) {
-
+    var IMAGE_DIR = 'assets/img/';
     var WORD_STATUS = {
         CURRENT : 1 ,
         EDITED : 2,
@@ -101,7 +101,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
 
             if (addingWord.image) {
                 // addingWord is image with description
-                tw.image = 'assets/img/' + addingWord.image;
+                tw.image = IMAGE_DIR + addingWord.image;
                 founded = true;
 
             }
@@ -210,14 +210,26 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
 
         var key2 = lang + '_' + (link+1);
         $('#ed_' + key2).focus();
+
         //alert('Submitted' + lang + lang + val);
     };
 
 
     $scope.focusWord = function(lang, link){
-        console.log('focusWord' + link);
+
+    }
+
+
+
+    $scope.isSeznamShowed = false;
+    $scope.showSeznam = function(lang, link){
+
+        console.log('showSeznam', lang, link);
+
+        $scope.isSeznamShowed = true;
+
         var word= getWordByLink(link);
-        console.log('focusWord' + word);
+
         if(word){
             var langTxt;
             var wordTxt;
@@ -230,7 +242,68 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
             }
 
             langTxt = langTxt.replace('cs','cz');
-            $('#slovnik_seznam_cz').attr('src', 'http://slovnik.seznam.cz/'+langTxt+'/word/?q=' + wordTxt);
+
+            var url = 'http://slovnik.seznam.cz/'+langTxt+'/word/?q=' + wordTxt;
+            var seznam = $('#slovnik_seznam_cz');
+
+            //var win = window.open(url, 'seznam_cz');
+            //win.blur();
+            var key = lang + '_' + (link);
+            var obj = $('#ed_' + key);
+
+
+
+            if(seznam.attr('src') != url){
+                console.log('furl', url + '  attr("src"):' +seznam.attr('src'));
+                seznam.attr('src', url);
+                seznam.ready(function(data, data2){
+                    var key = lang + '_' + (link);
+                    //$('#ed_' + key).focus();
+                    console.log('load', seznam.attr('src'));
+                });
+            }
+
+        }
+    }
+
+    $scope.isGoogleImageShowed = false;
+    $scope.showGImage = function(lang, link){
+
+        console.log('showGImage', lang, link);
+
+        //$scope.isGoogleImageShowed = true;
+
+        var word= getWordByLink(link);
+
+        if(word){
+            //var langTxt;
+            var wordTxt;
+            if(word.l1 != lang){
+            //    langTxt = word.l1 + '-' + word.l2;
+                wordTxt = word.o2;
+            } else {
+            //    langTxt = word.l2 + '-' + word.l1;
+                wordTxt = word.o1;
+            }
+
+            //langTxt = langTxt.replace('cs','cz');
+
+            var url = 'https://www.google.co.nz/search?source=lnms&tbm=isch&q='+wordTxt;
+            var googleImage = $('#google_image_com');
+
+            var win = window.open(url, 'name_cz');
+            console.log('name', win.name);
+
+            if(googleImage.attr('src') != url){
+                console.log('furl', url + '  attr("src"):' +googleImage.attr('src'));
+                //googleImage.attr('src', url);
+                googleImage.ready(function(data, data2){
+                    //var key = lang + '_' + (link);
+                    //$('#ed_' + key).focus();
+                    console.log('load', googleImage.attr('src'));
+                });
+            }
+
         }
     }
 
@@ -274,6 +347,55 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
 
         return readyForUpdate;
     }
+
+    $scope.updateImageFromURL = function(link){
+        var editorId = '#image_url_' + link;
+        var editor = $(editorId);
+
+        var val = editor.val();
+        if(!val || val.length < 1){
+           console.log('updateImageFromUrl', editorId, 'empty');
+        }
+
+        saveImgUrl(link, val, function(data){
+
+            for(var idx in data){
+                var cd = data[idx];
+
+                if(cd.version == 0){
+                    var word = getWordByLink(link);
+                    word.image = IMAGE_DIR + word.image;
+                    return;
+                }
+
+            }
+
+        });
+    }
+
+    function saveImgUrl(link,url,cb){
+        var dataContainer = {
+            url : url,
+            link : link
+        };
+
+
+        $http({
+            method: 'POST',
+            url: '/words/saveimgurl',
+            data: dataContainer}).
+            success(function(data, status, headers, config) {
+                console.log(data);
+                cb(data);
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+
+
+    }
+
 
     function updateWord(lang,link,word,cb){
         var dataContainer = {
