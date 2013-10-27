@@ -18,7 +18,7 @@ app.directive('onEnter',function(){
     };
 });
 
-function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
+function WordWebCtrl($scope, $rootScope,$http, $location) {
 
     var WORD_STATUS = {
         CURRENT : 1 ,
@@ -28,6 +28,17 @@ function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
 
     };
 
+    $scope.languages =[
+    'en',
+    'cs',
+    'pt']
+
+    $scope.lessons =[
+        1001,
+        2001,
+        2002]
+
+    $scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
     $scope.words=[
         {
             l1:'cs',
@@ -41,7 +52,13 @@ function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
         }
     ];
 
+    $scope.location = $location.path();
 
+    $scope.$on('$locationChangeSuccess', function () {
+        $scope.location = $location.path();
+        console.log('$locationChangeSuccess changed!', $location.path());
+        loadWords ($location.path());
+    });
 
     var tempWord = [];
 
@@ -99,28 +116,49 @@ function WordWebCtrl($scope, $http, $route, $routeParams, $location) {
 
     }
 
+    /**
+     * loadWords
+     * @param lessonAndLang - /2002/en/cs
+     */
+    function loadWords(lessonAndLang){
+        $http({method: 'GET', url: '/words/lesson' +lessonAndLang }).
+            success(function(data, status, headers, config) {
+                tempWord = [];
 
-    $http({method: 'GET', url: '/words/lesson/2001/cs/en'}).
-        success(function(data, status, headers, config) {
-            tempWord = [];
+                //console.error('ahoj');
+                data.forEach(function(data2, idx){
 
-            //console.error('ahoj');
-            data.forEach(function(data2, idx){
+                    data2.forEach(function(link, idx){
 
-                data2.forEach(function(link, idx){
-
-                    addToTemp(link);
+                        addToTemp(link);
+                    });
                 });
+
+                $scope.words = tempWord;
+
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
             });
+    }
 
-            $scope.words = tempWord;
 
-        }).
-        error(function(data, status, headers, config) {
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
-        });
+    $scope.langChange = function(idx, value){
+        var lesson = $scope.lesson;
 
+        lesson[idx] = value;
+
+        if(lesson[0] != 'lesson'
+            && lesson[1] != 'lang 1'
+            && lesson[2] != 'lang 2'){
+            $location.path('/' + lesson.join('/'));
+
+        }
+
+        $scope.lesson = lesson;
+        //alert(idx + value);
+    }
 
     $scope.myFunc = function(lang, lesson) {
         alert('Submitted' + lang + lesson);
