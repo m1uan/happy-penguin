@@ -188,18 +188,22 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         var key = lang + '_' + link;
         var val = $('#ed_' + key).val();
 
-        updateWord(lang,link, val, function(data){
-            data.forEach(function(word){
-                if(word.version == 0){
-                    $('#tv_' + key).text(word.word);
-                    $scope.checkWord(lang, link);
-                    return;
-                }
-            })
+        // upload just in case the word is changed
+        if($scope.checkWord(lang, link)){
+            updateWord(lang,link, val, function(data){
+                data.forEach(function(word){
+                    if(word.version == 0){
+                        $('#tv_' + key).text(word.word);
+                        $scope.checkWord(lang, link);
+                        return;
+                    }
+                })
 
-        });
+            });
+        }
 
-
+        var key2 = lang + '_' + (link+1);
+        $('#ed_' + key2).focus();
         //alert('Submitted' + lang + lang + val);
     };
 
@@ -251,21 +255,20 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
             word: word
         };
 
-        // upload just in case the word is changed
-        if($scope.checkWord(lang, link)){
-            $http({
-                method: 'POST',
-                url: '/words/update',
-                data: dataContainer}).
-                success(function(data, status, headers, config) {
-                    console.log(data);
-                    cb(data);
-                }).
-                error(function(data, status, headers, config) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                });
-        }
+
+        $http({
+            method: 'POST',
+            url: '/words/update',
+            data: dataContainer}).
+            success(function(data, status, headers, config) {
+                console.log(data);
+                cb(data);
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+
 
     }
 }
