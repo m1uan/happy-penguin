@@ -57,11 +57,19 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
 
 
 module.exports.storeUrl = function(pgClient, userId, url, cb){
-    var http = require('http');
+    var http;
+    if(url.indexOf('http:') == 0) {
+        http = require('http');
+    } else if(url.indexOf('https:') == 0) {
+        http = require('https');
+    } else {
+        cb('error: url must start with \'http:\' or \'https:\'', false);
+    }
+
 
 
     var tempName = generateNameInTemp()  +'.png';
-    console.log(tempName);
+    console.log('storeUrl', tempName);
     var file = fs.createWriteStream(tempName);
     file.on('close', function(){
         console.log('end of pipe')
@@ -88,7 +96,8 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
         });
     } catch (err) {
         // handle the error safely
-        console.log(err);
+        console.log('storeUrl', err);
+        cb(err) ;
     }
 
 

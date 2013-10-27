@@ -71,7 +71,8 @@ describe('image-dropbox', function(){
             }
 
             sqlMake(pgClient,[
-                "INSERT INTO link (lid,description,lesson) VALUES (160002,'descrpsdf sad fdas f',1);"
+                "INSERT INTO link (lid,description,lesson) VALUES (160002,'descrpsdf sad fdas f',1);",
+                "INSERT INTO link (lid,description,lesson) VALUES (160003,'descrpsdf sad fdas f',1);"
             ],cb);
 
         });
@@ -79,7 +80,8 @@ describe('image-dropbox', function(){
 
     after(function(cb){
         var remove = [
-            "DELETE FROM link WHERE lid = 160002;"
+            "DELETE FROM link WHERE lid = 160002;",
+            "DELETE FROM link WHERE lid = 160003;"
         ];
 
         imageForDelete.forEach(function(val,idx){
@@ -126,6 +128,28 @@ describe('image-dropbox', function(){
             var imgfile = 'http://0.tqn.com/d/motorcycles/1/0/f/o/-/-/Dyna_Wide_Glide_flames_static_TR.jpg';
 
             images.saveFromUrl(pgClient, 1, 160002, imgfile, function(err, rows){
+
+                console.log(rows);
+                assert(rows.length == 2);
+                rows.forEach(function(val, idx){
+                    if(val.version == 0){
+                        assert(val.image);
+                        assert(val.iid);
+                        imageForDelete.push(val.iid);
+                    }
+
+                });
+
+                assert(err == null, err);
+
+                cb();
+            });
+        });
+
+        it.only('upload image HTTPS ', function(cb){
+            var imgfile = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV3rY5UuajGkcyQDS_jsxrfj_WW9bL-FDuiX-ssq6CwbZYzoEX';
+
+            images.saveFromUrl(pgClient, 1, 160003, imgfile, function(err, rows){
 
                 console.log(rows);
                 assert(rows.length == 2);
