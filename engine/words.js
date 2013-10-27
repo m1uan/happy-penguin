@@ -27,7 +27,7 @@ module.exports.getWords = function(pgClient, lang, lesson, cb) {
     var sql = SQL_SELECT_WORD;
     sql += ' JOIN link ON link.lid = word.link' ;
     sql += ' WHERE lang = $1 AND link.lesson = $2'
-    sql += ' LIMIT 50';
+    //sql += ' AND word.version = 0 LIMIT 50';
 
     console.log(sql)  ;
     pgClient.query(sql, [lang, lesson], function(err, data){

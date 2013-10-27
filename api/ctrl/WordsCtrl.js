@@ -50,6 +50,15 @@ module.exports = {
         } else {
             request.reply('format : /lesson/lang1/lang2/{lang3?}');
         }
+    },
+    update_post : function(request){
+        console.log(request.payload);
+
+        var updateUser = request.payload;
+
+        wordsEngine.updateWord(pgClient, updateUser, request.user.id, function(err, data){
+           request.reply(err || data);
+        } );
     }
 
 

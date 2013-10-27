@@ -31,12 +31,19 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
     $scope.languages =[
     'en',
     'cs',
-    'pt']
+    'de',
+    'it']
 
     $scope.lessons =[
         1001,
         2001,
-        2002]
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008]
 
     $scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
     $scope.words=[
@@ -45,6 +52,8 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
             l2: 'en',
             w1:'ahoj',
             w2:'hello',
+            o1:'ahoj',
+            o2:'hello',
             link: 1,
             image: 'blabla',
             status : WORD_STATUS.CURRENT
@@ -63,7 +72,9 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
     var tempWord = [];
 
     function addToTemp(addingWord){
-
+        if(addingWord.version !== 0) {
+            return;
+        }
 
         var founded = false;
         for(var twindex in tempWord){
@@ -71,14 +82,16 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
             var link = addingWord.link || addingWord.lid;
 
             // this link is not the same like in set
+            // hadle only version 0
             if(tw.link != link){
+                //console.log(tw);
                 continue;
             }
 
             // addingWord is real word
             if(addingWord.word){
                 if(tw.w1) {
-                    tw.w2 = addingWord.word;
+                    tw.o2 = tw.w2 = addingWord.word;
                     tw.l2 = addingWord.lang;
                     tw.status = WORD_STATUS.CURRENT;
 
@@ -105,12 +118,14 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         if(!founded && addingWord.word){
             tempWord.push({
                 w1 : addingWord.word,
+                o1 : addingWord.word,
                 l1 : addingWord.lang,
-                link : addingWord.link
+                link : addingWord.link,
+                status : WORD_STATUS.CURRENT
             });
 
-            console.log('create:');
-            console.log(tempWord);
+            //console.log('create:');
+            //console.log(tempWord);
         }
 
 
@@ -160,7 +175,97 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         //alert(idx + value);
     }
 
-    $scope.myFunc = function(lang, lesson) {
-        alert('Submitted' + lang + lesson);
+    function getWordByLink(link){
+        $scope.words.forEach(function(w){
+           if(w.link==link){
+               return w;
+           }
+        });
+    }
+
+
+    $scope.updateWord = function(lang, link) {
+        var key = lang + '_' + link;
+        var val = $('#ed_' + key).val();
+
+        updateWord(lang,link, val, function(data){
+            data.forEach(function(word){
+                if(word.version == 0){
+                    $('#tv_' + key).text(word.word);
+                    $scope.checkWord(lang, link);
+                    return;
+                }
+            })
+
+        });
+
+
+        //alert('Submitted' + lang + lang + val);
     };
+
+    /**
+     * show button save if the word is diferent like orig
+     * @param lang
+     * @param link
+     * @returns {boolean} - word is diferent from orig
+     */
+    $scope.checkWord = function(lang, link) {
+        var key = lang + '_' + link;
+        var val = $('#ed_' + key).val();
+        var orig = $('#tv_' + key).text();
+
+        console.log('checkWord (val:' + val + ";" + orig);
+
+        var word = getWordByLink(link);
+
+        var indicator = $('#in_' + key);
+
+        var readyForUpdate = false;
+
+        if(val == orig){
+            indicator.addClass('hide');
+            //if(word.status != WORD_STATUS.SAVED) {
+           //     word.status = WORD_STATUS.CURRENT;
+            //}
+
+        } else {
+            indicator.removeClass('hide');
+            readyForUpdate = true;
+            //word.status = WORD_STATUS.EDITED;
+        }
+
+        var indicator2 = $('#in_' + link);
+        //if(word.status== WORD_STATUS.CURRENT){
+            //indicator2.removeClass('label-default');
+       // } else {
+            //indicator2.addClass('label-primary');
+        //}
+
+        return readyForUpdate;
+    }
+
+    function updateWord(lang,link,word,cb){
+        var dataContainer = {
+            lang : lang,
+            link : link,
+            word: word
+        };
+
+        // upload just in case the word is changed
+        if($scope.checkWord(lang, link)){
+            $http({
+                method: 'POST',
+                url: '/words/update',
+                data: dataContainer}).
+                success(function(data, status, headers, config) {
+                    console.log(data);
+                    cb(data);
+                }).
+                error(function(data, status, headers, config) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                });
+        }
+
+    }
 }

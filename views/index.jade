@@ -37,8 +37,7 @@ html(ng-app="words")
             div(ng-repeat="word in words")
                 div.wordrow
                     div.identifer
-                        span.label.label-warning {{word.link}}
-                        span.btn-xs.btn-primary save
+                        span(id="in_{{word.link}}").label.label-default {{word.link}}
                     div.wordcontainer
                         div.row.hide
                             span.col-md-1.word 1
@@ -54,14 +53,16 @@ html(ng-app="words")
                             span.col-md-1.word 1
                             span.col-md-1.word 1
                         div.row
-                            span.col-md-6.word {{word.w1}}
-                            span.col-md-6.word {{word.w2}}
+                            span(id="tv_{{word.l1}}_{{word.link}}").col-md-6.word {{word.o1}}
+                            span(id="tv_{{word.l2}}_{{word.link}}").col-md-6.word {{word.o2}}
 
                         div.row
                            div.col-md-6
-                                input(id="ed_{{word.l1}}_{{word.link}}",value="{{word.w1}}",on-enter="myFunc('{{word.l1}}',{{word.link}})")
-                            div.col-md-6
-                                input(value="{{word.w2}}")
+                                input(id="ed_{{word.l1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(word.l1,word.link)",ng-change="checkWord(word.l1,word.link)",ng-model="word.w1")
+                                span(id="in_{{word.l1}}_{{word.link}}",ng-click="updateWord(word.l1,word.link)").label.label-danger.hide save!
+                           div.col-md-6
+                                input(id="ed_{{word.l2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(word.l2,word.link)",ng-change="checkWord(word.l2,word.link)",ng-model="word.w2")
+                                span(id="in_{{word.l2}}_{{word.link}}",ng-click="updateWord(word.l2,word.link)").label.label-danger.hide save!
 
                         div
                             span.label.label-default {{word.description}}
