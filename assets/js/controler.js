@@ -28,22 +28,9 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
 
     };
 
-    $scope.languages =[
-    'en',
-    'cs',
-    'de',
-    'it']
+    $scope.languages =['en','cs','es','pt','it', 'de']
 
-    $scope.lessons =[
-        1001,
-        2001,
-        2002,
-        2003,
-        2004,
-        2005,
-        2006,
-        2007,
-        2008]
+    $scope.lessons =[ 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
 
     $scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
     $scope.words=[
