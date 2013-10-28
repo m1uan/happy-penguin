@@ -59,17 +59,18 @@ def checkSum(file){
     return sum[0];
     }
 
-def lang = ['en','cs','es','pt','it', 'de'];
+def lang = ['en','cs','es','pt','it', 'de','ar','zh','ru'];
 def lessons = [ 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
 def lang2 = ['en'];
 def lesson2 = [ 4009, 4010 ];
-def lang3 = ['en', 'cs', 'de'];
-def lessons3 = [  2004,4001 ];
+def lang3= ['en', 'cs', 'de'];
+def lessons3= [  2004,4001 ];
 
 lang.each{
     lng = it;
     count = 1;
-    lessons.each{ lsn ->
+    lessons.eachWithIndex(){ lsn,idx ->
+        count = (idx+1) * 1000;
         lesson = lsn
         def path = "outdatanew/${lng}/${lsn}.data";
         println path; 

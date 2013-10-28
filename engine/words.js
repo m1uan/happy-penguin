@@ -29,7 +29,7 @@ module.exports.getWords = function(pgClient, lang, lesson, cb) {
     sql += ' WHERE lang = $1 AND link.lesson = $2'
     sql += ' AND word.version = 0'
     sql += ' ORDER BY word.link'
-    sql += ' LIMIT 50';
+    //sql += ' LIMIT 50';
 
     console.log(sql)  ;
     pgClient.query(sql, [lang, lesson], function(err, data){
