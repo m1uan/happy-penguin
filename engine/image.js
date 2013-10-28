@@ -37,7 +37,21 @@ var generateNameInTemp = function(){
     return name;
 }
 
-
+/* { url: 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkNkSkn_H8K8wG_yhfljXY_jKM_ezbE7pZo5jwHj08-5vhxSBT',
+link: 2001 }
+storeUrl /tmp/113928-31024-68vjv7.png
+end of pipe
+prepareImage
+identify/tmp/113928-31024-68vjv7.png
+prepareImage:end
+prepareImage:end
+Debug: hapi, uncaught, handler, error TypeError: No srcPath or data defined
+at Object.exports.crop (/var/lib/openshift/525d8b535973caad560002dc/app-root/runtime/repo/node_modules/imagemagick/imagemagick.js:280:11)
+at crop (/var/lib/openshift/525d8b535973caad560002dc/app-root/runtime/repo/engine/image.js:229:12)
+at fn (/var/lib/openshift/525d8b535973caad560002dc/app-root/runtime/repo/node_modules/async/lib/async.js:579:34)
+at Object._onImmediate (/var/lib/openshift/525d8b535973caad560002dc/app-root/runtime/repo/node_modules/async/lib/async.js:495:34)
+at processImmediate [as _immediateCallback] (timers.js:317:15)
+*/
 
 module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
 

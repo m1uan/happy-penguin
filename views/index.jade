@@ -34,12 +34,12 @@ html(ng-app="words")
 
         h1 {{location}}
         div.wordwebctrl
-            div(ng-repeat="word in words")
+            div(ng-repeat="word in words").wordrowcolor
                 div.wordrow
                     div.identifer
                         span(id="in_{{word.link}}").label.label-primary {{word.link}}
                     div.wordcontainer
-                        div.row
+                        div.row.head-row
                             span(id="tv_{{word.l1}}_{{word.link}}").col-md-6.word {{word.o1}}
                             span(id="tv_{{word.l2}}_{{word.link}}").col-md-6.word {{word.o2}}
 
@@ -55,13 +55,13 @@ html(ng-app="words")
                                 span(ng-click="showSeznam(word.l2,word.link)").btn.btn-xs.btn-default sl
                                 span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
                         div
-                            span.label.label-default {{word.description}}
-                        div
+                            span.label.label-danger {{word.description}}
                             input(id="image_url_{{word.link}}",value="")
                             span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary upload
-
+                    div
 
                     img(id="image_{{word.link}}",src="{{word.image}}").imgpreview
+                    div.clearfix
         div#helpers
             div(ng-show="isSeznamShowed")
                 span(ng-click="isSeznamShowed=false").btn.btn-xs.btn-default close x
