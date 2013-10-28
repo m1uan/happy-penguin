@@ -364,7 +364,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
 
                 if(cd.version == 0){
                     var word = getWordByLink(link);
-                    word.image = word.image;
+                    word.image = IMAGE_DIR + cd.image;
                     return;
                 }
 

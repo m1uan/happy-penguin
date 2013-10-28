@@ -57,7 +57,7 @@ html(ng-app="words")
                         div
                             span.label.label-default {{word.description}}
                         div
-                            input(id="image_url_{{word.link}}",value="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV3rY5UuajGkcyQDS_jsxrfj_WW9bL-FDuiX-ssq6CwbZYzoEX")
+                            input(id="image_url_{{word.link}}",value="")
                             span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary upload
 
 

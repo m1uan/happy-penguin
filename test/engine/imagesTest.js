@@ -150,13 +150,14 @@ describe('image-dropbox', function(){
             var imgfile = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV3rY5UuajGkcyQDS_jsxrfj_WW9bL-FDuiX-ssq6CwbZYzoEX';
 
             images.saveFromUrl(pgClient, 1, 160003, imgfile, function(err, rows){
-
-                console.log(rows);
+                var fs = require('fs');
+                console.log(err, rows);
                 assert(rows.length == 2);
                 rows.forEach(function(val, idx){
                     if(val.version == 0){
                         assert(val.image);
                         assert(val.iid);
+                        assert(fs.existsSync(config.DIR_DATA + val.image), 'file isnt exist in data dir');
                         imageForDelete.push(val.iid);
                     }
 
