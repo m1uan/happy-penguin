@@ -361,10 +361,20 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
     }
 
     $scope.deleteImg = function(link){
-        deleteImg(link, function(data){
-            var word = getWordByLink(link);
-            word.image = 'http://uncletim.com/store/media/ecom/prodlg/none.gif';
+
+        var modalDialog = $('#modal-from-dom');
+
+        modalDialog.find('#yesbutton').click(function(event) {
+            deleteImg(link, function(data){
+                var word = getWordByLink(link);
+                word.image = null;//'http://uncletim.com/store/media/ecom/prodlg/none.gif';
+            });
+            modalDialog.modal('hide');
         });
+
+        modalDialog.modal('show');
+
+//
     }
 
 

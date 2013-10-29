@@ -33,6 +33,18 @@ html(ng-app="words")
         div.shadow
 
         h1 {{location}}
+        div#modal-from-dom.modal.fade
+            div.modal-dialog
+                div.modal-content
+                    div.modal-header
+                        a.close &times;
+                        h3 delete image
+                    div.modal-body
+                        p do you realy want delete the picture
+                    div.modal-footer
+                        a#yesbutton.btn.btn-danger Yes
+                        a(href="javascript:$('#modal-from-dom').modal('hide')").btn.btn-primary No
+
         div.wordwebctrl
             div(ng-repeat="word in words").wordrowcolor
                 div.wordrow
@@ -62,10 +74,11 @@ html(ng-app="words")
                             form(action="...", method="post", enctype="multipart/form-data")
                                 input(type="file", name="displayImage")
                                 input(type="upload")
-                            div
-                                div(ng-click="deleteImg(word.link)").btn.btn-success delete
 
-                    img(id="image_{{word.link}}",src="{{word.image}}").imgpreview
+                    div.imagepart
+                        div(ng-show="word.image")
+                            img(id="image_{{word.link}}",src="{{word.image}}").imgpreview
+                            div(ng-click="deleteImg(word.link)").btn.btn-success delete
 
 
                     div.clearfix
@@ -74,10 +87,7 @@ html(ng-app="words")
                 span(ng-click="isSeznamShowed=false").btn.btn-xs.btn-default close x
                 div
                     iframe.helpers_i#slovnik_seznam_cz
-            div(ng-show="isGoogleImageShowed")
-                span(ng-click="isGoogleImageShowed=false").btn.btn-xs.btn-default close x
-                div
-                    iframe.helpers_i#google_image_com
+
 
 
 

@@ -34,9 +34,10 @@
     padding-top:25px;
 }
 .wordcontainer {
-    float: left;
+
     padding:5px;
     width:490px;
+    background-color:black;
 }
 .wordspaner{
     color: darkred;
@@ -81,4 +82,10 @@
 .helpers_i {
     position:relative;
     top:-40px;
+}
+
+.imagepart{
+    float:left;
+    background-color:blue;
+    width:200px;
 }
