@@ -7,12 +7,10 @@
     margin-bottom: 2px;
     padding:5px;
 }
-.wordrow{
-    clear:both;
 
-}
-
-.wordrow div {
+.test{
+    background-color: black;
+    width:150px;
 
 }
 
@@ -36,9 +34,10 @@
     padding-top:25px;
 }
 .wordcontainer {
-    float: left;
+    float:left;
     padding:5px;
     width:490px;
+    background-color:black;
 }
 .wordspaner{
     color: darkred;
@@ -64,7 +63,7 @@
 
 #helpers {
     position:fixed;
-    left: 550px;
+    left: 850px;
     top: 10px;
     width:800px;
     height:800px;
@@ -83,4 +82,10 @@
 .helpers_i {
     position:relative;
     top:-40px;
+}
+
+.imagepart{
+    float:left;
+    background-color:blue;
+    width:300px;
 }

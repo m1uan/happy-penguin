@@ -69,55 +69,15 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
     });
 }
 
-
-module.exports.storeUrl = function(pgClient, userId, url, cb){
-    var http;
-    if(url.indexOf('http:') == 0) {
-        http = require('http');
-    } else if(url.indexOf('https:') == 0) {
-        http = require('https');
-    } else {
-        cb('error: url must start with \'http:\' or \'https:\'', false);
-    }
-
-
-
-    var tempName = generateNameInTemp()  +'.png';
-    console.log('storeUrl', tempName);
-    var file = fs.createWriteStream(tempName);
-    file.on('close', function(){
-        console.log('end of pipe')
-
-        async.waterfall([
-            function(icb){
-                icb(null, tempName);
-            },prepareImage
-            , countMD5AndCopy
-            , storeInDb
-        ]
-            ,cb);
-    });
-
-    try {
-        var request = http.get(url, function(response) {
-
-
-            process.on('uncaughtException', function (err) {
-                console.log(err);
-            })
-
-            response.pipe(file);
-        });
-    } catch (err) {
-        // handle the error safely
-        console.log('storeUrl', err);
-        cb(err) ;
-    }
-
-
-
-
-
+module.exports.storeImgFromFileName = function(pgClient, userId, tempName, cb){
+    async.waterfall([
+        function(icb){
+            icb(null, tempName);
+        },prepareImage
+        , countMD5AndCopy
+        , storeInDb
+    ]
+        ,cb);
 
 
     function storeInDb(imgFile, mdSum, icb){
@@ -208,7 +168,44 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
 
         });
     }
+}
 
+module.exports.storeUrl = function(pgClient, userId, url, cb){
+    var http;
+    if(url.indexOf('http:') == 0) {
+        http = require('http');
+    } else if(url.indexOf('https:') == 0) {
+        http = require('https');
+    } else {
+        cb('error: url must start with \'http:\' or \'https:\'', false);
+    }
+
+
+
+    var tempName = generateNameInTemp()  +'.png';
+    console.log('storeUrl', tempName);
+    var file = fs.createWriteStream(tempName);
+    file.on('close', function(){
+        console.log('end of pipe')
+        module.exports.storeImgFromFileName(pgClient, userId, tempName, cb)
+
+    });
+
+    try {
+        var request = http.get(url, function(response) {
+
+
+            process.on('uncaughtException', function (err) {
+                console.log(err);
+            })
+
+            response.pipe(file);
+        });
+    } catch (err) {
+        // handle the error safely
+        console.log('storeUrl', err);
+        cb(err) ;
+    }
 };
 
 

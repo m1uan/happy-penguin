@@ -33,15 +33,28 @@ html(ng-app="words")
         div.shadow
 
         h1 {{location}}
+        div#modal-from-dom.modal.fade
+            div.modal-dialog
+                div.modal-content
+                    div.modal-header
+                        a.close &times;
+                        h3 delete image
+                    div.modal-body
+                        p do you realy want delete the picture
+                    div.modal-footer
+                        a#yesbutton.btn.btn-danger Yes
+                        a(href="javascript:$('#modal-from-dom').modal('hide')").btn.btn-primary No
+
         div.wordwebctrl
             div(ng-repeat="word in words").wordrowcolor
                 div.wordrow
                     div.identifer
                         span(id="in_{{word.link}}").label.label-primary {{word.link}}
+
                     div.wordcontainer
                         div.row.head-row
-                            span(id="tv_{{word.l1}}_{{word.link}}").col-md-6.word {{word.o1}}
-                            span(id="tv_{{word.l2}}_{{word.link}}").col-md-6.word {{word.o2}}
+                            span(id="tv_{{word.l1}}_{{word.link}}").col-md-5.word {{word.o1}}
+                            span(id="tv_{{word.l2}}_{{word.link}}").col-md-5.word {{word.o2}}
 
                         div.row
                            div.col-md-6
@@ -56,21 +69,25 @@ html(ng-app="words")
                                 span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
                         div
                             span.label.label-danger {{word.description}}
-                            input(id="image_url_{{word.link}}",value="")
-                            span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary upload
-                    div
 
-                    img(id="image_{{word.link}}",src="{{word.image}}").imgpreview
+
+                    div.imagepart
+                        div(ng-show="word.image")
+                            img(id="image_{{word.link}}",src="{{word.image}}").imgpreview
+                            div(ng-click="deleteImg(word.link)").btn.btn-success delete
+                        div(ng-hide="word.image")
+                            input(id="image_url_{{word.link}}",ng-model="word.urlImage",placeholder="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQNFb0SBXieH1MlTtF9OQUK3zDLSLHJ0EkLaHIQuqnIG8lThRBw6aimTwS6")
+                            span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary url
+                            input(type="file", ng-file-select="onFileSelect($files,word.link)")
+
+
                     div.clearfix
         div#helpers
             div(ng-show="isSeznamShowed")
                 span(ng-click="isSeznamShowed=false").btn.btn-xs.btn-default close x
                 div
                     iframe.helpers_i#slovnik_seznam_cz
-            div(ng-show="isGoogleImageShowed")
-                span(ng-click="isGoogleImageShowed=false").btn.btn-xs.btn-default close x
-                div
-                    iframe.helpers_i#google_image_com
+
 
 
 
@@ -78,3 +95,4 @@ html(ng-app="words")
     script(src="assets/js/bootstrap.min.js")
     script(src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js")
     script(src="assets/js/controler.js")
+    script(src="assets/js/angular-file-upload.min.js")
