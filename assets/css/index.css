@@ -7,12 +7,10 @@
     margin-bottom: 2px;
     padding:5px;
 }
-.wordrow{
-    clear:both;
 
-}
-
-.wordrow div {
+.test{
+    background-color: black;
+    width:150px;
 
 }
 

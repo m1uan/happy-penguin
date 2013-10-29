@@ -12,7 +12,7 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 
 
 
-describe.skip('link operations', function(){
+describe.only('link operations', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -31,8 +31,8 @@ describe.skip('link operations', function(){
             sqlMake(pgClient, [
                 "INSERT INTO image (iid,image,md5) VALUES (150000,'karel.jpg', 'karel');"
                 ,"INSERT INTO image (iid,image,md5) VALUES (150001,'karel2.jpg', 'karel2');"
-                ,"INSERT INTO link (lid,description) VALUES (160000,'descrpsdf sad fdas f');"
-                ,"INSERT INTO link (lid,description,image) VALUES (160001,'descrpsdf sad fdsafa ', 150000);"
+                ,"INSERT INTO link (lid,description,lesson) VALUES (160000,'descrpsdf sad fdas f',1);"
+                ,"INSERT INTO link (lid,description,image,lesson) VALUES (160001,'descrpsdf sad fdsafa ', 150000,1);"
             ],cb);
 
         });
@@ -58,8 +58,8 @@ describe.skip('link operations', function(){
             linkGet = function(icb){
                 link.get(pgClient, linkData.lid, ['image'], function(err, links){
 
-                    console.log(links);
-                    console.log('get');
+                    console.log('links update 1', links);
+
                     if(links[0].description){
 
                         linkData.description = links[0].description + links.length;;
@@ -72,9 +72,7 @@ describe.skip('link operations', function(){
             function linkUpdate(icb){
                 console.log(linkData);
                 link.updateAndGet(pgClient, 2, linkData, ['image'], function(err, links){
-                    console.log(links);
-                    console.log(err);
-
+                    console.log('links update 2', err || links);
                     assert(links.length == length + 1);
                     assert(links[0].iid == linkData.image);
                     assert(links[0].description == linkData.description);
@@ -100,8 +98,8 @@ describe.skip('link operations', function(){
             linkGet = function(icb){
                 link.get(pgClient, linkData.lid, ['image'], function(err, links){
 
-                    console.log(links);
-                    console.log('get');
+                    console.log('links update 3', err || links);
+
                     if(links.length > 1){
 
                         linkData.description = links[1].description;
@@ -115,17 +113,18 @@ describe.skip('link operations', function(){
 
             function linkUpdate(icb){
                 console.log(linkData);
-                link.updateAndGet(pgClient, 3, linkData, ['image'], function(err, links){
-                    console.log(links);
-                    console.log(err);
+                link.updateAndGet(pgClient, 3, linkData, ['image'], function(err, links2){
+                    console.log('links update 4', err || links2, length);
 
-                    assert(links.length == length);
-                    assert(links[0].iid == linkData.image);
-                    assert(links[0].description == linkData.description);
-                    assert(links[0].usr == 3);
+                    assert(links2.length == length);
+                    assert(links2[0].iid == linkData.image);
+                    assert(links2[0].description == linkData.description);
+                    assert(links2[0].usr == 3);
                     icb(null);
                 });
             }
+
+
 
             async.series([
                 linkGet,
@@ -135,7 +134,7 @@ describe.skip('link operations', function(){
             //link.update(pgClient, linkData,
         });
 
-        it('update word with previous version', function(cb){
+        it('DELETE !!! update word with previous version', function(cb){
 
             var linkData = {lid : 160001, image : 150000, description: 'ahoj jak sa mas'}
 
@@ -144,8 +143,7 @@ describe.skip('link operations', function(){
             linkGet = function(icb){
                 link.get(pgClient, linkData.lid, ['image'], function(err, links){
 
-                    console.log(links);
-                    console.log('get');
+                    console.log('update 1', err || links );
                     if(links.length > 0){
 
                         linkData.description = links[0].description;
@@ -158,10 +156,10 @@ describe.skip('link operations', function(){
             }
 
             function linkUpdate(icb){
-                console.log(linkData);
+
+                console.log('linkData', linkData);
                 link.deleteImageAndGet(pgClient, 3, linkData.lid, ['image'], function(err, links){
-                    console.log(links);
-                    console.log(err);
+                    console.log('delete 2', err || links );
 
                     assert(links.length == length+1);
                     assert(links[0].iid == null);
@@ -171,9 +169,26 @@ describe.skip('link operations', function(){
                 });
             }
 
+            function linkUpdate2(icb){
+
+                console.log('linkData', linkData);
+                link.deleteImageAndGet(pgClient, 3, linkData.lid, ['image'], function(err, links){
+                link.deleteImageAndGet(pgClient, 3, linkData.lid, ['image'], function(err, links){
+                    console.log('delete 3', err || links );
+
+                    assert(links.length == length+1);
+                    assert(links[0].iid == null);
+                    assert(links[0].description == linkData.description);
+                    assert(links[0].usr == 3);
+                    icb(null);
+                });
+                });
+            }
+
             async.series([
                 linkGet,
-                linkUpdate
+                linkUpdate,
+                linkUpdate2
             ],cb);
 
             //link.update(pgClient, linkData,

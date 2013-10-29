@@ -38,6 +38,7 @@ html(ng-app="words")
                 div.wordrow
                     div.identifer
                         span(id="in_{{word.link}}").label.label-primary {{word.link}}
+
                     div.wordcontainer
                         div.row.head-row
                             span(id="tv_{{word.l1}}_{{word.link}}").col-md-6.word {{word.o1}}
@@ -56,11 +57,17 @@ html(ng-app="words")
                                 span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
                         div
                             span.label.label-danger {{word.description}}
-                            input(id="image_url_{{word.link}}",value="")
-                            span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary upload
-                    div
+                            input(id="image_url_{{word.link}}",ng-model="word.urlImage",placeholder="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQNFb0SBXieH1MlTtF9OQUK3zDLSLHJ0EkLaHIQuqnIG8lThRBw6aimTwS6")
+                            span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary url
+                            form(action="...", method="post", enctype="multipart/form-data")
+                                input(type="file", name="displayImage")
+                                input(type="upload")
+                            div
+                                div(ng-click="deleteImg(word.link)").btn.btn-success delete
 
                     img(id="image_{{word.link}}",src="{{word.image}}").imgpreview
+
+
                     div.clearfix
         div#helpers
             div(ng-show="isSeznamShowed")

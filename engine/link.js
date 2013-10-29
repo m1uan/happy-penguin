@@ -77,9 +77,18 @@ module.exports = {
                 image = linkData.image;
             }
 
-            var sql = 'UPDATE link SET version = 0, usr = $4 WHERE lid = $1 AND image = $2 AND description = $3;';
-            console.log(sql)  ;
-            pgClient.query(sql, [linkId, image, linkData.description, userId], function(err, data){
+            var sql = 'UPDATE link SET version = 0, usr = $2 WHERE lid = $1 AND description = $3 AND image';
+            var params = [linkId, userId, linkData.description];
+
+            if(image) {
+                sql += ' = $4';
+                params.push(image);
+            }else {
+                sql += ' IS NULL';
+            }
+
+            console.log('tryUpdateOld:', sql, params)  ;
+            pgClient.query(sql, params, function(err, data){
                 if(err ){
                     icb(err || 'no insert row', false);
                 } else {
@@ -93,8 +102,7 @@ module.exports = {
 
 
         function createNew(icb){
-            console.log('has updated');
-            console.log(hasUpdated);
+            console.log('has updated', hasUpdated);
 
             var image = null;
 
@@ -182,5 +190,5 @@ module.exports = {
             }
 
         });
-    },
+    }
 }

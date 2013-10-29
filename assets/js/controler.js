@@ -360,6 +360,14 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         });
     }
 
+    $scope.deleteImg = function(link){
+        deleteImg(link, function(data){
+            var word = getWordByLink(link);
+            word.image = 'http://uncletim.com/store/media/ecom/prodlg/none.gif';
+        });
+    }
+
+
     function saveImgUrl(link,url,cb){
         var dataContainer = {
             url : url,
@@ -395,6 +403,29 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         $http({
             method: 'POST',
             url: '/words/update',
+            data: dataContainer}).
+            success(function(data, status, headers, config) {
+                console.log(data);
+                cb(data);
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+
+
+    }
+
+
+    function deleteImg(link,cb){
+        var dataContainer = {
+            link : link
+        };
+
+
+        $http({
+            method: 'POST',
+            url: '/words/deleteimg',
             data: dataContainer}).
             success(function(data, status, headers, config) {
                 console.log(data);

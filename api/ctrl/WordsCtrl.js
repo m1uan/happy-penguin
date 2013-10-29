@@ -68,6 +68,14 @@ module.exports = {
         imageEngine.saveFromUrl(pgClient, request.user.id, updateImg.link, updateImg.url, function(err, data){
             request.reply(err || data);
         } );
+    },
+    deleteimg_post: function(request){
+        var link = require(process.cwd() + '/engine/link.js');
+
+        var updateImg = request.payload;
+        link.deleteImageAndGet(pgClient, request.user.id, updateImg.link, function(err, data){
+            request.reply(err || data);
+        });
     }
 
 

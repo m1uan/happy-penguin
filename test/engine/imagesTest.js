@@ -146,7 +146,7 @@ describe('image-dropbox', function(){
             });
         });
 
-        it.only('upload image HTTPS ', function(cb){
+        it('upload image HTTPS ', function(cb){
             var imgfile = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV3rY5UuajGkcyQDS_jsxrfj_WW9bL-FDuiX-ssq6CwbZYzoEX';
 
             images.saveFromUrl(pgClient, 1, 160003, imgfile, function(err, rows){
