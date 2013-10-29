@@ -34,7 +34,7 @@
     padding-top:25px;
 }
 .wordcontainer {
-
+    float:left;
     padding:5px;
     width:490px;
     background-color:black;
@@ -63,7 +63,7 @@
 
 #helpers {
     position:fixed;
-    left: 550px;
+    left: 850px;
     top: 10px;
     width:800px;
     height:800px;
@@ -87,5 +87,5 @@
 .imagepart{
     float:left;
     background-color:blue;
-    width:200px;
+    width:300px;
 }

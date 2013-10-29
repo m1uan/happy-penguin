@@ -53,8 +53,8 @@ html(ng-app="words")
 
                     div.wordcontainer
                         div.row.head-row
-                            span(id="tv_{{word.l1}}_{{word.link}}").col-md-6.word {{word.o1}}
-                            span(id="tv_{{word.l2}}_{{word.link}}").col-md-6.word {{word.o2}}
+                            span(id="tv_{{word.l1}}_{{word.link}}").col-md-5.word {{word.o1}}
+                            span(id="tv_{{word.l2}}_{{word.link}}").col-md-5.word {{word.o2}}
 
                         div.row
                            div.col-md-6
@@ -69,16 +69,16 @@ html(ng-app="words")
                                 span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
                         div
                             span.label.label-danger {{word.description}}
-                            input(id="image_url_{{word.link}}",ng-model="word.urlImage",placeholder="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQNFb0SBXieH1MlTtF9OQUK3zDLSLHJ0EkLaHIQuqnIG8lThRBw6aimTwS6")
-                            span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary url
-                            form(action="...", method="post", enctype="multipart/form-data")
-                                input(type="file", name="displayImage")
-                                input(type="upload")
+
 
                     div.imagepart
                         div(ng-show="word.image")
                             img(id="image_{{word.link}}",src="{{word.image}}").imgpreview
                             div(ng-click="deleteImg(word.link)").btn.btn-success delete
+                        div(ng-hide="word.image")
+                            input(id="image_url_{{word.link}}",ng-model="word.urlImage",placeholder="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQNFb0SBXieH1MlTtF9OQUK3zDLSLHJ0EkLaHIQuqnIG8lThRBw6aimTwS6")
+                            span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary url
+                            input(type="file", ng-file-select="onFileSelect($files,word.link)")
 
 
                     div.clearfix
@@ -95,3 +95,4 @@ html(ng-app="words")
     script(src="assets/js/bootstrap.min.js")
     script(src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js")
     script(src="assets/js/controler.js")
+    script(src="assets/js/angular-file-upload.min.js")

@@ -1,4 +1,6 @@
-var app = angular.module('words',[]);
+var app = angular.module('words',['angularFileUpload']);
+
+
 
 app.directive('onEnter',function(){
 
@@ -18,7 +20,7 @@ app.directive('onEnter',function(){
     };
 });
 
-function WordWebCtrl($scope, $rootScope,$http, $location) {
+function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     var IMAGE_DIR = 'assets/img/';
     var WORD_STATUS = {
         CURRENT : 1 ,
@@ -375,6 +377,37 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         modalDialog.modal('show');
 
 //
+    }
+
+    $scope.onFileSelect = function($files, linkId) {
+        console.log($files);
+
+        $upload.upload({
+            url: '/words/uploadimg', //upload.php script, node.js route, or servlet upload url
+            // headers: {'headerKey': 'headerValue'}, withCredential: true,
+            data: {link: linkId},
+            file: $files[0]
+            //fileFormDataName: myFile, //(optional) sets 'Content-Desposition' formData name for file
+
+        }).success(function(data, status, headers, config) {
+                // file is uploaded successfully
+
+                for(var idx in data){
+                    var cd = data[idx];
+
+                    if(cd.version == 0){
+                        var word = getWordByLink(linkId);
+                        word.image = IMAGE_DIR + cd.image;
+                        return;
+                    }
+
+                }
+
+                console.log(data);
+            }).error(function(err){
+                console.log(err);
+            });
+
     }
 
 

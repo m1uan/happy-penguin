@@ -65,7 +65,9 @@ module.exports = {
         var imageEngine = require(process.cwd() + '/engine/image.js');
         var updateImg = request.payload;
 
-        imageEngine.saveFromUrl(pgClient, request.user.id, updateImg.link, updateImg.url, function(err, data){
+        var userId = request.user.id;
+
+        imageEngine.saveFromUrl(pgClient, userId, updateImg.link, updateImg.url, function(err, data){
             request.reply(err || data);
         } );
     },
@@ -76,6 +78,32 @@ module.exports = {
         link.deleteImageAndGet(pgClient, request.user.id, updateImg.link, function(err, data){
             request.reply(err || data);
         });
+    },
+    uploadimg_post: function(request){
+        var image = require(process.cwd() + '/engine/image.js');
+        var linkEngine = require(process.cwd() + '/engine/link.js');
+
+        console.log(request.payload);
+        var userId = request.user.id;
+
+        image.storeImgFromFileName(pgClient, userId, request.payload.file.path, function(err, imageId){
+            var linkConteiner = {
+                image : imageId,
+                lid : request.payload.link};
+            //console.log(linkConteiner);
+            linkEngine.updateAndGet(pgClient, userId, linkConteiner, function(err, data){
+                request.reply(err || data);
+            });
+        });
+
+//        function(err, file){
+//
+//            console.log(err, request.payload);
+//        })
+
+
+
+
     }
 
 
