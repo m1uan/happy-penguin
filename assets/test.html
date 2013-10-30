@@ -1,0 +1,196 @@
+<html>
+
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="load-image-min.js"></script>
+<script src="canvas-to-blob.min.js"></script>
+<script>
+    $(document).ready(function(){
+        console.log('ahoj');
+        $('#div').on(
+                'dragover',
+                function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+        )
+        $('#div').on(
+                'dragenter',
+
+                function(e) {
+                    //console.log(e);
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+        )
+
+        $('#div').on(
+                'drop',
+                function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log(e);
+
+                    if(e.originalEvent.dataTransfer.items){
+                        console.log(e.originalEvent.dataTransfer.items, e.originalEvent.dataTransfer.items.length);
+
+                        if(e.originalEvent.dataTransfer.items.length == 1){
+                            e.originalEvent.dataTransfer.items[0].getAsString(function(url){
+//                        var obj = jQuery(url);
+
+
+
+                                //previewFromFile(src);
+
+                                loadImageFromResource(url);
+                                console.log(1, url);
+                            });
+                        }
+
+
+
+                        if(e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.items.length > 1){
+                            e.originalEvent.dataTransfer.items[1].getAsString(function(url){
+
+                                var obj = jQuery(url);
+                                var src = obj.attr('src');
+
+                                console.log(2, src);
+
+
+                                //previewFromFile(src);
+
+                                loadImageFromResource(src);
+
+                                //$('#div').attr('src',src);
+                                //console.log(url);
+                            });
+                        }
+
+
+                        if(e.originalEvent.dataTransfer){
+                            if(e.originalEvent.dataTransfer.files.length) {
+
+                                var f = e.originalEvent.dataTransfer.files[0];
+
+                                previewFromFile(f);
+                                console.log(3,f);
+                                /*UPLOAD FILES HERE*/
+                                //upload(e.originalEvent.dataTransfer.files);
+                            }
+                        }
+                    }
+
+
+
+                }
+
+
+        );
+
+
+        function upload(res){
+            var fd = new FormData();
+            fd.append("link", 1003);
+            fd.append("file", res);
+
+            $.ajax({
+                url: "/words/uploadimg",
+                type: "POST",
+                data: fd,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // .. do something
+                },
+                error: function(jqXHR, textStatus, errorMessage) {
+                    console.log(errorMessage); // Optional
+                }
+            });
+        }
+
+
+        function loadImageFromResource(res){
+            // image to canvas
+
+            // http://www.html5canvastutorials.com/tutorials/html5-canvas-image-crop/
+            // http://stackoverflow.com/questions/15036386/make-image-drawn-on-html5-canvas-draggable-with-javascript
+            var loadingImage = loadImage(res, function(can){
+                $('#width').html(loadingImage.width + '&' + loadingImage.height);
+                document.body.appendChild(loadingImage);
+
+
+                can.toBlob(function(data){
+                    console.log('blob', data);
+                            upload(data);
+                });
+
+
+                // https://github.com/blueimp/JavaScript-Canvas-to-Blob
+                // get canvas to png/jpg
+                // http://stackoverflow.com/questions/934012/get-image-data-in-javascript
+
+
+            }, {canvas:true});
+
+                    //{minWidth:144,minHeight:144,maxWidth:145, maxHeight:145, canvas:true, crop:true});
+
+
+
+
+            console.log(4, res, loadingImage);
+            $('#div').attr('src', res);
+        }
+
+        function previewFromFile(f){
+            var reader = new FileReader(f);
+
+            //attach event handlers here...
+            reader.onload = function (ef) {
+                loadImageFromResource(ef.target.result);
+            }
+
+            reader.onerror = function(err){
+                console.log(err);
+            }
+
+            reader.readAsDataURL(f);
+        }
+
+        $('#file1').on('change',function ()
+        {
+
+            previewFromFile(this.files[0]);
+//            var filePath = 'file:///' +  $(this).val();
+//            $('#div').attr('src',filePath);
+            console.log(this.files[0]);
+        });
+
+
+    })
+
+
+</script>
+<style>
+
+.drag-drop{
+    border:#000088;
+    border-style: dashed;
+    width:400px;
+    height:400px;
+}
+</style>
+
+<body>
+
+
+    <input type="file" id="file1"/>
+<img id="div" src="http://borderka-enny.websnadno.cz/ahoj.JPG"  class="drag-drop" />
+
+    <div id="container"></div>
+    <div>
+        widtht&height : <span id="width" />
+    </div>
+    </body>
+
+
+</html>

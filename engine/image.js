@@ -213,7 +213,7 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
 
 
 function prepareImage(fileName, cb){
-    console.log('prepareImage');
+    console.log('prepareImage', fileName);
     function identify(icb){
         console.log('identify' + fileName)  ;
         im.identify(fileName, function(err, metadata){

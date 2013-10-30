@@ -79,11 +79,13 @@ module.exports = {
             request.reply(err || data);
         });
     },
+    // http://stackoverflow.com/questions/18994881/convert-base64-image-to-raw-binary-with-node-js
+    // http://stackoverflow.com/questions/9622901/how-to-upload-a-file-using-jquery-ajax-and-formdata
     uploadimg_post: function(request){
         var image = require(process.cwd() + '/engine/image.js');
         var linkEngine = require(process.cwd() + '/engine/link.js');
 
-        console.log(request.payload);
+        console.log('payload', request.payload);
         var userId = request.user.id;
 
         image.storeImgFromFileName(pgClient, userId, request.payload.file.path, function(err, imageId){
