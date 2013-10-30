@@ -90,15 +90,40 @@ describe('image-dropbox', function(){
         sqlMake(pgClient,remove,cb);
     });
 
+    describe('test gm module', function(){
+       it.only('test gm works',function(cb){
+           var gm = require('gm');
+           var img = gm('/tmp/113923-9447-5ouod6.png');
+           img.size(function(err, size){
+                  console.log('ahoj1', err || size);
+               img.filesize(function(err,size){
+                   console.log('ahoj2', err || size);
+                   img.format(function(err,type){
+                       console.log('ahoj3', err || type);
+                       cb();
+                   });
+               });
 
+           });
+
+
+
+
+           //console.log('test3',img) ;
+       });
+       //assert(false) ;
+    });
     describe('test engine of image', function(){
         it('test imagemagick', function(cb){
-            if(typeof config.imagemagick !== 'undefined' || !config.imagemagick){
-                cb();
-                return;
-            }
+            console.log('imagemagick', config.imagemagick);
+            //if(typeof config.imagemagick !== 'undefined' || !config.imagemagick){
+           //     cb();
+            //    return;
+            //}
+
             var im = require('imagemagick');
-            im.identify('/home/miuan/nodejs/voc4u/undefined113923-9245-d2di5n.jpg', function(err, metadata){
+            im.identify('/tmp/113928-20630-1nn7f4f.png', function(err, metadata){
+                console.log('imagemagick', err || metadata);
                 cb();
             });
         });
