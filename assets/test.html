@@ -114,23 +114,31 @@
 
             // http://www.html5canvastutorials.com/tutorials/html5-canvas-image-crop/
             // http://stackoverflow.com/questions/15036386/make-image-drawn-on-html5-canvas-draggable-with-javascript
-            var loadingImage = loadImage(res, function(can){
-                $('#width').html(loadingImage.width + '&' + loadingImage.height);
-                document.body.appendChild(loadingImage);
+            var canvas = document.getElementById('myCanvas');
+            var context = canvas.getContext('2d');
+            var imageObj = new Image();
 
+            imageObj.onload = function() {
+                // draw cropped image
+                var sourceX = 150;
+                var sourceY = 0;
+                var sourceWidth = 150;
+                var sourceHeight = 150;
+                var destWidth = sourceWidth;
+                var destHeight = sourceHeight;
+                var destX = canvas.width / 2 - destWidth / 2;
+                var destY = canvas.height / 2 - destHeight / 2;
 
-                can.toBlob(function(data){
+                context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+
+                canvas.toBlob(function(data){
                     console.log('blob', data);
-                            upload(data);
+                    upload(data);
                 });
+            };
+            imageObj.src = res;
 
 
-                // https://github.com/blueimp/JavaScript-Canvas-to-Blob
-                // get canvas to png/jpg
-                // http://stackoverflow.com/questions/934012/get-image-data-in-javascript
-
-
-            }, {canvas:true});
 
                     //{minWidth:144,minHeight:144,maxWidth:145, maxHeight:145, canvas:true, crop:true});
 
