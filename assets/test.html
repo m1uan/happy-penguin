@@ -53,12 +53,20 @@
                                 var obj = jQuery(url);
                                 var src = obj.attr('src');
 
-                                console.log(2, src);
+                                var fr = new FileReader();
+
+                                fr.onload = function(data){
+                                   console.log(21, data);
+                                };
+
+
+
+                                console.log(2, url);
 
 
                                 //previewFromFile(src);
 
-                                loadImageFromResource(src);
+                                uploadData(src);
 
                                 //$('#div').attr('src',src);
                                 //console.log(url);
@@ -87,10 +95,12 @@
         );
 
 
-        function upload(res){
+        function uploadData(res){
+            var data = res.split(',');
             var fd = new FormData();
             fd.append("link", 1007);
-            fd.append("file", res);
+            fd.append("file", data[1]);
+            fd.append("type", data[0].split(';')[0]);
 
             $.ajax({
                 url: "/words/uploadimg",
@@ -101,6 +111,8 @@
                 success: function(response) {
                     // .. do something
                     console.log(response);
+
+                    loadImageFromResource(response);
                 },
                 error: function(jqXHR, textStatus, errorMessage) {
                     console.log(errorMessage); // Optional
@@ -110,56 +122,23 @@
 
 
         function loadImageFromResource(res){
-            // image to canvas
 
-            // http://www.html5canvastutorials.com/tutorials/html5-canvas-image-crop/
-            // http://stackoverflow.com/questions/15036386/make-image-drawn-on-html5-canvas-draggable-with-javascript
-            var canvas = document.getElementById('myCanvas');
-            var context = canvas.getContext('2d');
-            var canvas2 = document.getElementById('myCanvas2');
-            var context2 = canvas.getContext('2d');
-            var imageObj = new Image();
+            // CANVAS error CROS image data
 
-            imageObj.onload = function() {
-                // draw cropped image
-                var sourceX = 0;
-                var sourceY = 0;
-                var sourceWidth = 150;
-                var sourceHeight = 150;
-                var destWidth = sourceWidth;
-                var destHeight = sourceHeight;
-                var destX = canvas.width / 2 - destWidth / 2;
-                var destY = canvas.height / 2 - destHeight / 2;
-
-                context.createImageData(300,300);
-                context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+            if(res.length){
+                res.forEach(function(val, idx){
+                    if(val.version == 0){
+                        var src = '/assets/img/' + val.image;
+                        $('#div').attr('src',src);
+                        console.log('src', src);
+                    }
+                });
 
 
-                var data = canvas.toDataURL('image/png').replace('data:image/png;base64,','');
-
-                var the_file = new Blob([window.atob(data)],  {type: 'image/png'});
-
-                console.log('atob', data);
+            }
 
 
 
-                upload(data);
-//                canvas.toBlob(function(data){
-//                    console.log('blob', data);
-//
-//                });
-            };
-            imageObj.src = res;
-
-
-
-                    //{minWidth:144,minHeight:144,maxWidth:145, maxHeight:145, canvas:true, crop:true});
-
-
-
-
-            console.log(4, res);
-            $('#div').attr('src', res);
         }
 
         function previewFromFile(f){
@@ -167,7 +146,7 @@
 
             //attach event handlers here...
             reader.onload = function (ef) {
-                loadImageFromResource(ef.target.result);
+                uploadData(ef.target.result);
             }
 
             reader.onerror = function(err){
@@ -199,6 +178,9 @@
     width:400px;
     height:400px;
 }
+    #myCanvas2{
+        background-color:black;
+    }
 </style>
 
 <body>
