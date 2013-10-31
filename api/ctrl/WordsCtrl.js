@@ -88,14 +88,22 @@ module.exports = {
         console.log('payload', request.payload);
         var userId = request.user.id;
 
-        image.storeImgFromFileName(pgClient, userId, request.payload.file.path, function(err, imageId){
+
+
+        image.storeImgFromData(pgClient, userId, request.payload.file, function(err, imageId){
             var linkConteiner = {
                 image : imageId,
                 lid : request.payload.link};
             //console.log(linkConteiner);
-            linkEngine.updateAndGet(pgClient, userId, linkConteiner, function(err, data){
-                request.reply(err || data);
-            });
+            if(!err){
+                linkEngine.updateAndGet(pgClient, userId, linkConteiner, function(err, data){
+                    request.reply(err || data);
+                });
+            } else {
+                console.log(err);
+                request.reply(err);
+            }
+
         });
 
 //        function(err, file){

@@ -69,6 +69,13 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
     });
 }
 
+module.exports.storeImgFromData = function(pgClient, userId, data, cb){
+    var tempFileName = '/tmp/ahoj/test.png';
+    fs.writeFile(tempFileName, new Buffer(data, "base64"), function(err){
+        module.exports.storeImgFromFileName(pgClient, userId, tempFileName, cb);
+    });
+}
+
 module.exports.storeImgFromFileName = function(pgClient, userId, tempName, cb){
     async.waterfall([
         function(icb){
@@ -81,7 +88,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, tempName, cb){
 
 
     function storeInDb(imgFile, mdSum, icb){
-        //console.log(mdSum + '  ' + imgFile);
+        console.log('storeInDb',imgFile, mdSum );
 
         // NO STORE because already exists image with this md5sum
         if(!icb){
@@ -111,15 +118,21 @@ module.exports.storeImgFromFileName = function(pgClient, userId, tempName, cb){
 
     function isExistsSameImgWithMD5(md5, icb){
         var sql = 'SELECT iid FROM image where md5 = $1';
-        console.log(sql);
-        pgClient.query(sql,[md5], function(err, rows){
+
+        var data  = [md5];
+        console.log(sql, data);
+        pgClient.query(sql, data, function(err, rows){
+
+
 
             if(err){
+                console.log('E isExistsSameImgWithMD5 ', err);
                 icb(err, null);
                 return;
             }
 
-            console.log(rows);
+
+            console.log('LENGTH isExistsSameImgWithMD5', rows.rows.length);
 
             if(rows.rows.length < 1){
                 icb(err, -1);
@@ -135,11 +148,11 @@ module.exports.storeImgFromFileName = function(pgClient, userId, tempName, cb){
         var crypto = require('crypto');
         var md5sum = crypto.createHash('md5');
 
-        console.log('countMD5AndCopy');
+
         var data = fs.readFile(resizedFile, function(err, data){
             md5sum.update(data);
             var sum = md5sum.digest('hex');
-
+            console.log('countMD5AndCopy', sum);
             isExistsSameImgWithMD5(sum, function(err, imageID){
                 if(err){
                     icb(err, null);
@@ -158,7 +171,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, tempName, cb){
                 // copy
                 var writeFileName = generateName() +'.png';;
                 var writeFile = PUBLIC_DIR +writeFileName
-                console.log(writeFile) ;
+                console.log('countMD5AndCopy before wrote:', writeFile) ;
                 fs.writeFile(writeFile, data, function(err){
                     // create new image in DB with file name and md5
                     icb(err, writeFileName, sum);

@@ -94,7 +94,7 @@ lang.each{
     listFiles.each { file ->
         sqlvalues += ",(${file.id},'${file.md5}','${file.name}')\n";
     }
-
+    println "images done"
     sqlvalues = sqlvalues.substring(1) + ";";
 
     sqlvalues += 'SELECT setval(\'image_iid_seq\', (select max(iid) from image));'
@@ -102,11 +102,21 @@ lang.each{
     out.writeLine(sqlvalues);
 
     out.writeLine("\n\nINSERT INTO word ( link, word, lang ) VALUES ");
-    sqlvalues = ""; 
+    sqlvalues = "";
+
+	siz = listWords.size();
+    percent = siz / 100;
+    nextPercent = percent;
+    idx = 0;
     listWords.each { word ->
         if(word.word && !word.word.isNumber()){
             sqlvalues += ",(${word.lid}," + 'E\'' + word.word+ '\'' + ", '${word.lang}')\n";
         }
+
+	if( idx++ > nextPercent){
+		println "words " + nextPercent + " / " + siz;
+		nextPercent+=percent;
+	}
     }
 
     sqlvalues = sqlvalues.substring(1) + ";";
@@ -114,6 +124,10 @@ lang.each{
     
     out.writeLine("\n\nINSERT INTO link ( lid, description, image, lesson ) VALUES ");
     sqlvalues = ""; 
+    siz = listWords.size();
+    percent = siz / 100;
+    nextPercent = percent;
+    idx = 0;
     listWords.each { word ->
         if(word.lang == 'en' && !word.word.isNumber()&& word.word !=';'){
 	w =  word.word ? 'E\'' + word.word + '\'' : "''";
@@ -123,6 +137,10 @@ lang.each{
         sqlvalues += ",${word.lesson}"
         sqlvalues += ")\n";
         }
+	if( idx++ > nextPercent){
+		println "links " + nextPercent + " / " + siz;
+		nextPercent+=percent;
+	}
     }
 
     sqlvalues = sqlvalues.substring(1) + ";";

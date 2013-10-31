@@ -2,7 +2,6 @@
 
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script src="load-image-min.js"></script>
-<script src="canvas-to-blob.min.js"></script>
 <script>
     $(document).ready(function(){
         console.log('ahoj');
@@ -90,7 +89,7 @@
 
         function upload(res){
             var fd = new FormData();
-            fd.append("link", 1003);
+            fd.append("link", 1007);
             fd.append("file", res);
 
             $.ajax({
@@ -101,6 +100,7 @@
                 contentType: false,
                 success: function(response) {
                     // .. do something
+                    console.log(response);
                 },
                 error: function(jqXHR, textStatus, errorMessage) {
                     console.log(errorMessage); // Optional
@@ -116,11 +116,13 @@
             // http://stackoverflow.com/questions/15036386/make-image-drawn-on-html5-canvas-draggable-with-javascript
             var canvas = document.getElementById('myCanvas');
             var context = canvas.getContext('2d');
+            var canvas2 = document.getElementById('myCanvas2');
+            var context2 = canvas.getContext('2d');
             var imageObj = new Image();
 
             imageObj.onload = function() {
                 // draw cropped image
-                var sourceX = 150;
+                var sourceX = 0;
                 var sourceY = 0;
                 var sourceWidth = 150;
                 var sourceHeight = 150;
@@ -129,12 +131,23 @@
                 var destX = canvas.width / 2 - destWidth / 2;
                 var destY = canvas.height / 2 - destHeight / 2;
 
+                context.createImageData(300,300);
                 context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
 
-                canvas.toBlob(function(data){
-                    console.log('blob', data);
-                    upload(data);
-                });
+
+                var data = canvas.toDataURL('image/png').replace('data:image/png;base64,','');
+
+                var the_file = new Blob([window.atob(data)],  {type: 'image/png'});
+
+                console.log('atob', data);
+
+
+
+                upload(data);
+//                canvas.toBlob(function(data){
+//                    console.log('blob', data);
+//
+//                });
             };
             imageObj.src = res;
 
@@ -145,7 +158,7 @@
 
 
 
-            console.log(4, res, loadingImage);
+            console.log(4, res);
             $('#div').attr('src', res);
         }
 
@@ -198,6 +211,9 @@
     <div>
         widtht&height : <span id="width" />
     </div>
+
+    <canvas id="myCanvas" width="578" height="200"></canvas>
+    <canvas id="myCanvas2" width="578" height="400"></canvas>
     </body>
 
 
