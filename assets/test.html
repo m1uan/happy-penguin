@@ -65,8 +65,12 @@
 
 
                                 //previewFromFile(src);
+                                if(src.indexOf('http://') == 0 || src.indexOf('https://') == 0){
+                                    saveImgUrl(src);
+                                } else {
+                                    uploadData(src);
+                                }
 
-                                uploadData(src);
 
                                 //$('#div').attr('src',src);
                                 //console.log(url);
@@ -94,6 +98,31 @@
 
         );
 
+
+        function saveImgUrl(url){
+
+
+            var fd = new FormData();
+            fd.append("link", 1007);
+            fd.append("url", url);;
+            $.ajax({
+                type: 'POST',
+                url: '/words/saveimgurl',
+                data: fd,
+                processData: false,
+                contentType: false,
+                    success : function(data, status, headers, config) {
+                        console.log(data);
+                        loadImageFromResource(data);
+                    },
+                    error:function(data, status, headers, config) {
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+                    }
+            });
+
+
+        }
 
         function uploadData(res){
             var data = res.split(',');
