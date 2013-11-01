@@ -111,11 +111,18 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
             });
         });
     } else if(imageInfo.thumbData && imageInfo.thumbFor){
+        /**
+         * STORE THUMB ONLY
+         * @type {string}
+         */
         var sql = 'SELECT image FROM image WHERE iid = $1';
-        pgClient.query(sql, [imageInfo.thumbFor], function(err, data){
-            var row0 = data.row[0];
+        var sqlData = [imageInfo.thumbFor];
+        //console.log('storeImgFromData', '@STORE THUMB ONLY', sql, sqlData)
+        pgClient.query(sql, sqlData, function(err, data){
+            //console.log('storeImgFromData', 'query', err, data);
+            var row0 = data.rows[0];
             writeThumb(imageInfo.thumbData, row0.image, row0.iid, function(err){
-                 cb(err, {thumb: row0.image, iid : row0.iid}) ;
+                 cb(err, {thumb: row0.image, iid : imageInfo.thumbFor}) ;
             });
         });
     } else {
@@ -125,7 +132,7 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
 
     function writeToFile(fileName, dataForBuffer, icb) {
         console.log('storeImgFromData.writeTo', fileName);
-        fs.writeFile(tempFileName, new Buffer(dataForBuffer, "base64"), icb);
+        fs.writeFile(fileName, new Buffer(dataForBuffer, "base64"), icb);
     }
 
     function writeThumb(thumbData, thumbName, thumbFor, icb){
@@ -134,6 +141,7 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
             writeToFile(thumbFilePath, thumbData, function(err){
                 var sql = 'UPDATE image SET thumb=$1 WHERE iid = $2';
                 pgClient.query(sql, [thumbName, thumbFor], function(err){
+
                     icb(err, thumbName);
                 });
 
