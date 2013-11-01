@@ -85,40 +85,61 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
 
 
 
-    if(!imageInfo.thumbFor){
+    if(imageInfo.file && imageInfo.type){
         var tempFileName = config.DIR_TMP + generateName(userId);
-        writeTo(tempFileName, function(err){
+        writeToFile(tempFileName, imageInfo.file, function(err){
             var imageInfoNew = {
                 file : tempFileName,
-                type : imageInfo.type,
-                thumb : imageInfo.thumbFor
+                type : imageInfo.type
             };
-            module.exports.storeImgFromFileName(pgClient, userId, imageInfoNew, cb);
-        });
-    } else {
-        var sql = 'SELECT image FROM image WHERE iid = $1';
-        pgClient.query(sql, [imageInfo.thumbFor], function(err, data){
-            var thumbFile = data.row[0].image;
-            var thumbFilePath = module.exports.IMG_THUMB_DIR + data.row[0].image;
-            writeTo(thumbFilePath, function(err){
-                var sql = 'UPDATE image SET thumb=$1 WHERE iid = $2';
-                pgClient.query(sql, [thumbFile, imageInfo.thumbFor], function(err){
-                    // TODO: create column in image thumb
-                    // TODO: load images with thumb
-                    // TODO: tests - actualy test should be first! :-)
-                    cb(err);
-                });
+            module.exports.storeImgFromFileName(pgClient, userId, imageInfoNew, function(err, data){
+                // if also there thumbData
+                if(!err && imageInfo.thumbData){
+                    date.row.forEach(function(word, idx){
+                         if(word.version == 0){
+                             writeThumb(imageInfo.thumbData, word.image, word.iid, function(err, thumb){
+                                  word.thumb = thumb.thumb;
+                                  cb(err, data)
+                             });
+                         }
+                    });
+
+                } else {
+                    cb(err, data);
+                }
 
             });
         });
+    } else if(imageInfo.thumbData && imageInfo.thumbFor){
+        var sql = 'SELECT image FROM image WHERE iid = $1';
+        pgClient.query(sql, [imageInfo.thumbFor], function(err, data){
+            var row0 = data.row[0];
+            writeThumb(imageInfo.thumbData, row0.image, row0.iid, function(err){
+                 cb(err, {thumb: row0.image, iid : row0.iid}) ;
+            });
+        });
+    } else {
+        cb('imageInfo missing file and type '
+            + 'or thumbData and thumbType and thumbFor ');
     }
 
-    function writeTo(fileName, icb) {
+    function writeToFile(fileName, dataForBuffer, icb) {
         console.log('storeImgFromData.writeTo', fileName);
-        fs.writeFile(tempFileName, new Buffer(imageInfo.file, "base64"), icb);
+        fs.writeFile(tempFileName, new Buffer(dataForBuffer, "base64"), icb);
     }
 
+    function writeThumb(thumbData, thumbName, thumbFor, icb){
 
+            var thumbFilePath = module.exports.IMG_THUMB_DIR + thumbName;
+            writeToFile(thumbFilePath, thumbData, function(err){
+                var sql = 'UPDATE image SET thumb=$1 WHERE iid = $2';
+                pgClient.query(sql, [thumbName, thumbFor], function(err){
+                    icb(err, thumbName);
+                });
+
+            });
+
+    }
 }
 
 module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
