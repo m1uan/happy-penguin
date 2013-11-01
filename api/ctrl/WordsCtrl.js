@@ -91,7 +91,15 @@ module.exports = {
         var dataInfo = {
             file : request.payload.file,
             type : request.payload.type
+
         };
+
+
+        // must be specified image for which imageId
+        if(request.payload.thumbFor){
+            dataInfo.thumbFor = request.payload.thumbFor;
+        }
+
 
 
         image.storeImgFromData(pgClient, userId, dataInfo, function(err, imageId){
@@ -100,15 +108,27 @@ module.exports = {
                 lid : request.payload.link};
             //console.log(linkConteiner);
             if(!err){
-                linkEngine.updateAndGet(pgClient, userId, linkConteiner, function(err, data){
-                    request.reply(err || data);
-                });
+
+                // image is just thumb and is stored in image
+                // not necessary make any changes in link
+                if(!dataInfo.thumbFor){
+                    linkEngine.updateAndGet(pgClient, userId, linkConteiner, function(err, data){
+                        request.reply(err || data);
+                    });
+                } else {
+                    linkEngine.get(pgClient, linkConteiner.lid, function(err, data){
+                        request.reply(err || data);
+                    });
+                }
+
             } else {
                 console.log(err);
                 request.reply(err);
             }
 
         });
+
+
 
 //        function(err, file){
 //

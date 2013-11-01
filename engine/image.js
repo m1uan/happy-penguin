@@ -9,7 +9,7 @@ var config = require('../config/local.js'),
 
 
 var PUBLIC_DIR = config.DIR_DATA + ''
-module.exports.IMG_DIR = PUBLIC_DIR + 'img/'
+module.exports.IMG_THUMB_DIR = PUBLIC_DIR + 'img/'
 module.exports.IMG_ORIG_DIR = PUBLIC_DIR + 'orig/'
 /**
  *  config/local:
@@ -20,11 +20,12 @@ module.exports.IMG_ORIG_DIR = PUBLIC_DIR + 'orig/'
 
 
 // https://github.com/bruce/node-temp/blob/master/lib/temp.js
-var generateName = function(rawAffixes, defaultPrefix) {
+var generateName = function(userId, defaultPrefix) {
     //var affixes = parseAffixes(rawAffixes, defaultPrefix);
     var now = new Date();
     var name = [
-        now.getYear(), now.getMonth(), now.getDate(),
+        //now.getYear(), now.getMonth(), now.getDate(),
+        now.getTime(),
         '-',
         process.pid,
         '-',
@@ -82,17 +83,42 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
 module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
 
 
-    var tempFileName = config.DIR_TMP + generateName();
-    fs.writeFile(tempFileName, new Buffer(imageInfo.file, "base64"), function(err){
-        var imageInfoNew = {
-            file : tempFileName,
-            type : imageInfo.type,
-            thumb : imageInfo.thumb
-        };
 
 
-        module.exports.storeImgFromFileName(pgClient, userId, imageInfoNew, cb);
-    });
+    if(!imageInfo.thumbFor){
+        var tempFileName = config.DIR_TMP + generateName(userId);
+        writeTo(tempFileName, function(err){
+            var imageInfoNew = {
+                file : tempFileName,
+                type : imageInfo.type,
+                thumb : imageInfo.thumbFor
+            };
+            module.exports.storeImgFromFileName(pgClient, userId, imageInfoNew, cb);
+        });
+    } else {
+        var sql = 'SELECT image FROM image WHERE iid = $1';
+        pgClient.query(sql, [imageInfo.thumbFor], function(err, data){
+            var thumbFile = data.row[0].image;
+            var thumbFilePath = module.exports.IMG_THUMB_DIR + data.row[0].image;
+            writeTo(thumbFilePath, function(err){
+                var sql = 'UPDATE image SET thumb=$1 WHERE iid = $2';
+                pgClient.query(sql, [thumbFile, imageInfo.thumbFor], function(err){
+                    // TODO: create column in image thumb
+                    // TODO: load images with thumb
+                    // TODO: tests - actualy test should be first! :-)
+                    cb(err);
+                });
+
+            });
+        });
+    }
+
+    function writeTo(fileName, icb) {
+        console.log('storeImgFromData.writeTo', fileName);
+        fs.writeFile(tempFileName, new Buffer(imageInfo.file, "base64"), icb);
+    }
+
+
 }
 
 module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){

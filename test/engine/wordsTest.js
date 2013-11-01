@@ -87,7 +87,7 @@ describe('getWords', function(){
             })
     });
 
-    describe.only('getImages(lesson)', function(){
+    describe('getImages(lesson)', function(){
         it('get images from lesson 1', function(cb){
             words.getImages(pgClient, 101, function(err, rows){
                 console.error(err);
