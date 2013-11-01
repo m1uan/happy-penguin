@@ -95,13 +95,10 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
             module.exports.storeImgFromFileName(pgClient, userId, imageInfoNew, function(err, data){
                 // if also there thumbData
                 if(!err && imageInfo.thumbData){
-                    date.row.forEach(function(word, idx){
-                         if(word.version == 0){
-                             writeThumb(imageInfo.thumbData, word.image, word.iid, function(err, thumb){
-                                  word.thumb = thumb.thumb;
-                                  cb(err, data)
-                             });
-                         }
+                    console.log('storeImgFromData', '@ALSO THUMB',data);
+                    writeThumb(imageInfo.thumbData, data.image, data.iid, function(err, thumb){
+                        var res = {image: data.image, thumb: thumb, iid : data.iid};
+                        cb(err, res)
                     });
 
                 } else {
@@ -113,7 +110,6 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
     } else if(imageInfo.thumbData && imageInfo.thumbFor){
         /**
          * STORE THUMB ONLY
-         * @type {string}
          */
         var sql = 'SELECT image FROM image WHERE iid = $1';
         var sqlData = [imageInfo.thumbFor];
@@ -122,7 +118,9 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
             //console.log('storeImgFromData', 'query', err, data);
             var row0 = data.rows[0];
             writeThumb(imageInfo.thumbData, row0.image, row0.iid, function(err){
-                 cb(err, {thumb: row0.image, iid : imageInfo.thumbFor}) ;
+                var res = {image: row0.image, thumb: row0.image, iid : imageInfo.thumbFor};
+                console.log(res)
+                cb(err, res) ;
             });
         });
     } else {
@@ -187,13 +185,13 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
 
             console.log(data);
             // RETURN new id of image
-            icb(null, data.rows[0].iid);
+            icb(null, {image: imgFile, iid: data.rows[0].iid});
         });
 
     }
 
     function isExistsSameImgWithMD5(md5, icb){
-        var sql = 'SELECT iid FROM image where md5 = $1';
+        var sql = 'SELECT iid, image FROM image WHERE md5 = $1';
 
         var data  = [md5];
         console.log(sql, data);
@@ -213,7 +211,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
             if(rows.rows.length < 1){
                 icb(err, -1);
             } else {
-                icb(err, rows.rows[0].iid);
+                icb(err, {image: rows.rows[0].image, iid: rows.rows[0].iid});
             }
 
         });
