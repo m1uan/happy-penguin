@@ -88,9 +88,13 @@ module.exports = {
         console.log('payload', request.payload);
         var userId = request.user.id;
 
+        var dataInfo = {
+            file : request.payload.file,
+            type : request.payload.type
+        };
 
 
-        image.storeImgFromData(pgClient, userId, request.payload.file, function(err, imageId){
+        image.storeImgFromData(pgClient, userId, dataInfo, function(err, imageId){
             var linkConteiner = {
                 image : imageId,
                 lid : request.payload.link};

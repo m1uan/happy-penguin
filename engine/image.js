@@ -7,8 +7,10 @@ var config = require('../config/local.js'),
     , async = require('async')
     , link = require('./link.js');
 
-var PUBLIC_DIR = config.DIR_DATA + ''
 
+var PUBLIC_DIR = config.DIR_DATA + ''
+module.exports.IMG_DIR = PUBLIC_DIR + 'img/'
+module.exports.IMG_ORIG_DIR = PUBLIC_DIR + 'orig/'
 /**
  *  config/local:
  *      imagemagick: true/false - switch on of imagemagick transformation
@@ -41,10 +43,10 @@ var generateNameInTemp = function(){
 link: 2001 }
 storeUrl /tmp/113928-31024-68vjv7.png
 end of pipe
-prepareImage
+resizeImage
 identify/tmp/113928-31024-68vjv7.png
-prepareImage:end
-prepareImage:end
+resizeImage:end
+resizeImage:end
 Debug: hapi, uncaught, handler, error TypeError: No srcPath or data defined
 at Object.exports.crop (/var/lib/openshift/525d8b535973caad560002dc/app-root/runtime/repo/node_modules/imagemagick/imagemagick.js:280:11)
 at crop (/var/lib/openshift/525d8b535973caad560002dc/app-root/runtime/repo/engine/image.js:229:12)
@@ -69,18 +71,31 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
     });
 }
 
-module.exports.storeImgFromData = function(pgClient, userId, data, cb){
-    var tempFileName = '/tmp/ahoj/test.png';
-    fs.writeFile(tempFileName, new Buffer(data, "base64"), function(err){
-        module.exports.storeImgFromFileName(pgClient, userId, tempFileName, cb);
+/**
+ *
+ * @param pgClient
+ * @param userId
+ * @param imageInfo
+ * @param thumb Integer => store this image like thumbmail of link
+ * @param cb
+ */
+module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
+
+
+    var tempFileName = config.DIR_TMP + generateName();
+    fs.writeFile(tempFileName, new Buffer(imageInfo.file, "base64"), function(err){
+        imageInfo.file = tempFileName;
+        module.exports.storeImgFromFileName(pgClient, userId, imageInfo, cb);
     });
 }
 
-module.exports.storeImgFromFileName = function(pgClient, userId, tempName, cb){
+module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
+
+
     async.waterfall([
         function(icb){
-            icb(null, tempName);
-        },prepareImage
+            icb(null, imageInfo.file);
+        },resizeImage
         , countMD5AndCopy
         , storeInDb
     ]
@@ -169,8 +184,15 @@ module.exports.storeImgFromFileName = function(pgClient, userId, tempName, cb){
                 }
 
                 // copy
-                var writeFileName = generateName() +'.png';;
-                var writeFile = PUBLIC_DIR +writeFileName
+                var writeFileName = generateName();
+
+                if(imageInfo.type == 'data:image/png'){
+                    writeFileName += '.png';
+                } else {
+                    writeFileName += '.jpeg';
+                }
+
+                var writeFile = module.exports.IMG_ORIG_DIR +writeFileName;
                 console.log('countMD5AndCopy before wrote:', writeFile) ;
                 fs.writeFile(writeFile, data, function(err){
                     // create new image in DB with file name and md5
@@ -193,15 +215,26 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
         cb('error: url must start with \'http:\' or \'https:\'', false);
     }
 
+    var imageInfo = { };
+
+    var endOf = '.png';
+    // endsWith
+    if(url.indexOf(endOf, url.length - endOf.length) !== -1){
+        imageInfo.type = 'data:image/png';
+    } else {
+        imageInfo.type = 'data:image/jpeg';
+        endOf = '.jpg';
+    }
 
 
-    var tempName = generateNameInTemp()  +'.png';
-    console.log('storeUrl', tempName);
-    var file = fs.createWriteStream(tempName);
+    imageInfo.file = generateNameInTemp()  + endOf;
+
+
+    console.log('storeUrl', imageInfo);
+    var file = fs.createWriteStream(imageInfo.file);
     file.on('close', function(){
         console.log('end of pipe')
-        module.exports.storeImgFromFileName(pgClient, userId, tempName, cb)
-
+        module.exports.storeImgFromFileName(pgClient, userId, imageInfo, cb)
     });
 
     try {
@@ -225,12 +258,23 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
 
 
 
-function prepareImage(fileName, cb){
-    console.log('prepareImage', fileName);
+function resizeImage(fileName, cb){
+    console.log('resizeImage', fileName);
+
+    if(typeof config.imagemagick === 'undefined' || config.imagemagick){
+        async.waterfall([
+            identify
+            , crop
+            , resize
+        ],cb);
+    } else {
+        cb(null, fileName);
+    }
+
     function identify(icb){
         console.log('identify' + fileName)  ;
         im.identify(fileName, function(err, metadata){
-            console.log('prepareImage:end');
+            console.log('resizeImage:end');
 
             // download file isn't image
             if (err) {
@@ -238,7 +282,7 @@ function prepareImage(fileName, cb){
                 icb(err, null);
                 return ;
             }
-            console.log('prepareImage:end');
+            console.log('resizeImage:end');
             icb(null, metadata);
         });
     }
@@ -280,15 +324,7 @@ function prepareImage(fileName, cb){
         });
     }
 
-    if(typeof config.imagemagick === 'undefined' || config.imagemagick){
-        async.waterfall([
-            identify
-            , crop
-            , resize
-        ],cb);
-    } else {
-        cb(null, fileName);
-    }
+
 
 
       //cb() ;

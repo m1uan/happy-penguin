@@ -12,7 +12,7 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 
 
 
-describe.only('link operations', function(){
+describe('link operations', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;

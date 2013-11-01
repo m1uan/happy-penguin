@@ -90,29 +90,29 @@ describe('image-dropbox', function(){
         sqlMake(pgClient,remove,cb);
     });
 
-    describe('test gm module', function(){
-       it.only('test gm works',function(cb){
-           var gm = require('gm');
-           var img = gm('/tmp/113923-9447-5ouod6.png');
-           img.size(function(err, size){
-                  console.log('ahoj1', err || size);
-               img.filesize(function(err,size){
-                   console.log('ahoj2', err || size);
-                   img.format(function(err,type){
-                       console.log('ahoj3', err || type);
-                       cb();
-                   });
-               });
-
-           });
-
-
-
-
-           //console.log('test3',img) ;
-       });
-       //assert(false) ;
-    });
+//    describe('test gm module', function(){
+//       it.only('test gm works',function(cb){
+//           var gm = require('gm');
+//           var img = gm('/tmp/113923-9447-5ouod6.png');
+//           img.size(function(err, size){
+//                  console.log('ahoj1', err || size);
+//               img.filesize(function(err,size){
+//                   console.log('ahoj2', err || size);
+//                   img.format(function(err,type){
+//                       console.log('ahoj3', err || type);
+//                       cb();
+//                   });
+//               });
+//
+//           });
+//
+//
+//
+//
+//           //console.log('test3',img) ;
+//       });
+//       //assert(false) ;
+//    });
     describe('test engine of image', function(){
         it('test imagemagick', function(cb){
             console.log('imagemagick', config.imagemagick);
@@ -152,6 +152,8 @@ describe('image-dropbox', function(){
         it('upload image', function(cb){
             var imgfile = 'http://0.tqn.com/d/motorcycles/1/0/f/o/-/-/Dyna_Wide_Glide_flames_static_TR.jpg';
 
+
+
             images.saveFromUrl(pgClient, 1, 160002, imgfile, function(err, rows){
 
                 console.log(rows);
@@ -182,7 +184,7 @@ describe('image-dropbox', function(){
                     if(val.version == 0){
                         assert(val.image);
                         assert(val.iid);
-                        assert(fs.existsSync(config.DIR_DATA + val.image), 'file isnt exist in data dir');
+                        assert(fs.existsSync(images.IMG_ORIG_DIR + val.image), 'file isnt exist in data dir');
                         imageForDelete.push(val.iid);
                     }
 
