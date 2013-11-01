@@ -77,6 +77,7 @@ describe('link operations', function(){
                     assert(links[0].iid == linkData.image);
                     assert(links[0].description == linkData.description);
                     assert(links[0].usr == 2);
+                    links[0].should.have.property('thumb');
                     icb(null);
                 });
             }
@@ -99,7 +100,7 @@ describe('link operations', function(){
                 link.get(pgClient, linkData.lid, ['image'], function(err, links){
 
                     console.log('links update 3', err || links);
-
+                    links[1].should.have.property('thumb');
                     if(links.length > 1){
 
                         linkData.description = links[1].description;

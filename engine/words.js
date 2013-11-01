@@ -50,7 +50,7 @@ module.exports.getImages = function(pgClient, lesson, cb) {
         return cb('pgClient not setup', null);
     }
 
-    var sql = 'SELECT lid, description, image.image as image, version FROM link' +
+    var sql = 'SELECT lid, description, image.image as image, iid, image.thumb as thumb version FROM link' +
         ' LEFT JOIN image ON link.image = image.iid' +
         ' WHERE link.lesson = $1';
 

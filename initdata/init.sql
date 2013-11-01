@@ -35,7 +35,7 @@ CREATE TABLE image (
     PRIMARY KEY(iid)
 );
 
-
+ALTER TABLE image ADD COLUMN thumb VARCHAR(255) DEFAULT NULL;
 
 
 CREATE TABLE link (
