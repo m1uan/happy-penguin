@@ -58,12 +58,12 @@ at processImmediate [as _immediateCallback] (timers.js:317:15)
 
 module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
 
-    module.exports.storeUrl(pgClient, userId, url, function(err, imageId){
+    module.exports.storeUrl(pgClient, userId, url, function(err, imageData){
         if(err){
             cb(err, null);
         } else {
             var linkConteiner = {
-                image : imageId,
+                image : imageData.iid,
                 lid : linkId};
             //console.log(linkConteiner);
             link.updateAndGet(pgClient,userId, linkConteiner, cb);
@@ -97,7 +97,7 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
                 if(!err && imageInfo.thumbData){
                     console.log('storeImgFromData', '@ALSO THUMB',data);
                     writeThumb(imageInfo.thumbData, data.image, data.iid, function(err, thumb){
-                        var res = {image: data.image, thumb: thumb, iid : data.iid};
+                        var res = {image: data.image, thumb: thumb, iid :data.iid};
                         cb(err, res)
                     });
 
