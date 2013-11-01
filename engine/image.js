@@ -84,8 +84,14 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
 
     var tempFileName = config.DIR_TMP + generateName();
     fs.writeFile(tempFileName, new Buffer(imageInfo.file, "base64"), function(err){
-        imageInfo.file = tempFileName;
-        module.exports.storeImgFromFileName(pgClient, userId, imageInfo, cb);
+        var imageInfoNew = {
+            file : tempFileName,
+            type : imageInfo.type,
+            thumb : imageInfo.thumb
+        };
+
+
+        module.exports.storeImgFromFileName(pgClient, userId, imageInfoNew, cb);
     });
 }
 
