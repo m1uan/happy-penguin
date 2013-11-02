@@ -99,8 +99,8 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
                 // if also there thumbData
                 if(!err && imageInfo.thumbData){
                     console.log('storeImgFromData', '@ALSO THUMB',data);
-                    writeThumb(imageInfo.thumbData, data.image, data.iid, function(err, thumb){
-                        var res = {image: data.image, thumb: thumb, iid :data.iid};
+                    writeThumb(imageInfo.thumbData, data.imageFile, data.imageId, function(err, thumb){
+                        var res = {imageFile: data.imageFile, thumbFile: thumb, imageId :data.imageId};
                         cb(err, res)
                     });
 
@@ -121,7 +121,7 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
             //console.log('storeImgFromData', 'query', err, data);
             var row0 = data.rows[0];
             writeThumb(imageInfo.thumbData, row0.image, row0.iid, function(err){
-                var res = {image: row0.image, thumb: row0.image, iid : imageInfo.thumbFor};
+                var res = {imageFile: row0.image, thumbFile: row0.image, imageId : imageInfo.thumbFor};
                 console.log(res)
                 cb(err, res) ;
             });
@@ -214,6 +214,15 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
             icb(null, copyData);
             return;
         } else if(copyData.md5 && copyData.data){
+            // copy
+            var writeFileName = generateName();
+
+            if(imageInfo.type == 'data:image/png'){
+                writeFileName += '.png';
+            } else {
+                writeFileName += '.jpeg';
+            }
+
             var writeFile = module.exports.IMG_ORIG_DIR +writeFileName;
             console.log('countMD5AndCopy before wrote:', writeFile) ;
             fs.writeFile(writeFile, copyData.data, function(err){
@@ -225,14 +234,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
             return ;
         }
 
-        // copy
-        var writeFileName = generateName();
 
-        if(imageInfo.type == 'data:image/png'){
-            writeFileName += '.png';
-        } else {
-            writeFileName += '.jpeg';
-        }
 
 
     }
