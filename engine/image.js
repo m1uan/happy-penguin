@@ -120,10 +120,13 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
         pgClient.query(sql, sqlData, function(err, data){
             //console.log('storeImgFromData', 'query', err, data);
             var row0 = data.rows[0];
-            writeThumb(imageInfo.thumbData, row0.image, row0.iid, function(err){
+            writeThumb(imageInfo.thumbData, row0.image, imageInfo.thumbFor, function(err){
                 var res = {imageFile: row0.image, thumbFile: row0.image, imageId : imageInfo.thumbFor};
-                console.log(res)
-                cb(err, res) ;
+                console.log(res);
+
+                // bring one hunderd milion customer soon :-)
+                cb(err, res);
+
             });
         });
     } else {
@@ -141,8 +144,12 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
             var thumbFilePath = module.exports.IMG_THUMB_DIR + thumbName;
             writeToFile(thumbFilePath, thumbData, function(err){
                 var sql = 'UPDATE image SET thumb=$1 WHERE iid = $2';
-                pgClient.query(sql, [thumbName, thumbFor], function(err){
+                var sqlData = [thumbName, thumbFor];
 
+                pgClient.query(sql, sqlData, function(err, data){
+                    if(data.rowCount != 1){
+                        console.log('writeThumb', sql,sqlData);
+                    }
                     icb(err, thumbName);
                 });
 
