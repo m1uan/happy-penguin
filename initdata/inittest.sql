@@ -1,1337 +1,2431 @@
--- CREATE DATABASE voc4u;
--- CREATE USER uservoc4u WITH PASSWORD '*uservoc4u';
--- GRANT ALL PRIVILEGES ON DATABASE voc4u TO uservoc4u;
--- psql -d voc4u -f initdata/init.sql
-
-drop table word;
-drop table link;
-drop table image;
-drop table usr;
-
-CREATE TABLE usr (
-   id SERIAL UNIQUE NOT NULL,
-   name VARCHAR(25) NOT NULL,
-   pass VARCHAR(25) NOT NULL,
-   full_name VARCHAR(100) NOT NULL,
-   PRIMARY KEY(id, name)
-);
-
-INSERT INTO usr (name, pass, full_name) VALUES ('init','no password at all', 'inital');
-
-CREATE TABLE image (
-    iid SERIAL UNIQUE,
-    image VARCHAR(255),
-    md5 VARCHAR(255),
-    usr INTEGER NOT NULL DEFAULT 1,
-    PRIMARY KEY(iid)
-);
-
-INSERT INTO image (md5,image) VALUES ('3','ANd9GcQTTh6AAA_frsPCcIxcGHj8WSmgUPnzZAhwqvaTybS7R_AU-gVO8rupSG4z.jpg');
-INSERT INTO image (md5,image) VALUES ('7','ANd9GcQmnGEY2G6Y-9mPIlZ2S-utzlqJuVcMRXcrICdqrF1ct8oLHAmk8LGQ7NPs.jpg');
-INSERT INTO image (md5,image) VALUES ('10','ANd9GcQKYKWIZskMi7BdlCkko8cO9n6UM3ezsRGnNixcPCqgxhFhRgGlnB4c2UlE.jpg');
+delete from word;
+delete from link;
+delete from image;
+begin;
 
 
-CREATE TABLE link (
-    -- link id
-    lid INTEGER NOT NULL,
-    description TEXT,
-    image SERIAL,
-    usr INTEGER NOT NULL DEFAULT 1,
-    version SMALLINT NOT NULL DEFAULT 0,
-    PRIMARY KEY(lid, version)
-);
-
-INSERT INTO link (lid,image) VALUES ('3',1);
-INSERT INTO link (lid,image) VALUES ('7',2);
-INSERT INTO link (lid,image) VALUES ('10',3);
-
-
-CREATE TABLE word (
-    lang CHAR(2) NOT NULL,
-    word TEXT NOT NULL,
-    link INTEGER NOT NULL,
-    usr INTEGER NOT NULL DEFAULT 1,
-    FOREIGN KEY (usr) REFERENCES usr (id) ,
-    version SMALLINT NOT NULL DEFAULT 0,
-    PRIMARY KEY(lang, link, version)
-);
-
-
-
-
-
-
-
--- select link,word,'w' as type, lang from word where link > 10 and link < 15 union select link,image,'i' as type, '' as lang from image where link > 10 and link < 15;
--- link |                                 word                                 | type | lang
---------+----------------------------------------------------------------------+------+------
---   13 | comprobar                                                            | w    | es
---   11 | Kuchen                                                               | w    | de
---   11 | cake                                                                 | w    | en
---   14 | šachy                                                                | w    | cs
---   13 | check                                                                | w    | en
---   11 | dort                                                                 | w    | cs
---   12 | povídat                                                              | w    | cs
---   11 | ANd9GcTnI4XGBKnmfsg9Y3UFZS4mKmbkPQvsgb7wFUQdX2hMcDqaNzVy8vLor-A0.jpg | i    |
---   14 | ANd9GcT5wkG5QlniXGD3Fl3RjXhcu7iRpbaOqz-JBwkXAfhA0qlrLacivxNSyIY9.jpg | i    |
---   14 | ajedrez                                                              | w    | es
---   12 | charlar                                                              | w    | es
---   13 | überprüfen                                                           | w    | de
---   14 | Schach                                                               | w    | de
---   11 | pastel                                                               | w    | es
---   13 | kontrola                                                             | w    | cs
---   12 | chat                                                                 | w    | en
---   14 | chess                                                                | w    | en
---   12 | Chat                                                                 | w    | de
---   13 | ANd9GcRWsY8XhHZrS2lL4EipJvYhg73vzD9EJ6msDQMkb_mStIrOhXkhkwB91znY.jpg | i    |
-
---select word.word as word1cs, w2.word as word2en, word.lang, w2.lang, image.image from word  left join word w2 on word.link = w2.link left join image on word.link=image.link where word.lang='cs' and w2.lang='en' and word.link > 10 and word.link < 25;
---    word1cs     |    word2en     | lang | lang |                                 image
-------------------+----------------+------+------+------------------------------------------------------------------------
--- dort           | cake           | cs   | en   | ANd9GcTnI4XGBKnmfsg9Y3UFZS4mKmbkPQvsgb7wFUQdX2hMcDqaNzVy8vLor-A0.jpg
--- povídat        | chat           | cs   | en   |
--- kontrola       | check          | cs   | en   | ANd9GcRWsY8XhHZrS2lL4EipJvYhg73vzD9EJ6msDQMkb_mStIrOhXkhkwB91znY.jpg
--- šachy          | chess          | cs   | en   | ANd9GcT5wkG5QlniXGD3Fl3RjXhcu7iRpbaOqz-JBwkXAfhA0qlrLacivxNSyIY9.jpg
--- studený nápoj  | cold drink     | cs   | en   | ANd9GcQrPe-LSWKmy4riNjShg1VRjB1ZSomFZHWm1znb0AWW778zhf-qJuCucls.jpg
--- Tak pojď!      | Come on!       | cs   | en   |
--- komunikovat    | communicate    | cs   | en   | ANd9GcTdtmoB6Us_0c2XrTR8gT8XesXWHNIBCLJRwdZQ8ugXXq-M_b1eiHjyNh4eeQ.jpg
--- počítačové hry | computer games | cs   | en   | ANd9GcREWPc7HNRkA-plQCdcPsOTb9_fq0YT1l5wSdYsJyydyRJRj_2TPJfulKw.jpg
--- nekonečný      | endless        | cs   | en   |
--- promiňte       | excuse me      | cs   | en   |
--- květiny        | flowers        | cs   | en   | ANd9GcQKIPPp_Uw7rurvt5J_5sC5NxUTbtZ6m4Oj947WDshvY9ta_EU4m91Vq8o.jpg
--- předpověď      | forecast       | cs   | en   | ANd9GcSCOmvFvTWi3IV0Pd2z_5qoUvG6yqdbzDbb-N6J2Gl5GVxPHu1GXKXr_J2d.jpg
--- historie       | version        | cs   | en   |
--- tlumočník      | interpreter    | cs   | en   |
---(14 rows)
-
-
--- http://tools.perceptus.ca/text-wiz.php
-BEGIN;
-
-INSERT INTO usr (name, pass, full_name) VALUES ('admin','a', 'Administrator');
-INSERT INTO usr (name, pass, full_name) VALUES ('miuan','a', 'Milan Medlik');
-INSERT INTO usr (name, pass, full_name) VALUES ('klara','a', 'Klara Dvorakova');
-
-INSERT INTO word (link,word,lang) VALUES ('1','mientras','es');
-INSERT INTO word (link,word,lang) VALUES ('2','joven','es');
-INSERT INTO word (link,word,lang) VALUES ('3','aeropuerto','es');
-INSERT INTO word (link,word,lang) VALUES ('4','todo','es');
-INSERT INTO word (link,word,lang) VALUES ('5','de todos modos','es');
-INSERT INTO word (link,word,lang) VALUES ('6','arquitecto','es');
-INSERT INTO word (link,word,lang) VALUES ('7','atleta','es');
-INSERT INTO word (link,word,lang) VALUES ('8','principio','es');
-INSERT INTO word (link,word,lang) VALUES ('9','pedir prestado','es');
-INSERT INTO word (link,word,lang) VALUES ('10','traer','es');
-INSERT INTO word (link,word,lang) VALUES ('11','pastel','es');
-INSERT INTO word (link,word,lang) VALUES ('12','charlar','es');
-INSERT INTO word (link,word,lang) VALUES ('13','comprobar','es');
-INSERT INTO word (link,word,lang) VALUES ('14','ajedrez','es');
-INSERT INTO word (link,word,lang) VALUES ('15','bebida fría','es');
-INSERT INTO word (link,word,lang) VALUES ('16','¡Vamos!','es');
-INSERT INTO word (link,word,lang) VALUES ('17','comunicarse','es');
-INSERT INTO word (link,word,lang) VALUES ('18','juegos de ordenador','es');
-INSERT INTO word (link,word,lang) VALUES ('19','interminable','es');
-INSERT INTO word (link,word,lang) VALUES ('20','discúlpeme','es');
-INSERT INTO word (link,word,lang) VALUES ('21','flores','es');
-INSERT INTO word (link,word,lang) VALUES ('22','pronóstico','es');
-INSERT INTO word (link,word,lang) VALUES ('23','historia','es');
-INSERT INTO word (link,word,lang) VALUES ('24','intérprete','es');
-INSERT INTO word (link,word,lang) VALUES ('25','lista','es');
-INSERT INTO word (link,word,lang) VALUES ('26','perdido','es');
-INSERT INTO word (link,word,lang) VALUES ('27','hacer posible','es');
-INSERT INTO word (link,word,lang) VALUES ('28','muchos más','es');
-INSERT INTO word (link,word,lang) VALUES ('29','significar','es');
-INSERT INTO word (link,word,lang) VALUES ('30','militar','es');
-INSERT INTO word (link,word,lang) VALUES ('31','red','es');
-INSERT INTO word (link,word,lang) VALUES ('32','la próxima vez','es');
-INSERT INTO word (link,word,lang) VALUES ('33','norte','es');
-INSERT INTO word (link,word,lang) VALUES ('34','de negocios','es');
-INSERT INTO word (link,word,lang) VALUES ('35','pasaporte','es');
-INSERT INTO word (link,word,lang) VALUES ('36','plano','es');
-INSERT INTO word (link,word,lang) VALUES ('37','problema','es');
-INSERT INTO word (link,word,lang) VALUES ('38','empujar','es');
-INSERT INTO word (link,word,lang) VALUES ('39','montar','es');
-INSERT INTO word (link,word,lang) VALUES ('40','Ruso','es');
-INSERT INTO word (link,word,lang) VALUES ('41','despacio','es');
-INSERT INTO word (link,word,lang) VALUES ('42','expendedor','es');
-INSERT INTO word (link,word,lang) VALUES ('43','tractor','es');
-INSERT INTO word (link,word,lang) VALUES ('44','Televisores rotos','es');
-INSERT INTO word (link,word,lang) VALUES ('45','utilizar','es');
-INSERT INTO word (link,word,lang) VALUES ('46','web','es');
-INSERT INTO word (link,word,lang) VALUES ('47','sitio web','es');
-INSERT INTO word (link,word,lang) VALUES ('48','mundial','es');
-INSERT INTO word (link,word,lang) VALUES ('49','aerolíneas','es');
-INSERT INTO word (link,word,lang) VALUES ('50','extranjero','es');
-INSERT INTO word (link,word,lang) VALUES ('51','vivo','es');
-INSERT INTO word (link,word,lang) VALUES ('52','asombroso','es');
-INSERT INTO word (link,word,lang) VALUES ('53','se convirtió en','es');
-INSERT INTO word (link,word,lang) VALUES ('54','convertirse en','es');
-INSERT INTO word (link,word,lang) VALUES ('55','sopló','es');
-INSERT INTO word (link,word,lang) VALUES ('56','hueso','es');
-INSERT INTO word (link,word,lang) VALUES ('57','rompió','es');
-INSERT INTO word (link,word,lang) VALUES ('58','traído','es');
-INSERT INTO word (link,word,lang) VALUES ('59','vino','es');
-INSERT INTO word (link,word,lang) VALUES ('60','capturado','es');
-INSERT INTO word (link,word,lang) VALUES ('61','continente','es');
-INSERT INTO word (link,word,lang) VALUES ('62','chocar','es');
-INSERT INTO word (link,word,lang) VALUES ('63','crimen','es');
-INSERT INTO word (link,word,lang) VALUES ('64','peligroso','es');
-INSERT INTO word (link,word,lang) VALUES ('65','hizo','es');
-INSERT INTO word (link,word,lang) VALUES ('66','no lo hizo','es');
-INSERT INTO word (link,word,lang) VALUES ('67','final','es');
-INSERT INTO word (link,word,lang) VALUES ('68','enorme','es');
-INSERT INTO word (link,word,lang) VALUES ('69','escapar','es');
-INSERT INTO word (link,word,lang) VALUES ('70','esperar','es');
-INSERT INTO word (link,word,lang) VALUES ('71','explotar','es');
-INSERT INTO word (link,word,lang) VALUES ('72','pies','es');
-INSERT INTO word (link,word,lang) VALUES ('73','talar','es');
-INSERT INTO word (link,word,lang) VALUES ('74','voló','es');
-INSERT INTO word (link,word,lang) VALUES ('75','fundar','es');
-INSERT INTO word (link,word,lang) VALUES ('76','susto','es');
-INSERT INTO word (link,word,lang) VALUES ('77','dio','es');
-INSERT INTO word (link,word,lang) VALUES ('78','pistola','es');
-INSERT INTO word (link,word,lang) VALUES ('79','tiene','es');
-INSERT INTO word (link,word,lang) VALUES ('80','tenido','es');
-INSERT INTO word (link,word,lang) VALUES ('81','peluquero','es');
-INSERT INTO word (link,word,lang) VALUES ('82','cabeza','es');
-INSERT INTO word (link,word,lang) VALUES ('83','ataque del corazón','es');
-INSERT INTO word (link,word,lang) VALUES ('84','helicóptero','es');
-INSERT INTO word (link,word,lang) VALUES ('85','golpear','es');
-INSERT INTO word (link,word,lang) VALUES ('86','Apuesto','es');
-INSERT INTO word (link,word,lang) VALUES ('87','invitar','es');
-INSERT INTO word (link,word,lang) VALUES ('88','tierra','es');
-INSERT INTO word (link,word,lang) VALUES ('89','izquierda','es');
-INSERT INTO word (link,word,lang) VALUES ('90','hecho','es');
-INSERT INTO word (link,word,lang) VALUES ('91','mi culpa','es');
-INSERT INTO word (link,word,lang) VALUES ('92','noticias','es');
-INSERT INTO word (link,word,lang) VALUES ('93','encima','es');
-INSERT INTO word (link,word,lang) VALUES ('94','paracaídas','es');
-INSERT INTO word (link,word,lang) VALUES ('95','coche de policía','es');
-INSERT INTO word (link,word,lang) VALUES ('96','premio','es');
-INSERT INTO word (link,word,lang) VALUES ('97','poner','es');
-INSERT INTO word (link,word,lang) VALUES ('98','corrió','es');
-INSERT INTO word (link,word,lang) VALUES ('99','rata','es');
-INSERT INTO word (link,word,lang) VALUES ('100','rescatar','es');
-INSERT INTO word (link,word,lang) VALUES ('101','robo','es');
-INSERT INTO word (link,word,lang) VALUES ('102','huir','es');
-INSERT INTO word (link,word,lang) VALUES ('103','dijo','es');
-INSERT INTO word (link,word,lang) VALUES ('104','se hundió','es');
-INSERT INTO word (link,word,lang) VALUES ('105','sierra','es');
-INSERT INTO word (link,word,lang) VALUES ('106','hundirse','es');
-INSERT INTO word (link,word,lang) VALUES ('107','situación','es');
-INSERT INTO word (link,word,lang) VALUES ('108','nieve','es');
-INSERT INTO word (link,word,lang) VALUES ('109','resolver','es');
-INSERT INTO word (link,word,lang) VALUES ('110','extraño','es');
-INSERT INTO word (link,word,lang) VALUES ('111','sobrevivir a','es');
-INSERT INTO word (link,word,lang) VALUES ('112','nadó','es');
-INSERT INTO word (link,word,lang) VALUES ('113','ladrón','es');
-INSERT INTO word (link,word,lang) VALUES ('114','arrojó','es');
-INSERT INTO word (link,word,lang) VALUES ('115','tomó','es');
-INSERT INTO word (link,word,lang) VALUES ('116','La presentadora de televisión','es');
-INSERT INTO word (link,word,lang) VALUES ('117','Estudio de televisión','es');
-INSERT INTO word (link,word,lang) VALUES ('118','inconsciente','es');
-INSERT INTO word (link,word,lang) VALUES ('119','despertarse','es');
-INSERT INTO word (link,word,lang) VALUES ('120','fue','es');
-INSERT INTO word (link,word,lang) VALUES ('121','ganar','es');
-INSERT INTO word (link,word,lang) VALUES ('122','despertó','es');
-INSERT INTO word (link,word,lang) VALUES ('123','won','es');
-INSERT INTO word (link,word,lang) VALUES ('124','que muchos','es');
-INSERT INTO word (link,word,lang) VALUES ('125','Usted ve.','es');
-INSERT INTO word (link,word,lang) VALUES ('126','pastel de manzana','es');
-INSERT INTO word (link,word,lang) VALUES ('127','tocino','es');
-INSERT INTO word (link,word,lang) VALUES ('128','proyecto de ley','es');
-INSERT INTO word (link,word,lang) VALUES ('129','tarjeta de cumpleaños','es');
-INSERT INTO word (link,word,lang) VALUES ('130','café negro','es');
-INSERT INTO word (link,word,lang) VALUES ('131','hamburguesa','es');
-INSERT INTO word (link,word,lang) VALUES ('132','zanahorias','es');
-INSERT INTO word (link,word,lang) VALUES ('133','ciertamente','es');
-INSERT INTO word (link,word,lang) VALUES ('134','pollo','es');
-INSERT INTO word (link,word,lang) VALUES ('135','cóctel','es');
-INSERT INTO word (link,word,lang) VALUES ('136','crema','es');
-INSERT INTO word (link,word,lang) VALUES ('137','taza','es');
-INSERT INTO word (link,word,lang) VALUES ('138','postre','es');
-INSERT INTO word (link,word,lang) VALUES ('139','factura de la luz','es');
-INSERT INTO word (link,word,lang) VALUES ('140','sabor','es');
-INSERT INTO word (link,word,lang) VALUES ('141','papas fritas','es');
-INSERT INTO word (link,word,lang) VALUES ('142','fruta','es');
-INSERT INTO word (link,word,lang) VALUES ('143','generación','es');
-INSERT INTO word (link,word,lang) VALUES ('144','abuelita','es');
-INSERT INTO word (link,word,lang) VALUES ('145','Indio','es');
-INSERT INTO word (link,word,lang) VALUES ('146','kilo','es');
-INSERT INTO word (link,word,lang) VALUES ('147','lechuga','es');
-INSERT INTO word (link,word,lang) VALUES ('148','plato principal','es');
-INSERT INTO word (link,word,lang) VALUES ('149','carne','es');
-INSERT INTO word (link,word,lang) VALUES ('150','agua mineral','es');
-INSERT INTO word (link,word,lang) VALUES ('151','ensalada mezclada','es');
-INSERT INTO word (link,word,lang) VALUES ('152','más antiguo','es');
-INSERT INTO word (link,word,lang) VALUES ('153','orden','es');
-INSERT INTO word (link,word,lang) VALUES ('154','chícharos','es');
-INSERT INTO word (link,word,lang) VALUES ('155','tarjeta telefónica','es');
-INSERT INTO word (link,word,lang) VALUES ('156','palomitas de maíz','es');
-INSERT INTO word (link,word,lang) VALUES ('157','patata','es');
-INSERT INTO word (link,word,lang) VALUES ('158','programa','es');
-INSERT INTO word (link,word,lang) VALUES ('159','rojo','es');
-INSERT INTO word (link,word,lang) VALUES ('160','asado','es');
-INSERT INTO word (link,word,lang) VALUES ('161','tamaño','es');
-INSERT INTO word (link,word,lang) VALUES ('162','solo','es');
-INSERT INTO word (link,word,lang) VALUES ('163','medio','es');
-INSERT INTO word (link,word,lang) VALUES ('164','agua sin gas','es');
-INSERT INTO word (link,word,lang) VALUES ('165','agua gaseosa','es');
-INSERT INTO word (link,word,lang) VALUES ('166','prueba','es');
-INSERT INTO word (link,word,lang) VALUES ('167','tomate','es');
-INSERT INTO word (link,word,lang) VALUES ('168','esta noche','es');
-INSERT INTO word (link,word,lang) VALUES ('169','vainilla','es');
-INSERT INTO word (link,word,lang) VALUES ('170','vegetal','es');
-INSERT INTO word (link,word,lang) VALUES ('171','café con leche','es');
-INSERT INTO word (link,word,lang) VALUES ('172','¡Por supuesto!','es');
-INSERT INTO word (link,word,lang) VALUES ('173','actriz','es');
-INSERT INTO word (link,word,lang) VALUES ('174','aventura','es');
-INSERT INTO word (link,word,lang) VALUES ('175','nadie','es');
-INSERT INTO word (link,word,lang) VALUES ('176','','es');
-INSERT INTO word (link,word,lang) VALUES ('177','mal','es');
-INSERT INTO word (link,word,lang) VALUES ('178','creer','es');
-INSERT INTO word (link,word,lang) VALUES ('179','culturista','es');
-INSERT INTO word (link,word,lang) VALUES ('180','culturismo','es');
-INSERT INTO word (link,word,lang) VALUES ('181','nacido','es');
-INSERT INTO word (link,word,lang) VALUES ('182','valiente','es');
-INSERT INTO word (link,word,lang) VALUES ('183','valientemente','es');
-INSERT INTO word (link,word,lang) VALUES ('184','comedia','es');
-INSERT INTO word (link,word,lang) VALUES ('185','salir','es');
-INSERT INTO word (link,word,lang) VALUES ('186','concierto','es');
-INSERT INTO word (link,word,lang) VALUES ('187','fácilmente','es');
-INSERT INTO word (link,word,lang) VALUES ('188','fácil','es');
-INSERT INTO word (link,word,lang) VALUES ('189','suficiente','es');
-INSERT INTO word (link,word,lang) VALUES ('190','episodio','es');
-INSERT INTO word (link,word,lang) VALUES ('191','emocionante','es');
-INSERT INTO word (link,word,lang) VALUES ('192','luchar','es');
-INSERT INTO word (link,word,lang) VALUES ('193','primero','es');
-INSERT INTO word (link,word,lang) VALUES ('194','seguir','es');
-INSERT INTO word (link,word,lang) VALUES ('195','luchado','es');
-INSERT INTO word (link,word,lang) VALUES ('196','duro','es');
-INSERT INTO word (link,word,lang) VALUES ('197','fuertemente','es');
-INSERT INTO word (link,word,lang) VALUES ('198','patear','es');
-INSERT INTO word (link,word,lang) VALUES ('199','local','es');
-INSERT INTO word (link,word,lang) VALUES ('200','en voz alta','es');
-INSERT INTO word (link,word,lang) VALUES ('201','modesto','es');
-INSERT INTO word (link,word,lang) VALUES ('202','cuello','es');
-INSERT INTO word (link,word,lang) VALUES ('203','rápidamente','es');
-INSERT INTO word (link,word,lang) VALUES ('204','tranquilamente','es');
-INSERT INTO word (link,word,lang) VALUES ('205','razón','es');
-INSERT INTO word (link,word,lang) VALUES ('206','reportero','es');
-INSERT INTO word (link,word,lang) VALUES ('207','robot','es');
-INSERT INTO word (link,word,lang) VALUES ('208','con tristeza','es');
-INSERT INTO word (link,word,lang) VALUES ('209','guardar','es');
-INSERT INTO word (link,word,lang) VALUES ('210','ciencia ficción','es');
-INSERT INTO word (link,word,lang) VALUES ('211','en segundo lugar','es');
-INSERT INTO word (link,word,lang) VALUES ('212','velocímetro','es');
-INSERT INTO word (link,word,lang) VALUES ('213','especialista','es');
-INSERT INTO word (link,word,lang) VALUES ('214','en tercer lugar','es');
-INSERT INTO word (link,word,lang) VALUES ('215','a la estrella','es');
-INSERT INTO word (link,word,lang) VALUES ('216','girar','es');
-INSERT INTO word (link,word,lang) VALUES ('217','desabrochar','es');
-INSERT INTO word (link,word,lang) VALUES ('218','palabra','es');
-INSERT INTO word (link,word,lang) VALUES ('219','años','es');
-INSERT INTO word (link,word,lang) VALUES ('220','barbacoa','es');
-INSERT INTO word (link,word,lang) VALUES ('221','bota','es');
-INSERT INTO word (link,word,lang) VALUES ('222','Día de Navidad','es');
-INSERT INTO word (link,word,lang) VALUES ('223','durante','es');
-INSERT INTO word (link,word,lang) VALUES ('224','disfrutar','es');
-INSERT INTO word (link,word,lang) VALUES ('225','desfile de moda','es');
-INSERT INTO word (link,word,lang) VALUES ('226','casarse','es');
-INSERT INTO word (link,word,lang) VALUES ('227','prepararse','es');
-INSERT INTO word (link,word,lang) VALUES ('228','hambriento','es');
-INSERT INTO word (link,word,lang) VALUES ('229','oyentes','es');
-INSERT INTO word (link,word,lang) VALUES ('230','historia de amor','es');
-INSERT INTO word (link,word,lang) VALUES ('231','satisfacer','es');
-INSERT INTO word (link,word,lang) VALUES ('232','modelo','es');
-INSERT INTO word (link,word,lang) VALUES ('233','empacar bolsas','es');
-INSERT INTO word (link,word,lang) VALUES ('234','lluvia','es');
-INSERT INTO word (link,word,lang) VALUES ('235','sandalia','es');
-INSERT INTO word (link,word,lang) VALUES ('236','calcetín','es');
-INSERT INTO word (link,word,lang) VALUES ('237','especial','es');
-INSERT INTO word (link,word,lang) VALUES ('238','traje de baño','es');
-INSERT INTO word (link,word,lang) VALUES ('239','las noticias','es');
-INSERT INTO word (link,word,lang) VALUES ('240','sediento','es');
-INSERT INTO word (link,word,lang) VALUES ('241','cansado','es');
-INSERT INTO word (link,word,lang) VALUES ('242','argumento','es');
-INSERT INTO word (link,word,lang) VALUES ('243','bat','es');
-INSERT INTO word (link,word,lang) VALUES ('244','compañero de negocios','es');
-INSERT INTO word (link,word,lang) VALUES ('245','soltar','es');
-INSERT INTO word (link,word,lang) VALUES ('246','huellas dactilares','es');
-INSERT INTO word (link,word,lang) VALUES ('247','manejar','es');
-INSERT INTO word (link,word,lang) VALUES ('248','oído','es');
-INSERT INTO word (link,word,lang) VALUES ('249','conocido','es');
-INSERT INTO word (link,word,lang) VALUES ('250','asesinato','es');
-INSERT INTO word (link,word,lang) VALUES ('251','asesino','es');
-INSERT INTO word (link,word,lang) VALUES ('252','sospechar','es');
-INSERT INTO word (link,word,lang) VALUES ('253','mujer','es');
-INSERT INTO word (link,word,lang) VALUES ('254','alrededor','es');
-INSERT INTO word (link,word,lang) VALUES ('255','adulto','es');
-INSERT INTO word (link,word,lang) VALUES ('256','Círculo Polar Ártico','es');
-INSERT INTO word (link,word,lang) VALUES ('257','bicicleta','es');
-INSERT INTO word (link,word,lang) VALUES ('258','recorrido en autobús','es');
-INSERT INTO word (link,word,lang) VALUES ('259','ocupado','es');
-INSERT INTO word (link,word,lang) VALUES ('260','costo','es');
-INSERT INTO word (link,word,lang) VALUES ('261','diario','es');
-INSERT INTO word (link,word,lang) VALUES ('262','excitado','es');
-INSERT INTO word (link,word,lang) VALUES ('263','vuelo','es');
-INSERT INTO word (link,word,lang) VALUES ('264','volar','es');
-INSERT INTO word (link,word,lang) VALUES ('265','futuro','es');
-INSERT INTO word (link,word,lang) VALUES ('266','salir a correr','es');
-INSERT INTO word (link,word,lang) VALUES ('267','hacer turismo','es');
-INSERT INTO word (link,word,lang) VALUES ('268','albergue','es');
-INSERT INTO word (link,word,lang) VALUES ('269','mes pasado','es');
-INSERT INTO word (link,word,lang) VALUES ('270','afortunado','es');
-INSERT INTO word (link,word,lang) VALUES ('271','moto','es');
-INSERT INTO word (link,word,lang) VALUES ('272','Nueva Zelandia','es');
-INSERT INTO word (link,word,lang) VALUES ('273','plan','es');
-INSERT INTO word (link,word,lang) VALUES ('274','mochila','es');
-INSERT INTO word (link,word,lang) VALUES ('275','enviar','es');
-INSERT INTO word (link,word,lang) VALUES ('276','maleta','es');
-INSERT INTO word (link,word,lang) VALUES ('277','agente de viaje','es');
-INSERT INTO word (link,word,lang) VALUES ('278','Subterráneo','es');
-INSERT INTO word (link,word,lang) VALUES ('279','vía','es');
-INSERT INTO word (link,word,lang) VALUES ('280','','es');
-INSERT INTO word (link,word,lang) VALUES ('281','por todo el mundo','es');
-INSERT INTO word (link,word,lang) VALUES ('282','ministerio de defensa','es');
-INSERT INTO word (link,word,lang) VALUES ('283','no importa','es');
-INSERT INTO word (link,word,lang) VALUES ('284','no funciona','es');
-INSERT INTO word (link,word,lang) VALUES ('285','Dime la vez, por favor.','es');
-INSERT INTO word (link,word,lang) VALUES ('286','espere un minuto','es');
-INSERT INTO word (link,word,lang) VALUES ('287','al mismo tiempo','es');
-INSERT INTO word (link,word,lang) VALUES ('288','cambiar de opinión','es');
-INSERT INTO word (link,word,lang) VALUES ('289','a mediados de','es');
-INSERT INTO word (link,word,lang) VALUES ('290','en su camino de ... a','es');
-INSERT INTO word (link,word,lang) VALUES ('291','¿Qué está pasando?','es');
-INSERT INTO word (link,word,lang) VALUES ('292','sentirse como en casa','es');
-INSERT INTO word (link,word,lang) VALUES ('293','Aquí tiene.','es');
-INSERT INTO word (link,word,lang) VALUES ('294','Sólo estoy buscando','es');
-INSERT INTO word (link,word,lang) VALUES ('295','junto a la orilla','es');
-INSERT INTO word (link,word,lang) VALUES ('296','vaqueros','es');
-INSERT INTO word (link,word,lang) VALUES ('297','¿De qué tamaño es usted?','es');
-INSERT INTO word (link,word,lang) VALUES ('298','¿Quieres ...?','es');
-INSERT INTO word (link,word,lang) VALUES ('299','ahora mismo','es');
-INSERT INTO word (link,word,lang) VALUES ('300','¿De qué color es?','es');
-INSERT INTO word (link,word,lang) VALUES ('301','coger un avión','es');
-INSERT INTO word (link,word,lang) VALUES ('302','¿hasta cuándo?','es');
-INSERT INTO word (link,word,lang) VALUES ('303','es el momento de ir','es');
-INSERT INTO word (link,word,lang) VALUES ('304','la siguiente','es');
+INSERT INTO image ( iid, md5, image ) VALUES 
+(1,'822fdcdc2fa91a5d92a0af675a825742','ANd9GcScPnoIvDcgSKwZ3sGXEtjiwUNWkCXwmg0YoyD8SoDiK4mDnunECwnk_w.jpg')
+,(2,'e10a5c9624fb14266d24892aba8198f8','ANd9GcRBFmWitnxKjwsTKHYwI1ZJdBeDQmBeEfTgKftaxl40r1eaqnQ7_E5E6P5h.jpg')
+,(3,'408ad3dd2b18102b7adeba1d5fd2c56c','ANd9GcSlLx8sof4PPTPdQap4YkEQvCkifKiQH_IffhtIzAR8FUhnHjN-3iU-Jd26.jpg')
+,(4,'02409a7eff0d89d7407621e6abffed93','ANd9GcRARWz1MMbEo8WE9xvZtJCFChLV1GftXYdkAMudwt1Q2u3fnKxjOq9YF-k.jpg')
+,(5,'52ccc9d9bcc2c24314054c45ac28b834','ANd9GcSE3Csxdrw8OFsUzCyWO2-G3NJDh4dUnLbpzed26WSDN6xErwpuTc0gl2jf.jpg')
+,(6,'0d3f7baf0b065f1ff9469d1cfe3e8e7d','ANd9GcTNGL4Y4qbUt_akC7BmkGKt2Vzvtesy4HfwDDVhzSiIukn6k9oriKbngS4.jpg')
+,(7,'30ecb79dcf40eef90916f30b1278a0fa','ANd9GcQmexX7i5L2ErXVVu0Y4r3pWUlH2sl8ctkpqQq_pleXP8Yjyrdx3qzXtiEU7A.jpg')
+,(8,'0e0054043f0f9779089a7bfe25fd9e3f','ANd9GcTLiLuabMfJZGue9O2vZTXcsv_h-RPL-bej87UuP6wed5v9yi3mXMPkK4ky.jpg')
+,(9,'0fb8250b30e0393aea18811cb3e29b46','ANd9GcTBY9FgDAFuwQDs1V1cJR7NtdsMnH7sm4WkDPUjtBz0TyLkwpEVBz9T618X.jpg')
+,(10,'a6dba2ccd2457c0b72a35f4af6fede98','ANd9GcRQmopv1RH0fHtTO6ljjBYwjVd-Eabjet6YU_XxSmOkqv25ejyIIBOHOHPO.jpg')
+,(11,'0780146557ae4273de5cd14e60fb2fce','ANd9GcTcx5-Q0SKhnGbjVdbQvwG7g3uWazxvk-yYH5ZeVvERoh6y7k1heFnBtLw.jpg')
+,(12,'1b0834ed4f6662c2cc5c5cb3863612a0','ANd9GcTOPd7Zc8kdtYcnW3eWVeF_O18q_J8hGdq54x8AeOboOgQM9WKpapGLxC0.jpg')
+,(13,'91d6678222009dd45387e6bc5d893577','ANd9GcT70tHRb7_EcKwVPhcUuhAmbCTCohDWTxLB6IfNwZ2-qGC_FhD0P0o2ljbg.jpg')
+,(14,'63b79a9d9666ba806b2ea41effe07b50','ANd9GcRxfuCtIQRyHqe17fT_OaKPuhdw1A07j3zrcthXVTFItHq5bDgOaR7S1cgt.jpg')
+,(15,'ca60bac8f808ad35e2618d13ec7e9191','ANd9GcSXOn66Cqk6Ah9kELd-dbY51Q080QOOR7qpYytIhLFrZ6HNehtfXRekeNu5.jpg')
+,(16,'6b889abfab03c935d8773577fcbbeefe','ANd9GcThVszPIoHg_M7oLVOHZxpqJX0KhsJ7Sh64g-6GoeAyF4uVr5B0LfJw8_U38A.jpg')
+,(17,'424b8683b4b93637d7d60e642313adc9','ANd9GcToB2B-tZPDl-FaFG_Ph9vZSSxv4tCJZPMV_d9ieoGkHqk9J4jb5nC6jnU.jpg')
+,(18,'1a2fe235814169264dee6e82cbf93167','ANd9GcSRb6bHr9zERh7374MlA-iEOWLLzqBn4AbZlyhVsqpNIlr3T9vNy-YE4NWE.jpg')
+,(19,'e022ab2fe74005d5bf32d54254aef6c2','ANd9GcQWVzk7a8HHZnM54ETTenoCleL1AdnzsCOs1IqYHHICMITYPEDfZOkTA7M.jpg')
+,(20,'f51ab17694d0bde0bdadbca66f48b497','ANd9GcSuf5qG8D5b9HKM8p_Suu7FBml679ucmhww23wd9Ay_h0WqA03Zn3HCTQ.jpg')
+,(21,'5badbc74f7a4d08850d5b9fa6995b710','ANd9GcSsdMkQWLs3NXVB_fQoeFQEUz7knGTyfbHX4ufrzcqKA7MD5KTsgMzJ7239.jpg')
+,(22,'6b2227bb3fde326528e57675d90522b9','ANd9GcSmNfiA2DDQ3cjlx17NnoSeLF84rM7LpLpIjDciZdNawUN2kWXktW2RziU.jpg')
+,(23,'3522f821aaf42f167a12310b041101ea','ANd9GcQkxirWMJKnMjU4B87RU6b2DJQZ2OgMMBfN2O1iRRgOTkJM6dX47BRoP47x.jpg')
+,(24,'ba3d1703e3b92ffb6bc4d9fa1a7e4148','ANd9GcShmj4Uw_FhR25W2ZIlK-6y-53KZd6AhSC6eUKWjO6Gwc3hp4lD2HTHhPjRxw.jpg')
+,(25,'3028880dac035fd53ee50b537887fbb1','ANd9GcTf7FtU_l9sbsJIEPX0c9p9QljZUgpsC3ZA7zHv-bEgISdGoSCPE2EKfw.jpg')
+,(26,'1fa9f7dd26fb76d79aec1ae7d6d4d564','ANd9GcRnM-x4cV-VeQqdUDJg6sTUCC6ZPLZ7_f9saGhjBzxqiljmhPfV-TKlUGLx.jpg')
+,(27,'4f43f469e66dd59ecfa3ec952c621146','ANd9GcQpYSHMHs6Ka513NAYGAY5NaikoFoLwsGbN05REsQDQ_FerYQEcsSDjZkrO.jpg')
+,(28,'5bf9f2a9f74cc6bb8b9d3e5435d7118d','ANd9GcReCJgI_-_qt8om5pWcnXlJPp7Iio1-mnpLb96iem-GHWAGiW8Vv87y-x3p.jpg')
+,(29,'5a9c351081de1f2a99c6e9a4dfa3eafa','ANd9GcTXynhFDA1wIXnge6GVia6RIjwczBQ5idc168D24GJCwPiLOb5vz0DUldw0.jpg')
+,(30,'23d9cdfb98b495937a8733895c702301','ANd9GcT5dlylQx34gdwPTQvWOGwRwPOqVnVByZp81A2-WXxHrAn5JBjpJgp7KQTo.jpg')
+,(31,'d529d8a341d4af7c621a3818d1f0c342','ANd9GcRFuW-HtZUsAvXfZHFIs8OehxcM5u9knoy9iwBh7OMUvCjLgISpoNzP5A.jpg')
+,(32,'cc653eb9c278d5954ea802c33d90ae4d','ANd9GcRMYItNsoHWI8U3TLGAm1uVLCPYxvpJCFUDAPHd3J9Y506-m0yEYvsRlpc.jpg')
+,(33,'9cb61398dd299e4a93089d710ea88fbe','ANd9GcTcfrj9FPnppacaRHe3X1VCwXR7ZipvkyvwBCkhnHCLAkwcg_y2m0Kg-I4.jpg')
+,(34,'7e07dccc6b0434e1f5ea4992a04b9606','ANd9GcQPmwPSRGkL8_pLrJuc8AtrWRg5pWIeCF8RfeI_-PC2hQVL5y5fRmfpu2o.jpg')
+,(35,'51cb42970b76b4dc8203a15c2bfcd6aa','ANd9GcShdQISjEt7hDWAN6_N-HUmRz8PqQmH8aox7yFeSnI4QDQoBKTS7iQQ-w.jpg')
+,(36,'6fbd9ed0372eade4d83fd9745a93156a','ANd9GcT6TEPjUSRTh4bcQ3F8-hfdJNIiW08vIAZb1bASUT67iV21qED44OI_Nvg.jpg')
+,(37,'4c509057e5694c621a990701934d4827','ANd9GcQdbuj9Rrqt_ohEv-0n5KXhw7CMhW7dsLx2G07Tuz1uc8AfakeMip1ndrM.jpg')
+,(38,'0931d468eb07ba3d857609705e3c4726','ANd9GcTrkYjcIkbZVRTfMGwJH_-DEoPselPe7GIVjyUlj3nR_ukDA2HYzq5Td-VK.jpg')
+,(39,'03b1800aff8395c6a5b4c3160a8a6c00','ANd9GcRLrxgSAIEu_99ybFo89qV3WCU5Ld2lJWRcJcKG4Ektymzmh-tKYbsb23A.jpg')
+,(40,'5de27449968575ddcd85a272976ebc68','ANd9GcTW-hRFR5m7o3zKYTbjW62OQWGNxfGJAt7kAB5ggoKYwf36HN2wr6goaX_z.jpg')
+,(41,'6cd1a85687138351525554a2aa0c78ab','ANd9GcRGku5W7UGiYDpaS1p9QOPnIbj84OCrCj46YiyUgm6YpqVMP5N-PCwHPLWN.jpg')
+,(42,'cab012c183463ead9405fb0d35b6dc87','ANd9GcQ6HRv7ZQoRO5CJmjqQNa4HSqzA_4zF3LepKaZP-hAXjD6y8S9ZjzprWEE.jpg')
+,(43,'4e05ced159fbcd709427cb421c21b3ba','ANd9GcQs7cShG5FIycjaZpgPnjg-UcEp46k5AoMVGTY4tKSrYrCoOJIbrsuRepUV.jpg')
+,(44,'3d843df930a131e655423dbbeb741077','ANd9GcTRxaMd3hvN5-Y2vB8-yclUA6ul0r-q2oWJO6uRa-yPOlf6sBQEIEiryR2_.jpg')
+,(45,'464ebf41cc7da69ea2ad08a0797b8a64','ANd9GcRPLnz3-eeLv3jbrSH7Z3W0y7j0xng8H-FMaKx54Pkfx-93I_8qTjLl2VLD.jpg')
+,(46,'24e2066a287e76f7088263fbb650ce78','ANd9GcQjXQWPACqeiOkgAupIjbrZyBi7RW1_NXfN31groOwNJGiB2N_EWB6iEFw.jpg')
+,(47,'14c78f3df1b4e6754725cc072c91c71e','ANd9GcQ37HlkTOHgIGlcdRhgZgxxqV4pNMB-KEVsmkHjEwPKHKYxgkG0tslYZw.jpg')
+,(48,'02550991cc82653d234fa1b6b910fde3','ANd9GcTK28ivssxXGAiVjBM-XZpckQ7XWv0hBpkmAhbbWYdSiCT9J3Za2e5XUys.jpg')
+,(49,'12dc63b5aad8db2d3662b721d28bf513','ANd9GcRZ6sQZSwPtEbGSIOSOqT_yYkoJDG50PoicU0YItUNPqtui4ek697cb97-W.jpg')
+,(50,'126e964c97e6fad62179ad53a90ea9a5','ANd9GcTPA2q2N1LZLrL2UxCDTQto-InSOS52OadyDliGZDQsgl9i2cfEXqOk3LQ.jpg')
+,(51,'0b8467abc5e714eb3fb557c319917a06','ANd9GcRqH16l9DRSMGB7HIErL2aZSw1joboMk-8Fz-RH5EyQkOhTAKdT8P_8KHc.jpg')
+,(52,'19502d4bd7d8e88db450aaec62ac22c6','ANd9GcQEfRVMc6DRx_6Itsg-Jow2nA0aplD0UtC4TYNLguOZMFRC6Lokd0FmHfceBQ.jpg')
+,(53,'74804f1e0a3efa1737eb104b5583ee14','ANd9GcR_lnhmHYN-EGIxrQt8Hvfxl66Vgm-dEa1J_LW4grOdaJqNfddrn14dRI-x.jpg')
+,(54,'a4065f5215b98794912f3e46b5771059','ANd9GcTHTjNaFhNhljeExKio0B6gu_4S6ZBGTnVkMZgN_8BOsMLSlWSdW9C5IiPd.jpg')
+,(55,'0686da0e9e505f019a5e44250b6d7c62','ANd9GcS00jcktUPuxCJOq1g5IC2ner6vHw4Okj_unELdaWPUgCnZYPlUKUqtH0E.jpg')
+,(56,'0e4d6eec453f30175996de8f0d1e7e37','ANd9GcRZJ3s73GcEGqZIqWX1JivnLLV0uc4vknVSQ2AMd3dKxLh_x9Ku2aGo29E.jpg')
+,(57,'ac38e600a1d5b285073c9faf33954622','ANd9GcRvgm5xsVCIpeOmP0npXf0c0XAZ0GoIbemQ2hJHWiXE6ali3w5n2GGA8LE.jpg')
+,(58,'3ab62b76944467dd43cf639588f246e5','be_surprised_1378106273800.jpg')
+,(59,'9194eca876cb617e37020887b2dd0928','corridor_1378106273800.jpg')
+,(60,'275ddbf8ed7984c804b4b740dd28d6b8','interview_1378106273800.jpg')
+,(61,'feb78eb6a93ec1a1e38b2b82c76e3e27','luggage_1378106273800.jpg')
+,(62,'c4a1b173ef7c07c823242496e00db10c','sports_stuff_1378106273800.jpg')
+,(63,'180c8d2e169398e2ab0c64a9523b5724','tennis_racquet_1378106273800.jpg')
+,(64,'599133b2c2f045c3bbedee088ebd0457','trainers_1378106273800.jpg')
+,(65,'94f0e6b84033eb2ca815119593f39510','ancient_1378106273800.jpg')
+,(66,'c066d3fcdbdaba64825950f9a1aad1cc','builder_1378106273800.jpg')
+,(67,'0622f2512c0fcd4ab557b997acab62ae','butterfly_1378106273800.jpg')
+,(68,'28694c85788c30bb6734e57c1479e601','communicate_1378106273800.jpg')
+,(69,'7cff98df79defbed51c8a2f2de262e0d','computer_1378106273800.jpg')
+,(70,'5c99937f7c7a82685a37f2f9eefeaae5','corn_1378106273800.jpg')
+,(71,'2b43b8388eed20486421dd49693d5163','dishwasher_1378106273800.jpg')
+,(72,'68c17855b7e77fa229a299519327979e','email_1378106273800.jpg')
+,(73,'b5dfff519fd7da4ea55d2bab4e507635','galaxy_1378106273800.jpg')
+,(74,'f9c7508d9d3b96ab251e066c8c8f0b8d','get_stuck_1378106273800.jpg')
+,(75,'0889dfd2868996b4d10572ef7c8cc3a6','health_care_1378106273800.jpg')
+,(76,'c244d20dd8cc2522f663f0a0bc156bc7','increase_1378106273800.jpg')
+,(77,'ac985486077b6926edec9ef9ee3b5979','Internet_1378106273800.jpg')
+,(78,'601d3f71474c2ae941a2bd15367c50c9','loo_toilet_1378106273800.jpg')
+,(79,'1aff8382a81b2278c82fab8f6c80d9eb','mess_1378106273801.jpg')
+,(80,'61b0275a045d697d78436f3afab66751','musical_instrument_1378106273801.jpg')
+,(81,'3f5e71d3aecab90c67dba3c10e3c8f43','noticeable_1378106273801.jpg')
+,(82,'696de699b89ec4af6c496d0f76ae541a','observatory_1378106273801.jpg')
+,(83,'03aa5d81d7b478daec56c7d240fc57e3','Olympic_Games_1378106273801.jpg')
+,(84,'5b7605108942ef487886dc89e6293473','pet_1378106273801.jpg')
+,(85,'cda26110be133201d31828c722f7445c','popcorn_1378106273801.jpg')
+,(86,'a967b820926dcdb08a4cc14113652cf1','race_1378106273801.jpg')
+,(87,'231660cd11825bb297fc2b7ab6c1cd44','ray_1378106273801.jpg')
+,(88,'230fd15aa309f61bbf2c86e9fbbeff81','record_1378106273801.jpg')
+,(89,'97e8e301f7dbc02d8fa6f544bc26f7e3','save_1378106273801.jpg')
+,(90,'4223a49697ad5f536e98dc53d5bad015','solar_system_1378106273801.jpg')
+,(91,'3109b626d086f5fdce41f4c4e9709d92','space_probe_1378106273801.jpg')
+,(92,'578349ab2cce27adab00b2f8bb547880','sparkling_1378106273801.jpg')
+,(93,'8517d1c2b3414b8f5a539f53b1fb4437','stage_1378106273801.jpg')
+,(94,'48221ee662ce8e33fb533cc442195703','swimming_costume_1378106273801.jpg')
+,(95,'70c74292e622472b88b5b6324992ff3d','try_on_1378106273801.jpg')
+,(96,'fa848887f6fd677ff2d7508f94e8c405','website_1378106273801.jpg')
+,(97,'4a6dcfa7d01d3ff150c4cda17ee70dcb','wing_1378106273801.jpg')
+,(98,'0b83cbae5f9ecad24cfc34ae021b016c','aerobics_1378106273801.jpg')
+,(99,'87cf85664da995eff74c6294a37378d7','clown_1378106273801.jpg')
+,(100,'ae12d4814919aedd0735f9bf8d76bd89','coach_1378106273801.jpg')
+,(101,'7058e98c20136e33b306db7f07e48f94','crazy_about_1378106273801.jpg')
+,(102,'c7f7ed848e0b505f7932b3d048e20064','deep_1378106273801.jpg')
+,(103,'0fd0cff9a968bcdafdf74eb9c8f6a2f5','exhausted_1378106273801.jpg')
+,(104,'00568a1a85f0d4f9603b492d494b06c2','graduate_1378106273801.jpg')
+,(105,'1a8c82c32ea157e13c3968a61ffd7f3e','health_1378106273801.jpg')
+,(106,'cca10246345a5528f42f45ca22e01201','injection_1378106273801.jpg')
+,(107,'2eb78cbb244291aa2619d8b49902dac3','jogger_1378106273801.jpg')
+,(108,'2ac9452fa631e32706ccf1247a7c0a71','journalist_1378106273801.jpg')
+,(109,'7cccae8c973e0d8e16c0a92a93e8b7cd','kid_1378106273801.jpg')
+,(110,'edff528cd4f36b8571d63887fd155be4','laugh_1378106273801.jpg')
+,(111,'1211661700b8ddb55275c8870be6f2c7','lawyer_1378106273801.jpg')
+,(112,'f6fa0042b7de5b5ed205aaf788f8119b','leisure_1378106273801.jpg')
+,(113,'31ff01b229698bbd2abbb82a11e1f858','lobby_1378106273801.jpg')
+,(114,'32eac5a5e5fa6313246271f8ef43d5fb','magic_trick_1378106273801.jpg')
+,(115,'10b9c0490a8ff1b9e1836e9c773c358d','marriage_counsellor_1378106273801.jpg')
+,(116,'d12680f621e89cd98aa2dca1df0b09ae','medicine_1378106273801.jpg')
+,(117,'8cd66cdf8169b2756901f6d42e5fca51','mind_1378106273801.jpg')
+,(118,'bd5bb4bc662363b2b3732059a8a8acda','percentage_1378106273801.jpg')
+,(119,'83afc56df892c90a3bd6f1f42a7204e5','relax_1378106273801.jpg')
+,(120,'961c1b3589cd122af0b1a69d8277f41f','research_scientist_1378106273801.jpg')
+,(121,'c4154d4e6f2aea0b9b4c20ea43cae71a','resort_1378106273801.jpg')
+,(122,'8808d4648823fc5ab9126f6ead0020b0','shorts_1378106273801.jpg')
+,(123,'a747d5891d830b6e91feb6a5f9848bdd','sick_1378106273801.jpg')
+,(124,'a2ab06a82900c019b77301e03bd812d0','sleep_1378106273801.jpg')
+,(125,'2a4134a3bbe704de96a2c640884b66d0','suburb_1378106273801.jpg')
+,(126,'c430cb9b31d3558c78d4eef81a47a026','tights_1378106273801.jpg')
+,(127,'45b585b97b6fcafad2d7f88b415622fa','tiring_1378106273801.jpg')
+,(128,'c9e259c57c6ee619a2ebe9530bf37ae3','volleyball_1378106273801.jpg')
+,(129,'13772ed56ca8e31f0e0af5d629434b48','waterproof_1378106273801.jpg')
+,(130,'746ab03216dd6d570ce19d6e85e39138','worry_1378106273801.jpg')
+,(131,'8a73a1ee1f80e973af28c1ff9c7750c5','zookeeper_1378106273801.jpg')
+,(132,'25d92979879c62e512acbf1d10bd99e7','amazement_1378106273801.jpg')
+,(133,'8944c07b12f5787feaafa5aed4e86229','award_1378106273801.jpg')
+,(134,'570b8e31ccb0382e728af98f31365601','battle_1378106273801.jpg')
+,(135,'65a6a5d751ce86758f3cee0629ef2c9b','brush_1378106273801.jpg')
+,(136,'8073364e4742e5d09b27457983d8e27a','chat_1378106273801.jpg')
+,(137,'b59a1a48b4f2a0e6fc59d2790efac509','childhood_1378106273801.jpg')
+,(138,'70a953a0119a1183015ffb17fdbb0fb3','diamond_1378106273801.jpg')
+,(139,'4ffb1965c791e5797c7436c10b17fb55','dig_1378106273801.jpg')
+,(140,'27d07205681e294726f524a5a0085a71','DVD_1378106273801.jpg')
+,(141,'cd927cd31ace7511171678376f40426c','eyesight_1378106273801.jpg')
+,(142,'49d21273412232b9e05538c8703701f5','fascinated_1378106273801.jpg')
+,(143,'c5dad8e4a1e8b40a3854af8f8d1c1990','fight_1378106273801.jpg')
+,(144,'dd1ff2484a8c481235719fd490003117','genius_1378106273801.jpg')
+,(145,'0cdf10bb8bd8fde3f822f47e17e2d47f','hunting_1378106273801.jpg')
+,(146,'ec4d4ea22cd785d139a5ebe61a2876ad','match_1378106273801.jpg')
+,(147,'2311a462e9ca7beecfd9e2157b6a8830','nationality_1378106273801.jpg')
+,(148,'79b6ed76a7e6655db75b41e7086afdd4','nature_1378106273801.jpg')
+,(149,'82078ed92552372c011b48f2dce84726','necklace_1378106273801.jpg')
+,(150,'e5011140d095fa5af0cafdb12d892bd4','outdoor_1378106273801.jpg')
+,(151,'679bdac32305987abe363a3e91937a8b','palace_1378106273801.jpg')
+,(152,'99bbda2c37f66b70200ae65c0b1bc14e','palette_1378106273801.jpg')
+,(153,'8194669004781444358ce9bac29c05dc','pigeon_1378106273801.jpg')
+,(154,'7d88268fbe512c22283710c1f0610de5','point_1378106273801.jpg')
+,(155,'ab8b23047f37407ed1e9a0387bce80ea','refuse_1378106273801.jpg')
+,(156,'94e2e8bb7e2444848d7de205eeca5a4b','religious_1378106273801.jpg')
+,(157,'acf5705f62c496d73db3beddd850b572','sand_1378106273801.jpg')
+,(158,'4e883162a69c5e4eecdb1cf36a436c93','shotgun_1378106273801.jpg')
+,(159,'b504460496a5109cfd74cd9c96249bf7','sign_1378106273801.jpg')
+,(160,'917f06d2aa8413b12ce711de1e2b5911','sink_1378106273801.jpg')
+,(161,'bca15cc2e57661a56f1a1c8a88eea169','soldier_1378106273801.jpg')
+,(162,'a309f2bc650e41ec16ae8d385d028182','spill_1378106273801.jpg')
+,(163,'dbfd8db11dc9f74955e60562aebeff4d','star_1378106273801.jpg')
+;SELECT setval('image_iid_seq', (select max(iid) from image));
 
 
-INSERT INTO word (link,word,lang) VALUES ('1','zatímco','cs');
-INSERT INTO word (link,word,lang) VALUES ('2','mladý','cs');
-INSERT INTO word (link,word,lang) VALUES ('3','letiště','cs');
-INSERT INTO word (link,word,lang) VALUES ('4','vše','cs');
-INSERT INTO word (link,word,lang) VALUES ('5','stejně','cs');
-INSERT INTO word (link,word,lang) VALUES ('6','architekt','cs');
-INSERT INTO word (link,word,lang) VALUES ('7','sportovec','cs');
-INSERT INTO word (link,word,lang) VALUES ('8','začátek','cs');
-INSERT INTO word (link,word,lang) VALUES ('9','půjčit si','cs');
-INSERT INTO word (link,word,lang) VALUES ('10','přinést','cs');
-INSERT INTO word (link,word,lang) VALUES ('11','dort','cs');
-INSERT INTO word (link,word,lang) VALUES ('12','povídat','cs');
-INSERT INTO word (link,word,lang) VALUES ('13','kontrola','cs');
-INSERT INTO word (link,word,lang) VALUES ('14','šachy','cs');
-INSERT INTO word (link,word,lang) VALUES ('15','studený nápoj','cs');
-INSERT INTO word (link,word,lang) VALUES ('16','Tak pojď!','cs');
-INSERT INTO word (link,word,lang) VALUES ('17','komunikovat','cs');
-INSERT INTO word (link,word,lang) VALUES ('18','počítačové hry','cs');
-INSERT INTO word (link,word,lang) VALUES ('19','nekonečný','cs');
-INSERT INTO word (link,word,lang) VALUES ('20','promiňte','cs');
-INSERT INTO word (link,word,lang) VALUES ('21','květiny','cs');
-INSERT INTO word (link,word,lang) VALUES ('22','předpověď','cs');
-INSERT INTO word (link,word,lang) VALUES ('23','historie','cs');
-INSERT INTO word (link,word,lang) VALUES ('24','tlumočník','cs');
-INSERT INTO word (link,word,lang) VALUES ('25','seznam','cs');
-INSERT INTO word (link,word,lang) VALUES ('26','ztracený','cs');
-INSERT INTO word (link,word,lang) VALUES ('27','umožňují','cs');
-INSERT INTO word (link,word,lang) VALUES ('28','mnoho dalších','cs');
-INSERT INTO word (link,word,lang) VALUES ('29','průměr','cs');
-INSERT INTO word (link,word,lang) VALUES ('30','vojenský','cs');
-INSERT INTO word (link,word,lang) VALUES ('31','síť','cs');
-INSERT INTO word (link,word,lang) VALUES ('32','příště','cs');
-INSERT INTO word (link,word,lang) VALUES ('33','sever','cs');
-INSERT INTO word (link,word,lang) VALUES ('34','na podnikání','cs');
-INSERT INTO word (link,word,lang) VALUES ('35','pas','cs');
-INSERT INTO word (link,word,lang) VALUES ('36','rovina','cs');
-INSERT INTO word (link,word,lang) VALUES ('37','problém','cs');
-INSERT INTO word (link,word,lang) VALUES ('38','tlačit','cs');
-INSERT INTO word (link,word,lang) VALUES ('39','jízda','cs');
-INSERT INTO word (link,word,lang) VALUES ('40','Ruština','cs');
-INSERT INTO word (link,word,lang) VALUES ('41','pomalu','cs');
-INSERT INTO word (link,word,lang) VALUES ('42','parkovací automaty','cs');
-INSERT INTO word (link,word,lang) VALUES ('43','traktor','cs');
-INSERT INTO word (link,word,lang) VALUES ('44','Televizory zlomené','cs');
-INSERT INTO word (link,word,lang) VALUES ('45','použití','cs');
-INSERT INTO word (link,word,lang) VALUES ('46','web','cs');
-INSERT INTO word (link,word,lang) VALUES ('47','webové stránky','cs');
-INSERT INTO word (link,word,lang) VALUES ('48','celosvětově','cs');
-INSERT INTO word (link,word,lang) VALUES ('49','letecké společnosti','cs');
-INSERT INTO word (link,word,lang) VALUES ('50','cizí','cs');
-INSERT INTO word (link,word,lang) VALUES ('51','naživu','cs');
-INSERT INTO word (link,word,lang) VALUES ('52','úžasný','cs');
-INSERT INTO word (link,word,lang) VALUES ('53','se stal','cs');
-INSERT INTO word (link,word,lang) VALUES ('54','stát se','cs');
-INSERT INTO word (link,word,lang) VALUES ('55','foukal','cs');
-INSERT INTO word (link,word,lang) VALUES ('56','kost','cs');
-INSERT INTO word (link,word,lang) VALUES ('57','zlomil','cs');
-INSERT INTO word (link,word,lang) VALUES ('58','přinesl','cs');
-INSERT INTO word (link,word,lang) VALUES ('59','přišel','cs');
-INSERT INTO word (link,word,lang) VALUES ('60','chytil','cs');
-INSERT INTO word (link,word,lang) VALUES ('61','kontinent','cs');
-INSERT INTO word (link,word,lang) VALUES ('62','pád','cs');
-INSERT INTO word (link,word,lang) VALUES ('63','zločin','cs');
-INSERT INTO word (link,word,lang) VALUES ('64','nebezpečný','cs');
-INSERT INTO word (link,word,lang) VALUES ('65','ano','cs');
-INSERT INTO word (link,word,lang) VALUES ('66','ne','cs');
-INSERT INTO word (link,word,lang) VALUES ('67','konec','cs');
-INSERT INTO word (link,word,lang) VALUES ('68','obrovský','cs');
-INSERT INTO word (link,word,lang) VALUES ('69','uniknout','cs');
-INSERT INTO word (link,word,lang) VALUES ('70','očekávat','cs');
-INSERT INTO word (link,word,lang) VALUES ('71','explodovat','cs');
-INSERT INTO word (link,word,lang) VALUES ('72','nohy','cs');
-INSERT INTO word (link,word,lang) VALUES ('73','klesl','cs');
-INSERT INTO word (link,word,lang) VALUES ('74','letěl','cs');
-INSERT INTO word (link,word,lang) VALUES ('75','nalezeno','cs');
-INSERT INTO word (link,word,lang) VALUES ('76','hrůza','cs');
-INSERT INTO word (link,word,lang) VALUES ('77','dal','cs');
-INSERT INTO word (link,word,lang) VALUES ('78','pistole','cs');
-INSERT INTO word (link,word,lang) VALUES ('79','dostal','cs');
-INSERT INTO word (link,word,lang) VALUES ('80','měl','cs');
-INSERT INTO word (link,word,lang) VALUES ('81','kadeřník','cs');
-INSERT INTO word (link,word,lang) VALUES ('82','hlava','cs');
-INSERT INTO word (link,word,lang) VALUES ('83','infarkt','cs');
-INSERT INTO word (link,word,lang) VALUES ('84','vrtulník','cs');
-INSERT INTO word (link,word,lang) VALUES ('85','hit','cs');
-INSERT INTO word (link,word,lang) VALUES ('86','Vsadím se, že','cs');
-INSERT INTO word (link,word,lang) VALUES ('87','pozvat','cs');
-INSERT INTO word (link,word,lang) VALUES ('88','země','cs');
-INSERT INTO word (link,word,lang) VALUES ('89','vlevo','cs');
-INSERT INTO word (link,word,lang) VALUES ('90','vyrobený','cs');
-INSERT INTO word (link,word,lang) VALUES ('91','moje chyba','cs');
-INSERT INTO word (link,word,lang) VALUES ('92','zprávy','cs');
-INSERT INTO word (link,word,lang) VALUES ('93','přes','cs');
-INSERT INTO word (link,word,lang) VALUES ('94','padák','cs');
-INSERT INTO word (link,word,lang) VALUES ('95','policejní auto','cs');
-INSERT INTO word (link,word,lang) VALUES ('96','cena','cs');
-INSERT INTO word (link,word,lang) VALUES ('97','obléci','cs');
-INSERT INTO word (link,word,lang) VALUES ('98','běžel','cs');
-INSERT INTO word (link,word,lang) VALUES ('99','krysa','cs');
-INSERT INTO word (link,word,lang) VALUES ('100','zachránit','cs');
-INSERT INTO word (link,word,lang) VALUES ('101','loupež','cs');
-INSERT INTO word (link,word,lang) VALUES ('102','utéci','cs');
-INSERT INTO word (link,word,lang) VALUES ('103','uvedený','cs');
-INSERT INTO word (link,word,lang) VALUES ('104','potopila','cs');
-INSERT INTO word (link,word,lang) VALUES ('105','viděl','cs');
-INSERT INTO word (link,word,lang) VALUES ('106','dřez','cs');
-INSERT INTO word (link,word,lang) VALUES ('107','situace','cs');
-INSERT INTO word (link,word,lang) VALUES ('108','sníh','cs');
-INSERT INTO word (link,word,lang) VALUES ('109','vyřešit','cs');
-INSERT INTO word (link,word,lang) VALUES ('110','zvláštní','cs');
-INSERT INTO word (link,word,lang) VALUES ('111','přežít','cs');
-INSERT INTO word (link,word,lang) VALUES ('112','plaval','cs');
-INSERT INTO word (link,word,lang) VALUES ('113','zloděj','cs');
-INSERT INTO word (link,word,lang) VALUES ('114','hodil','cs');
-INSERT INTO word (link,word,lang) VALUES ('115','se','cs');
-INSERT INTO word (link,word,lang) VALUES ('116','Televizní moderátorka','cs');
-INSERT INTO word (link,word,lang) VALUES ('117','TV studio','cs');
-INSERT INTO word (link,word,lang) VALUES ('118','v bezvědomí','cs');
-INSERT INTO word (link,word,lang) VALUES ('119','vzbudit','cs');
-INSERT INTO word (link,word,lang) VALUES ('120','šel','cs');
-INSERT INTO word (link,word,lang) VALUES ('121','vítězství','cs');
-INSERT INTO word (link,word,lang) VALUES ('122','Probudil','cs');
-INSERT INTO word (link,word,lang) VALUES ('123','vyhrál','cs');
-INSERT INTO word (link,word,lang) VALUES ('124','bando','cs');
-INSERT INTO word (link,word,lang) VALUES ('125','Vidíte.','cs');
-INSERT INTO word (link,word,lang) VALUES ('126','jablečný koláč','cs');
-INSERT INTO word (link,word,lang) VALUES ('127','slanina','cs');
-INSERT INTO word (link,word,lang) VALUES ('128','účet','cs');
-INSERT INTO word (link,word,lang) VALUES ('129','blahopřání k narozeninám','cs');
-INSERT INTO word (link,word,lang) VALUES ('130','černá káva','cs');
-INSERT INTO word (link,word,lang) VALUES ('131','hamburger','cs');
-INSERT INTO word (link,word,lang) VALUES ('132','mrkev','cs');
-INSERT INTO word (link,word,lang) VALUES ('133','jistě','cs');
-INSERT INTO word (link,word,lang) VALUES ('134','kuře','cs');
-INSERT INTO word (link,word,lang) VALUES ('135','koktejl','cs');
-INSERT INTO word (link,word,lang) VALUES ('136','krém','cs');
-INSERT INTO word (link,word,lang) VALUES ('137','šálek','cs');
-INSERT INTO word (link,word,lang) VALUES ('138','dezert','cs');
-INSERT INTO word (link,word,lang) VALUES ('139','elektřinu','cs');
-INSERT INTO word (link,word,lang) VALUES ('140','příchuť','cs');
-INSERT INTO word (link,word,lang) VALUES ('141','hranolky','cs');
-INSERT INTO word (link,word,lang) VALUES ('142','ovoce','cs');
-INSERT INTO word (link,word,lang) VALUES ('143','generace','cs');
-INSERT INTO word (link,word,lang) VALUES ('144','babička','cs');
-INSERT INTO word (link,word,lang) VALUES ('145','Indický','cs');
-INSERT INTO word (link,word,lang) VALUES ('146','kilo','cs');
-INSERT INTO word (link,word,lang) VALUES ('147','salát','cs');
-INSERT INTO word (link,word,lang) VALUES ('148','hlavní chod','cs');
-INSERT INTO word (link,word,lang) VALUES ('149','maso','cs');
-INSERT INTO word (link,word,lang) VALUES ('150','minerálka','cs');
-INSERT INTO word (link,word,lang) VALUES ('151','míchaný salát','cs');
-INSERT INTO word (link,word,lang) VALUES ('152','Nejstarší','cs');
-INSERT INTO word (link,word,lang) VALUES ('153','objednávka','cs');
-INSERT INTO word (link,word,lang) VALUES ('154','hrášek','cs');
-INSERT INTO word (link,word,lang) VALUES ('155','telefonní karta','cs');
-INSERT INTO word (link,word,lang) VALUES ('156','pražená kukuřice','cs');
-INSERT INTO word (link,word,lang) VALUES ('157','brambor','cs');
-INSERT INTO word (link,word,lang) VALUES ('158','program','cs');
-INSERT INTO word (link,word,lang) VALUES ('159','červený','cs');
-INSERT INTO word (link,word,lang) VALUES ('160','pečeně','cs');
-INSERT INTO word (link,word,lang) VALUES ('161','velikost','cs');
-INSERT INTO word (link,word,lang) VALUES ('162','jednolůžkový','cs');
-INSERT INTO word (link,word,lang) VALUES ('163','střední','cs');
-INSERT INTO word (link,word,lang) VALUES ('164','neperlivá voda','cs');
-INSERT INTO word (link,word,lang) VALUES ('165','perlivá voda','cs');
-INSERT INTO word (link,word,lang) VALUES ('166','test','cs');
-INSERT INTO word (link,word,lang) VALUES ('167','rajče','cs');
-INSERT INTO word (link,word,lang) VALUES ('168','dnes večer','cs');
-INSERT INTO word (link,word,lang) VALUES ('169','vanilka','cs');
-INSERT INTO word (link,word,lang) VALUES ('170','zeleninový','cs');
-INSERT INTO word (link,word,lang) VALUES ('171','bílá káva','cs');
-INSERT INTO word (link,word,lang) VALUES ('172','můžete vsadit!','cs');
-INSERT INTO word (link,word,lang) VALUES ('173','herečka','cs');
-INSERT INTO word (link,word,lang) VALUES ('174','dobrodružství','cs');
-INSERT INTO word (link,word,lang) VALUES ('175','někdo','cs');
-INSERT INTO word (link,word,lang) VALUES ('176','','cs');
-INSERT INTO word (link,word,lang) VALUES ('177','špatně','cs');
-INSERT INTO word (link,word,lang) VALUES ('178','věřit','cs');
-INSERT INTO word (link,word,lang) VALUES ('179','kulturista','cs');
-INSERT INTO word (link,word,lang) VALUES ('180','kulturistika','cs');
-INSERT INTO word (link,word,lang) VALUES ('181','narozený','cs');
-INSERT INTO word (link,word,lang) VALUES ('182','statečný','cs');
-INSERT INTO word (link,word,lang) VALUES ('183','statečně','cs');
-INSERT INTO word (link,word,lang) VALUES ('184','komedie','cs');
-INSERT INTO word (link,word,lang) VALUES ('185','odejít','cs');
-INSERT INTO word (link,word,lang) VALUES ('186','koncert','cs');
-INSERT INTO word (link,word,lang) VALUES ('187','snadno','cs');
-INSERT INTO word (link,word,lang) VALUES ('188','snadný','cs');
-INSERT INTO word (link,word,lang) VALUES ('189','dost','cs');
-INSERT INTO word (link,word,lang) VALUES ('190','epizoda','cs');
-INSERT INTO word (link,word,lang) VALUES ('191','vzrušující','cs');
-INSERT INTO word (link,word,lang) VALUES ('192','bojovat','cs');
-INSERT INTO word (link,word,lang) VALUES ('193','za prvé','cs');
-INSERT INTO word (link,word,lang) VALUES ('194','následovat','cs');
-INSERT INTO word (link,word,lang) VALUES ('195','Bojoval','cs');
-INSERT INTO word (link,word,lang) VALUES ('196','těžce','cs');
-INSERT INTO word (link,word,lang) VALUES ('197','silně','cs');
-INSERT INTO word (link,word,lang) VALUES ('198','kopat','cs');
-INSERT INTO word (link,word,lang) VALUES ('199','místní','cs');
-INSERT INTO word (link,word,lang) VALUES ('200','hlasitě','cs');
-INSERT INTO word (link,word,lang) VALUES ('201','skromný','cs');
-INSERT INTO word (link,word,lang) VALUES ('202','krk','cs');
-INSERT INTO word (link,word,lang) VALUES ('203','rychle','cs');
-INSERT INTO word (link,word,lang) VALUES ('204','klidně','cs');
-INSERT INTO word (link,word,lang) VALUES ('205','důvod','cs');
-INSERT INTO word (link,word,lang) VALUES ('206','reportér','cs');
-INSERT INTO word (link,word,lang) VALUES ('207','robot','cs');
-INSERT INTO word (link,word,lang) VALUES ('208','smutně','cs');
-INSERT INTO word (link,word,lang) VALUES ('209','uložit','cs');
-INSERT INTO word (link,word,lang) VALUES ('210','sci-fi','cs');
-INSERT INTO word (link,word,lang) VALUES ('211','za druhé','cs');
-INSERT INTO word (link,word,lang) VALUES ('212','rychloměr','cs');
-INSERT INTO word (link,word,lang) VALUES ('213','kaskadér','cs');
-INSERT INTO word (link,word,lang) VALUES ('214','za třetí','cs');
-INSERT INTO word (link,word,lang) VALUES ('215','označit hvězdičkou','cs');
-INSERT INTO word (link,word,lang) VALUES ('216','otočit se','cs');
-INSERT INTO word (link,word,lang) VALUES ('217','rozepnout','cs');
-INSERT INTO word (link,word,lang) VALUES ('218','slovo','cs');
-INSERT INTO word (link,word,lang) VALUES ('219','let','cs');
-INSERT INTO word (link,word,lang) VALUES ('220','grilování','cs');
-INSERT INTO word (link,word,lang) VALUES ('221','bota','cs');
-INSERT INTO word (link,word,lang) VALUES ('222','Štědrý den','cs');
-INSERT INTO word (link,word,lang) VALUES ('223','během','cs');
-INSERT INTO word (link,word,lang) VALUES ('224','těšit','cs');
-INSERT INTO word (link,word,lang) VALUES ('225','módní přehlídka','cs');
-INSERT INTO word (link,word,lang) VALUES ('226','vdávat','cs');
-INSERT INTO word (link,word,lang) VALUES ('227','připravit','cs');
-INSERT INTO word (link,word,lang) VALUES ('228','hladový','cs');
-INSERT INTO word (link,word,lang) VALUES ('229','posluchači','cs');
-INSERT INTO word (link,word,lang) VALUES ('230','milostný příběh','cs');
-INSERT INTO word (link,word,lang) VALUES ('231','setkat se','cs');
-INSERT INTO word (link,word,lang) VALUES ('232','model','cs');
-INSERT INTO word (link,word,lang) VALUES ('233','sbalit kufry','cs');
-INSERT INTO word (link,word,lang) VALUES ('234','déšť','cs');
-INSERT INTO word (link,word,lang) VALUES ('235','sandál','cs');
-INSERT INTO word (link,word,lang) VALUES ('236','ponožka','cs');
-INSERT INTO word (link,word,lang) VALUES ('237','speciální','cs');
-INSERT INTO word (link,word,lang) VALUES ('238','dámské plavky','cs');
-INSERT INTO word (link,word,lang) VALUES ('239','novinky','cs');
-INSERT INTO word (link,word,lang) VALUES ('240','žíznivý','cs');
-INSERT INTO word (link,word,lang) VALUES ('241','unavený','cs');
-INSERT INTO word (link,word,lang) VALUES ('242','argument','cs');
-INSERT INTO word (link,word,lang) VALUES ('243','bat','cs');
-INSERT INTO word (link,word,lang) VALUES ('244','obchodní partner','cs');
-INSERT INTO word (link,word,lang) VALUES ('245','pokles','cs');
-INSERT INTO word (link,word,lang) VALUES ('246','otisky prstů','cs');
-INSERT INTO word (link,word,lang) VALUES ('247','rukojeť','cs');
-INSERT INTO word (link,word,lang) VALUES ('248','slyšet','cs');
-INSERT INTO word (link,word,lang) VALUES ('249','splněna','cs');
-INSERT INTO word (link,word,lang) VALUES ('250','vražda','cs');
-INSERT INTO word (link,word,lang) VALUES ('251','vrah','cs');
-INSERT INTO word (link,word,lang) VALUES ('252','podezřelý','cs');
-INSERT INTO word (link,word,lang) VALUES ('253','žena','cs');
-INSERT INTO word (link,word,lang) VALUES ('254','kolem','cs');
-INSERT INTO word (link,word,lang) VALUES ('255','dospělý','cs');
-INSERT INTO word (link,word,lang) VALUES ('256','Arctic Circle','cs');
-INSERT INTO word (link,word,lang) VALUES ('257','jízdní kolo','cs');
-INSERT INTO word (link,word,lang) VALUES ('258','autobusem turné','cs');
-INSERT INTO word (link,word,lang) VALUES ('259','zaneprázdněný','cs');
-INSERT INTO word (link,word,lang) VALUES ('260','náklady','cs');
-INSERT INTO word (link,word,lang) VALUES ('261','deník','cs');
-INSERT INTO word (link,word,lang) VALUES ('262','vzrušený','cs');
-INSERT INTO word (link,word,lang) VALUES ('263','','cs');
-INSERT INTO word (link,word,lang) VALUES ('264','létat','cs');
-INSERT INTO word (link,word,lang) VALUES ('265','budoucnost','cs');
-INSERT INTO word (link,word,lang) VALUES ('266','jít běhat','cs');
-INSERT INTO word (link,word,lang) VALUES ('267','prohlédnout pamětihodnosti','cs');
-INSERT INTO word (link,word,lang) VALUES ('268','ubytovna','cs');
-INSERT INTO word (link,word,lang) VALUES ('269','poslední měsíc','cs');
-INSERT INTO word (link,word,lang) VALUES ('270','šťastný','cs');
-INSERT INTO word (link,word,lang) VALUES ('271','motorka','cs');
-INSERT INTO word (link,word,lang) VALUES ('272','Nový Zéland','cs');
-INSERT INTO word (link,word,lang) VALUES ('273','plán','cs');
-INSERT INTO word (link,word,lang) VALUES ('274','batoh','cs');
-INSERT INTO word (link,word,lang) VALUES ('275','loď','cs');
-INSERT INTO word (link,word,lang) VALUES ('276','kufr','cs');
-INSERT INTO word (link,word,lang) VALUES ('277','majitel cestovní kanceláře','cs');
-INSERT INTO word (link,word,lang) VALUES ('278','Podzemní','cs');
-INSERT INTO word (link,word,lang) VALUES ('279','','cs');
-INSERT INTO word (link,word,lang) VALUES ('280','mládežnická ubytovna','cs');
-INSERT INTO word (link,word,lang) VALUES ('281','na celém světě','cs');
-INSERT INTO word (link,word,lang) VALUES ('282','Ministerstvo obrany','cs');
-INSERT INTO word (link,word,lang) VALUES ('283','to nevadí','cs');
-INSERT INTO word (link,word,lang) VALUES ('284','to nefunguje','cs');
-INSERT INTO word (link,word,lang) VALUES ('285','Řekni mi čas, prosím.','cs');
-INSERT INTO word (link,word,lang) VALUES ('286','počkej','cs');
-INSERT INTO word (link,word,lang) VALUES ('287','ve stejnou dobu','cs');
-INSERT INTO word (link,word,lang) VALUES ('288','rozmyslím','cs');
-INSERT INTO word (link,word,lang) VALUES ('289','ve středu','cs');
-INSERT INTO word (link,word,lang) VALUES ('290','na cestě z ... na','cs');
-INSERT INTO word (link,word,lang) VALUES ('291','Co se děje?','cs');
-INSERT INTO word (link,word,lang) VALUES ('292','cítit jako doma','cs');
-INSERT INTO word (link,word,lang) VALUES ('293','Prosím.','cs');
-INSERT INTO word (link,word,lang) VALUES ('294','Jen se dívám','cs');
-INSERT INTO word (link,word,lang) VALUES ('295','u banky','cs');
-INSERT INTO word (link,word,lang) VALUES ('296','džíny','cs');
-INSERT INTO word (link,word,lang) VALUES ('297','Jakou velikost jste?','cs');
-INSERT INTO word (link,word,lang) VALUES ('298','Chtěli byste ...?','cs');
-INSERT INTO word (link,word,lang) VALUES ('299','tady a teď','cs');
-INSERT INTO word (link,word,lang) VALUES ('300','Jakou to má barvu?','cs');
-INSERT INTO word (link,word,lang) VALUES ('301','stihnout letadlo','cs');
-INSERT INTO word (link,word,lang) VALUES ('302','jak dlouho?','cs');
-INSERT INTO word (link,word,lang) VALUES ('303','je čas jít','cs');
-INSERT INTO word (link,word,lang) VALUES ('304','příští','cs');
+INSERT INTO word ( link, word, lang ) VALUES 
+(1001,E'Lithuania', 'en')
+,(1002,E'Lithuanian', 'en')
+,(1003,E'Poland', 'en')
+,(1004,E'Polish', 'en')
+,(1005,E'Portugal', 'en')
+,(1006,E'Portuguese', 'en')
+,(1007,E'Scotland', 'en')
+,(1008,E'Scottish', 'en')
+,(1009,E'Slovakia', 'en')
+,(1010,E'Slovakian', 'en')
+,(1011,E'South Africa', 'en')
+,(1012,E'South African', 'en')
+,(1013,E'Turkey', 'en')
+,(1014,E'Turkish', 'en')
+,(1015,E'Ukraine', 'en')
+,(1016,E'Ukrainian', 'en')
+,(1017,E'Welsh', 'en')
+,(1018,E'actor', 'en')
+,(1019,E'actress', 'en')
+,(1020,E'doctor', 'en')
+,(1021,E'housewife', 'en')
+,(1022,E'nurse', 'en')
+,(1023,E'singer', 'en')
+,(1024,E'student', 'en')
+,(1025,E'teacher', 'en')
+,(1026,E'shop assistant', 'en')
+,(1027,E'bag', 'en')
+,(1028,E'blackboard', 'en')
+,(1029,E'book', 'en')
+,(1030,E'ceiling', 'en')
+,(1031,E'chair', 'en')
+,(1032,E'computer', 'en')
+,(1033,E'desk', 'en')
+,(1034,E'dictionary', 'en')
+,(1035,E'door', 'en')
+,(1036,E'exercise book', 'en')
+,(1037,E'floor', 'en')
+,(1038,E'pen', 'en')
+,(1039,E'pencil', 'en')
+,(1040,E'pencil case', 'en')
+,(1041,E'rubber', 'en')
+,(1042,E'rucksack', 'en')
+,(1043,E'ruler', 'en')
+,(1044,E'wall', 'en')
+,(1045,E'window', 'en')
+,(1046,E'beside', 'en')
+,(1047,E'between', 'en')
+,(1048,E'in', 'en')
+,(1049,E'near', 'en')
+,(1050,E'on', 'en')
+,(1051,E'that', 'en')
+,(1052,E'these', 'en')
+,(1053,E'this', 'en')
+,(1054,E'those', 'en')
+,(1055,E'what', 'en')
+,(1056,E'where', 'en')
+,(1057,E'apple', 'en')
+,(1058,E'bad', 'en')
+,(1059,E'brother', 'en')
+,(1060,E'children', 'en')
+,(1061,E'country', 'en')
+,(1062,E'Egypt', 'en')
+,(1063,E'evening', 'en')
+,(1064,E'extension', 'en')
+,(1065,E'fine', 'en')
+,(1066,E'a an', 'en')
+,(1067,E'from', 'en')
+,(1068,E'goodbye', 'en')
+,(1069,E'have', 'en')
+,(1070,E'hello', 'en')
+,(1071,E'her', 'en')
+,(1072,E'house', 'en')
+,(1073,E'job', 'en')
+,(1074,E'key', 'en')
+,(1075,E'language', 'en')
+,(1076,E'live', 'en')
+,(1077,E'me', 'en')
+,(1078,E'Mexico', 'en')
+,(1079,E'my', 'en')
+,(1080,E'newspaper', 'en')
+,(1081,E'nice', 'en')
+,(1082,E'not bad', 'en')
+,(1083,E'orange', 'en')
+,(1084,E'postcard', 'en')
+,(1085,E'Russia', 'en')
+,(1086,E'see you', 'en')
+,(1087,E'sister', 'en')
+,(1088,E'telephone number', 'en')
+,(1089,E'thank you', 'en')
+,(1090,E'the USA', 'en')
+,(1091,E'the', 'en')
+,(1092,E'want', 'en')
+,(1093,E'your', 'en')
+,(1094,E'bathroom', 'en')
+,(1095,E'bedroom', 'en')
+,(1096,E'dining-room', 'en')
+,(1097,E'garage', 'en')
+,(1098,E'living-room', 'en')
+,(1099,E'room', 'en')
+,(1100,E'toilet', 'en')
+,(1101,E'bicycle bike', 'en')
+,(1102,E'CD', 'en')
+,(1103,E'computer disc', 'en')
+,(1104,E'computer game', 'en')
+,(1105,E'computer program', 'en')
+,(1106,E'desktop computer', 'en')
+,(1107,E'football', 'en')
+,(1108,E'guitar', 'en')
+,(1109,E'hi-fi', 'en')
+,(1110,E'laptop computer', 'en')
+,(1111,E'mobile phone', 'en')
+,(1112,E'modem', 'en')
+,(1113,E'MP3 player', 'en')
+,(1114,E'PC', 'en')
+,(1115,E'rollerblades', 'en')
+,(1116,E'TV television', 'en')
+,(1117,E'video', 'en')
+,(1118,E'first 1st', 'en')
+,(1119,E'second 2nd', 'en')
+,(1120,E'third 3rd', 'en')
+,(1121,E'fourth 4th', 'en')
+,(1122,E'fifth 5th', 'en')
+,(1123,E'sixth 6th', 'en')
+,(1124,E'seventh 7th', 'en')
+,(1125,E'eighth 8th', 'en')
+,(1126,E'ninth 9th', 'en')
+,(1127,E'tenth 10th', 'en')
+,(1128,E'eleventh 11th', 'en')
+,(1129,E'twelfth 12th', 'en')
+,(1130,E'thirteenth 13th', 'en')
+,(1131,E'fourteenth 14th', 'en')
+,(1132,E'fifteenth 15th', 'en')
+,(1133,E'sixteenth 16th', 'en')
+,(1134,E'seventeenth 17th', 'en')
+,(1135,E'eighteenth 18th', 'en')
+,(1136,E'nineteenth 19th', 'en')
+,(1137,E'twentieth 20th', 'en')
+,(1138,E'twenty-first 21st', 'en')
+,(1139,E'thirtieth 30th', 'en')
+,(1140,E'birthday', 'en')
+,(1141,E'horoscope', 'en')
+,(1142,E'Aquarius', 'en')
+,(1143,E'Aries', 'en')
+,(1144,E'Cancer', 'en')
+,(1145,E'Capricorn', 'en')
+,(1146,E'Gemini', 'en')
+,(1147,E'Leo', 'en')
+,(1148,E'Libra', 'en')
+,(1149,E'Pisces', 'en')
+,(1150,E'Sagittarius', 'en')
+,(1151,E'Scorpio', 'en')
+,(1152,E'Taurus', 'en')
+,(1153,E'Virgio', 'en')
+,(1154,E'activity', 'en')
+,(1155,E'comic', 'en')
+,(1156,E'dancing', 'en')
+,(1157,E'designer', 'en')
+,(1158,E'editor', 'en')
+,(1159,E'exam', 'en')
+,(1160,E'favourite', 'en')
+,(1161,E'football team', 'en')
+,(1162,E'free time', 'en')
+,(1163,E'important', 'en')
+,(1164,E'novel', 'en')
+,(1165,E'photo', 'en')
+,(1166,E'photographer', 'en')
+,(1167,E'poetry book', 'en')
+,(1168,E'school', 'en')
+,(1169,E'press conference', 'en')
+,(1170,E'rockstar', 'en')
+,(1171,E'accountant', 'en')
+,(1172,E'anything else', 'en')
+,(1173,E'apartment', 'en')
+,(1174,E'at home', 'en')
+,(1175,E'big', 'en')
+,(1176,E'boyfriend', 'en')
+,(1177,E'cheap', 'en')
+,(1178,E'chocolate', 'en')
+,(1179,E'coffee bar', 'en')
+,(1180,E'college', 'en')
+,(1181,E'dancer', 'en')
+,(1182,E'daughter', 'en')
+,(1183,E'different', 'en')
+,(1184,E'difficult', 'en')
+,(1185,E'drink', 'en')
+,(1186,E'easy', 'en')
+,(1187,E'egg', 'en')
+,(1188,E'exciting', 'en')
+,(1189,E'expensive', 'en')
+,(1190,E'fast', 'en')
+,(1191,E'father', 'en')
+,(1192,E'first name', 'en')
+,(1193,E'girl', 'en')
+,(1194,E'girlfriend', 'en')
+,(1195,E'good', 'en')
+,(1196,E'grandfather', 'en')
+,(1197,E'grandmother', 'en')
+,(1198,E'hamburger', 'en')
+,(1199,E'happy', 'en')
+,(1200,E'here', 'en')
+,(1201,E'hi', 'en')
+,(1202,E'horrible', 'en')
+,(1203,E'husband', 'en')
+,(1204,E'ice-cream', 'en')
+,(1205,E'identity card', 'en')
+,(1206,E'journalist', 'en')
+,(1207,E'Love, ...', 'en')
+,(1208,E'menu', 'en')
+,(1209,E'morning', 'en')
+,(1210,E'mother', 'en')
+,(1211,E'new', 'en')
+,(1212,E'now', 'en')
+,(1213,E'orange juice', 'en')
+,(1214,E'please', 'en')
+,(1215,E'policeman', 'en')
+,(1216,E'pound', 'en')
+,(1217,E'practice', 'en')
+,(1218,E'price', 'en')
+,(1219,E'slow', 'en')
+,(1220,E'small', 'en')
+,(1221,E'snack bar', 'en')
+,(1222,E'snow', 'en')
+,(1223,E'son', 'en')
+,(1224,E'soon', 'en')
+,(1225,E'speak', 'en')
+,(1226,E'subway', 'en')
+,(1227,E'Switzerland', 'en')
+,(1228,E'tea', 'en')
+,(1229,E'understand', 'en')
+,(1230,E'use', 'en')
+,(1231,E'wife', 'en')
+,(1232,E'write', 'en')
+,(1233,E'child', 'en')
+,(1234,E'engineer', 'en')
+,(1235,E'father dad', 'en')
+,(1236,E'grandchild', 'en')
+,(1237,E'grandchildren', 'en')
+,(1238,E'grandfather granddad', 'en')
+,(1239,E'grandmother grandma', 'en')
+,(1240,E'grandparents', 'en')
+,(1241,E'mother mum', 'en')
+,(1242,E'musician', 'en')
+,(1243,E'nephew', 'en')
+,(1244,E'niece', 'en')
+,(1245,E'parents', 'en')
+,(1246,E'beautiful', 'en')
+,(1247,E'blonde', 'en')
+,(1248,E'build', 'en')
+,(1249,E'curly', 'en')
+,(1250,E'eyes', 'en')
+,(1251,E'good-looking', 'en')
+,(1252,E'UK United Kingdom', 'en')
+,(1253,E'USA United States of America', 'en')
+,(1254,E'Can you repeat that please?', 'en')
+,(1255,E'How do you say ... in English?', 'en')
+,(1256,E'How do you spell ...?', 'en')
+,(1257,E'I don\'t understand.', 'en')
+,(1258,E'Listen and repeat.', 'en')
+,(1259,E'Open your books.', 'en')
+,(1260,E'how?', 'en')
+,(1261,E'what?', 'en')
+,(1262,E'where?', 'en')
+,(1263,E'Have a nice day.', 'en')
+,(1264,E'How are you?', 'en')
+,(1265,E'I am not bad.', 'en')
+,(1266,E'I am fine.', 'en')
+,(1267,E'What\'s your name?', 'en')
+,(1268,E'Where are you from?', 'en')
+,(1269,E'I\'m from ...', 'en')
+,(1270,E'surf the Internet', 'en')
+,(1271,E'Can I have ...?', 'en')
+,(1272,E'Can I help?', 'en')
+,(1273,E'here you are', 'en')
+,(1274,E'How much is it?', 'en')
+,(1275,E'How old are you?', 'en')
+,(1276,E'pardon?', 'en')
+,(1277,E'who?', 'en')
+,(1278,E'I\'m 18 years old.', 'en')
+,(1279,E'It\'s much money.', 'en')
+,(1280,E'They speak fast.', 'en')
+,(1281,E'She is French.', 'en')
+,(1282,E'It\'s very cold.', 'en')
+,(1283,E';', 'en')
+,(2001,E'accept', 'en')
+,(2002,E'ask for', 'en')
+,(2003,E'be surprised', 'en')
+,(2004,E'corridor', 'en')
+,(2005,E'good luck', 'en')
+,(2006,E'interview', 'en')
+,(2007,E'luggage', 'en')
+,(2008,E'practise', 'en')
+,(2009,E'sports stuff', 'en')
+,(2010,E'straight', 'en')
+,(2011,E'tennis racquet', 'en')
+,(2012,E'trainers', 'en')
+,(2013,E'trolley', 'en')
+,(2014,E'turn up', 'en')
+,(2015,E'achievement', 'en')
+,(2016,E'advertisement', 'en')
+,(2017,E'afford', 'en')
+,(2018,E'ages', 'en')
+,(2019,E'amazing', 'en')
+,(2020,E'ambassador', 'en')
+,(2021,E'amount', 'en')
+,(2022,E'ancient', 'en')
+,(2023,E'apologize', 'en')
+,(2024,E'architectural', 'en')
+,(2025,E'assassinate', 'en')
+,(2026,E'benefit', 'en')
+,(2027,E'break', 'en')
+,(2028,E'bright', 'en')
+,(2029,E'brochure', 'en')
+,(2030,E'builder', 'en')
+,(2031,E'butterfly', 'en')
+,(2032,E'celebrity', 'en')
+,(2033,E'century', 'en')
+,(2034,E'come round', 'en')
+,(2035,E'commercialized', 'en')
+,(2036,E'communicate', 'en')
+,(2037,E'computer', 'en')
+,(2038,E'corn', 'en')
+,(2039,E'destroy', 'en')
+,(2040,E'dishwasher', 'en')
+,(2041,E'drug abuse', 'en')
+,(2042,E'email', 'en')
+,(2043,E'estimate', 'en')
+,(2044,E'famine', 'en')
+,(2045,E'freezing', 'en')
+,(2046,E'full-time', 'en')
+,(2047,E'galaxy', 'en')
+,(2048,E'get stuck', 'en')
+,(2049,E'giant', 'en')
+,(2050,E'go mad', 'en')
+,(2051,E'goodwill', 'en')
+,(2052,E'gorgeous', 'en')
+,(2053,E'greed', 'en')
+,(2054,E'health care', 'en')
+,(2055,E'hectic', 'en')
+,(2056,E'huge', 'en')
+,(2057,E'humble', 'en')
+,(2058,E'inconvenience', 'en')
+,(2059,E'increase', 'en')
+,(2060,E'interactivity', 'en')
+,(2061,E'Internet', 'en')
+,(2062,E'knowledge', 'en')
+,(2063,E'leap', 'en')
+,(2064,E'loo toilet', 'en')
+,(2065,E'mankind', 'en')
+,(2066,E'mess', 'en')
+,(2067,E'mobile phone', 'en')
+,(2068,E'musical instrument', 'en')
+,(2069,E'noticeable', 'en')
+,(2070,E'nuclear weapon', 'en')
+,(2071,E'observatory', 'en')
+,(2072,E'Olympic Games', 'en')
+,(2073,E'online', 'en')
+,(2074,E'order', 'en')
+,(2075,E'payment', 'en')
+,(2076,E'perform', 'en')
+,(2077,E'pet', 'en')
+,(2078,E'pick up', 'en')
+,(2079,E'popcorn', 'en')
+,(2080,E'process', 'en')
+,(2081,E'race', 'en')
+,(2082,E'ray', 'en')
+,(2083,E'record', 'en')
+,(2084,E'revolutionize', 'en')
+,(2085,E'rise', 'en')
+,(2086,E'save', 'en')
+,(2087,E'skid', 'en')
+,(2088,E'solar system', 'en')
+,(2089,E'space probe', 'en')
+,(2090,E'sparkling', 'en')
+,(2091,E'stage', 'en')
+,(2092,E'stand', 'en')
+,(2093,E'stand for', 'en')
+,(2094,E'statement', 'en')
+,(2095,E'step', 'en')
+,(2096,E'surely', 'en')
+,(2097,E'swimming costume', 'en')
+,(2098,E'take part', 'en')
+,(2099,E'take place', 'en')
+,(2100,E'text message', 'en')
+,(2101,E'text', 'en')
+,(2102,E'try on', 'en')
+,(2103,E'the UN', 'en')
+,(2104,E'user', 'en')
+,(2105,E'vegetarian', 'en')
+,(2106,E'web page', 'en')
+,(2107,E'website', 'en')
+,(2108,E'wing', 'en')
+,(2109,E'wonder', 'en')
+,(2110,E'absolutely', 'en')
+,(2111,E'aerobics', 'en')
+,(2112,E'allow', 'en')
+,(2113,E'arrangement', 'en')
+,(2114,E'bargain', 'en')
+,(2115,E'busy', 'en')
+,(2116,E'charity', 'en')
+,(2117,E'cheer up', 'en')
+,(2118,E'cheque', 'en')
+,(2119,E'clown', 'en')
+,(2120,E'coach', 'en')
+,(2121,E'convenience', 'en')
+,(2122,E'crazy about', 'en')
+,(2123,E'decimal', 'en')
+,(2124,E'decorate', 'en')
+,(2125,E'deep', 'en')
+,(2126,E'definitely', 'en')
+,(2127,E'distract', 'en')
+,(2128,E'energetic', 'en')
+,(2129,E'event', 'en')
+,(2130,E'exhausted', 'en')
+,(2131,E'fancy', 'en')
+,(2132,E'feed', 'en')
+,(2133,E'football pitch', 'en')
+,(2134,E'goggles', 'en')
+,(2135,E'graduate', 'en')
+,(2136,E'guess', 'en')
+,(2137,E'health', 'en')
+,(2138,E'injection', 'en')
+,(2139,E'interior designer', 'en')
+,(2140,E'jogger', 'en')
+,(2141,E'journalist', 'en')
+,(2142,E'kid', 'en')
+,(2143,E'laugh', 'en')
+,(2144,E'laughter', 'en')
+,(2145,E'lawyer', 'en')
+,(2146,E'leisure', 'en')
+,(2147,E'lobby', 'en')
+,(2148,E'loose-fitting', 'en')
+,(2149,E'magic trick', 'en')
+,(2150,E'marriage counsellor', 'en')
+,(2151,E'master’s degree', 'en')
+,(2152,E'medicine', 'en')
+,(2153,E'mind', 'en')
+,(2154,E'nonsense', 'en')
+,(2155,E'operation', 'en')
+,(2156,E'otherwise', 'en')
+,(2157,E'pack', 'en')
+,(2158,E'participate', 'en')
+,(2159,E'percentage', 'en')
+,(2160,E'plait', 'en')
+,(2161,E'privileged', 'en')
+,(2162,E'race about', 'en')
+,(2163,E'raise', 'en')
+,(2164,E'rarely', 'en')
+,(2165,E'reduced', 'en')
+,(2166,E'relax', 'en')
+,(2167,E'research scientist', 'en')
+,(2168,E'resort', 'en')
+,(2169,E'response', 'en')
+,(2170,E'rubber', 'en')
+,(2171,E'sale', 'en')
+,(2172,E'sensitive', 'en')
+,(2173,E'shorts', 'en')
+,(2174,E'sick', 'en')
+,(2175,E'silly', 'en')
+,(2176,E'sleep', 'en')
+,(2177,E'slightly', 'en')
+,(2178,E'suburb', 'en')
+,(2179,E'supportive', 'en')
+,(2180,E'tights', 'en')
+,(2181,E'tip advice', 'en')
+,(2182,E'tiring', 'en')
+,(2183,E'totally', 'en')
+,(2184,E'treat', 'en')
+,(2185,E'unemployment', 'en')
+,(2186,E'unwind', 'en')
+,(2187,E'useless', 'en')
+,(2188,E'volleyball', 'en')
+,(2189,E'ward', 'en')
+,(2190,E'waterproof', 'en')
+,(2191,E'wedding anniversary', 'en')
+,(2192,E'worry', 'en')
+,(2193,E'yell', 'en')
+,(2194,E'zookeeper', 'en')
+,(2195,E'act', 'en')
+,(2196,E'amazement', 'en')
+,(2197,E'award', 'en')
+,(2198,E'awful', 'en')
+,(2199,E'battle', 'en')
+,(2200,E'beat', 'en')
+,(2201,E'bet', 'en')
+,(2202,E'birth', 'en')
+,(2203,E'boast', 'en')
+,(2204,E'breathe', 'en')
+,(2205,E'brush', 'en')
+,(2206,E'chapter', 'en')
+,(2207,E'chat', 'en')
+,(2208,E'childhood', 'en')
+,(2209,E'commit suicide', 'en')
+,(2210,E'depression', 'en')
+,(2211,E'diamond', 'en')
+,(2212,E'dig', 'en')
+,(2213,E'disgusting', 'en')
+,(2214,E'draw', 'en')
+,(2215,E'DVD', 'en')
+,(2216,E'emperor', 'en')
+,(2217,E'encourage', 'en')
+,(2218,E'exhibition', 'en')
+,(2219,E'eyesight', 'en')
+,(2220,E'fail', 'en')
+,(2221,E'fascinated', 'en')
+,(2222,E'fearless', 'en')
+,(2223,E'feature', 'en')
+,(2224,E'fight', 'en')
+,(2225,E'genius', 'en')
+,(2226,E'heart failure', 'en')
+,(2227,E'homesick', 'en')
+,(2228,E'honour', 'en')
+,(2229,E'hunting', 'en')
+,(2230,E'impressed', 'en')
+,(2231,E'influenza', 'en')
+,(2232,E'lifelike', 'en')
+,(2233,E'masterpiece', 'en')
+,(2234,E'match', 'en')
+,(2235,E'mile', 'en')
+,(2236,E'moral', 'en')
+,(2237,E'nationality', 'en')
+,(2238,E'nature', 'en')
+,(2239,E'necklace', 'en')
+,(2240,E'neighbourhood', 'en')
+,(2241,E'old-fashioned', 'en')
+,(2242,E'only', 'en')
+,(2243,E'outdoor', 'en')
+,(2244,E'palace', 'en')
+,(2245,E'palette', 'en')
+,(2246,E'pigeon', 'en')
+,(2247,E'pleased', 'en')
+,(2248,E'point', 'en')
+,(2249,E'portrait', 'en')
+,(2250,E'recognize', 'en')
+,(2251,E'refuse', 'en')
+,(2252,E'religious', 'en')
+,(2253,E'report', 'en')
+,(2254,E'sand', 'en')
+,(2255,E'scary', 'en')
+,(2256,E'score', 'en')
+,(2257,E'scream', 'en')
+,(2258,E'shotgun', 'en')
+,(2259,E'sign', 'en')
+,(2260,E'sink', 'en')
+,(2261,E'sketch', 'en')
+,(2262,E'skip', 'en')
+,(2263,E'soldier', 'en')
+,(2264,E'spill', 'en')
+,(2265,E'spoiled', 'en')
+,(2266,E'star', 'en')
+,(2267,E'strict', 'en')
+,(2268,E'suffer', 'en')
+,(2269,E'sweetcorn', 'en')
+,(2270,E'any day now', 'en')
+,(2271,E'at the end of', 'en')
+,(2272,E'late for work', 'en')
+,(2273,E'take a year out', 'en')
+,(2274,E'go out with', 'en')
+,(2275,E'hang on wait', 'en')
+,(2276,E'lift ride in a car', 'en')
+,(2277,E'packing and postage', 'en')
+,(2278,E'stuff things in general', 'en')
+,(2279,E'dry ski slope', 'en')
+,(2280,E'tell a lie', 'en')
+,(2281,E'web page designer', 'en')
+,(2282,E'hang out relax', 'en')
+,(2283,E';', 'en')
+,(1001,E'Litva', 'cs')
+,(1002,E'Litevský', 'cs')
+,(1003,E'Polsko', 'cs')
+,(1004,E'Polský', 'cs')
+,(1005,E'Portugalsko', 'cs')
+,(1006,E'Portugalština', 'cs')
+,(1007,E'Skotsko', 'cs')
+,(1008,E'Skotský', 'cs')
+,(1009,E'Slovensko', 'cs')
+,(1010,E'Slovenský', 'cs')
+,(1011,E'Jižní Afrika', 'cs')
+,(1012,E'Jihoafrický', 'cs')
+,(1013,E'Turecko', 'cs')
+,(1014,E'Turečtina', 'cs')
+,(1015,E'Ukrajina', 'cs')
+,(1016,E'Ukrajinec', 'cs')
+,(1017,E'Velština', 'cs')
+,(1018,E'herec', 'cs')
+,(1019,E'herečka', 'cs')
+,(1020,E'lékař', 'cs')
+,(1021,E'hospodyňka', 'cs')
+,(1022,E'zdravotní sestra', 'cs')
+,(1023,E'zpěvák', 'cs')
+,(1024,E'student', 'cs')
+,(1025,E'učitel', 'cs')
+,(1026,E'prodavač', 'cs')
+,(1027,E'taška', 'cs')
+,(1028,E'tabule', 'cs')
+,(1029,E'kniha', 'cs')
+,(1030,E'strop', 'cs')
+,(1031,E'židle', 'cs')
+,(1032,E'počítač', 'cs')
+,(1033,E'psací stůl', 'cs')
+,(1034,E'slovník', 'cs')
+,(1035,E'dveře', 'cs')
+,(1036,E'sešit', 'cs')
+,(1037,E'patro', 'cs')
+,(1038,E'pero', 'cs')
+,(1039,E'tužka', 'cs')
+,(1040,E'pouzdro na tužku', 'cs')
+,(1041,E'pryž', 'cs')
+,(1042,E'batoh', 'cs')
+,(1043,E'pravítko', 'cs')
+,(1044,E'zeď', 'cs')
+,(1045,E'okno', 'cs')
+,(1046,E'vedle', 'cs')
+,(1047,E'mezi', 'cs')
+,(1048,E'v', 'cs')
+,(1049,E'poblíž', 'cs')
+,(1050,E'na', 'cs')
+,(1051,E'že', 'cs')
+,(1052,E'tyto', 'cs')
+,(1053,E'tento', 'cs')
+,(1054,E'ty', 'cs')
+,(1055,E'co', 'cs')
+,(1056,E'kde', 'cs')
+,(1057,E'jablko', 'cs')
+,(1058,E'špatný', 'cs')
+,(1059,E'bratr', 'cs')
+,(1060,E'děti', 'cs')
+,(1061,E'země', 'cs')
+,(1062,E'Egypt', 'cs')
+,(1063,E'večer', 'cs')
+,(1064,E'prodloužení', 'cs')
+,(1065,E'jemný', 'cs')
+,(1067,E'z', 'cs')
+,(1068,E'sbohem', 'cs')
+,(1069,E'mít', 'cs')
+,(1070,E'ahoj', 'cs')
+,(1071,E'ji', 'cs')
+,(1072,E'dům', 'cs')
+,(1073,E'práce', 'cs')
+,(1074,E'klíč', 'cs')
+,(1075,E'jazyk', 'cs')
+,(1076,E'žít', 'cs')
+,(1077,E'mě', 'cs')
+,(1078,E'Mexiko', 'cs')
+,(1079,E'můj', 'cs')
+,(1080,E'noviny', 'cs')
+,(1081,E'pěkný', 'cs')
+,(1082,E'není špatný', 'cs')
+,(1083,E'oranžový', 'cs')
+,(1084,E'pohlednice', 'cs')
+,(1085,E'Rusko', 'cs')
+,(1086,E'vidět', 'cs')
+,(1087,E'sestra', 'cs')
+,(1088,E'telefonní číslo', 'cs')
+,(1089,E'děkuji', 'cs')
+,(1090,E'USA', 'cs')
+,(1092,E'chtít', 'cs')
+,(1093,E'váš', 'cs')
+,(1094,E'koupelna', 'cs')
+,(1095,E'ložnice', 'cs')
+,(1096,E'jídelna', 'cs')
+,(1097,E'garáž', 'cs')
+,(1098,E'obývací pokoj', 'cs')
+,(1099,E'pokoj', 'cs')
+,(1100,E'záchod', 'cs')
+,(1101,E'rotoped kolo', 'cs')
+,(1102,E'CD', 'cs')
+,(1103,E'počítačový disk', 'cs')
+,(1104,E'počítačová hra', 'cs')
+,(1105,E'počítačový program', 'cs')
+,(1106,E'stolní počítač', 'cs')
+,(1107,E'fotbal', 'cs')
+,(1108,E'kytara', 'cs')
+,(1109,E'hifi', 'cs')
+,(1110,E'Přenosný počítač', 'cs')
+,(1111,E'mobilní telefon', 'cs')
+,(1112,E'modem', 'cs')
+,(1113,E'MP3 přehrávač', 'cs')
+,(1114,E'PC', 'cs')
+,(1115,E'kolečkových bruslích', 'cs')
+,(1116,E'TV televize', 'cs')
+,(1117,E'video', 'cs')
+,(1118,E'první první', 'cs')
+,(1119,E'Druhá 2.', 'cs')
+,(1120,E'3. třetina', 'cs')
+,(1121,E'Čtvrtý 4.', 'cs')
+,(1122,E'pátá pátá', 'cs')
+,(1123,E'Šestý 6.', 'cs')
+,(1124,E'sedmého sedmý', 'cs')
+,(1125,E'Osmý 8.', 'cs')
+,(1126,E'Devátý 9.', 'cs')
+,(1127,E'Desátý 10.', 'cs')
+,(1128,E'Jedenáctý 11.', 'cs')
+,(1129,E'dvanáctého 12.', 'cs')
+,(1130,E'Třináctý 13.', 'cs')
+,(1131,E'Čtrnáctý 14.', 'cs')
+,(1132,E'patnáctý 15.', 'cs')
+,(1133,E'šestnáctého 16.', 'cs')
+,(1134,E'sedmnáctého 17.', 'cs')
+,(1135,E'osmnáctého 18.', 'cs')
+,(1136,E'devatenáctého 19.', 'cs')
+,(1137,E'dvacátého 20.', 'cs')
+,(1138,E'dvacátáprvní 21.', 'cs')
+,(1139,E'třicátého 30.', 'cs')
+,(1140,E'narozeniny', 'cs')
+,(1141,E'horoskop', 'cs')
+,(1142,E'Vodnář', 'cs')
+,(1143,E'Skopec', 'cs')
+,(1144,E'Rak', 'cs')
+,(1145,E'Kozoroh', 'cs')
+,(1146,E'Blíženci', 'cs')
+,(1147,E'Lev', 'cs')
+,(1148,E'Váhy', 'cs')
+,(1149,E'Ryby', 'cs')
+,(1150,E'Střelec', 'cs')
+,(1151,E'Štír', 'cs')
+,(1152,E'Býk', 'cs')
+,(1153,E'Virgio', 'cs')
+,(1154,E'činnost', 'cs')
+,(1155,E'komiks', 'cs')
+,(1156,E'tanec', 'cs')
+,(1157,E'návrhář', 'cs')
+,(1158,E'editor', 'cs')
+,(1159,E'zkouška', 'cs')
+,(1160,E'oblíbený', 'cs')
+,(1161,E'fotbalový tým', 'cs')
+,(1162,E'volno', 'cs')
+,(1163,E'důležitý', 'cs')
+,(1164,E'román', 'cs')
+,(1165,E'fotografie', 'cs')
+,(1166,E'fotograf', 'cs')
+,(1167,E'poezie kniha', 'cs')
+,(1168,E'škola', 'cs')
+,(1169,E'tisková konference', 'cs')
+,(1170,E'rockstar', 'cs')
+,(1171,E'účetní', 'cs')
+,(1172,E'něco jiného', 'cs')
+,(1173,E'byt', 'cs')
+,(1174,E'doma', 'cs')
+,(1175,E'velký', 'cs')
+,(1176,E'přítel', 'cs')
+,(1177,E'levný', 'cs')
+,(1178,E'čokoláda', 'cs')
+,(1179,E'kavárna', 'cs')
+,(1180,E'kolej', 'cs')
+,(1181,E'tanečník', 'cs')
+,(1182,E'dcera', 'cs')
+,(1183,E'odlišný', 'cs')
+,(1184,E'obtížný', 'cs')
+,(1185,E'pít', 'cs')
+,(1186,E'snadný', 'cs')
+,(1187,E'vejce', 'cs')
+,(1188,E'vzrušující', 'cs')
+,(1189,E'drahý', 'cs')
+,(1190,E'rychle', 'cs')
+,(1191,E'otec', 'cs')
+,(1192,E'křestní jméno', 'cs')
+,(1193,E'dívka', 'cs')
+,(1194,E'přítelkyně', 'cs')
+,(1195,E'dobrý', 'cs')
+,(1196,E'dědeček', 'cs')
+,(1197,E'babička', 'cs')
+,(1198,E'hamburger', 'cs')
+,(1199,E'šťastný', 'cs')
+,(1200,E'zde', 'cs')
+,(1202,E'hrozný', 'cs')
+,(1203,E'manžel', 'cs')
+,(1204,E'zmrzlina', 'cs')
+,(1205,E'občanský průkaz', 'cs')
+,(1206,E'novinář', 'cs')
+,(1207,E'Láska, ...', 'cs')
+,(1208,E'menu', 'cs')
+,(1209,E'ráno', 'cs')
+,(1210,E'matka', 'cs')
+,(1211,E'nový', 'cs')
+,(1212,E'nyní', 'cs')
+,(1213,E'pomerančový džus', 'cs')
+,(1214,E'prosím', 'cs')
+,(1215,E'policista', 'cs')
+,(1216,E'libra', 'cs')
+,(1217,E'praxe', 'cs')
+,(1218,E'cena', 'cs')
+,(1219,E'zpomalit', 'cs')
+,(1220,E'malé', 'cs')
+,(1221,E'snack bar', 'cs')
+,(1222,E'sníh', 'cs')
+,(1223,E'syn', 'cs')
+,(1224,E'brzy', 'cs')
+,(1225,E'mluvit', 'cs')
+,(1226,E'metro', 'cs')
+,(1227,E'Švýcarsko', 'cs')
+,(1228,E'čaj', 'cs')
+,(1229,E'porozumět', 'cs')
+,(1230,E'použití', 'cs')
+,(1231,E'žena', 'cs')
+,(1232,E'napsat', 'cs')
+,(1233,E'dítě', 'cs')
+,(1234,E'inženýr', 'cs')
+,(1235,E'otec táta', 'cs')
+,(1236,E'vnouče', 'cs')
+,(1237,E'vnoučata', 'cs')
+,(1238,E'děda děda', 'cs')
+,(1239,E'babička babička', 'cs')
+,(1240,E'prarodiče', 'cs')
+,(1241,E'matku maminka', 'cs')
+,(1242,E'hudebník', 'cs')
+,(1243,E'synovec', 'cs')
+,(1244,E'neteř', 'cs')
+,(1245,E'rodiče', 'cs')
+,(1246,E'krásný', 'cs')
+,(1247,E'blondýnka', 'cs')
+,(1248,E'vybudovat', 'cs')
+,(1249,E'kudrnatý', 'cs')
+,(1250,E'oči', 'cs')
+,(1251,E'hezký', 'cs')
+,(1252,E'UK Spojené království', 'cs')
+,(1253,E'USA Spojené státy americké', 'cs')
+,(1254,E'Můžeš to zopakovat, prosím?', 'cs')
+,(1255,E'Jak se řekne ... v angličtině?', 'cs')
+,(1256,E'Jak se píše ...?', 'cs')
+,(1257,E'Nerozumím.', 'cs')
+,(1258,E'Poslouchejte a opakujte.', 'cs')
+,(1259,E'Otevřete své knihy.', 'cs')
+,(1260,E'jak na to?', 'cs')
+,(1261,E'co?', 'cs')
+,(1262,E'kde?', 'cs')
+,(1263,E'Hezký den.', 'cs')
+,(1264,E'Jak se máš?', 'cs')
+,(1265,E'Nejsem špatný.', 'cs')
+,(1266,E'Jsem v pořádku.', 'cs')
+,(1267,E'Jak se jmenujete?', 'cs')
+,(1268,E'Odkud jste?', 'cs')
+,(1269,E'Jsem z ...', 'cs')
+,(1270,E'surfovat na internetu', 'cs')
+,(1271,E'Mohu mít ...?', 'cs')
+,(1272,E'Mohu vám nějak pomoci?', 'cs')
+,(1273,E'jste tady', 'cs')
+,(1274,E'Kolik to je?', 'cs')
+,(1275,E'Kolik je vám let?', 'cs')
+,(1276,E'milost?', 'cs')
+,(1277,E'kdo?', 'cs')
+,(1278,E'Je mi 18 let.', 'cs')
+,(1279,E'Je to hodně peněz.', 'cs')
+,(1280,E'Mluví rychle.', 'cs')
+,(1281,E'Ona je francouzština.', 'cs')
+,(1282,E'Je to velmi chladno.', 'cs')
+,(1283,E';', 'cs')
+,(2001,E'přijmout', 'cs')
+,(2002,E'požádat o', 'cs')
+,(2003,E'být překvapen', 'cs')
+,(2004,E'chodba', 'cs')
+,(2005,E'hodně štěstí', 'cs')
+,(2006,E'rozhovor', 'cs')
+,(2007,E'zavazadla', 'cs')
+,(2008,E'praxe', 'cs')
+,(2009,E'Sportovní věci', 'cs')
+,(2010,E'rovný', 'cs')
+,(2011,E'Tenisová raketa', 'cs')
+,(2012,E'trenéři', 'cs')
+,(2013,E'trolejbus', 'cs')
+,(2014,E'zesílit', 'cs')
+,(2015,E'úspěch', 'cs')
+,(2016,E'reklama', 'cs')
+,(2017,E'poskytnout', 'cs')
+,(2018,E've věku', 'cs')
+,(2019,E'úžasný', 'cs')
+,(2020,E'velvyslanec', 'cs')
+,(2021,E'množství', 'cs')
+,(2022,E'starověký', 'cs')
+,(2023,E'Omlouvám se', 'cs')
+,(2024,E'architektonický', 'cs')
+,(2025,E'zavraždit', 'cs')
+,(2026,E'prospěch', 'cs')
+,(2027,E'přestávka', 'cs')
+,(2028,E'jasný', 'cs')
+,(2029,E'brožura', 'cs')
+,(2030,E'stavitel', 'cs')
+,(2031,E'motýl', 'cs')
+,(2032,E'osobnost', 'cs')
+,(2033,E'století', 'cs')
+,(2034,E'stavit se', 'cs')
+,(2035,E'komerčně', 'cs')
+,(2036,E'komunikovat', 'cs')
+,(2037,E'počítač', 'cs')
+,(2038,E'kukuřice', 'cs')
+,(2039,E'zničit', 'cs')
+,(2040,E'myčka', 'cs')
+,(2041,E'zneužívání drog', 'cs')
+,(2042,E'e-mail', 'cs')
+,(2043,E'odhad', 'cs')
+,(2044,E'hladomor', 'cs')
+,(2045,E'mrazivý', 'cs')
+,(2046,E'na plný úvazek', 'cs')
+,(2047,E'galaxie', 'cs')
+,(2048,E'uvíznout', 'cs')
+,(2049,E'obr', 'cs')
+,(2050,E'zbláznit se', 'cs')
+,(2051,E'dobré jméno', 'cs')
+,(2052,E'nádherný', 'cs')
+,(2053,E'chamtivost', 'cs')
+,(2054,E'zdravotní péče', 'cs')
+,(2055,E'hektický', 'cs')
+,(2056,E'obrovský', 'cs')
+,(2057,E'pokorný', 'cs')
+,(2058,E'nepříjemnost', 'cs')
+,(2059,E'zvýšení', 'cs')
+,(2060,E'interaktivita', 'cs')
+,(2061,E'Internet', 'cs')
+,(2062,E'znalost', 'cs')
+,(2063,E'skok', 'cs')
+,(2064,E'loo WC', 'cs')
+,(2065,E'lidstvo', 'cs')
+,(2066,E'nepořádek', 'cs')
+,(2067,E'mobilní telefon', 'cs')
+,(2068,E'hudební nástroj', 'cs')
+,(2069,E'nápadný', 'cs')
+,(2070,E'jaderná zbraň', 'cs')
+,(2071,E'observatoř', 'cs')
+,(2072,E'Olympijské hry', 'cs')
+,(2073,E'on-line', 'cs')
+,(2074,E'objednávka', 'cs')
+,(2075,E'platba', 'cs')
+,(2076,E'provést', 'cs')
+,(2077,E'domácí zvíře', 'cs')
+,(2078,E'zvednout', 'cs')
+,(2079,E'pražená kukuřice', 'cs')
+,(2080,E'proces', 'cs')
+,(2081,E'závod', 'cs')
+,(2082,E'paprsek', 'cs')
+,(2083,E'záznam', 'cs')
+,(2084,E'způsobit převrat', 'cs')
+,(2085,E'stoupat', 'cs')
+,(2086,E'uložit', 'cs')
+,(2087,E'smyk', 'cs')
+,(2088,E'solární systém', 'cs')
+,(2089,E'sonda', 'cs')
+,(2090,E'jiskřivý', 'cs')
+,(2091,E'fáze', 'cs')
+,(2092,E'stát', 'cs')
+,(2094,E'prohlášení', 'cs')
+,(2095,E'krok', 'cs')
+,(2096,E'jistě', 'cs')
+,(2097,E'plavky', 'cs')
+,(2098,E'účastnit se', 'cs')
+,(2099,E'probíhat', 'cs')
+,(2100,E'textové zprávy', 'cs')
+,(2101,E'text', 'cs')
+,(2102,E'vyzkoušet', 'cs')
+,(2103,E'OSN', 'cs')
+,(2104,E'uživatel', 'cs')
+,(2105,E'vegetarián', 'cs')
+,(2106,E'webová stránka', 'cs')
+,(2107,E'webové stránky', 'cs')
+,(2108,E'křídlo', 'cs')
+,(2109,E'zázrak', 'cs')
+,(2110,E'absolutně', 'cs')
+,(2111,E'aerobik', 'cs')
+,(2112,E'povolit', 'cs')
+,(2113,E'uspořádání', 'cs')
+,(2114,E'smlouvat', 'cs')
+,(2115,E'zaneprázdněný', 'cs')
+,(2116,E'dobročinnost', 'cs')
+,(2117,E'vzchopit se', 'cs')
+,(2118,E'šek', 'cs')
+,(2119,E'klaun', 'cs')
+,(2120,E'trenér', 'cs')
+,(2121,E'pohodlí', 'cs')
+,(2122,E'blázen', 'cs')
+,(2123,E'desetinný', 'cs')
+,(2124,E'vyzdobit', 'cs')
+,(2125,E'hluboký', 'cs')
+,(2126,E'rozhodně', 'cs')
+,(2127,E'rozptýlit', 'cs')
+,(2128,E'energický', 'cs')
+,(2129,E'událost', 'cs')
+,(2130,E'vyčerpaný', 'cs')
+,(2131,E'fantazie', 'cs')
+,(2132,E'krmení', 'cs')
+,(2133,E'fotbalové hřiště', 'cs')
+,(2134,E'ochranné brýle', 'cs')
+,(2135,E'absolvent', 'cs')
+,(2136,E'hádat', 'cs')
+,(2137,E'zdraví', 'cs')
+,(2138,E'injekce', 'cs')
+,(2139,E'návrhář interiérů', 'cs')
+,(2140,E'kdo běhá pro zdraví', 'cs')
+,(2141,E'novinář', 'cs')
+,(2142,E'dítě', 'cs')
+,(2143,E'smát se', 'cs')
+,(2144,E'smích', 'cs')
+,(2145,E'právník', 'cs')
+,(2146,E'volný čas', 'cs')
+,(2147,E'lobby', 'cs')
+,(2148,E'přiléhavým', 'cs')
+,(2149,E'kouzelnický trik', 'cs')
+,(2150,E'manželský poradce', 'cs')
+,(2151,E'magisterské', 'cs')
+,(2152,E'medicína', 'cs')
+,(2153,E'mysl', 'cs')
+,(2154,E'nesmysl', 'cs')
+,(2155,E'operace', 'cs')
+,(2156,E'jinak', 'cs')
+,(2157,E'zabalit', 'cs')
+,(2159,E'procento', 'cs')
+,(2160,E'cop', 'cs')
+,(2161,E'privilegovaný', 'cs')
+,(2162,E'Závod o', 'cs')
+,(2163,E'získat', 'cs')
+,(2164,E'zřídka', 'cs')
+,(2165,E'snížený', 'cs')
+,(2166,E'relaxovat', 'cs')
+,(2167,E'vědecký pracovník', 'cs')
+,(2168,E'uchýlit se', 'cs')
+,(2169,E'odpověď', 'cs')
+,(2170,E'pryž', 'cs')
+,(2171,E'prodej', 'cs')
+,(2172,E'citlivý', 'cs')
+,(2173,E'šortky', 'cs')
+,(2174,E'nemocný', 'cs')
+,(2175,E'hloupý', 'cs')
+,(2176,E'spát', 'cs')
+,(2177,E'trochu', 'cs')
+,(2178,E'předměstí', 'cs')
+,(2179,E'podpůrná', 'cs')
+,(2180,E'punčocháče', 'cs')
+,(2181,E'tip poradenství', 'cs')
+,(2182,E'únavné', 'cs')
+,(2183,E'naprosto', 'cs')
+,(2184,E'zacházet', 'cs')
+,(2185,E'nezaměstnanost', 'cs')
+,(2186,E'uvolnit se', 'cs')
+,(2187,E'zbytečný', 'cs')
+,(2188,E'volejbal', 'cs')
+,(2189,E'hlídat', 'cs')
+,(2190,E'vodotěsný', 'cs')
+,(2191,E'výročí svatby', 'cs')
+,(2192,E'starosti', 'cs')
+,(2193,E'zařvat', 'cs')
+,(2194,E'zookeeper', 'cs')
+,(2195,E'jednat', 'cs')
+,(2196,E'ohromení', 'cs')
+,(2197,E'cena', 'cs')
+,(2198,E'hrozný', 'cs')
+,(2199,E'bitva', 'cs')
+,(2200,E'porazit', 'cs')
+,(2201,E'sázet', 'cs')
+,(2202,E'narození', 'cs')
+,(2203,E'chlubit', 'cs')
+,(2204,E'dýchat', 'cs')
+,(2205,E'kartáč', 'cs')
+,(2206,E'kapitola', 'cs')
+,(2207,E'povídat', 'cs')
+,(2208,E'dětství', 'cs')
+,(2209,E'spáchat sebevraždu', 'cs')
+,(2210,E'deprese', 'cs')
+,(2211,E'diamant', 'cs')
+,(2212,E'kopat', 'cs')
+,(2213,E'nechutný', 'cs')
+,(2214,E'kreslit', 'cs')
+,(2215,E'DVD', 'cs')
+,(2216,E'císař', 'cs')
+,(2217,E'podporovat', 'cs')
+,(2218,E'výstava', 'cs')
+,(2219,E'zrak', 'cs')
+,(2220,E'selhat', 'cs')
+,(2221,E'Fascinuje', 'cs')
+,(2222,E'nebojácný', 'cs')
+,(2223,E'rys', 'cs')
+,(2224,E'bojovat', 'cs')
+,(2225,E'génius', 'cs')
+,(2226,E'selhání srdce', 'cs')
+,(2227,E'nostalgický', 'cs')
+,(2228,E'čest', 'cs')
+,(2229,E'myslivost', 'cs')
+,(2230,E'dojem', 'cs')
+,(2231,E'chřipka', 'cs')
+,(2232,E'živý', 'cs')
+,(2233,E'veledílo', 'cs')
+,(2234,E'zápas', 'cs')
+,(2235,E'míle', 'cs')
+,(2236,E'morální', 'cs')
+,(2237,E'národnost', 'cs')
+,(2238,E'příroda', 'cs')
+,(2239,E'náhrdelník', 'cs')
+,(2240,E'sousedství', 'cs')
+,(2241,E'staromódní', 'cs')
+,(2242,E'pouze', 'cs')
+,(2243,E'venkovní', 'cs')
+,(2244,E'palác', 'cs')
+,(2245,E'palety', 'cs')
+,(2246,E'holub', 'cs')
+,(2247,E'potěšen', 'cs')
+,(2248,E'bod', 'cs')
+,(2249,E'portrét', 'cs')
+,(2250,E'uznat', 'cs')
+,(2251,E'odmítnout', 'cs')
+,(2252,E'náboženský', 'cs')
+,(2253,E'zprávy', 'cs')
+,(2254,E'písek', 'cs')
+,(2255,E'strašidelný', 'cs')
+,(2256,E'hodnocení', 'cs')
+,(2257,E'křičet', 'cs')
+,(2258,E'brokovnice', 'cs')
+,(2259,E'podepsat', 'cs')
+,(2260,E'dřez', 'cs')
+,(2261,E'skica', 'cs')
+,(2262,E'přeskočit', 'cs')
+,(2263,E'voják', 'cs')
+,(2264,E'rozlít', 'cs')
+,(2265,E'zkažený', 'cs')
+,(2266,E'hvězda', 'cs')
+,(2267,E'přísný', 'cs')
+,(2268,E'trpět', 'cs')
+,(2270,E'každým dnem', 'cs')
+,(2271,E'na konci', 'cs')
+,(2272,E'pozdě do práce', 'cs')
+,(2273,E'se za rokem', 'cs')
+,(2274,E'jít ven s', 'cs')
+,(2275,E'vydrž čekat', 'cs')
+,(2276,E'výtah jezdit v autě', 'cs')
+,(2277,E'balení a poštovné', 'cs')
+,(2278,E'věci věci obecně', 'cs')
+,(2279,E'suché sjezdovka', 'cs')
+,(2280,E'lhal', 'cs')
+,(2281,E'webové stránky designer', 'cs')
+,(2282,E'servítky relax', 'cs')
+,(2283,E';', 'cs')
+,(1001,E'Litauen', 'de')
+,(1002,E'Litauisch', 'de')
+,(1003,E'Polen', 'de')
+,(1004,E'Polnisch', 'de')
+,(1005,E'Portugal', 'de')
+,(1006,E'Portugiesisch', 'de')
+,(1007,E'Schottland', 'de')
+,(1008,E'Scottish', 'de')
+,(1009,E'Slowakei', 'de')
+,(1010,E'Slowakischer', 'de')
+,(1011,E'Südafrika', 'de')
+,(1012,E'South African', 'de')
+,(1013,E'Türkei', 'de')
+,(1014,E'Türkisch', 'de')
+,(1015,E'Ukraine', 'de')
+,(1016,E'Ukrainisch', 'de')
+,(1017,E'Welsh', 'de')
+,(1018,E'Schauspieler', 'de')
+,(1019,E'Schauspielerin', 'de')
+,(1020,E'Arzt', 'de')
+,(1021,E'Hausfrau', 'de')
+,(1022,E'Krankenschwester', 'de')
+,(1023,E'Sänger', 'de')
+,(1024,E'Schüler', 'de')
+,(1025,E'Lehrer', 'de')
+,(1026,E'Verkäufer', 'de')
+,(1027,E'bag', 'de')
+,(1028,E'Tafel', 'de')
+,(1029,E'Buch', 'de')
+,(1030,E'Decke', 'de')
+,(1031,E'Stuhl', 'de')
+,(1032,E'Computer', 'de')
+,(1033,E'Schreibtisch', 'de')
+,(1034,E'Wörterbuch', 'de')
+,(1035,E'Tür', 'de')
+,(1036,E'Übungsbuch', 'de')
+,(1037,E'Fußboden', 'de')
+,(1038,E'pen', 'de')
+,(1039,E'Bleistift', 'de')
+,(1040,E'Federmäppchen', 'de')
+,(1041,E'Gummi', 'de')
+,(1042,E'Rucksack', 'de')
+,(1043,E'Herrscher', 'de')
+,(1044,E'Wand', 'de')
+,(1045,E'Fenster', 'de')
+,(1046,E'neben', 'de')
+,(1047,E'zwischen', 'de')
+,(1048,E'in', 'de')
+,(1049,E'in der Nähe', 'de')
+,(1050,E'auf', 'de')
+,(1051,E'dass', 'de')
+,(1052,E'diese', 'de')
+,(1054,E'diejenigen', 'de')
+,(1055,E'welche', 'de')
+,(1056,E'wo', 'de')
+,(1057,E'Apfel', 'de')
+,(1058,E'schlecht', 'de')
+,(1059,E'Bruder', 'de')
+,(1060,E'Kinder', 'de')
+,(1061,E'Land', 'de')
+,(1062,E'Ägypten', 'de')
+,(1063,E'Abend', 'de')
+,(1064,E'Erweiterung', 'de')
+,(1065,E'Geldbuße', 'de')
+,(1066,E'a eine', 'de')
+,(1067,E'von', 'de')
+,(1068,E'Auf Wiedersehen', 'de')
+,(1069,E'haben', 'de')
+,(1070,E'hallo', 'de')
+,(1071,E'sie', 'de')
+,(1072,E'Haus', 'de')
+,(1073,E'Job', 'de')
+,(1074,E'Schlüssel', 'de')
+,(1075,E'Sprache', 'de')
+,(1076,E'leben', 'de')
+,(1077,E'me', 'de')
+,(1078,E'Mexiko', 'de')
+,(1079,E'meine', 'de')
+,(1080,E'Zeitung', 'de')
+,(1081,E'schön', 'de')
+,(1082,E'nicht schlecht', 'de')
+,(1083,E'Orange', 'de')
+,(1084,E'Ansichtskarte', 'de')
+,(1085,E'Russland', 'de')
+,(1086,E'Sie sehen', 'de')
+,(1087,E'Schwester', 'de')
+,(1088,E'Rufnummer', 'de')
+,(1089,E'danke', 'de')
+,(1090,E'die USA', 'de')
+,(1091,E'die', 'de')
+,(1092,E'wollen', 'de')
+,(1093,E'Ihre', 'de')
+,(1094,E'Bad', 'de')
+,(1095,E'Schlafzimmer', 'de')
+,(1096,E'Esszimmer', 'de')
+,(1097,E'Garage', 'de')
+,(1098,E'Wohnzimmer', 'de')
+,(1099,E'Zimmer', 'de')
+,(1100,E'WC', 'de')
+,(1101,E'fahrrad', 'de')
+,(1102,E'CD', 'de')
+,(1103,E'Computer-Disc', 'de')
+,(1104,E'Computerspiel', 'de')
+,(1105,E'Computerprogramm', 'de')
+,(1106,E'Desktop-Computer', 'de')
+,(1107,E'Fußball', 'de')
+,(1108,E'Gitarre', 'de')
+,(1109,E'hallo-fi', 'de')
+,(1110,E'Laptop-Computer', 'de')
+,(1111,E'Handy', 'de')
+,(1112,E'Modem', 'de')
+,(1113,E'MP3-Player', 'de')
+,(1114,E'PC', 'de')
+,(1115,E'Rollerblades', 'de')
+,(1116,E'TV Fernsehen', 'de')
+,(1117,E'Video', 'de')
+,(1118,E'ersten 1.', 'de')
+,(1119,E'zweiten 2.', 'de')
+,(1120,E'dritte 3.', 'de')
+,(1121,E'vierte 4.', 'de')
+,(1122,E'fünften 5.', 'de')
+,(1123,E'sechsten 6.', 'de')
+,(1124,E'siebten 7.', 'de')
+,(1125,E'achte 8.', 'de')
+,(1126,E'neunten 9.', 'de')
+,(1127,E'Zehntel 10.', 'de')
+,(1128,E'elften 11.', 'de')
+,(1129,E'zwölften 12.', 'de')
+,(1130,E'dreizehnten 13.', 'de')
+,(1131,E'vierzehnten 14.', 'de')
+,(1132,E'fünfzehnten 15.', 'de')
+,(1133,E'sechzehnten 16.', 'de')
+,(1134,E'siebzehnten 17.', 'de')
+,(1135,E'achtzehnten 18.', 'de')
+,(1136,E'neunzehnten 19.', 'de')
+,(1137,E'zwanzigsten 20.', 'de')
+,(1138,E'einundzwanzigste 21.', 'de')
+,(1139,E'dreißigsten 30.', 'de')
+,(1140,E'Geburtstag', 'de')
+,(1141,E'Horoskop', 'de')
+,(1142,E'Wassermann', 'de')
+,(1143,E'Widder', 'de')
+,(1144,E'Krebs', 'de')
+,(1145,E'Steinbock', 'de')
+,(1146,E'Zwillinge', 'de')
+,(1147,E'Leo', 'de')
+,(1148,E'Waage', 'de')
+,(1149,E'Fische', 'de')
+,(1150,E'Schütze', 'de')
+,(1151,E'Skorpion', 'de')
+,(1152,E'Stier', 'de')
+,(1153,E'Virgio', 'de')
+,(1154,E'Aktivität', 'de')
+,(1155,E'Comic', 'de')
+,(1156,E'Tanzen', 'de')
+,(1157,E'Designer', 'de')
+,(1158,E'Editor', 'de')
+,(1159,E'Prüfung', 'de')
+,(1160,E'Favoriten', 'de')
+,(1161,E'Fußballmannschaft', 'de')
+,(1162,E'Freizeit', 'de')
+,(1163,E'wichtig', 'de')
+,(1164,E'Roman', 'de')
+,(1165,E'Foto', 'de')
+,(1166,E'Fotografen', 'de')
+,(1167,E'Gedichtband', 'de')
+,(1168,E'Schule', 'de')
+,(1169,E'Pressekonferenz', 'de')
+,(1170,E'rockstar', 'de')
+,(1171,E'Buchhalter', 'de')
+,(1172,E'etwas anderes', 'de')
+,(1173,E'Wohnung', 'de')
+,(1174,E'zu Hause', 'de')
+,(1175,E'big', 'de')
+,(1176,E'Freund', 'de')
+,(1177,E'billig', 'de')
+,(1178,E'Schokolade', 'de')
+,(1179,E'Kaffee-Bar', 'de')
+,(1180,E'Hochschule', 'de')
+,(1181,E'Tänzerin', 'de')
+,(1182,E'Tochter', 'de')
+,(1183,E'unterschiedlich', 'de')
+,(1184,E'schwierig', 'de')
+,(1185,E'trinken', 'de')
+,(1186,E'leicht', 'de')
+,(1187,E'Ei', 'de')
+,(1188,E'aufregend', 'de')
+,(1189,E'teuer', 'de')
+,(1190,E'schnell', 'de')
+,(1191,E'Vater', 'de')
+,(1192,E'Vorname', 'de')
+,(1193,E'Mädchen', 'de')
+,(1194,E'Freundin', 'de')
+,(1195,E'gut', 'de')
+,(1196,E'Großvater', 'de')
+,(1197,E'Großmutter', 'de')
+,(1198,E'hamburger', 'de')
+,(1199,E'glücklich', 'de')
+,(1200,E'hierher', 'de')
+,(1202,E'schrecklich', 'de')
+,(1203,E'Ehemann', 'de')
+,(1204,E'Eis', 'de')
+,(1205,E'Ausweis', 'de')
+,(1206,E'Journalist', 'de')
+,(1207,E'Liebe, ...', 'de')
+,(1208,E'Menü', 'de')
+,(1209,E'Morgen', 'de')
+,(1210,E'Mutter', 'de')
+,(1211,E'neue', 'de')
+,(1212,E'jetzt', 'de')
+,(1213,E'Orangensaft', 'de')
+,(1214,E'gefallen', 'de')
+,(1215,E'Polizist', 'de')
+,(1216,E'Pfund', 'de')
+,(1217,E'Übung', 'de')
+,(1218,E'Preis', 'de')
+,(1219,E'verlangsamen', 'de')
+,(1220,E'wenig', 'de')
+,(1221,E'Snack-Bar', 'de')
+,(1222,E'Schnee', 'de')
+,(1223,E'Sohn', 'de')
+,(1224,E'bald', 'de')
+,(1225,E'sprechen', 'de')
+,(1226,E'U-Bahn', 'de')
+,(1227,E'Schweiz', 'de')
+,(1228,E'Tee', 'de')
+,(1229,E'verstehen', 'de')
+,(1230,E'verwenden', 'de')
+,(1231,E'Ehefrau', 'de')
+,(1232,E'schreiben', 'de')
+,(1233,E'Kind', 'de')
+,(1234,E'Ingenieur', 'de')
+,(1235,E'Vater dad', 'de')
+,(1236,E'Enkelkind', 'de')
+,(1237,E'Enkelkinder', 'de')
+,(1238,E'Großvater Opa', 'de')
+,(1239,E'Großmutter Oma', 'de')
+,(1240,E'Großeltern', 'de')
+,(1241,E'mütter', 'de')
+,(1242,E'Musiker', 'de')
+,(1243,E'Neffe', 'de')
+,(1244,E'Nichte', 'de')
+,(1245,E'Eltern', 'de')
+,(1247,E'blonde', 'de')
+,(1248,E'bauen', 'de')
+,(1249,E'lockig', 'de')
+,(1250,E'Augen', 'de')
+,(1251,E'gut aussehend', 'de')
+,(1252,E'UK Vereinigtes Königreich', 'de')
+,(1253,E'USA Vereinigte Staaten von Amerika', 'de')
+,(1254,E'Können Sie das wiederholen Sie bitte das?', 'de')
+,(1255,E'Wie sagt man ... auf Englisch?', 'de')
+,(1256,E'Wie schreibt man ...?', 'de')
+,(1257,E'Ich verstehe nicht.', 'de')
+,(1258,E'Hören Sie zu und wiederholen.', 'de')
+,(1259,E'Öffnen Sie Ihre Bücher.', 'de')
+,(1260,E'wie?', 'de')
+,(1261,E'was?', 'de')
+,(1262,E'wo?', 'de')
+,(1263,E'Haben Sie einen schönen Tag.', 'de')
+,(1264,E'Wie geht es Ihnen?', 'de')
+,(1265,E'Ich bin nicht schlecht.', 'de')
+,(1266,E'Mir geht es gut.', 'de')
+,(1267,E'Wie ist dein Name?', 'de')
+,(1268,E'Woher kommen Sie?', 'de')
+,(1269,E'Ich komme aus ...', 'de')
+,(1270,E'im Internet surfen', 'de')
+,(1271,E'Kann ich ...?', 'de')
+,(1272,E'Kann ich Ihnen helfen?', 'de')
+,(1273,E'hier sind Sie', 'de')
+,(1274,E'Wie viel ist es?', 'de')
+,(1275,E'Wie alt sind Sie?', 'de')
+,(1276,E'Verzeihung?', 'de')
+,(1277,E'wer?', 'de')
+,(1278,E'Ich bin 18 Jahre alt.', 'de')
+,(1279,E'Es ist viel Geld.', 'de')
+,(1280,E'Sie sprechen schnell.', 'de')
+,(1281,E'Sie ist Französisch.', 'de')
+,(1282,E'Es ist sehr kalt.', 'de')
+,(1283,E';', 'de')
+,(2001,E'akzeptieren', 'de')
+,(2002,E'fragen Sie nach', 'de')
+,(2003,E'lassen Sie sich überraschen', 'de')
+,(2004,E'Korridor', 'de')
+,(2005,E'Glück', 'de')
+,(2006,E'Vorstellungsgespräch', 'de')
+,(2007,E'Gepäck', 'de')
+,(2008,E'üben', 'de')
+,(2009,E'Sport-Sachen', 'de')
+,(2010,E'gerade', 'de')
+,(2011,E'Tennisschläger', 'de')
+,(2012,E'Ausbilder', 'de')
+,(2013,E'Trolley', 'de')
+,(2014,E'auftauchen', 'de')
+,(2015,E'Leistung', 'de')
+,(2016,E'Anzeige', 'de')
+,(2017,E'leisten', 'de')
+,(2018,E'Ewigkeit', 'de')
+,(2019,E'erstaunlich', 'de')
+,(2020,E'Botschafter', 'de')
+,(2021,E'Betrag', 'de')
+,(2022,E'alten', 'de')
+,(2023,E'entschuldigen', 'de')
+,(2024,E'architektonisch', 'de')
+,(2025,E'ermorden', 'de')
+,(2026,E'profitieren', 'de')
+,(2027,E'brechen', 'de')
+,(2028,E'leuchtend', 'de')
+,(2029,E'Broschüre', 'de')
+,(2030,E'Baumeister', 'de')
+,(2031,E'Schmetterling', 'de')
+,(2032,E'Berühmtheit', 'de')
+,(2033,E'Jahrhundert', 'de')
+,(2034,E'vorbeikommen', 'de')
+,(2035,E'kommerzialisiert', 'de')
+,(2036,E'kommunizieren', 'de')
+,(2037,E'Computer', 'de')
+,(2038,E'Mais', 'de')
+,(2039,E'zerstören', 'de')
+,(2040,E'Geschirrspüler', 'de')
+,(2041,E'Drogenmissbrauch', 'de')
+,(2042,E'E-Mail-', 'de')
+,(2043,E'schätzen', 'de')
+,(2044,E'Hungersnot', 'de')
+,(2045,E'Einfrieren', 'de')
+,(2046,E'Vollzeit', 'de')
+,(2047,E'galaxy', 'de')
+,(2048,E'stecken', 'de')
+,(2049,E'Riese', 'de')
+,(2050,E'verrückt', 'de')
+,(2051,E'Wohlwollen', 'de')
+,(2052,E'herrlich', 'de')
+,(2053,E'Gier', 'de')
+,(2054,E'Gesundheitspflege', 'de')
+,(2055,E'hektisch', 'de')
+,(2056,E'riesige', 'de')
+,(2057,E'demütig', 'de')
+,(2058,E'Unannehmlichkeit', 'de')
+,(2059,E'erhöhen', 'de')
+,(2060,E'Interaktivität', 'de')
+,(2061,E'Internet', 'de')
+,(2062,E'Wissen', 'de')
+,(2063,E'springen', 'de')
+,(2064,E'loo WC', 'de')
+,(2065,E'Menschheit', 'de')
+,(2066,E'Durcheinander', 'de')
+,(2067,E'Handy', 'de')
+,(2068,E'Musikinstrument', 'de')
+,(2069,E'spürbar', 'de')
+,(2070,E'Kernwaffe', 'de')
+,(2071,E'Sternwarte', 'de')
+,(2072,E'Olympische Spiele', 'de')
+,(2073,E'Online', 'de')
+,(2074,E'Bestellung', 'de')
+,(2075,E'Bezahlung', 'de')
+,(2076,E'durchführen', 'de')
+,(2077,E'pet', 'de')
+,(2078,E'aufnehmen', 'de')
+,(2079,E'Popcorn', 'de')
+,(2080,E'Prozess', 'de')
+,(2081,E'Rennen', 'de')
+,(2082,E'ray', 'de')
+,(2083,E'Aufzeichnung', 'de')
+,(2084,E'revolutionieren', 'de')
+,(2085,E'steigen', 'de')
+,(2086,E'speichern', 'de')
+,(2087,E'Schleudern', 'de')
+,(2088,E'Solaranlage', 'de')
+,(2089,E'Raumsonde', 'de')
+,(2090,E'Sekt', 'de')
+,(2091,E'Bühne', 'de')
+,(2092,E'stehen', 'de')
+,(2093,E'stehen für', 'de')
+,(2094,E'Erklärung', 'de')
+,(2095,E'Schritt', 'de')
+,(2096,E'sicherlich', 'de')
+,(2097,E'Badeanzug', 'de')
+,(2098,E'teilnehmen', 'de')
+,(2099,E'stattfinden', 'de')
+,(2100,E'Textnachricht', 'de')
+,(2101,E'Text', 'de')
+,(2102,E'anprobieren', 'de')
+,(2103,E'die UN', 'de')
+,(2104,E'Benutzer', 'de')
+,(2105,E'Vegetarier', 'de')
+,(2106,E'Web-Seite', 'de')
+,(2107,E'Website', 'de')
+,(2108,E'Flügel', 'de')
+,(2109,E'Wunder', 'de')
+,(2110,E'absolut', 'de')
+,(2111,E'Aerobic', 'de')
+,(2112,E'erlauben', 'de')
+,(2113,E'Anordnung', 'de')
+,(2114,E'Schnäppchen', 'de')
+,(2115,E'beschäftigt', 'de')
+,(2116,E'Nächstenliebe', 'de')
+,(2117,E'aufzumuntern', 'de')
+,(2118,E'Scheck', 'de')
+,(2119,E'Clown', 'de')
+,(2120,E'Reisebus', 'de')
+,(2121,E'Bequemlichkeit', 'de')
+,(2123,E'Nachkommastelle', 'de')
+,(2124,E'dekorieren', 'de')
+,(2125,E'tief', 'de')
+,(2126,E'bestimmt', 'de')
+,(2127,E'ablenken', 'de')
+,(2128,E'energetische', 'de')
+,(2129,E'Veranstaltung', 'de')
+,(2130,E'erschöpft', 'de')
+,(2131,E'Phantasie', 'de')
+,(2132,E'füttern', 'de')
+,(2133,E'Fußballplatz', 'de')
+,(2134,E'Schutzbrille', 'de')
+,(2135,E'Abschluss', 'de')
+,(2136,E'erraten', 'de')
+,(2137,E'Gesundheit', 'de')
+,(2138,E'Einspritzung', 'de')
+,(2139,E'Innenarchitekt', 'de')
+,(2140,E'Jogger', 'de')
+,(2141,E'Journalist', 'de')
+,(2142,E'kid', 'de')
+,(2143,E'lachen', 'de')
+,(2144,E'Lachen', 'de')
+,(2145,E'Rechtsanwalt', 'de')
+,(2146,E'Freizeit', 'de')
+,(2147,E'Lobby', 'de')
+,(2148,E'loose-fitting', 'de')
+,(2149,E'Zaubertrick', 'de')
+,(2150,E'Eheberater', 'de')
+,(2151,E'Master-Abschluss', 'de')
+,(2152,E'Medizin', 'de')
+,(2153,E'Sinn', 'de')
+,(2154,E'Unsinn', 'de')
+,(2155,E'Betrieb', 'de')
+,(2156,E'ansonsten', 'de')
+,(2157,E'verpacken', 'de')
+,(2159,E'Prozentsatz', 'de')
+,(2160,E'Zopf', 'de')
+,(2161,E'privilegierten', 'de')
+,(2162,E'herumrasen', 'de')
+,(2164,E'selten', 'de')
+,(2165,E'reduziert', 'de')
+,(2166,E'entspannen', 'de')
+,(2167,E'Wissenschaftler', 'de')
+,(2168,E'zurückgreifen', 'de')
+,(2169,E'Antwort', 'de')
+,(2170,E'Gummi', 'de')
+,(2171,E'Verkauf', 'de')
+,(2172,E'empfindlich', 'de')
+,(2173,E'Shorts', 'de')
+,(2174,E'sick', 'de')
+,(2175,E'albern', 'de')
+,(2176,E'schlafen', 'de')
+,(2177,E'leicht', 'de')
+,(2178,E'Vorort', 'de')
+,(2179,E'unterstützende', 'de')
+,(2180,E'Strumpfhosen', 'de')
+,(2181,E'Tipp Beratung', 'de')
+,(2182,E'ermüdend', 'de')
+,(2183,E'gänzlich', 'de')
+,(2184,E'behandeln', 'de')
+,(2185,E'Arbeitslosigkeit', 'de')
+,(2187,E'nutzlos', 'de')
+,(2188,E'Volleyball', 'de')
+,(2189,E'Ward', 'de')
+,(2190,E'wasserdicht', 'de')
+,(2191,E'Hochzeitstag', 'de')
+,(2192,E'sich sorgen', 'de')
+,(2193,E'schreien', 'de')
+,(2194,E'Tierpfleger', 'de')
+,(2195,E'handeln', 'de')
+,(2196,E'Staunen', 'de')
+,(2197,E'Auszeichnung', 'de')
+,(2198,E'schrecklich', 'de')
+,(2199,E'Schlacht', 'de')
+,(2200,E'schlagen', 'de')
+,(2201,E'wette', 'de')
+,(2202,E'Geburt', 'de')
+,(2203,E'rühmen', 'de')
+,(2204,E'hauchen', 'de')
+,(2205,E'bürsten', 'de')
+,(2206,E'Kapitel', 'de')
+,(2207,E'Chat', 'de')
+,(2208,E'Kindheit', 'de')
+,(2209,E'Selbstmord begehen', 'de')
+,(2210,E'Depression', 'de')
+,(2211,E'Diamant', 'de')
+,(2212,E'graben', 'de')
+,(2213,E'widerlich', 'de')
+,(2214,E'ziehen', 'de')
+,(2215,E'DVD', 'de')
+,(2216,E'Kaiser', 'de')
+,(2217,E'ermutigen', 'de')
+,(2218,E'Ausstellung', 'de')
+,(2219,E'Sehvermögen', 'de')
+,(2220,E'scheitern', 'de')
+,(2221,E'fasziniert', 'de')
+,(2222,E'furchtlos', 'de')
+,(2223,E'Eigenschaft', 'de')
+,(2224,E'kämpfen', 'de')
+,(2225,E'Genie', 'de')
+,(2226,E'Herzinsuffizienz', 'de')
+,(2227,E'Heimweh', 'de')
+,(2228,E'Ehre', 'de')
+,(2229,E'Jagd', 'de')
+,(2230,E'beeindruckt', 'de')
+,(2231,E'Influenza', 'de')
+,(2232,E'lebensecht', 'de')
+,(2233,E'Meisterwerk', 'de')
+,(2234,E'entsprechen', 'de')
+,(2235,E'Meile', 'de')
+,(2236,E'moralische', 'de')
+,(2237,E'Staatsangehörigkeit', 'de')
+,(2238,E'Natur', 'de')
+,(2239,E'Halskette', 'de')
+,(2240,E'Nachbarschaft', 'de')
+,(2241,E'unmodern', 'de')
+,(2242,E'lediglich', 'de')
+,(2243,E'im Freien', 'de')
+,(2244,E'Palast', 'de')
+,(2245,E'Palette', 'de')
+,(2246,E'Taube', 'de')
+,(2247,E'zufrieden', 'de')
+,(2248,E'Punkt', 'de')
+,(2249,E'Porträt', 'de')
+,(2250,E'erkennen', 'de')
+,(2251,E'verweigern', 'de')
+,(2252,E'religiösen', 'de')
+,(2253,E'berichten', 'de')
+,(2254,E'Sand', 'de')
+,(2255,E'unheimlich', 'de')
+,(2256,E'Punktzahl', 'de')
+,(2258,E'Schrotflinte', 'de')
+,(2259,E'Anmeldung', 'de')
+,(2260,E'sinken', 'de')
+,(2261,E'Skizze', 'de')
+,(2262,E'überspringen', 'de')
+,(2263,E'Soldat', 'de')
+,(2264,E'verschütten', 'de')
+,(2265,E'verdorben', 'de')
+,(2266,E'Sterne', 'de')
+,(2267,E'strengen', 'de')
+,(2268,E'erleiden', 'de')
+,(2269,E'Zuckermais', 'de')
+,(2270,E'jetzt jeden Tag', 'de')
+,(2271,E'Ende', 'de')
+,(2272,E'zu spät zur Arbeit', 'de')
+,(2273,E'nehmen Sie ein Jahr aus', 'de')
+,(2274,E'gehen mit', 'de')
+,(2275,E'hängen warten', 'de')
+,(2276,E'Liftfahrt in einem Auto', 'de')
+,(2277,E'Porto und Verpackung', 'de')
+,(2278,E'Sachen die Dinge im Allgemeinen', 'de')
+,(2279,E'trockene Piste', 'de')
+,(2280,E'lügen', 'de')
+,(2281,E'Web-Designer', 'de')
+,(2282,E'rumhängen entspannen', 'de')
+,(2283,E';', 'de')
+;
 
-INSERT INTO word (link,word,lang) VALUES ('1','während','de');
-INSERT INTO word (link,word,lang) VALUES ('2','junge','de');
-INSERT INTO word (link,word,lang) VALUES ('3','Flughafen','de');
-INSERT INTO word (link,word,lang) VALUES ('4','alle','de');
-INSERT INTO word (link,word,lang) VALUES ('5','ohnehin','de');
-INSERT INTO word (link,word,lang) VALUES ('6','Architekt','de');
-INSERT INTO word (link,word,lang) VALUES ('7','Leichtathlet','de');
-INSERT INTO word (link,word,lang) VALUES ('8','Anfang','de');
-INSERT INTO word (link,word,lang) VALUES ('9','leihen','de');
-INSERT INTO word (link,word,lang) VALUES ('10','bringen','de');
-INSERT INTO word (link,word,lang) VALUES ('11','Kuchen','de');
-INSERT INTO word (link,word,lang) VALUES ('12','Chat','de');
-INSERT INTO word (link,word,lang) VALUES ('13','überprüfen','de');
-INSERT INTO word (link,word,lang) VALUES ('14','Schach','de');
-INSERT INTO word (link,word,lang) VALUES ('15','kaltes Getränk','de');
-INSERT INTO word (link,word,lang) VALUES ('16','Come on!','de');
-INSERT INTO word (link,word,lang) VALUES ('17','kommunizieren','de');
-INSERT INTO word (link,word,lang) VALUES ('18','Computerspiele','de');
-INSERT INTO word (link,word,lang) VALUES ('19','endlose','de');
-INSERT INTO word (link,word,lang) VALUES ('20','entschuldigen Sie mich','de');
-INSERT INTO word (link,word,lang) VALUES ('21','Blumen','de');
-INSERT INTO word (link,word,lang) VALUES ('22','Vorhersage','de');
-INSERT INTO word (link,word,lang) VALUES ('23','Geschichte','de');
-INSERT INTO word (link,word,lang) VALUES ('24','Dolmetscher','de');
-INSERT INTO word (link,word,lang) VALUES ('25','Liste','de');
-INSERT INTO word (link,word,lang) VALUES ('26','verloren','de');
-INSERT INTO word (link,word,lang) VALUES ('27','ermöglichen','de');
-INSERT INTO word (link,word,lang) VALUES ('28','viele mehr','de');
-INSERT INTO word (link,word,lang) VALUES ('29','bedeuten','de');
-INSERT INTO word (link,word,lang) VALUES ('30','Militär','de');
-INSERT INTO word (link,word,lang) VALUES ('31','Netzwerk','de');
-INSERT INTO word (link,word,lang) VALUES ('32','nächstes Mal','de');
-INSERT INTO word (link,word,lang) VALUES ('33','nördlich','de');
-INSERT INTO word (link,word,lang) VALUES ('34','Business','de');
-INSERT INTO word (link,word,lang) VALUES ('35','Reisepass','de');
-INSERT INTO word (link,word,lang) VALUES ('36','Flugzeug','de');
-INSERT INTO word (link,word,lang) VALUES ('37','Problem','de');
-INSERT INTO word (link,word,lang) VALUES ('38','schieben','de');
-INSERT INTO word (link,word,lang) VALUES ('39','reiten','de');
-INSERT INTO word (link,word,lang) VALUES ('40','Russisch','de');
-INSERT INTO word (link,word,lang) VALUES ('41','langsam','de');
-INSERT INTO word (link,word,lang) VALUES ('42','Fahrkartenautomat','de');
-INSERT INTO word (link,word,lang) VALUES ('43','Traktor','de');
-INSERT INTO word (link,word,lang) VALUES ('44','TV gebrochen','de');
-INSERT INTO word (link,word,lang) VALUES ('45','verwenden','de');
-INSERT INTO word (link,word,lang) VALUES ('46','web','de');
-INSERT INTO word (link,word,lang) VALUES ('47','Website','de');
-INSERT INTO word (link,word,lang) VALUES ('48','weltweit','de');
-INSERT INTO word (link,word,lang) VALUES ('49','Fluggesellschaften','de');
-INSERT INTO word (link,word,lang) VALUES ('50','alien','de');
-INSERT INTO word (link,word,lang) VALUES ('51','lebendig','de');
-INSERT INTO word (link,word,lang) VALUES ('52','erstaunlich','de');
-INSERT INTO word (link,word,lang) VALUES ('53','wurde','de');
-INSERT INTO word (link,word,lang) VALUES ('54','werden','de');
-INSERT INTO word (link,word,lang) VALUES ('55','blies','de');
-INSERT INTO word (link,word,lang) VALUES ('56','Knochen','de');
-INSERT INTO word (link,word,lang) VALUES ('57','brach','de');
-INSERT INTO word (link,word,lang) VALUES ('58','gebracht','de');
-INSERT INTO word (link,word,lang) VALUES ('59','kam','de');
-INSERT INTO word (link,word,lang) VALUES ('60','gefangen','de');
-INSERT INTO word (link,word,lang) VALUES ('61','Kontinent','de');
-INSERT INTO word (link,word,lang) VALUES ('62','Absturz','de');
-INSERT INTO word (link,word,lang) VALUES ('63','Kriminalität','de');
-INSERT INTO word (link,word,lang) VALUES ('64','gefährlich','de');
-INSERT INTO word (link,word,lang) VALUES ('65','tat','de');
-INSERT INTO word (link,word,lang) VALUES ('66','nicht','de');
-INSERT INTO word (link,word,lang) VALUES ('67','Ende','de');
-INSERT INTO word (link,word,lang) VALUES ('68','enorme','de');
-INSERT INTO word (link,word,lang) VALUES ('69','Flucht','de');
-INSERT INTO word (link,word,lang) VALUES ('70','erwarten','de');
-INSERT INTO word (link,word,lang) VALUES ('71','explodieren','de');
-INSERT INTO word (link,word,lang) VALUES ('72','Füße','de');
-INSERT INTO word (link,word,lang) VALUES ('73','fiel','de');
-INSERT INTO word (link,word,lang) VALUES ('74','flog','de');
-INSERT INTO word (link,word,lang) VALUES ('75','gefunden','de');
-INSERT INTO word (link,word,lang) VALUES ('76','Schreck','de');
-INSERT INTO word (link,word,lang) VALUES ('77','gab','de');
-INSERT INTO word (link,word,lang) VALUES ('78','gun','de');
-INSERT INTO word (link,word,lang) VALUES ('79','bekam','de');
-INSERT INTO word (link,word,lang) VALUES ('80','hatte','de');
-INSERT INTO word (link,word,lang) VALUES ('81','Friseur','de');
-INSERT INTO word (link,word,lang) VALUES ('82','Leiter','de');
-INSERT INTO word (link,word,lang) VALUES ('83','Herzinfarkt','de');
-INSERT INTO word (link,word,lang) VALUES ('84','Hubschrauber','de');
-INSERT INTO word (link,word,lang) VALUES ('85','hit','de');
-INSERT INTO word (link,word,lang) VALUES ('86','Ich wette','de');
-INSERT INTO word (link,word,lang) VALUES ('87','laden','de');
-INSERT INTO word (link,word,lang) VALUES ('88','Land','de');
-INSERT INTO word (link,word,lang) VALUES ('89','links','de');
-INSERT INTO word (link,word,lang) VALUES ('90','gemacht','de');
-INSERT INTO word (link,word,lang) VALUES ('91','meine Schuld','de');
-INSERT INTO word (link,word,lang) VALUES ('92','Nachrichten','de');
-INSERT INTO word (link,word,lang) VALUES ('93','über','de');
-INSERT INTO word (link,word,lang) VALUES ('94','Fallschirm','de');
-INSERT INTO word (link,word,lang) VALUES ('95','Polizeiauto','de');
-INSERT INTO word (link,word,lang) VALUES ('96','Preis','de');
-INSERT INTO word (link,word,lang) VALUES ('97','setzen auf','de');
-INSERT INTO word (link,word,lang) VALUES ('98','lief','de');
-INSERT INTO word (link,word,lang) VALUES ('99','rat','de');
-INSERT INTO word (link,word,lang) VALUES ('100','retten','de');
-INSERT INTO word (link,word,lang) VALUES ('101','Raub','de');
-INSERT INTO word (link,word,lang) VALUES ('102','weglaufen','de');
-INSERT INTO word (link,word,lang) VALUES ('103','sagte','de');
-INSERT INTO word (link,word,lang) VALUES ('104','sank','de');
-INSERT INTO word (link,word,lang) VALUES ('105','sah','de');
-INSERT INTO word (link,word,lang) VALUES ('106','sinken','de');
-INSERT INTO word (link,word,lang) VALUES ('107','Situation','de');
-INSERT INTO word (link,word,lang) VALUES ('108','Schnee','de');
-INSERT INTO word (link,word,lang) VALUES ('109','lösen','de');
-INSERT INTO word (link,word,lang) VALUES ('110','seltsam','de');
-INSERT INTO word (link,word,lang) VALUES ('111','überleben','de');
-INSERT INTO word (link,word,lang) VALUES ('112','schwamm','de');
-INSERT INTO word (link,word,lang) VALUES ('113','Dieb','de');
-INSERT INTO word (link,word,lang) VALUES ('114','warf','de');
-INSERT INTO word (link,word,lang) VALUES ('115','nahm','de');
-INSERT INTO word (link,word,lang) VALUES ('116','TV-Moderatorin','de');
-INSERT INTO word (link,word,lang) VALUES ('117','TV-Studio','de');
-INSERT INTO word (link,word,lang) VALUES ('118','bewusstlos','de');
-INSERT INTO word (link,word,lang) VALUES ('119','aufwachen','de');
-INSERT INTO word (link,word,lang) VALUES ('120','ging','de');
-INSERT INTO word (link,word,lang) VALUES ('121','gewinnen','de');
-INSERT INTO word (link,word,lang) VALUES ('122','erwachte','de');
-INSERT INTO word (link,word,lang) VALUES ('123','gewonnen','de');
-INSERT INTO word (link,word,lang) VALUES ('124','Sie viel','de');
-INSERT INTO word (link,word,lang) VALUES ('125','Sie sehen.','de');
-INSERT INTO word (link,word,lang) VALUES ('126','Apfelkuchen','de');
-INSERT INTO word (link,word,lang) VALUES ('127','Speck','de');
-INSERT INTO word (link,word,lang) VALUES ('128','bill','de');
-INSERT INTO word (link,word,lang) VALUES ('129','Geburtstagskarte','de');
-INSERT INTO word (link,word,lang) VALUES ('130','schwarzer Kaffee','de');
-INSERT INTO word (link,word,lang) VALUES ('131','burger','de');
-INSERT INTO word (link,word,lang) VALUES ('132','Karotten','de');
-INSERT INTO word (link,word,lang) VALUES ('133','sicherlich','de');
-INSERT INTO word (link,word,lang) VALUES ('134','Huhn','de');
-INSERT INTO word (link,word,lang) VALUES ('135','Cocktail','de');
-INSERT INTO word (link,word,lang) VALUES ('136','Sahne','de');
-INSERT INTO word (link,word,lang) VALUES ('137','Tasse','de');
-INSERT INTO word (link,word,lang) VALUES ('138','Dessert','de');
-INSERT INTO word (link,word,lang) VALUES ('139','Stromrechnung','de');
-INSERT INTO word (link,word,lang) VALUES ('140','Geschmack','de');
-INSERT INTO word (link,word,lang) VALUES ('141','frites','de');
-INSERT INTO word (link,word,lang) VALUES ('142','Obst','de');
-INSERT INTO word (link,word,lang) VALUES ('143','Generation','de');
-INSERT INTO word (link,word,lang) VALUES ('144','Oma','de');
-INSERT INTO word (link,word,lang) VALUES ('145','Indian','de');
-INSERT INTO word (link,word,lang) VALUES ('146','kilo','de');
-INSERT INTO word (link,word,lang) VALUES ('147','Salat','de');
-INSERT INTO word (link,word,lang) VALUES ('148','Hauptgericht','de');
-INSERT INTO word (link,word,lang) VALUES ('149','Fleisch','de');
-INSERT INTO word (link,word,lang) VALUES ('150','Mineralwasser','de');
-INSERT INTO word (link,word,lang) VALUES ('151','gemischter Salat','de');
-INSERT INTO word (link,word,lang) VALUES ('152','älteste','de');
-INSERT INTO word (link,word,lang) VALUES ('153','Bestellung','de');
-INSERT INTO word (link,word,lang) VALUES ('154','Erbsen','de');
-INSERT INTO word (link,word,lang) VALUES ('155','Telefonkarte','de');
-INSERT INTO word (link,word,lang) VALUES ('156','Popcorn','de');
-INSERT INTO word (link,word,lang) VALUES ('157','Kartoffel','de');
-INSERT INTO word (link,word,lang) VALUES ('158','Programm','de');
-INSERT INTO word (link,word,lang) VALUES ('159','red','de');
-INSERT INTO word (link,word,lang) VALUES ('160','Braten','de');
-INSERT INTO word (link,word,lang) VALUES ('161','Größe','de');
-INSERT INTO word (link,word,lang) VALUES ('162','Single','de');
-INSERT INTO word (link,word,lang) VALUES ('163','Medium','de');
-INSERT INTO word (link,word,lang) VALUES ('164','stilles Wasser','de');
-INSERT INTO word (link,word,lang) VALUES ('165','Mineralwasser','de');
-INSERT INTO word (link,word,lang) VALUES ('166','Test','de');
-INSERT INTO word (link,word,lang) VALUES ('167','Tomaten','de');
-INSERT INTO word (link,word,lang) VALUES ('168','heute Abend','de');
-INSERT INTO word (link,word,lang) VALUES ('169','Vanille','de');
-INSERT INTO word (link,word,lang) VALUES ('170','Gemüse','de');
-INSERT INTO word (link,word,lang) VALUES ('171','Milchkaffee','de');
-INSERT INTO word (link,word,lang) VALUES ('172','Sie wetten!','de');
-INSERT INTO word (link,word,lang) VALUES ('173','Schauspielerin','de');
-INSERT INTO word (link,word,lang) VALUES ('174','Abenteuer','de');
-INSERT INTO word (link,word,lang) VALUES ('175','jedermann','de');
-INSERT INTO word (link,word,lang) VALUES ('176','Auszeichnung','de');
-INSERT INTO word (link,word,lang) VALUES ('177','schlecht','de');
-INSERT INTO word (link,word,lang) VALUES ('178','glauben','de');
-INSERT INTO word (link,word,lang) VALUES ('179','Bodybuilder','de');
-INSERT INTO word (link,word,lang) VALUES ('180','Bodybuilding','de');
-INSERT INTO word (link,word,lang) VALUES ('181','geboren','de');
-INSERT INTO word (link,word,lang) VALUES ('182','trotzen','de');
-INSERT INTO word (link,word,lang) VALUES ('183','tapfer','de');
-INSERT INTO word (link,word,lang) VALUES ('184','Komödie','de');
-INSERT INTO word (link,word,lang) VALUES ('185','abgehen','de');
-INSERT INTO word (link,word,lang) VALUES ('186','Konzert','de');
-INSERT INTO word (link,word,lang) VALUES ('187','leicht','de');
-INSERT INTO word (link,word,lang) VALUES ('188','leicht','de');
-INSERT INTO word (link,word,lang) VALUES ('189','genug','de');
-INSERT INTO word (link,word,lang) VALUES ('190','Folge','de');
-INSERT INTO word (link,word,lang) VALUES ('191','aufregend','de');
-INSERT INTO word (link,word,lang) VALUES ('192','kämpfen','de');
-INSERT INTO word (link,word,lang) VALUES ('193','erstens','de');
-INSERT INTO word (link,word,lang) VALUES ('194','folgen','de');
-INSERT INTO word (link,word,lang) VALUES ('195','gekämpft','de');
-INSERT INTO word (link,word,lang) VALUES ('196','schwer','de');
-INSERT INTO word (link,word,lang) VALUES ('197','schwer','de');
-INSERT INTO word (link,word,lang) VALUES ('198','Kick','de');
-INSERT INTO word (link,word,lang) VALUES ('199','lokalen','de');
-INSERT INTO word (link,word,lang) VALUES ('200','laut','de');
-INSERT INTO word (link,word,lang) VALUES ('201','bescheiden','de');
-INSERT INTO word (link,word,lang) VALUES ('202','Hals','de');
-INSERT INTO word (link,word,lang) VALUES ('203','schnell','de');
-INSERT INTO word (link,word,lang) VALUES ('204','ruhig','de');
-INSERT INTO word (link,word,lang) VALUES ('205','Grund','de');
-INSERT INTO word (link,word,lang) VALUES ('206','Berichterstatter','de');
-INSERT INTO word (link,word,lang) VALUES ('207','Roboter','de');
-INSERT INTO word (link,word,lang) VALUES ('208','traurig','de');
-INSERT INTO word (link,word,lang) VALUES ('209','speichern','de');
-INSERT INTO word (link,word,lang) VALUES ('210','Sci-Fi','de');
-INSERT INTO word (link,word,lang) VALUES ('211','zweitens','de');
-INSERT INTO word (link,word,lang) VALUES ('212','Tacho','de');
-INSERT INTO word (link,word,lang) VALUES ('213','Stuntman','de');
-INSERT INTO word (link,word,lang) VALUES ('214','drittens','de');
-INSERT INTO word (link,word,lang) VALUES ('215','um Hauptrolle','de');
-INSERT INTO word (link,word,lang) VALUES ('216','umdrehen','de');
-INSERT INTO word (link,word,lang) VALUES ('217','unbutton','de');
-INSERT INTO word (link,word,lang) VALUES ('218','Wort','de');
-INSERT INTO word (link,word,lang) VALUES ('219','Jahre','de');
-INSERT INTO word (link,word,lang) VALUES ('220','Grill','de');
-INSERT INTO word (link,word,lang) VALUES ('221','booten','de');
-INSERT INTO word (link,word,lang) VALUES ('222','Christmas Day','de');
-INSERT INTO word (link,word,lang) VALUES ('223','während','de');
-INSERT INTO word (link,word,lang) VALUES ('224','genießen','de');
-INSERT INTO word (link,word,lang) VALUES ('225','Modenschau','de');
-INSERT INTO word (link,word,lang) VALUES ('226','heiraten','de');
-INSERT INTO word (link,word,lang) VALUES ('227','fertig machen','de');
-INSERT INTO word (link,word,lang) VALUES ('228','hungrig','de');
-INSERT INTO word (link,word,lang) VALUES ('229','Zuhörer','de');
-INSERT INTO word (link,word,lang) VALUES ('230','Liebesgeschichte','de');
-INSERT INTO word (link,word,lang) VALUES ('231','treffen','de');
-INSERT INTO word (link,word,lang) VALUES ('232','Modell','de');
-INSERT INTO word (link,word,lang) VALUES ('233','Packtaschen','de');
-INSERT INTO word (link,word,lang) VALUES ('234','regen','de');
-INSERT INTO word (link,word,lang) VALUES ('235','Sandale','de');
-INSERT INTO word (link,word,lang) VALUES ('236','Socke','de');
-INSERT INTO word (link,word,lang) VALUES ('237','besondere','de');
-INSERT INTO word (link,word,lang) VALUES ('238','Badeanzug','de');
-INSERT INTO word (link,word,lang) VALUES ('239','die Nachrichten','de');
-INSERT INTO word (link,word,lang) VALUES ('240','durstig','de');
-INSERT INTO word (link,word,lang) VALUES ('241','müde','de');
-INSERT INTO word (link,word,lang) VALUES ('242','Argument','de');
-INSERT INTO word (link,word,lang) VALUES ('243','Fledermaus','de');
-INSERT INTO word (link,word,lang) VALUES ('244','Geschäftspartner','de');
-INSERT INTO word (link,word,lang) VALUES ('245','fallen','de');
-INSERT INTO word (link,word,lang) VALUES ('246','Fingerabdrücke','de');
-INSERT INTO word (link,word,lang) VALUES ('247','Griff','de');
-INSERT INTO word (link,word,lang) VALUES ('248','gehört','de');
-INSERT INTO word (link,word,lang) VALUES ('249','erfüllt','de');
-INSERT INTO word (link,word,lang) VALUES ('250','Mord','de');
-INSERT INTO word (link,word,lang) VALUES ('251','Mörder','de');
-INSERT INTO word (link,word,lang) VALUES ('252','Verdacht','de');
-INSERT INTO word (link,word,lang) VALUES ('253','Frau','de');
-INSERT INTO word (link,word,lang) VALUES ('254','herum','de');
-INSERT INTO word (link,word,lang) VALUES ('255','Erwachsenen','de');
-INSERT INTO word (link,word,lang) VALUES ('256','Polarkreis','de');
-INSERT INTO word (link,word,lang) VALUES ('257','Fahrrad','de');
-INSERT INTO word (link,word,lang) VALUES ('258','Bustour','de');
-INSERT INTO word (link,word,lang) VALUES ('259','beschäftigt','de');
-INSERT INTO word (link,word,lang) VALUES ('260','kosten','de');
-INSERT INTO word (link,word,lang) VALUES ('261','Tagebuch','de');
-INSERT INTO word (link,word,lang) VALUES ('262','aufgeregt','de');
-INSERT INTO word (link,word,lang) VALUES ('263','Flucht','de');
-INSERT INTO word (link,word,lang) VALUES ('264','fliegen','de');
-INSERT INTO word (link,word,lang) VALUES ('265','Zukunft','de');
-INSERT INTO word (link,word,lang) VALUES ('266','joggen','de');
-INSERT INTO word (link,word,lang) VALUES ('267','Sightseeing','de');
-INSERT INTO word (link,word,lang) VALUES ('268','Herberge','de');
-INSERT INTO word (link,word,lang) VALUES ('269','letzten Monat','de');
-INSERT INTO word (link,word,lang) VALUES ('270','Glück','de');
-INSERT INTO word (link,word,lang) VALUES ('271','Motorrad','de');
-INSERT INTO word (link,word,lang) VALUES ('272','Neuseeland','de');
-INSERT INTO word (link,word,lang) VALUES ('273','Plan','de');
-INSERT INTO word (link,word,lang) VALUES ('274','Rucksack','de');
-INSERT INTO word (link,word,lang) VALUES ('275','versenden','de');
-INSERT INTO word (link,word,lang) VALUES ('276','Koffer','de');
-INSERT INTO word (link,word,lang) VALUES ('277','Reisebüro','de');
-INSERT INTO word (link,word,lang) VALUES ('278','U-Bahn','de');
-INSERT INTO word (link,word,lang) VALUES ('279','über','de');
-INSERT INTO word (link,word,lang) VALUES ('280','Jugendherberge','de');
-INSERT INTO word (link,word,lang) VALUES ('281','auf der ganzen Welt','de');
-INSERT INTO word (link,word,lang) VALUES ('282','Department of Defense','de');
-INSERT INTO word (link,word,lang) VALUES ('283','es spielt keine Rolle','de');
-INSERT INTO word (link,word,lang) VALUES ('284','es funktioniert nicht','de');
-INSERT INTO word (link,word,lang) VALUES ('285','Sag mir die Zeit','de');
-INSERT INTO word (link,word,lang) VALUES ('286','warten Sie eine Minute','de');
-INSERT INTO word (link,word,lang) VALUES ('287','gleichzeitig','de');
-INSERT INTO word (link,word,lang) VALUES ('288','meine Meinung ändern','de');
-INSERT INTO word (link,word,lang) VALUES ('289','inmitten','de');
-INSERT INTO word (link,word,lang) VALUES ('290','auf seinem Weg von ... zu','de');
-INSERT INTO word (link,word,lang) VALUES ('291','Was ist da los?','de');
-INSERT INTO word (link,word,lang) VALUES ('292','wie zu Hause fühlen','de');
-INSERT INTO word (link,word,lang) VALUES ('293','Hier','de');
-INSERT INTO word (link,word,lang) VALUES ('294','Ich bin gerade auf der Suche','de');
-INSERT INTO word (link,word,lang) VALUES ('295','neben der Bank','de');
-INSERT INTO word (link,word,lang) VALUES ('296','Jeans','de');
-INSERT INTO word (link,word,lang) VALUES ('297','Wie groß bist du?','de');
-INSERT INTO word (link,word,lang) VALUES ('298','Möchten Sie','de');
-INSERT INTO word (link,word,lang) VALUES ('299','Hier und Jetzt','de');
-INSERT INTO word (link,word,lang) VALUES ('300','Welche Farbe hat es?','de');
-INSERT INTO word (link,word,lang) VALUES ('301','ein Flugzeug erwischen','de');
-INSERT INTO word (link,word,lang) VALUES ('302','wie lange?','de');
-INSERT INTO word (link,word,lang) VALUES ('303','es ist Zeit zu gehen','de');
-INSERT INTO word (link,word,lang) VALUES ('304','der nächste','de');
-INSERT INTO word (link,word,lang) VALUES ('1','while','en');
-INSERT INTO word (link,word,lang) VALUES ('2','young','en');
-INSERT INTO word (link,word,lang) VALUES ('3','airport','en');
-INSERT INTO word (link,word,lang) VALUES ('4','all','en');
-INSERT INTO word (link,word,lang) VALUES ('5','anyway','en');
-INSERT INTO word (link,word,lang) VALUES ('6','architect','en');
-INSERT INTO word (link,word,lang) VALUES ('7','athlete','en');
-INSERT INTO word (link,word,lang) VALUES ('8','beginning','en');
-INSERT INTO word (link,word,lang) VALUES ('9','borrow','en');
-INSERT INTO word (link,word,lang) VALUES ('10','bring','en');
-INSERT INTO word (link,word,lang) VALUES ('11','cake','en');
-INSERT INTO word (link,word,lang) VALUES ('12','chat','en');
-INSERT INTO word (link,word,lang) VALUES ('13','check','en');
-INSERT INTO word (link,word,lang) VALUES ('14','chess','en');
-INSERT INTO word (link,word,lang) VALUES ('15','cold drink','en');
-INSERT INTO word (link,word,lang) VALUES ('16','Come on!','en');
-INSERT INTO word (link,word,lang) VALUES ('17','communicate','en');
-INSERT INTO word (link,word,lang) VALUES ('18','computer games','en');
-INSERT INTO word (link,word,lang) VALUES ('19','endless','en');
-INSERT INTO word (link,word,lang) VALUES ('20','excuse me','en');
-INSERT INTO word (link,word,lang) VALUES ('21','flowers','en');
-INSERT INTO word (link,word,lang) VALUES ('22','forecast','en');
-INSERT INTO word (link,word,lang) VALUES ('23','version','en');
-INSERT INTO word (link,word,lang) VALUES ('24','interpreter','en');
-INSERT INTO word (link,word,lang) VALUES ('25','list','en');
-INSERT INTO word (link,word,lang) VALUES ('26','lost','en');
-INSERT INTO word (link,word,lang) VALUES ('27','make possible','en');
-INSERT INTO word (link,word,lang) VALUES ('28','many more','en');
-INSERT INTO word (link,word,lang) VALUES ('29','mean','en');
-INSERT INTO word (link,word,lang) VALUES ('30','military','en');
-INSERT INTO word (link,word,lang) VALUES ('31','network','en');
-INSERT INTO word (link,word,lang) VALUES ('32','next time','en');
-INSERT INTO word (link,word,lang) VALUES ('33','north','en');
-INSERT INTO word (link,word,lang) VALUES ('34','on business','en');
-INSERT INTO word (link,word,lang) VALUES ('35','passport','en');
-INSERT INTO word (link,word,lang) VALUES ('36','plane','en');
-INSERT INTO word (link,word,lang) VALUES ('37','problem','en');
-INSERT INTO word (link,word,lang) VALUES ('38','push','en');
-INSERT INTO word (link,word,lang) VALUES ('39','ride','en');
-INSERT INTO word (link,word,lang) VALUES ('40','Russian','en');
-INSERT INTO word (link,word,lang) VALUES ('41','slowly','en');
-INSERT INTO word (link,word,lang) VALUES ('42','ticket machine','en');
-INSERT INTO word (link,word,lang) VALUES ('43','tractor','en');
-INSERT INTO word (link,word,lang) VALUES ('45','use','en');
-INSERT INTO word (link,word,lang) VALUES ('46','web','en');
-INSERT INTO word (link,word,lang) VALUES ('47','website','en');
-INSERT INTO word (link,word,lang) VALUES ('48','worldwide','en');
-INSERT INTO word (link,word,lang) VALUES ('49','airlines','en');
-INSERT INTO word (link,word,lang) VALUES ('50','alien','en');
-INSERT INTO word (link,word,lang) VALUES ('51','alive','en');
-INSERT INTO word (link,word,lang) VALUES ('52','amazing','en');
-INSERT INTO word (link,word,lang) VALUES ('53','became','en');
-INSERT INTO word (link,word,lang) VALUES ('54','become','en');
-INSERT INTO word (link,word,lang) VALUES ('55','blew','en');
-INSERT INTO word (link,word,lang) VALUES ('56','bone','en');
-INSERT INTO word (link,word,lang) VALUES ('57','broke','en');
-INSERT INTO word (link,word,lang) VALUES ('58','brought','en');
-INSERT INTO word (link,word,lang) VALUES ('59','came','en');
-INSERT INTO word (link,word,lang) VALUES ('60','caught','en');
-INSERT INTO word (link,word,lang) VALUES ('61','continent','en');
-INSERT INTO word (link,word,lang) VALUES ('62','crash','en');
-INSERT INTO word (link,word,lang) VALUES ('63','crime','en');
-INSERT INTO word (link,word,lang) VALUES ('64','dangerous','en');
-INSERT INTO word (link,word,lang) VALUES ('65','did','en');
-INSERT INTO word (link,word,lang) VALUES ('67','end','en');
-INSERT INTO word (link,word,lang) VALUES ('68','enormous','en');
-INSERT INTO word (link,word,lang) VALUES ('69','escape','en');
-INSERT INTO word (link,word,lang) VALUES ('70','expect','en');
-INSERT INTO word (link,word,lang) VALUES ('71','explode','en');
-INSERT INTO word (link,word,lang) VALUES ('72','feet','en');
-INSERT INTO word (link,word,lang) VALUES ('73','fell','en');
-INSERT INTO word (link,word,lang) VALUES ('74','flew','en');
-INSERT INTO word (link,word,lang) VALUES ('75','found','en');
-INSERT INTO word (link,word,lang) VALUES ('76','fright','en');
-INSERT INTO word (link,word,lang) VALUES ('77','gave','en');
-INSERT INTO word (link,word,lang) VALUES ('78','gun','en');
-INSERT INTO word (link,word,lang) VALUES ('79','got','en');
-INSERT INTO word (link,word,lang) VALUES ('80','had','en');
-INSERT INTO word (link,word,lang) VALUES ('81','hairdresser','en');
-INSERT INTO word (link,word,lang) VALUES ('82','head','en');
-INSERT INTO word (link,word,lang) VALUES ('83','heart attack','en');
-INSERT INTO word (link,word,lang) VALUES ('84','helicopter','en');
-INSERT INTO word (link,word,lang) VALUES ('85','hit','en');
-INSERT INTO word (link,word,lang) VALUES ('86','','en');
-INSERT INTO word (link,word,lang) VALUES ('87','invite','en');
-INSERT INTO word (link,word,lang) VALUES ('88','land','en');
-INSERT INTO word (link,word,lang) VALUES ('89','left','en');
-INSERT INTO word (link,word,lang) VALUES ('90','made','en');
-INSERT INTO word (link,word,lang) VALUES ('91','my fault','en');
-INSERT INTO word (link,word,lang) VALUES ('92','news','en');
-INSERT INTO word (link,word,lang) VALUES ('93','over','en');
-INSERT INTO word (link,word,lang) VALUES ('94','parachute','en');
-INSERT INTO word (link,word,lang) VALUES ('95','police car','en');
-INSERT INTO word (link,word,lang) VALUES ('96','prize','en');
-INSERT INTO word (link,word,lang) VALUES ('97','put on','en');
-INSERT INTO word (link,word,lang) VALUES ('98','ran','en');
-INSERT INTO word (link,word,lang) VALUES ('99','rat','en');
-INSERT INTO word (link,word,lang) VALUES ('100','rescue','en');
-INSERT INTO word (link,word,lang) VALUES ('101','robbery','en');
-INSERT INTO word (link,word,lang) VALUES ('102','run away','en');
-INSERT INTO word (link,word,lang) VALUES ('103','said','en');
-INSERT INTO word (link,word,lang) VALUES ('104','sank','en');
-INSERT INTO word (link,word,lang) VALUES ('105','saw','en');
-INSERT INTO word (link,word,lang) VALUES ('106','sink','en');
-INSERT INTO word (link,word,lang) VALUES ('107','situation','en');
-INSERT INTO word (link,word,lang) VALUES ('108','snow','en');
-INSERT INTO word (link,word,lang) VALUES ('109','solve','en');
-INSERT INTO word (link,word,lang) VALUES ('110','strange','en');
-INSERT INTO word (link,word,lang) VALUES ('111','survive','en');
-INSERT INTO word (link,word,lang) VALUES ('112','swam','en');
-INSERT INTO word (link,word,lang) VALUES ('113','thief','en');
-INSERT INTO word (link,word,lang) VALUES ('114','threw','en');
-INSERT INTO word (link,word,lang) VALUES ('115','took','en');
-INSERT INTO word (link,word,lang) VALUES ('116','TV presenter','en');
-INSERT INTO word (link,word,lang) VALUES ('117','TV studio','en');
-INSERT INTO word (link,word,lang) VALUES ('118','unconscious','en');
-INSERT INTO word (link,word,lang) VALUES ('119','wake up','en');
-INSERT INTO word (link,word,lang) VALUES ('120','went','en');
-INSERT INTO word (link,word,lang) VALUES ('121','win','en');
-INSERT INTO word (link,word,lang) VALUES ('122','woke','en');
-INSERT INTO word (link,word,lang) VALUES ('123','won','en');
-INSERT INTO word (link,word,lang) VALUES ('124','you lot','en');
-INSERT INTO word (link,word,lang) VALUES ('125','You see.','en');
-INSERT INTO word (link,word,lang) VALUES ('126','apple pie','en');
-INSERT INTO word (link,word,lang) VALUES ('127','bacon','en');
-INSERT INTO word (link,word,lang) VALUES ('128','bill','en');
-INSERT INTO word (link,word,lang) VALUES ('129','birthday card','en');
-INSERT INTO word (link,word,lang) VALUES ('130','black coffee','en');
-INSERT INTO word (link,word,lang) VALUES ('131','burger','en');
-INSERT INTO word (link,word,lang) VALUES ('132','carrots','en');
-INSERT INTO word (link,word,lang) VALUES ('133','certainly','en');
-INSERT INTO word (link,word,lang) VALUES ('134','chicken','en');
-INSERT INTO word (link,word,lang) VALUES ('135','cocktail','en');
-INSERT INTO word (link,word,lang) VALUES ('136','cream','en');
-INSERT INTO word (link,word,lang) VALUES ('137','cup','en');
-INSERT INTO word (link,word,lang) VALUES ('138','dessert','en');
-INSERT INTO word (link,word,lang) VALUES ('139','electricity bill','en');
-INSERT INTO word (link,word,lang) VALUES ('140','flavour','en');
-INSERT INTO word (link,word,lang) VALUES ('141','fries','en');
-INSERT INTO word (link,word,lang) VALUES ('142','fruit','en');
-INSERT INTO word (link,word,lang) VALUES ('143','generation','en');
-INSERT INTO word (link,word,lang) VALUES ('144','grandma','en');
-INSERT INTO word (link,word,lang) VALUES ('145','Indian','en');
-INSERT INTO word (link,word,lang) VALUES ('146','kilo','en');
-INSERT INTO word (link,word,lang) VALUES ('147','lettuce','en');
-INSERT INTO word (link,word,lang) VALUES ('148','main course','en');
-INSERT INTO word (link,word,lang) VALUES ('149','meat','en');
-INSERT INTO word (link,word,lang) VALUES ('150','mineral water','en');
-INSERT INTO word (link,word,lang) VALUES ('151','mixed salad','en');
-INSERT INTO word (link,word,lang) VALUES ('152','oldest','en');
-INSERT INTO word (link,word,lang) VALUES ('153','order','en');
-INSERT INTO word (link,word,lang) VALUES ('154','peas','en');
-INSERT INTO word (link,word,lang) VALUES ('155','phone card','en');
-INSERT INTO word (link,word,lang) VALUES ('156','popcorn','en');
-INSERT INTO word (link,word,lang) VALUES ('157','potato','en');
-INSERT INTO word (link,word,lang) VALUES ('158','program','en');
-INSERT INTO word (link,word,lang) VALUES ('159','red','en');
-INSERT INTO word (link,word,lang) VALUES ('160','roast','en');
-INSERT INTO word (link,word,lang) VALUES ('161','size','en');
-INSERT INTO word (link,word,lang) VALUES ('162','single','en');
-INSERT INTO word (link,word,lang) VALUES ('163','medium','en');
-INSERT INTO word (link,word,lang) VALUES ('164','still water','en');
-INSERT INTO word (link,word,lang) VALUES ('165','sparkling water','en');
-INSERT INTO word (link,word,lang) VALUES ('166','test','en');
-INSERT INTO word (link,word,lang) VALUES ('167','tomato','en');
-INSERT INTO word (link,word,lang) VALUES ('168','tonight','en');
-INSERT INTO word (link,word,lang) VALUES ('169','vanilla','en');
-INSERT INTO word (link,word,lang) VALUES ('170','vegetable','en');
-INSERT INTO word (link,word,lang) VALUES ('171','white coffee','en');
-INSERT INTO word (link,word,lang) VALUES ('172','you bet!','en');
-INSERT INTO word (link,word,lang) VALUES ('173','actress','en');
-INSERT INTO word (link,word,lang) VALUES ('174','adventure','en');
-INSERT INTO word (link,word,lang) VALUES ('175','anyone','en');
-INSERT INTO word (link,word,lang) VALUES ('176','award','en');
-INSERT INTO word (link,word,lang) VALUES ('177','badly','en');
-INSERT INTO word (link,word,lang) VALUES ('178','believe','en');
-INSERT INTO word (link,word,lang) VALUES ('179','bodybuilder','en');
-INSERT INTO word (link,word,lang) VALUES ('180','bodybuilding','en');
-INSERT INTO word (link,word,lang) VALUES ('181','born','en');
-INSERT INTO word (link,word,lang) VALUES ('182','brave','en');
-INSERT INTO word (link,word,lang) VALUES ('183','bravely','en');
-INSERT INTO word (link,word,lang) VALUES ('184','comedy','en');
-INSERT INTO word (link,word,lang) VALUES ('185','come off','en');
-INSERT INTO word (link,word,lang) VALUES ('186','concert','en');
-INSERT INTO word (link,word,lang) VALUES ('187','easily','en');
-INSERT INTO word (link,word,lang) VALUES ('188','easy','en');
-INSERT INTO word (link,word,lang) VALUES ('189','enough','en');
-INSERT INTO word (link,word,lang) VALUES ('190','episode','en');
-INSERT INTO word (link,word,lang) VALUES ('191','exciting','en');
-INSERT INTO word (link,word,lang) VALUES ('192','fight','en');
-INSERT INTO word (link,word,lang) VALUES ('193','firstly','en');
-INSERT INTO word (link,word,lang) VALUES ('194','follow','en');
-INSERT INTO word (link,word,lang) VALUES ('195','fought','en');
-INSERT INTO word (link,word,lang) VALUES ('196','hard','en');
-INSERT INTO word (link,word,lang) VALUES ('197','heavily','en');
-INSERT INTO word (link,word,lang) VALUES ('198','kick','en');
-INSERT INTO word (link,word,lang) VALUES ('199','local','en');
-INSERT INTO word (link,word,lang) VALUES ('200','loudly','en');
-INSERT INTO word (link,word,lang) VALUES ('201','modest','en');
-INSERT INTO word (link,word,lang) VALUES ('202','neck','en');
-INSERT INTO word (link,word,lang) VALUES ('203','quickly','en');
-INSERT INTO word (link,word,lang) VALUES ('204','quietly','en');
-INSERT INTO word (link,word,lang) VALUES ('205','reason','en');
-INSERT INTO word (link,word,lang) VALUES ('206','reporter','en');
-INSERT INTO word (link,word,lang) VALUES ('207','robot','en');
-INSERT INTO word (link,word,lang) VALUES ('208','sadly','en');
-INSERT INTO word (link,word,lang) VALUES ('209','save','en');
-INSERT INTO word (link,word,lang) VALUES ('210','sci-fi','en');
-INSERT INTO word (link,word,lang) VALUES ('211','secondly','en');
-INSERT INTO word (link,word,lang) VALUES ('212','speedometer','en');
-INSERT INTO word (link,word,lang) VALUES ('213','stuntman','en');
-INSERT INTO word (link,word,lang) VALUES ('214','thirdly','en');
-INSERT INTO word (link,word,lang) VALUES ('215','to star','en');
-INSERT INTO word (link,word,lang) VALUES ('216','turn round','en');
-INSERT INTO word (link,word,lang) VALUES ('217','unbutton','en');
-INSERT INTO word (link,word,lang) VALUES ('218','word','en');
-INSERT INTO word (link,word,lang) VALUES ('219','years old','en');
-INSERT INTO word (link,word,lang) VALUES ('220','barbecue','en');
-INSERT INTO word (link,word,lang) VALUES ('221','boot','en');
-INSERT INTO word (link,word,lang) VALUES ('222','Christmas Day','en');
-INSERT INTO word (link,word,lang) VALUES ('223','during','en');
-INSERT INTO word (link,word,lang) VALUES ('224','enjoy','en');
-INSERT INTO word (link,word,lang) VALUES ('225','fashion show','en');
-INSERT INTO word (link,word,lang) VALUES ('226','get married','en');
-INSERT INTO word (link,word,lang) VALUES ('227','get ready','en');
-INSERT INTO word (link,word,lang) VALUES ('228','hungry','en');
-INSERT INTO word (link,word,lang) VALUES ('229','listeners','en');
-INSERT INTO word (link,word,lang) VALUES ('230','love story','en');
-INSERT INTO word (link,word,lang) VALUES ('231','meet','en');
-INSERT INTO word (link,word,lang) VALUES ('232','model','en');
-INSERT INTO word (link,word,lang) VALUES ('233','pack bags','en');
-INSERT INTO word (link,word,lang) VALUES ('234','rain','en');
-INSERT INTO word (link,word,lang) VALUES ('235','sandal','en');
-INSERT INTO word (link,word,lang) VALUES ('236','sock','en');
-INSERT INTO word (link,word,lang) VALUES ('237','special','en');
-INSERT INTO word (link,word,lang) VALUES ('238','swimsuit','en');
-INSERT INTO word (link,word,lang) VALUES ('239','the news','en');
-INSERT INTO word (link,word,lang) VALUES ('240','thirsty','en');
-INSERT INTO word (link,word,lang) VALUES ('241','tired','en');
-INSERT INTO word (link,word,lang) VALUES ('242','argument','en');
-INSERT INTO word (link,word,lang) VALUES ('243','bat','en');
-INSERT INTO word (link,word,lang) VALUES ('244','business partner','en');
-INSERT INTO word (link,word,lang) VALUES ('245','drop','en');
-INSERT INTO word (link,word,lang) VALUES ('246','fingerprints','en');
-INSERT INTO word (link,word,lang) VALUES ('247','handle','en');
-INSERT INTO word (link,word,lang) VALUES ('248','heard','en');
-INSERT INTO word (link,word,lang) VALUES ('249','met','en');
-INSERT INTO word (link,word,lang) VALUES ('250','murder','en');
-INSERT INTO word (link,word,lang) VALUES ('251','murderer','en');
-INSERT INTO word (link,word,lang) VALUES ('252','suspect','en');
-INSERT INTO word (link,word,lang) VALUES ('253','woman','en');
-INSERT INTO word (link,word,lang) VALUES ('254','around','en');
-INSERT INTO word (link,word,lang) VALUES ('255','adult','en');
-INSERT INTO word (link,word,lang) VALUES ('256','Arctic Circle','en');
-INSERT INTO word (link,word,lang) VALUES ('257','bicycle','en');
-INSERT INTO word (link,word,lang) VALUES ('258','bus tour','en');
-INSERT INTO word (link,word,lang) VALUES ('259','busy','en');
-INSERT INTO word (link,word,lang) VALUES ('260','cost','en');
-INSERT INTO word (link,word,lang) VALUES ('261','diary','en');
-INSERT INTO word (link,word,lang) VALUES ('262','excited','en');
-INSERT INTO word (link,word,lang) VALUES ('263','flight','en');
-INSERT INTO word (link,word,lang) VALUES ('264','fly','en');
-INSERT INTO word (link,word,lang) VALUES ('265','future','en');
-INSERT INTO word (link,word,lang) VALUES ('266','go jogging','en');
-INSERT INTO word (link,word,lang) VALUES ('267','go sightseeing','en');
-INSERT INTO word (link,word,lang) VALUES ('268','hostel','en');
-INSERT INTO word (link,word,lang) VALUES ('269','last month','en');
-INSERT INTO word (link,word,lang) VALUES ('270','lucky','en');
-INSERT INTO word (link,word,lang) VALUES ('271','motorbike','en');
-INSERT INTO word (link,word,lang) VALUES ('272','New Zealand','en');
-INSERT INTO word (link,word,lang) VALUES ('273','plan','en');
-INSERT INTO word (link,word,lang) VALUES ('274','rucksack','en');
-INSERT INTO word (link,word,lang) VALUES ('275','ship','en');
-INSERT INTO word (link,word,lang) VALUES ('276','suitcase','en');
-INSERT INTO word (link,word,lang) VALUES ('277','travel agent','en');
-INSERT INTO word (link,word,lang) VALUES ('278','Underground','en');
-INSERT INTO word (link,word,lang) VALUES ('279','via','en');
-INSERT INTO word (link,word,lang) VALUES ('280','youth hostel','en');
-INSERT INTO word (link,word,lang) VALUES ('281','all over the world','en');
-INSERT INTO word (link,word,lang) VALUES ('282','department of defense','en');
-INSERT INTO word (link,word,lang) VALUES ('283','','en');
-INSERT INTO word (link,word,lang) VALUES ('285',' bitte.','en');
-INSERT INTO word (link,word,lang) VALUES ('286','wait a minute','en');
-INSERT INTO word (link,word,lang) VALUES ('287','at the same time','en');
-INSERT INTO word (link,word,lang) VALUES ('288','change my mind','en');
-INSERT INTO word (link,word,lang) VALUES ('289','in the middle of','en');
-INSERT INTO word (link,word,lang) VALUES ('290','on his way from ... to','en');
-INSERT INTO word (link,word,lang) VALUES ('292','feel at home','en');
-INSERT INTO word (link,word,lang) VALUES ('293',' bitte.','en');
-INSERT INTO word (link,word,lang) VALUES ('295','next to the bank','en');
-INSERT INTO word (link,word,lang) VALUES ('296','pair of jeans','en');
-INSERT INTO word (link,word,lang) VALUES ('297','What size are you?','en');
-INSERT INTO word (link,word,lang) VALUES ('298',' dass ...?','en');
-INSERT INTO word (link,word,lang) VALUES ('299','here and now','en');
-INSERT INTO word (link,word,lang) VALUES ('300','What colour is it?','en');
-INSERT INTO word (link,word,lang) VALUES ('301','catch a plane','en');
-INSERT INTO word (link,word,lang) VALUES ('302','how long?','en');
-INSERT INTO word (link,word,lang) VALUES ('304','the next one','en');
 
-
-COMMIT;
-
-GRANT ALL ON link TO uservoc4u;
-GRANT ALL ON usr TO uservoc4u;
-GRANT ALL ON word TO uservoc4u;
-GRANT ALL ON image TO uservoc4u;
-
+INSERT INTO link ( lid, description, image, lesson ) VALUES 
+(1001,E'Lithuania',NULL,101)
+,(1002,E'Lithuanian',NULL,101)
+,(1003,E'Poland',NULL,101)
+,(1004,E'Polish',NULL,101)
+,(1005,E'Portugal',1,101)
+,(1006,E'Portuguese',NULL,101)
+,(1007,E'Scotland',NULL,101)
+,(1008,E'Scottish',NULL,101)
+,(1009,E'Slovakia',2,101)
+,(1010,E'Slovakian',NULL,101)
+,(1011,E'South Africa',3,101)
+,(1012,E'South African',NULL,101)
+,(1013,E'Turkey',NULL,101)
+,(1014,E'Turkish',NULL,101)
+,(1015,E'Ukraine',4,101)
+,(1016,E'Ukrainian',NULL,101)
+,(1017,E'Welsh',NULL,101)
+,(1018,E'actor',NULL,101)
+,(1019,E'actress',NULL,101)
+,(1020,E'doctor',NULL,101)
+,(1021,E'housewife',NULL,101)
+,(1022,E'nurse',5,101)
+,(1023,E'singer',6,101)
+,(1024,E'student',NULL,101)
+,(1025,E'teacher',7,102)
+,(1026,E'shop assistant',8,102)
+,(1027,E'bag',9,102)
+,(1028,E'blackboard',10,102)
+,(1029,E'book',NULL,102)
+,(1030,E'ceiling',NULL,102)
+,(1031,E'chair',NULL,102)
+,(1032,E'computer',11,102)
+,(1033,E'desk',NULL,102)
+,(1034,E'dictionary',12,102)
+,(1035,E'door',13,102)
+,(1036,E'exercise book',14,102)
+,(1037,E'floor',NULL,102)
+,(1038,E'pen',NULL,102)
+,(1039,E'pencil',15,102)
+,(1040,E'pencil case',16,102)
+,(1041,E'rubber',NULL,102)
+,(1042,E'rucksack',NULL,102)
+,(1043,E'ruler',17,102)
+,(1044,E'wall',18,2001)
+,(1045,E'window',19,2001)
+,(1046,E'beside',NULL,2001)
+,(1047,E'between',NULL,2001)
+,(1048,E'in',NULL,2001)
+,(1049,E'near',NULL,2001)
+,(1050,E'on',NULL,2001)
+,(1051,E'that',NULL,2001)
+,(1052,E'these',NULL,2001)
+,(1053,E'this',NULL,2001)
+,(1054,E'those',NULL,2001)
+,(1055,E'what',NULL,2001)
+,(1056,E'where',NULL,2001)
+,(1057,E'apple',NULL,2001)
+,(1058,E'bad',NULL,2001)
+,(1059,E'brother',NULL,2001)
+,(1060,E'children',NULL,2001)
+,(1061,E'country',NULL,2001)
+,(1062,E'Egypt',20,2001)
+,(1063,E'evening',NULL,2001)
+,(1064,E'extension',NULL,2004)
+,(1065,E'fine',NULL,2004)
+,(1066,E'a an',NULL,2004)
+,(1067,E'from',NULL,2004)
+,(1068,E'goodbye',NULL,2004)
+,(1069,E'have',NULL,2004)
+,(1070,E'hello',NULL,2004)
+,(1071,E'her',NULL,2004)
+,(1072,E'house',21,2004)
+,(1073,E'job',NULL,2004)
+,(1074,E'key',22,2004)
+,(1075,E'language',NULL,2004)
+,(1076,E'live',NULL,2004)
+,(1077,E'me',NULL,2004)
+,(1078,E'Mexico',NULL,2004)
+,(1079,E'my',NULL,2004)
+,(1080,E'newspaper',23,2004)
+,(1081,E'nice',NULL,2004)
+,(1082,E'not bad',NULL,2004)
+,(1083,E'orange',24,2004)
+,(1084,E'postcard',25,2004)
+,(1085,E'Russia',26,2004)
+,(1086,E'see you',NULL,2004)
+,(1087,E'sister',NULL,2004)
+,(1088,E'telephone number',NULL,2004)
+,(1089,E'thank you',NULL,2004)
+,(1090,E'the USA',27,2004)
+,(1091,E'the',NULL,2004)
+,(1092,E'want',NULL,2004)
+,(1093,E'your',NULL,2004)
+,(1094,E'bathroom',28,2004)
+,(1095,E'bedroom',29,2004)
+,(1096,E'dining-room',30,2004)
+,(1097,E'garage',NULL,2004)
+,(1098,E'living-room',NULL,2004)
+,(1099,E'room',NULL,2004)
+,(1100,E'toilet',31,2004)
+,(1101,E'bicycle bike',32,2004)
+,(1102,E'CD',NULL,2004)
+,(1103,E'computer disc',NULL,2004)
+,(1104,E'computer game',NULL,2004)
+,(1105,E'computer program',NULL,2004)
+,(1106,E'desktop computer',NULL,2004)
+,(1107,E'football',NULL,2004)
+,(1108,E'guitar',33,2004)
+,(1109,E'hi-fi',NULL,2004)
+,(1110,E'laptop computer',34,2004)
+,(1111,E'mobile phone',35,2004)
+,(1112,E'modem',36,2004)
+,(1113,E'MP3 player',NULL,2004)
+,(1114,E'PC',NULL,2004)
+,(1115,E'rollerblades',37,2004)
+,(1116,E'TV television',NULL,2004)
+,(1117,E'video',NULL,2004)
+,(1118,E'first 1st',NULL,2004)
+,(1119,E'second 2nd',NULL,2004)
+,(1120,E'third 3rd',NULL,2004)
+,(1121,E'fourth 4th',NULL,2004)
+,(1122,E'fifth 5th',NULL,2004)
+,(1123,E'sixth 6th',NULL,2004)
+,(1124,E'seventh 7th',NULL,2004)
+,(1125,E'eighth 8th',NULL,2004)
+,(1126,E'ninth 9th',NULL,2004)
+,(1127,E'tenth 10th',NULL,2004)
+,(1128,E'eleventh 11th',NULL,2004)
+,(1129,E'twelfth 12th',NULL,2004)
+,(1130,E'thirteenth 13th',NULL,2004)
+,(1131,E'fourteenth 14th',NULL,2004)
+,(1132,E'fifteenth 15th',NULL,2004)
+,(1133,E'sixteenth 16th',NULL,2004)
+,(1134,E'seventeenth 17th',NULL,2004)
+,(1135,E'eighteenth 18th',NULL,2004)
+,(1136,E'nineteenth 19th',NULL,2004)
+,(1137,E'twentieth 20th',NULL,2004)
+,(1138,E'twenty-first 21st',NULL,2004)
+,(1139,E'thirtieth 30th',NULL,2004)
+,(1140,E'birthday',NULL,2004)
+,(1141,E'horoscope',38,2004)
+,(1142,E'Aquarius',NULL,2004)
+,(1143,E'Aries',NULL,2004)
+,(1144,E'Cancer',NULL,2004)
+,(1145,E'Capricorn',NULL,2004)
+,(1146,E'Gemini',NULL,2004)
+,(1147,E'Leo',NULL,2004)
+,(1148,E'Libra',NULL,2004)
+,(1149,E'Pisces',NULL,2004)
+,(1150,E'Sagittarius',NULL,2004)
+,(1151,E'Scorpio',NULL,2004)
+,(1152,E'Taurus',NULL,2004)
+,(1153,E'Virgio',NULL,2004)
+,(1154,E'activity',NULL,2004)
+,(1155,E'comic',NULL,2004)
+,(1156,E'dancing',NULL,2004)
+,(1157,E'designer',NULL,2004)
+,(1158,E'editor',NULL,2004)
+,(1159,E'exam',NULL,2004)
+,(1160,E'favourite',NULL,2004)
+,(1161,E'football team',39,2004)
+,(1162,E'free time',NULL,2004)
+,(1163,E'important',NULL,2004)
+,(1164,E'novel',NULL,2004)
+,(1165,E'photo',NULL,2004)
+,(1166,E'photographer',40,2004)
+,(1167,E'poetry book',NULL,2004)
+,(1168,E'school',NULL,2004)
+,(1169,E'press conference',NULL,2004)
+,(1170,E'rockstar',NULL,2004)
+,(1171,E'accountant',41,2004)
+,(1172,E'anything else',NULL,2004)
+,(1173,E'apartment',NULL,2004)
+,(1174,E'at home',NULL,2004)
+,(1175,E'big',NULL,2004)
+,(1176,E'boyfriend',NULL,2004)
+,(1177,E'cheap',NULL,2004)
+,(1178,E'chocolate',42,2004)
+,(1179,E'coffee bar',NULL,2004)
+,(1180,E'college',NULL,2004)
+,(1181,E'dancer',43,2004)
+,(1182,E'daughter',NULL,2004)
+,(1183,E'different',NULL,2004)
+,(1184,E'difficult',NULL,2004)
+,(1185,E'drink',NULL,2004)
+,(1186,E'easy',NULL,2004)
+,(1187,E'egg',44,2004)
+,(1188,E'exciting',NULL,2004)
+,(1189,E'expensive',NULL,2004)
+,(1190,E'fast',45,2004)
+,(1191,E'father',NULL,2004)
+,(1192,E'first name',NULL,2004)
+,(1193,E'girl',NULL,2004)
+,(1194,E'girlfriend',NULL,2004)
+,(1195,E'good',NULL,2004)
+,(1196,E'grandfather',NULL,2004)
+,(1197,E'grandmother',NULL,2004)
+,(1198,E'hamburger',46,2004)
+,(1199,E'happy',47,2004)
+,(1200,E'here',NULL,2004)
+,(1201,E'hi',NULL,2004)
+,(1202,E'horrible',NULL,2004)
+,(1203,E'husband',NULL,2004)
+,(1204,E'ice-cream',48,2004)
+,(1205,E'identity card',49,2004)
+,(1206,E'journalist',50,2004)
+,(1207,E'Love, ...',NULL,2004)
+,(1208,E'menu',NULL,2004)
+,(1209,E'morning',NULL,2004)
+,(1210,E'mother',NULL,2004)
+,(1211,E'new',NULL,2004)
+,(1212,E'now',NULL,2004)
+,(1213,E'orange juice',51,2004)
+,(1214,E'please',NULL,2004)
+,(1215,E'policeman',52,2004)
+,(1216,E'pound',NULL,2004)
+,(1217,E'practice',NULL,2004)
+,(1218,E'price',NULL,2004)
+,(1219,E'slow',NULL,2004)
+,(1220,E'small',NULL,2004)
+,(1221,E'snack bar',NULL,2004)
+,(1222,E'snow',53,2004)
+,(1223,E'son',NULL,2004)
+,(1224,E'soon',NULL,2004)
+,(1225,E'speak',NULL,2004)
+,(1226,E'subway',54,2004)
+,(1227,E'Switzerland',NULL,2004)
+,(1228,E'tea',55,2004)
+,(1229,E'understand',NULL,2004)
+,(1230,E'use',NULL,2004)
+,(1231,E'wife',NULL,2004)
+,(1232,E'write',56,2004)
+,(1233,E'child',57,2004)
+,(1234,E'engineer',NULL,2004)
+,(1235,E'father dad',NULL,2004)
+,(1236,E'grandchild',NULL,2004)
+,(1237,E'grandchildren',NULL,2004)
+,(1238,E'grandfather granddad',NULL,2004)
+,(1239,E'grandmother grandma',NULL,2004)
+,(1240,E'grandparents',NULL,2004)
+,(1241,E'mother mum',NULL,2004)
+,(1242,E'musician',NULL,2004)
+,(1243,E'nephew',NULL,2004)
+,(1244,E'niece',NULL,2004)
+,(1245,E'parents',NULL,2004)
+,(1246,E'beautiful',NULL,2004)
+,(1247,E'blonde',NULL,2004)
+,(1248,E'build',NULL,2004)
+,(1249,E'curly',NULL,2004)
+,(1250,E'eyes',NULL,2004)
+,(1251,E'good-looking',NULL,2004)
+,(1252,E'UK United Kingdom',NULL,2004)
+,(1253,E'USA United States of America',NULL,2004)
+,(1254,E'Can you repeat that please?',NULL,2004)
+,(1255,E'How do you say ... in English?',NULL,2004)
+,(1256,E'How do you spell ...?',NULL,2004)
+,(1257,E'I don\'t understand.',NULL,2004)
+,(1258,E'Listen and repeat.',NULL,2004)
+,(1259,E'Open your books.',NULL,2004)
+,(1260,E'how?',NULL,2004)
+,(1261,E'what?',NULL,2004)
+,(1262,E'where?',NULL,2004)
+,(1263,E'Have a nice day.',NULL,2004)
+,(1264,E'How are you?',NULL,2004)
+,(1265,E'I am not bad.',NULL,2004)
+,(1266,E'I am fine.',NULL,2004)
+,(1267,E'What\'s your name?',NULL,2004)
+,(1268,E'Where are you from?',NULL,2004)
+,(1269,E'I\'m from ...',NULL,2004)
+,(1270,E'surf the Internet',NULL,2004)
+,(1271,E'Can I have ...?',NULL,2004)
+,(1272,E'Can I help?',NULL,2004)
+,(1273,E'here you are',NULL,2004)
+,(1274,E'How much is it?',NULL,2004)
+,(1275,E'How old are you?',NULL,2004)
+,(1276,E'pardon?',NULL,2004)
+,(1277,E'who?',NULL,2004)
+,(1278,E'I\'m 18 years old.',NULL,2004)
+,(1279,E'It\'s much money.',NULL,2004)
+,(1280,E'They speak fast.',NULL,2004)
+,(1281,E'She is French.',NULL,2004)
+,(1282,E'It\'s very cold.',NULL,2004)
+,(1284,'',NULL,2004)
+,(2001,E'accept',NULL,4001)
+,(2002,E'ask for',NULL,4001)
+,(2003,E'be surprised',58,4001)
+,(2004,E'corridor',59,4001)
+,(2005,E'good luck',NULL,4001)
+,(2006,E'interview',60,4001)
+,(2007,E'luggage',61,4001)
+,(2008,E'practise',NULL,4001)
+,(2009,E'sports stuff',62,4001)
+,(2010,E'straight',NULL,4001)
+,(2011,E'tennis racquet',63,4001)
+,(2012,E'trainers',64,4001)
+,(2013,E'trolley',NULL,4001)
+,(2014,E'turn up',NULL,4001)
+,(2015,E'achievement',NULL,4001)
+,(2016,E'advertisement',NULL,4001)
+,(2017,E'afford',NULL,4001)
+,(2018,E'ages',NULL,4001)
+,(2019,E'amazing',NULL,4001)
+,(2020,E'ambassador',NULL,4001)
+,(2021,E'amount',NULL,4001)
+,(2022,E'ancient',65,4001)
+,(2023,E'apologize',NULL,4001)
+,(2024,E'architectural',NULL,4001)
+,(2025,E'assassinate',NULL,4001)
+,(2026,E'benefit',NULL,4001)
+,(2027,E'break',NULL,4001)
+,(2028,E'bright',NULL,4001)
+,(2029,E'brochure',NULL,4001)
+,(2030,E'builder',66,4001)
+,(2031,E'butterfly',67,4001)
+,(2032,E'celebrity',NULL,4001)
+,(2033,E'century',NULL,4001)
+,(2034,E'come round',NULL,4001)
+,(2035,E'commercialized',NULL,4001)
+,(2036,E'communicate',68,4001)
+,(2037,E'computer',69,4001)
+,(2038,E'corn',70,4001)
+,(2039,E'destroy',NULL,4001)
+,(2040,E'dishwasher',71,4001)
+,(2041,E'drug abuse',NULL,4001)
+,(2042,E'email',72,4001)
+,(2043,E'estimate',NULL,4001)
+,(2044,E'famine',NULL,4001)
+,(2045,E'freezing',NULL,4001)
+,(2046,E'full-time',NULL,4001)
+,(2047,E'galaxy',73,4001)
+,(2048,E'get stuck',74,4001)
+,(2049,E'giant',NULL,4001)
+,(2050,E'go mad',NULL,4001)
+,(2051,E'goodwill',NULL,4001)
+,(2052,E'gorgeous',NULL,4001)
+,(2053,E'greed',NULL,4001)
+,(2054,E'health care',75,4001)
+,(2055,E'hectic',NULL,4001)
+,(2056,E'huge',NULL,4001)
+,(2057,E'humble',NULL,4001)
+,(2058,E'inconvenience',NULL,4001)
+,(2059,E'increase',76,4001)
+,(2060,E'interactivity',NULL,4001)
+,(2061,E'Internet',77,4001)
+,(2062,E'knowledge',NULL,4001)
+,(2063,E'leap',NULL,4001)
+,(2064,E'loo toilet',78,4001)
+,(2065,E'mankind',NULL,4001)
+,(2066,E'mess',79,4001)
+,(2067,E'mobile phone',NULL,4001)
+,(2068,E'musical instrument',80,4001)
+,(2069,E'noticeable',81,4001)
+,(2070,E'nuclear weapon',NULL,4001)
+,(2071,E'observatory',82,4001)
+,(2072,E'Olympic Games',83,4001)
+,(2073,E'online',NULL,4001)
+,(2074,E'order',NULL,4001)
+,(2075,E'payment',NULL,4001)
+,(2076,E'perform',NULL,4001)
+,(2077,E'pet',84,4001)
+,(2078,E'pick up',NULL,4001)
+,(2079,E'popcorn',85,4001)
+,(2080,E'process',NULL,4001)
+,(2081,E'race',86,4001)
+,(2082,E'ray',87,4001)
+,(2083,E'record',88,4001)
+,(2084,E'revolutionize',NULL,4001)
+,(2085,E'rise',NULL,4001)
+,(2086,E'save',89,4001)
+,(2087,E'skid',NULL,4001)
+,(2088,E'solar system',90,4001)
+,(2089,E'space probe',91,4001)
+,(2090,E'sparkling',92,4001)
+,(2091,E'stage',93,4001)
+,(2092,E'stand',NULL,4001)
+,(2093,E'stand for',NULL,4001)
+,(2094,E'statement',NULL,4001)
+,(2095,E'step',NULL,4001)
+,(2096,E'surely',NULL,4001)
+,(2097,E'swimming costume',94,4001)
+,(2098,E'take part',NULL,4001)
+,(2099,E'take place',NULL,4001)
+,(2100,E'text message',NULL,4001)
+,(2101,E'text',NULL,4001)
+,(2102,E'try on',95,4001)
+,(2103,E'the UN',NULL,4001)
+,(2104,E'user',NULL,4001)
+,(2105,E'vegetarian',NULL,4001)
+,(2106,E'web page',NULL,4001)
+,(2107,E'website',96,4001)
+,(2108,E'wing',97,4001)
+,(2109,E'wonder',NULL,4001)
+,(2110,E'absolutely',NULL,4001)
+,(2111,E'aerobics',98,4001)
+,(2112,E'allow',NULL,4001)
+,(2113,E'arrangement',NULL,4001)
+,(2114,E'bargain',NULL,4001)
+,(2115,E'busy',NULL,4001)
+,(2116,E'charity',NULL,4001)
+,(2117,E'cheer up',NULL,4001)
+,(2118,E'cheque',NULL,4001)
+,(2119,E'clown',99,4001)
+,(2120,E'coach',100,4001)
+,(2121,E'convenience',NULL,4001)
+,(2122,E'crazy about',101,4001)
+,(2123,E'decimal',NULL,4001)
+,(2124,E'decorate',NULL,4001)
+,(2125,E'deep',102,4001)
+,(2126,E'definitely',NULL,4001)
+,(2127,E'distract',NULL,4001)
+,(2128,E'energetic',NULL,4001)
+,(2129,E'event',NULL,4001)
+,(2130,E'exhausted',103,4001)
+,(2131,E'fancy',NULL,4001)
+,(2132,E'feed',NULL,4001)
+,(2133,E'football pitch',NULL,4001)
+,(2134,E'goggles',NULL,4001)
+,(2135,E'graduate',104,4001)
+,(2136,E'guess',NULL,4001)
+,(2137,E'health',105,4001)
+,(2138,E'injection',106,4001)
+,(2139,E'interior designer',NULL,4001)
+,(2140,E'jogger',107,4001)
+,(2141,E'journalist',108,4001)
+,(2142,E'kid',109,4001)
+,(2143,E'laugh',110,4001)
+,(2144,E'laughter',NULL,4001)
+,(2145,E'lawyer',111,4001)
+,(2146,E'leisure',112,4001)
+,(2147,E'lobby',113,4001)
+,(2148,E'loose-fitting',NULL,4001)
+,(2149,E'magic trick',114,4001)
+,(2150,E'marriage counsellor',115,4001)
+,(2151,E'master’s degree',NULL,4001)
+,(2152,E'medicine',116,4001)
+,(2153,E'mind',117,4001)
+,(2154,E'nonsense',NULL,4001)
+,(2155,E'operation',NULL,4001)
+,(2156,E'otherwise',NULL,4001)
+,(2157,E'pack',NULL,4001)
+,(2158,E'participate',NULL,4001)
+,(2159,E'percentage',118,4001)
+,(2160,E'plait',NULL,4001)
+,(2161,E'privileged',NULL,4001)
+,(2162,E'race about',NULL,4001)
+,(2163,E'raise',NULL,4001)
+,(2164,E'rarely',NULL,4001)
+,(2165,E'reduced',NULL,4001)
+,(2166,E'relax',119,4001)
+,(2167,E'research scientist',120,4001)
+,(2168,E'resort',121,4001)
+,(2169,E'response',NULL,4001)
+,(2170,E'rubber',NULL,4001)
+,(2171,E'sale',NULL,4001)
+,(2172,E'sensitive',NULL,4001)
+,(2173,E'shorts',122,4001)
+,(2174,E'sick',123,4001)
+,(2175,E'silly',NULL,4001)
+,(2176,E'sleep',124,4001)
+,(2177,E'slightly',NULL,4001)
+,(2178,E'suburb',125,4001)
+,(2179,E'supportive',NULL,4001)
+,(2180,E'tights',126,4001)
+,(2181,E'tip advice',NULL,4001)
+,(2182,E'tiring',127,4001)
+,(2183,E'totally',NULL,4001)
+,(2184,E'treat',NULL,4001)
+,(2185,E'unemployment',NULL,4001)
+,(2186,E'unwind',NULL,4001)
+,(2187,E'useless',NULL,4001)
+,(2188,E'volleyball',128,4001)
+,(2189,E'ward',NULL,4001)
+,(2190,E'waterproof',129,4001)
+,(2191,E'wedding anniversary',NULL,4001)
+,(2192,E'worry',130,4001)
+,(2193,E'yell',NULL,4001)
+,(2194,E'zookeeper',131,4001)
+,(2195,E'act',NULL,4001)
+,(2196,E'amazement',132,4001)
+,(2197,E'award',133,4001)
+,(2198,E'awful',NULL,4001)
+,(2199,E'battle',134,4001)
+,(2200,E'beat',NULL,4001)
+,(2201,E'bet',NULL,4001)
+,(2202,E'birth',NULL,4001)
+,(2203,E'boast',NULL,4001)
+,(2204,E'breathe',NULL,4001)
+,(2205,E'brush',135,4001)
+,(2206,E'chapter',NULL,4001)
+,(2207,E'chat',136,4001)
+,(2208,E'childhood',137,4001)
+,(2209,E'commit suicide',NULL,4001)
+,(2210,E'depression',NULL,4001)
+,(2211,E'diamond',138,4001)
+,(2212,E'dig',139,4001)
+,(2213,E'disgusting',NULL,4001)
+,(2214,E'draw',NULL,4001)
+,(2215,E'DVD',140,4001)
+,(2216,E'emperor',NULL,4001)
+,(2217,E'encourage',NULL,4001)
+,(2218,E'exhibition',NULL,4001)
+,(2219,E'eyesight',141,4001)
+,(2220,E'fail',NULL,4001)
+,(2221,E'fascinated',142,4001)
+,(2222,E'fearless',NULL,4001)
+,(2223,E'feature',NULL,4001)
+,(2224,E'fight',143,4001)
+,(2225,E'genius',144,4001)
+,(2226,E'heart failure',NULL,4001)
+,(2227,E'homesick',NULL,4001)
+,(2228,E'honour',NULL,4001)
+,(2229,E'hunting',145,4001)
+,(2230,E'impressed',NULL,4001)
+,(2231,E'influenza',NULL,4001)
+,(2232,E'lifelike',NULL,4001)
+,(2233,E'masterpiece',NULL,4001)
+,(2234,E'match',146,4001)
+,(2235,E'mile',NULL,4001)
+,(2236,E'moral',NULL,4001)
+,(2237,E'nationality',147,4001)
+,(2238,E'nature',148,4001)
+,(2239,E'necklace',149,4001)
+,(2240,E'neighbourhood',NULL,4001)
+,(2241,E'old-fashioned',NULL,4001)
+,(2242,E'only',NULL,4001)
+,(2243,E'outdoor',150,4001)
+,(2244,E'palace',151,4001)
+,(2245,E'palette',152,4001)
+,(2246,E'pigeon',153,4001)
+,(2247,E'pleased',NULL,4001)
+,(2248,E'point',154,4001)
+,(2249,E'portrait',NULL,4001)
+,(2250,E'recognize',NULL,4001)
+,(2251,E'refuse',155,4001)
+,(2252,E'religious',156,4001)
+,(2253,E'report',NULL,4001)
+,(2254,E'sand',157,4001)
+,(2255,E'scary',NULL,4001)
+,(2256,E'score',NULL,4001)
+,(2257,E'scream',NULL,4001)
+,(2258,E'shotgun',158,4001)
+,(2259,E'sign',159,4001)
+,(2260,E'sink',160,4001)
+,(2261,E'sketch',NULL,4001)
+,(2262,E'skip',NULL,4001)
+,(2263,E'soldier',161,4001)
+,(2264,E'spill',162,4001)
+,(2265,E'spoiled',NULL,4001)
+,(2266,E'star',163,4001)
+,(2267,E'strict',NULL,4001)
+,(2268,E'suffer',NULL,4001)
+,(2269,E'sweetcorn',NULL,4001)
+,(2270,E'any day now',NULL,4001)
+,(2271,E'at the end of',NULL,4001)
+,(2272,E'late for work',NULL,4001)
+,(2273,E'take a year out',NULL,4001)
+,(2274,E'go out with',NULL,4001)
+,(2275,E'hang on wait',NULL,4001)
+,(2276,E'lift ride in a car',NULL,4001)
+,(2277,E'packing and postage',NULL,4001)
+,(2278,E'stuff things in general',NULL,4001)
+,(2279,E'dry ski slope',NULL,4001)
+,(2280,E'tell a lie',NULL,4001)
+,(2281,E'web page designer',NULL,4001)
+,(2282,E'hang out relax',NULL,4001)
+,(2284,'',NULL,4001)
+;
+commit;
 SELECT pg_size_pretty(pg_database_size('voc4u'));

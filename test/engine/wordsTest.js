@@ -44,6 +44,9 @@ describe('getWords', function(){
                 assert(rows);
                 console.log(rows) ;
                 //rows.length.should.be.eql(words.lessonSize);
+
+                rows.should.be.Array;
+                rows.length.should.be.above(0);
                 var rows0 = rows[0];
                 rows0.should.have.property('link');
                 rows0.should.have.property('word');
@@ -61,8 +64,12 @@ describe('getWords', function(){
                 words.getWordsWithImages(pgClient, ['en','cs'], 2001, function(err, rows){
                     //console.log(rows) ;
                     assert(rows);
+                    rows.should.be.Array;
                     rows.should.have.length(3);
                     rows.length.should.be.eql(3);
+                    rows[0].should.be.Array;
+                    rows[1].should.be.Array;
+                    rows[2].should.be.Array;
                     var rows00 = rows[0][0];
                     rows00.should.have.property('link');
                     rows00.should.have.property('word');
