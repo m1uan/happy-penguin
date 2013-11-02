@@ -158,7 +158,7 @@ module.exports = {
         }
 
         var sqlData = [linkId];
-        var sql = 'SELECT lid,description, link.usr, version, image.image as image, image.iid as iid, image.thumb as thumb FROM link LEFT JOIN image ON image.iid = link.image WHERE lid = $1;';
+        var sql = 'SELECT lid,description, link.usr, version, image.image as imageFile, image.iid as imageId, image.thumb as thumbFile FROM link LEFT JOIN image ON image.iid = link.image WHERE lid = $1;';
 
         console.log('link.get', sql, sqlData)  ;
         pgClient.query(sql, sqlData , function(err, data){

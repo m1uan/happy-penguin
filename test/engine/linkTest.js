@@ -51,7 +51,7 @@ describe('link operations', function(){
     describe('download and store images', function(){
         it('update word', function(cb){
 
-            var linkData = {lid : 160000, image : 150000, description: 'ahoj jak sa mas'}
+            var linkData = {lid : 160000, imageId : 150000, description: 'ahoj jak sa mas'}
 
             var length = 0;
 
@@ -73,11 +73,12 @@ describe('link operations', function(){
                 console.log(linkData);
                 link.updateAndGet(pgClient, 2, linkData, ['image'], function(err, links){
                     console.log('links update 2', err || links);
-                    assert(links.length == length + 1);
-                    assert(links[0].iid == linkData.image);
+                    links.should.a.length(length + 1);
+                    links[0].should.have.property('imageid');
+                    links[0].imageid.should.eql(linkData.imageId);
                     assert(links[0].description == linkData.description);
                     assert(links[0].usr == 2);
-                    links[0].should.have.property('thumb');
+                    links[0].should.have.property('thumbfile');
                     icb(null);
                 });
             }
@@ -100,7 +101,7 @@ describe('link operations', function(){
                 link.get(pgClient, linkData.lid, ['image'], function(err, links){
 
                     console.log('links update 3', err || links);
-                    links[1].should.have.property('thumb');
+                    links[1].should.have.property('thumbfile');
                     if(links.length > 1){
 
                         linkData.description = links[1].description;
@@ -118,7 +119,7 @@ describe('link operations', function(){
                     console.log('links update 4', err || links2, length);
 
                     assert(links2.length == length);
-                    assert(links2[0].iid == linkData.image);
+                    assert(links2[0].iid == linkData.imageId);
                     assert(links2[0].description == linkData.description);
                     assert(links2[0].usr == 3);
                     icb(null);

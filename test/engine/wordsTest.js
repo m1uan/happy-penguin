@@ -61,8 +61,8 @@ describe('getWords', function(){
                 words.getWordsWithImages(pgClient, ['en','cs'], 2001, function(err, rows){
                     //console.log(rows) ;
                     assert(rows);
-
-                    //rows.length.should.be.eql(words.lessonSize);
+                    rows.should.have.length(3);
+                    rows.length.should.be.eql(3);
                     var rows00 = rows[0][0];
                     rows00.should.have.property('link');
                     rows00.should.have.property('word');
@@ -76,9 +76,11 @@ describe('getWords', function(){
                     rows10.should.have.property('lang');
                     rows10.lang.should.eql('cs');
 
+                    rows[2].should.not.be.Null
+                    rows[2].length.should.be.above(0);
                     var rows20 = rows[2][0];
                     rows20.should.have.property('lid');
-                    rows20.should.have.property('image');
+                    rows20.should.have.property('imagefile');
                     rows20.should.have.property('version');
                     rows20.should.have.property('description');
                     cb();
@@ -90,12 +92,15 @@ describe('getWords', function(){
     describe('getImages(lesson)', function(){
         it('get images from lesson 1', function(cb){
             words.getImages(pgClient, 101, function(err, rows){
-                console.error(err);
                 //console.log(rows);
-                assert(rows);
-                assert(rows[0].lid);
-                assert(rows[0].description);
-                assert(rows[0].image);
+
+                rows.should.be.a.Array;
+                rows.length.should.be.above(0);
+                var row0 = rows[0];
+
+                row0.should.have.property('lid');
+                row0.should.have.property('description');
+                row0.should.have.property('imagefile');
 
                 cb();
             });
@@ -153,7 +158,7 @@ describe('getWords', function(){
             async.series(ser,cb);
         });
 
-        it('update 3 cs', function(cb){
+        it.skip('update 3 cs', function(cb){
 
 
 

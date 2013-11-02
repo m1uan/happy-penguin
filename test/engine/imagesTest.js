@@ -54,7 +54,7 @@ var imageForDelete = [];
 
 
 
-describe.only('image store', function(){
+describe('image store', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -161,9 +161,9 @@ describe.only('image store', function(){
                 assert(rows.length == 2);
                 rows.forEach(function(val, idx){
                     if(val.version == 0){
-                        assert(val.image);
-                        assert(val.iid);
-                        imageForDelete.push(val.iid);
+                        val.should.have.property('imagefile');
+                        val.should.have.property('imageid');
+                        imageForDelete.push(val.imageid);
                     }
 
                 });
@@ -184,11 +184,11 @@ describe.only('image store', function(){
                 rows.should.a.length(2);
                 rows.forEach(function(val, idx){
                     if(val.version == 0){
-                        val.should.have.property('image');
-                        val.should.have.property('iid');
-                        val.image.should.not.eql('');
-                        val.iid.should.not.be.Null;
-                        assert(fs.existsSync(images.IMG_ORIG_DIR + val.image), 'file isnt exist in data dir');
+                        val.should.have.property('imagefile');
+                        val.should.have.property('imageid');
+                        val.imagefile.should.not.eql('');
+                        val.imageid.should.not.be.Null;
+                        assert(fs.existsSync(images.IMG_ORIG_DIR + val.imagefile), 'file isnt exist in data dir');
                         imageForDelete.push(val.iid);
                     }
 
@@ -255,19 +255,19 @@ describe.only('image store', function(){
                 rows.should.a.length(3);
                 rows.forEach(function(val, idx){
                     if(val.version == 0){
-                        assert(val.image);
-                        assert(val.iid);
-                        imageForDelete.push(val.iid);
+                        val.should.have.property('imagefile');
+                        val.should.have.property('imageid');
+                        imageForDelete.push(val.imageid);
                         var data = {
                             thumbData: ic3,
-                            thumbFor: val.iid
+                            thumbFor: val.imageid
                         }
                         images.storeImgFromData(pgClient, 1,data, function(err, thumb){
                             console.log(thumb);
                             thumb.should.have.property('thumbFile');
                             thumb.should.have.property('imageId');
-                            thumb.thumbFile.should.equal(val.image);
-                            thumb.imageId.should.equal(val.iid);
+                            thumb.thumbFile.should.equal(val.imagefile);
+                            thumb.imageId.should.equal(val.imageid);
                             cb();
                         });
                     }
