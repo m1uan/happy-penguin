@@ -57,13 +57,15 @@ at processImmediate [as _immediateCallback] (timers.js:317:15)
 */
 
 module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
-
+    console.log('BEGIN:image.saveFromUrl', userId, linkId, url) ;
     module.exports.storeUrl(pgClient, userId, url, function(err, imageData){
+        console.log('BACK:image.saveFromUrl', err, imageData) ;
         if(err){
             cb(err, null);
         } else {
             var linkConteiner = {
-                image : imageData.iid,
+                imageId: imageData.imageId,
+                imageFile : imageData.imageFile,
                 lid : linkId};
             //console.log(linkConteiner);
             link.updateAndGet(pgClient,userId, linkConteiner, cb);
@@ -93,6 +95,7 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
                 type : imageInfo.type
             };
             module.exports.storeImgFromFileName(pgClient, userId, imageInfoNew, function(err, data){
+                console.log('BACK:storeImgFromData', userId, data);
                 // if also there thumbData
                 if(!err && imageInfo.thumbData){
                     console.log('storeImgFromData', '@ALSO THUMB',data);
@@ -149,55 +152,41 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
 }
 
 module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
-
-
+    console.log('BEGIN:image.storeImgFromFileName', userId, userId, imageInfo) ;
     async.waterfall([
         function(icb){
             icb(null, imageInfo.file);
-        },resizeImage
-        , countMD5AndCopy
+        }
+        , countMD5
+        , isExistsSameImgWithMD5
+        , copyFile
         , storeInDb
     ]
         ,cb);
 
 
-    function storeInDb(imgFile, mdSum, icb){
-        console.log('storeInDb',imgFile, mdSum );
-
-        // NO STORE because already exists image with this md5sum
-        if(!icb){
-            // imgFile - cointains id of IMAGE
-            mdSum(null, imgFile);
-            return;
-
-            // SKIP INSERT - because already
-        }
 
 
-        var sql = 'INSERT INTO image (image, md5, usr) VALUES ($1,$2,$3) RETURNING iid';
-        console.log(sql);
-        console.log(imgFile);
-        pgClient.query(sql,[imgFile, mdSum, userId], function(err, data){
-            if(err){
-                icb(err, null);
-                return;
-            }
+    function countMD5(fileName, icb){
+        console.log('storeImgFromFileName:countMD5', fileName) ;
 
-            console.log(data);
-            // RETURN new id of image
-            icb(null, {image: imgFile, iid: data.rows[0].iid});
+        var crypto = require('crypto');
+        var md5sum = crypto.createHash('md5');
+
+        var data = fs.readFile(fileName, function(err, data){
+            md5sum.update(data);
+            var sum = md5sum.digest('hex');
+            icb(err, {md5: sum, data: data});
         });
-
     }
 
-    function isExistsSameImgWithMD5(md5, icb){
+    function isExistsSameImgWithMD5(md5data, icb){
+        console.log('storeImgFromFileName:isExistsSameImgWithMD5', md5data) ;
         var sql = 'SELECT iid, image FROM image WHERE md5 = $1';
 
-        var data  = [md5];
+        var data  = [md5data.md5];
         console.log(sql, data);
         pgClient.query(sql, data, function(err, rows){
-
-
 
             if(err){
                 console.log('E isExistsSameImgWithMD5 ', err);
@@ -209,11 +198,72 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
             console.log('LENGTH isExistsSameImgWithMD5', rows.rows.length);
 
             if(rows.rows.length < 1){
-                icb(err, -1);
+                icb(err, md5data);
             } else {
-                icb(err, {image: rows.rows[0].image, iid: rows.rows[0].iid});
+                icb(err, {imageFile: rows.rows[0].image, imageId: rows.rows[0].iid});
             }
 
+        });
+
+    }
+
+    function copyFile(copyData, icb){
+        console.log('storeImgFromFileName:copyFile', copyData) ;
+
+        if(copyData.imageId && copyData.imageFile){
+            icb(null, copyData);
+            return;
+        } else if(copyData.md5 && copyData.data){
+            var writeFile = module.exports.IMG_ORIG_DIR +writeFileName;
+            console.log('countMD5AndCopy before wrote:', writeFile) ;
+            fs.writeFile(writeFile, copyData.data, function(err){
+                // create new image in DB with file name and md5
+                icb(err, {file: writeFileName, md5 : copyData.md5});
+            });
+        } else {
+            icb('missing md5 and data for copy');
+            return ;
+        }
+
+        // copy
+        var writeFileName = generateName();
+
+        if(imageInfo.type == 'data:image/png'){
+            writeFileName += '.png';
+        } else {
+            writeFileName += '.jpeg';
+        }
+
+
+    }
+
+    function storeInDb(storeData, icb){
+        console.log('storeImgFromFileName:storeInDb', storeData );
+
+        // NO STORE because already exists image with this md5sum
+        if(storeData.imageId && storeData.imageFile){
+            // imgFile - cointains id of IMAGE
+            icb(null, storeData);
+            return;
+        } else if(!storeData.file || !storeData.md5) {
+            icb('missing file or md5 or booth', null);
+            return;
+        }
+
+
+        var sql = 'INSERT INTO image (image, md5, usr) VALUES ($1,$2,$3) RETURNING iid';
+        var sqldata = [storeData.file, storeData.md5, userId];
+        console.log(sql, sqldata);
+
+        pgClient.query(sql, sqldata, function(err, data){
+            if(err){
+                icb(err, null);
+                return;
+            }
+
+            console.log(data);
+            // RETURN new id of image
+            icb(null, {imageFile: storeData.file, imageId: data.rows[0].iid});
         });
 
     }
@@ -265,6 +315,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
 }
 
 module.exports.storeUrl = function(pgClient, userId, url, cb){
+    console.log('BEGIN:image.storeUrl', userId, url, url) ;
     var http;
     if(url.indexOf('http:') == 0) {
         http = require('http');

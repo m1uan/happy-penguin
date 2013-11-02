@@ -158,7 +158,7 @@ describe('image-dropbox', function(){
             images.saveFromUrl(pgClient, 1, 160002, imgfile, function(err, rows){
 
                 console.log(rows);
-                assert(rows.length == 2);
+                assert(rows.length == 1);
                 rows.forEach(function(val, idx){
                     if(val.version == 0){
                         assert(val.image);
@@ -174,17 +174,20 @@ describe('image-dropbox', function(){
             });
         });
 
-        it('upload image HTTPS ', function(cb){
+        it.only('upload image HTTPS ', function(cb){
             var imgfile = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV3rY5UuajGkcyQDS_jsxrfj_WW9bL-FDuiX-ssq6CwbZYzoEX';
 
             images.saveFromUrl(pgClient, 1, 160003, imgfile, function(err, rows){
                 var fs = require('fs');
                 console.log(err, rows);
-                assert(rows.length == 2);
+                rows.should.be.an.Array;
+                rows.should.a.length(2);
                 rows.forEach(function(val, idx){
                     if(val.version == 0){
-                        assert(val.image);
-                        assert(val.iid);
+                        val.should.have.property('image');
+                        val.should.have.property('iid');
+                        val.image.should.not.eql('');
+                        val.iid.should.not.be.Null;
                         assert(fs.existsSync(images.IMG_ORIG_DIR + val.image), 'file isnt exist in data dir');
                         imageForDelete.push(val.iid);
                     }
@@ -211,7 +214,7 @@ describe('image-dropbox', function(){
                 //data.file = file;
 
                 images.storeImgFromData(pgClient, 1,data, function(err, iid2){
-                    assert(iid1 == iid2, 'The same image have been store 2times' + iid1 + iid2);
+                    assert(iid1.iid == iid2.iid, 'The same image have been store 2times' + iid1 + iid2);
                     assert(err == null, err);
 
                     imageForDelete.push(iid1);
@@ -229,7 +232,7 @@ describe('image-dropbox', function(){
 
             images.storeUrl(pgClient, 1,imgfile, function(err, iid1){
                 images.storeUrl(pgClient, 1,imgfile, function(err, iid2){
-                    assert(iid1 == iid2, 'The same image have been store 2times');
+                    assert(iid1.iid == iid2.iid, 'The same image have been store 2times');
                     assert(err == null, err);
 
                     imageForDelete.push(iid1);

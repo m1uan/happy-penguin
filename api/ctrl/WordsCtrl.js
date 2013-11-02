@@ -102,9 +102,10 @@ module.exports = {
 
 
 
-        image.storeImgFromData(pgClient, userId, dataInfo, function(err, imageId){
+        image.storeImgFromData(pgClient, userId, dataInfo, function(err, imageData){
             var linkConteiner = {
-                image : imageId,
+                imageId : imageData.imageId,
+                image : imageData.imageFile,
                 lid : request.payload.link};
             //console.log(linkConteiner);
             if(!err){
