@@ -14,6 +14,7 @@
 
 
     function dragImage(name, linkId){
+        var IMAGE_ORIG = '/assets/img/orig/';
         console.log('ahoj');
         $(name).on(
                 'dragover',
@@ -57,8 +58,6 @@
                             });
                         }
 
-
-
                         if(e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.items.length > 1){
                             e.originalEvent.dataTransfer.items[1].getAsString(function(url){
 
@@ -81,7 +80,7 @@
                                     saveImgUrl(src);
                                 } else {
 
-                                    uploadData(src);
+                                    prepareAndUploadData(src);
 
                                 }
 
@@ -114,7 +113,7 @@
 
 
         function saveImgUrl(url){
-
+            console.log('saveImgUrl', url) ;
 
             var fd = new FormData();
             fd.append("link", linkId);
@@ -128,7 +127,7 @@
                 success : function(data, status, headers, config) {
                     console.log(data);
                     loadImageFromResource(data);
-
+                    uploadThumbIfNeed(data);
                 },
                 error:function(data, status, headers, config) {
                     // called asynchronously if an error occurs
@@ -139,41 +138,89 @@
 
         }
 
-        function uploadData(res, thumb){
+        function uploadThumbIfNeed(data){
+            console.log('uploadThumbIfNeed', data) ;
+            if(data.length){
+                data.forEach(function(val, idx){
+                    if(val.version == 0){
+                        if(!val.thumbfile){
+                            var url = val.imagefile
+                            var imageInfo = {src:IMAGE_ORIG + val.imagefile};
+                            var endOf = '.png';
+                            // endsWith
+                            if(url.indexOf(endOf, url.length - endOf.length) !== -1){
+                                imageInfo.type = 'image/png';
+                            } else {
+                                imageInfo.type = 'image/jpeg';
+
+                            }
+
+                            cropImage(imageInfo, function(thumb){
+                                uploadData(val.lid, null, null, thumb, val.imageid);
+                            });
+                        }
+
+                        return ;
+                    }
+                });
+            }
+        }
+
+        function prepareAndUploadData(res, thumb){
+            console.log('prepareAndUploadData', res, thumb) ;
             var data = res.split(',');
+            // this code is not public so don't watch it! :-P
             var type = data[0].split(';')[0].split(':')[1];
 
             cropImage({src : res, type: type}, function(thumb){
-                var fd = new FormData();
-                fd.append("link", linkId);
-                fd.append("file", data[1]);
-                fd.append("thumbData", thumb);
-                fd.append("type", type);
-
-                $.ajax({
-                    url: "/words/uploadimg",
-                    type: "POST",
-                    data: fd,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        // .. do something
-                        console.log(response);
-
-                        loadImageFromResource(response);
-                    },
-                    error: function(jqXHR, textStatus, errorMessage) {
-                        console.log(errorMessage); // Optional
-                    }
-                });
+                uploadData(linkId, data[1], type, thumb);
             });
 
 
         }
 
+        function uploadData(linkdId, file, type, thumb, thumbFor){
+            console.log('uploadData', linkdId, file, type, thumb, thumbFor) ;
+            var fd = new FormData();
+            fd.append("link", linkId);
+
+            if(file && type){
+                fd.append("file", file);
+                fd.append("type", type);
+            } else if(thumb && thumbFor){
+                fd.append("thumbFor", thumbFor);
+            } else {
+                console.err(uploadData, 'the parrams is not complete, sorry :-P');
+                return ;
+            }
+
+            if(thumb) {
+                fd.append("thumbData", thumb);
+            }
+
+
+
+            $.ajax({
+                url: "/words/uploadimg",
+                type: "POST",
+                data: fd,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // .. do something
+                    console.log(response);
+
+                    loadImageFromResource(response);
+                },
+                error: function(jqXHR, textStatus, errorMessage) {
+                    console.log(errorMessage); // Optional
+                }
+            });
+        }
+
 
         function loadImageFromResource(res){
-
+            console.log('loadImageFromResource', res) ;
             // CANVAS error CROS image data
 
             if(res.length){
@@ -181,7 +228,7 @@
                     if(val.version == 0){
 
                         if(!val.thumbfile){
-                            var src = '/assets/img/orig/' + val.imagefile;
+                            var src = IMAGE_ORIG + val.imagefile;
                             $(name).attr('src', src);
                         }
 
@@ -206,7 +253,7 @@
 
             //attach event handlers here...
             reader.onload = function (ef) {
-                uploadData(ef.target.result);
+                prepareAndUploadData(ef.target.result);
             }
 
             reader.onerror = function(err){
@@ -228,12 +275,13 @@
 
     }
 
-    function cropImage(imgData, store){
+    function cropImage(imgData, cb){
+        console.log('cropImage', imgData) ;
         var canvas = document.getElementById('myCanvas');
         var context = canvas.getContext('2d');
         var imageObj = new Image();
 
-        console.log('cropImage', imgData);
+
         imageObj.onload = function() {
             var minWH = imageObj.width < imageObj.height ? imageObj.width : imageObj.height;
             // center source
@@ -249,7 +297,7 @@
 
             context.drawImage(imageObj, sourceX, sourceY, minWH, minWH, 0, 0, 128, 128);
             var data = canvas.toDataURL(imgData.type).split(',');
-            store(data[1]);
+            cb(data[1]);
         };
 
         imageObj.src = imgData.src;

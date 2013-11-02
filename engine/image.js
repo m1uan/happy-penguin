@@ -332,9 +332,9 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
     var endOf = '.png';
     // endsWith
     if(url.indexOf(endOf, url.length - endOf.length) !== -1){
-        imageInfo.type = 'data:image/png';
+        imageInfo.type = 'image/png';
     } else {
-        imageInfo.type = 'data:image/jpeg';
+        imageInfo.type = 'image/jpeg';
         endOf = '.jpg';
     }
 
