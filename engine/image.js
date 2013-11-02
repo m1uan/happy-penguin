@@ -9,7 +9,7 @@ var config = require('../config/local.js'),
 
 
 var PUBLIC_DIR = config.DIR_DATA + ''
-module.exports.IMG_THUMB_DIR = PUBLIC_DIR + 'img/'
+module.exports.IMG_THUMB_DIR = PUBLIC_DIR + 'thumb/'
 module.exports.IMG_ORIG_DIR = PUBLIC_DIR + 'orig/'
 /**
  *  config/local:
@@ -217,10 +217,10 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
             // copy
             var writeFileName = generateName();
 
-            if(imageInfo.type == 'data:image/png'){
+            if(imageInfo.type == 'image/png'){
                 writeFileName += '.png';
             } else {
-                writeFileName += '.jpeg';
+                writeFileName += '.jpg';
             }
 
             var writeFile = module.exports.IMG_ORIG_DIR +writeFileName;

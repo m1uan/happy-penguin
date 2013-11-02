@@ -100,6 +100,10 @@ module.exports = {
             dataInfo.thumbFor = request.payload.thumbFor;
         }
 
+        if(request.payload.thumbData){
+            dataInfo.thumbData = request.payload.thumbData;
+        }
+
 
 
         image.storeImgFromData(pgClient, userId, dataInfo, function(err, imageData){

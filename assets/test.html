@@ -128,6 +128,7 @@
                 success : function(data, status, headers, config) {
                     console.log(data);
                     loadImageFromResource(data);
+
                 },
                 error:function(data, status, headers, config) {
                     // called asynchronously if an error occurs
@@ -140,13 +141,13 @@
 
         function uploadData(res, thumb){
             var data = res.split(',');
-            var type = data[0].split(';')[0];
+            var type = data[0].split(';')[0].split(':')[1];
 
             cropImage({src : res, type: type}, function(thumb){
                 var fd = new FormData();
                 fd.append("link", linkId);
                 fd.append("file", data[1]);
-                fd.append("thumb", thumb);
+                fd.append("thumbData", thumb);
                 fd.append("type", type);
 
                 $.ajax({
@@ -178,9 +179,18 @@
             if(res.length){
                 res.forEach(function(val, idx){
                     if(val.version == 0){
-                        var src = '/assets/img/orig/' + val.imagefile;
-                        $(name).attr('src',src);
-                        console.log('src', src);
+
+                        if(!val.thumbfile){
+                            var src = '/assets/img/orig/' + val.imagefile;
+                            $(name).attr('src', src);
+                        }
+
+                        if(val.thumbfile){
+                            // show in thumb
+                            var thumb = '/assets/img/thumb/' + val.thumbfile;
+                            $(name + '_thumb').attr('src', thumb);
+                        }
+                        console.log('src', src, thumb);
                     }
                 });
 
@@ -238,8 +248,8 @@
             var destY = 0;
 
             context.drawImage(imageObj, sourceX, sourceY, minWH, minWH, 0, 0, 128, 128);
-            var data = canvas.toDataURL(imgData.type);
-            store(data);
+            var data = canvas.toDataURL(imgData.type).split(',');
+            store(data[1]);
         };
 
         imageObj.src = imgData.src;
@@ -271,14 +281,14 @@
 
     <input type="file" id="div_file"/>
     <img id="div" src="http://borderka-enny.websnadno.cz/ahoj.JPG"  class="drag-drop" />
-
+    <img id="div_thumb"   />
     <div id="container"></div>
     <div>
         widtht&height : <span id="width" />
     </div>
 
     <img id="canvasHelper" />
-    <canvas id="myCanvas" width="500" height="500"></canvas>
+    <canvas id="myCanvas" width="128" height="128"></canvas>
     </body>
 
 
