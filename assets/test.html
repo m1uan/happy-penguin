@@ -4,25 +4,33 @@
 <script src="load-image-min.js"></script>
 <script>
     $(document).ready(function(){
+        dragImage('#div', 1009);
+    });
+
+
+
+    function dragImage(name, linkId){
         console.log('ahoj');
-        $('#div').on(
+        $(name).on(
                 'dragover',
                 function(e) {
+                    $(name).addClass('over');
                     e.preventDefault();
                     e.stopPropagation();
                 }
         )
-        $('#div').on(
-                'dragenter',
+        $(name).on(
+                'dragleave',
 
                 function(e) {
+                    $(name).removeClass('over');
                     //console.log(e);
                     e.preventDefault();
                     e.stopPropagation();
                 }
         )
 
-        $('#div').on(
+        $(name).on(
                 'drop',
                 function(e){
                     e.preventDefault();
@@ -56,7 +64,7 @@
                                 var fr = new FileReader();
 
                                 fr.onload = function(data){
-                                   console.log(21, data);
+                                    console.log(21, data);
                                 };
 
 
@@ -72,7 +80,7 @@
                                 }
 
 
-                                //$('#div').attr('src',src);
+                                //$(name).attr('src',src);
                                 //console.log(url);
                             });
                         }
@@ -103,22 +111,22 @@
 
 
             var fd = new FormData();
-            fd.append("link", 1007);
-            fd.append("url", url);;
+            fd.append("link", linkId);
+            fd.append("url", url);
             $.ajax({
                 type: 'POST',
                 url: '/words/saveimgurl',
                 data: fd,
                 processData: false,
                 contentType: false,
-                    success : function(data, status, headers, config) {
-                        console.log(data);
-                        loadImageFromResource(data);
-                    },
-                    error:function(data, status, headers, config) {
-                        // called asynchronously if an error occurs
-                        // or server returns response with an error status.
-                    }
+                success : function(data, status, headers, config) {
+                    console.log(data);
+                    loadImageFromResource(data);
+                },
+                error:function(data, status, headers, config) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                }
             });
 
 
@@ -127,8 +135,9 @@
         function uploadData(res){
             var data = res.split(',');
             var fd = new FormData();
-            fd.append("link", 1007);
+            fd.append("link", linkId);
             fd.append("file", data[1]);
+            fd.append("thumb", data[1]);
             fd.append("type", data[0].split(';')[0]);
 
             $.ajax({
@@ -157,8 +166,8 @@
             if(res.length){
                 res.forEach(function(val, idx){
                     if(val.version == 0){
-                        var src = '/assets/img/orig/' + val.image;
-                        $('#div').attr('src',src);
+                        var src = '/assets/img/orig/' + val.imagefile;
+                        $(name).attr('src',src);
                         console.log('src', src);
                     }
                 });
@@ -185,17 +194,17 @@
             reader.readAsDataURL(f);
         }
 
-        $('#file1').on('change',function ()
+        $(name + '_file').on('change',function ()
         {
 
             previewFromFile(this.files[0]);
 //            var filePath = 'file:///' +  $(this).val();
-//            $('#div').attr('src',filePath);
+//            $(name).attr('src',filePath);
             console.log(this.files[0]);
         });
 
 
-    })
+    }
 
 
 </script>
@@ -210,13 +219,19 @@
     #myCanvas2{
         background-color:black;
     }
+
+
+.over{
+    border:green;
+    border-style: dashed;
+}
 </style>
 
 <body>
 
 
-    <input type="file" id="file1"/>
-<img id="div" src="http://borderka-enny.websnadno.cz/ahoj.JPG"  class="drag-drop" />
+    <input type="div_file" id="file1"/>
+    <img id="div" src="http://borderka-enny.websnadno.cz/ahoj.JPG"  class="drag-drop" />
 
     <div id="container"></div>
     <div>
