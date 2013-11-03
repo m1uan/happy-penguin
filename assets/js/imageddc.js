@@ -28,70 +28,18 @@ function dragImage(imageElement, fileElement, linkId){
             e.stopPropagation();
             console.log(e);
             imageElement.removeClass('imgpreview-draged');
-            if(e.originalEvent.dataTransfer.items){
-                console.log(e.originalEvent.dataTransfer.items, e.originalEvent.dataTransfer.items.length);
 
-                if(e.originalEvent.dataTransfer.items.length == 1){
-                    e.originalEvent.dataTransfer.items[0].getAsString(function(url){
-//                        var obj = jQuery(url);
-
+            // works in firefox 24.0
+            // works for chrome 30.0
+            var src = e.originalEvent.dataTransfer.getData('text/html').match(/src\s*=\s*"(.+?)"/)[1];
+            console.log(src);
 
 
-                        //previewFromFile(src);
-
-                        loadImageFromResource(url);
-                        console.log(1, url);
-                    });
-                }
-
-                if(e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.items.length > 1){
-                    e.originalEvent.dataTransfer.items[1].getAsString(function(url){
-
-                        var obj = jQuery(url);
-                        var src = obj.attr('src');
-
-                        var fr = new FileReader();
-
-                        fr.onload = function(data){
-                            console.log(21, data);
-                        };
-
-
-
-                        console.log(2, url);
-
-
-                        //previewFromFile(src);
-                        if(src.indexOf('http://') == 0 || src.indexOf('https://') == 0){
-                            saveImgUrl(src);
-                        } else {
-
-                            prepareAndUploadData(src);
-
-                        }
-
-
-                        //$(name).attr('src',src);
-                        //console.log(url);
-                    });
-                }
-
-
-                if(e.originalEvent.dataTransfer){
-                    if(e.originalEvent.dataTransfer.files.length) {
-
-                        var f = e.originalEvent.dataTransfer.files[0];
-
-                        previewFromFile(f);
-                        console.log(3,f);
-                        /*UPLOAD FILES HERE*/
-                        //upload(e.originalEvent.dataTransfer.files);
-                    }
-                }
+            if(src.indexOf('http://') == 0 || src.indexOf('https://') == 0){
+                saveImgUrl(src);
+            } else {
+                prepareAndUploadData(src);
             }
-
-
-
         }
 
 
