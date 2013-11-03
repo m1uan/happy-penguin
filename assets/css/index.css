@@ -5,7 +5,9 @@
 .wordrowcolor{
     background-color: darkgray;
     margin-bottom: 2px;
-    padding:5px;
+    padding:0px;
+
+    width:650px;
 }
 
 .test{
@@ -20,7 +22,6 @@
 }
 
 .head-row{
-    background-color: lightgray;
     font-weight:bold;
 }
 
@@ -36,8 +37,6 @@
 .wordcontainer {
     float:left;
     padding:5px;
-    width:490px;
-    background-color:black;
 }
 .wordspaner{
     color: darkred;
@@ -50,7 +49,7 @@
     font-size: smaller;
 }
 .word {
-    font-size: larger;
+    font-size: 30px;
     font-weight: bolder;
 }
 
@@ -99,8 +98,35 @@
     top:-40px;
 }
 
+
 .imagepart{
+    position:relative;
     float:left;
-    background-color:blue;
-    width:300px;
+    margin-top:-25px;
+}
+
+.delete-button {
+    position:absolute;
+    top:0px;
+    right:0;
+    margin:5px;
+}
+
+.fileupload{
+    position:absolute;
+    left:0px;
+    bottom:0px;
+    width:128px;
+}
+
+.description {
+    position: relative;
+    font-size:18px;
+    font-style:italic;
+    background-color:green;
+    color:white;
+    padding:0px;
+    padding-right:128px;
+    margin:0px;
+
 }
