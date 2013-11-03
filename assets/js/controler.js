@@ -20,6 +20,30 @@ app.directive('onEnter',function(){
     };
 });
 
+app.directive('myRepeatDirective', function() {
+    return function(scope, element, attrs) {
+        var el = angular.element(element);
+        el.css('color','blue');
+        console.log(el);
+
+        var im = el.find('img');
+        var inp = el.find('input');
+        console.log(attrs);
+
+        var linkId  = attrs.id.split('_')[0];
+
+        //console.log('link', linkId, im, inp);
+        dragImage(im, inp, linkId);
+
+
+        //console.log('im', attrs.id);
+        //console.log('element', attrs('id'));
+        //if (scope.$last){
+            //window.alert("im the last!");
+        //}
+    };
+})  ;
+
 function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     var IMAGE_DIR = 'assets/img/';
     var WORD_STATUS = {
@@ -88,9 +112,9 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                 founded = true;
             }
 
-            if (addingWord.image) {
+            if (addingWord.imagefile) {
                 // addingWord is image with description
-                tw.image = IMAGE_DIR + addingWord.image;
+                tw.imagefile = IMAGE_DIR + 'orig/' + addingWord.imagefile;
                 founded = true;
 
             }
@@ -139,6 +163,8 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                 });
 
                 $scope.words = tempWord;
+
+
 
             }).
             error(function(data, status, headers, config) {

@@ -1860,14 +1860,14 @@ INSERT INTO word ( link, word, lang ) VALUES
 
 
 INSERT INTO link ( lid, description, image, lesson ) VALUES 
-(1001,E'Lithuania',NULL,101)
-,(1002,E'Lithuanian',NULL,101)
+(1001,E'Lithuania',101,101)
+,(1002,E'Lithuanian',102,101)
 ,(1003,E'Poland',NULL,101)
 ,(1004,E'Polish',NULL,101)
 ,(1005,E'Portugal',1,101)
 ,(1006,E'Portuguese',NULL,101)
 ,(1007,E'Scotland',NULL,101)
-,(1008,E'Scottish',NULL,101)
+,(1008,E'Scottish',105,101)
 ,(1009,E'Slovakia',2,101)
 ,(1010,E'Slovakian',NULL,101)
 ,(1011,E'South Africa',3,101)

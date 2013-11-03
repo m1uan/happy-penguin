@@ -71,14 +71,14 @@ html(ng-app="words")
                             span.label.label-danger {{word.description}}
 
 
-                    div.imagepart
-                        div(ng-show="word.image")
-                            img(id="image_{{word.link}}",src="{{word.image}}").imgpreview
+                    div(id="{{word.link}}_image_select",my-repeat-directive).imagepart
+                        img(id="image_{{word.link}}",src="{{word.imagefile}}").imgpreview
+                        div(ng-show="word.imagefile")
                             div(ng-click="deleteImg(word.link)").btn.btn-success delete
-                        div(ng-hide="word.image")
-                            input(id="image_url_{{word.link}}",ng-model="word.urlImage",placeholder="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQNFb0SBXieH1MlTtF9OQUK3zDLSLHJ0EkLaHIQuqnIG8lThRBw6aimTwS6")
-                            span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary url
-                            input(type="file", ng-file-select="onFileSelect($files,word.link)")
+                        //div(ng-hide="word.image")
+                            //input(id="image_url_{{word.link}}",ng-model="word.urlImage",placeholder="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQNFb0SBXieH1MlTtF9OQUK3zDLSLHJ0EkLaHIQuqnIG8lThRBw6aimTwS6")
+                            //span(ng-click="updateImageFromURL(word.link)").btn.btn-xs.btn-primary url
+                        input(type="file",id="image_{{word.link}}_file")
 
 
                     div.clearfix
@@ -87,12 +87,14 @@ html(ng-app="words")
                 span(ng-click="isSeznamShowed=false").btn.btn-xs.btn-default close x
                 div
                     iframe.helpers_i#slovnik_seznam_cz
-
-
+        div
+            img#canvasHelper
+            canvas(width="128",height="128")#myCanvas
 
 
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
     script(src="assets/js/bootstrap.min.js")
     script(src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js")
+    script(src="assets/js/imageddc.js")
     script(src="assets/js/controler.js")
     script(src="assets/js/angular-file-upload.min.js")

@@ -1,33 +1,33 @@
 
-function dragImage(name, linkId){
+function dragImage(imageElement, fileElement, linkId){
     var IMAGE_ORIG = '/assets/img/orig/';
-    console.log('ahoj');
-    $(name).on(
+    console.log('dragImage', imageElement.attr('id'), linkId);
+    imageElement.on(
         'dragover',
         function(e) {
-            $(name).addClass('over');
+            imageElement.addClass('imgpreview-draged');
             e.preventDefault();
             e.stopPropagation();
         }
     )
-    $(name).on(
+    imageElement.on(
         'dragleave',
 
         function(e) {
-            $(name).removeClass('over');
+            imageElement.removeClass('imgpreview-draged');
             //console.log(e);
             e.preventDefault();
             e.stopPropagation();
         }
     )
 
-    $(name).on(
+    imageElement.on(
         'drop',
         function(e){
             e.preventDefault();
             e.stopPropagation();
             console.log(e);
-
+            imageElement.removeClass('imgpreview-draged');
             if(e.originalEvent.dataTransfer.items){
                 console.log(e.originalEvent.dataTransfer.items, e.originalEvent.dataTransfer.items.length);
 
@@ -215,13 +215,13 @@ function dragImage(name, linkId){
 
                     if(!val.thumbfile){
                         var src = IMAGE_ORIG + val.imagefile;
-                        $(name).attr('src', src);
+                        imageElement.attr('src', src);
                     }
 
                     if(val.thumbfile){
                         // show in thumb
                         var thumb = '/assets/img/thumb/' + val.thumbfile;
-                        $(name + '_thumb').attr('src', thumb);
+                        imageElement.attr('src', thumb);
                     }
                     console.log('src', src, thumb);
                 }
@@ -249,7 +249,7 @@ function dragImage(name, linkId){
         reader.readAsDataURL(f);
     }
 
-    $(name + '_file').on('change',function ()
+    fileElement.on('change',function ()
     {
 
         previewFromFile(this.files[0]);

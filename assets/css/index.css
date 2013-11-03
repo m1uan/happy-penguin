@@ -54,7 +54,22 @@
     font-weight: bolder;
 }
 
-.imgpreview,.identifer{
+
+.imgpreview {
+    width:128px;
+    height:128px;
+}
+.imgpreview {
+    border-width: 2px;
+    border-style: dotted;
+    border-color: blue;
+}
+
+.imgpreview-draged {
+    border-color: red;
+}
+
+.identifer{
     height:70px;
     margin:5px;
 }
