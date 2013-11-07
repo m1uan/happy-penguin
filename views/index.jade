@@ -47,11 +47,18 @@ html(ng-app="words")
 
         div.wordwebctrl
             div(ng-repeat="word in words").wordrowcolor
+                div.text-center.description
+                    span(id="in_{{word.link}}").identifer {{word.link}}
+                    span {{word.description}}
                 div.head-row
                     div.row
-                        span(id="tv_{{word.l1}}_{{word.link}}").col-md-6.word {{word.o1}}
-                        span(id="tv_{{word.l2}}_{{word.link}}").col-md-6.word {{word.o2}}
-                div.text-center.description {{word.description}}
+                        span.col-md-6
+                            span(id="tv_{{word.l1}}_{{word.link}}").word {{word.o1}}
+                            img(src="assets/img/flags/flag_{{word.l1}}.png").flag-left
+                        span.col-md-6
+                            img(src="assets/img/flags/flag_{{word.l2}}.png").flag-right
+                            span(id="tv_{{word.l2}}_{{word.link}}").word {{word.o2}}
+
                 div.wordrow
                     div(id="{{word.link}}_image_select",my-repeat-directive).imagepart
                         img(id="image_{{word.link}}",src="{{word.imagefile}}").imgpreview
@@ -75,8 +82,7 @@ html(ng-app="words")
                                 span(ng-click="showSeznam(word.l2,word.link)").btn.btn-xs.btn-default sl
                                 span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
 
-                    div.identifer
-                        span(id="in_{{word.link}}").label.label-default {{word.link}}
+
                     div.clearfix
 
 

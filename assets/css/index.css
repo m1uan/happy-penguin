@@ -28,15 +28,12 @@
     font-weight:bold;
 }
 
-.identifer span {
-    padding-top : 10px;
-    padding-bottom : 10px;
+.identifer {
+    padding-right : 4px;
+    font-size:10px;
 }
 
-.identifer {
-    float: left;
-    padding-top:25px;
-}
+
 .wordcontainer {
     float:left;
     padding:5px;
@@ -52,7 +49,7 @@
     font-size: smaller;
 }
 .word {
-    font-size: 30px;
+    font-size: 25px;
     font-weight: bolder;
 }
 
@@ -130,16 +127,23 @@
     font-style:italic;
     color:white;
     padding:0px;
-    padding-left:128px;
+    padding-left:138px;
     margin:0px;
     background-color:#3071a9;
 }
 
 .description {
-    font-size:15px;
+    font-size:18px;
+    background-color:#0d3349;
 }
 
 
 .wordrow {
 
+}
+
+.flag-right, .flag-left {
+    width: 30px;
+    height:20px;
+    margin:4px;
 }
