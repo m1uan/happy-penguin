@@ -3,10 +3,13 @@
 }
 
 .wordrowcolor{
-    background-color: darkgray;
+
+    border-style:solid;
+    border-width: 1px;
+    border-color: darkblue;
+    background-color: white;
     margin-bottom: 2px;
     padding:0px;
-
     width:650px;
 }
 
@@ -102,7 +105,8 @@
 .imagepart{
     position:relative;
     float:left;
-    margin-top:-25px;
+    margin-top:-55px;
+
 }
 
 .delete-button {
@@ -119,14 +123,22 @@
     width:128px;
 }
 
-.description {
+.description,.head-row {
     position: relative;
     font-size:18px;
     font-style:italic;
-    background-color:green;
     color:white;
     padding:0px;
-    padding-right:128px;
+    padding-left:128px;
     margin:0px;
+    background-color:#3071a9;
+}
+
+.description {
+    font-size:15px;
+}
+
+
+.wordrow {
 
 }
