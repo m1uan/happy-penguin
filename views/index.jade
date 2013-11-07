@@ -54,8 +54,7 @@ html(ng-app="words")
                 div.text-center.description {{word.description}}
                 div.wordrow
                     div(id="{{word.link}}_image_select",my-repeat-directive).imagepart
-                        div.imgpreview
-                            img(id="image_{{word.link}}",src="{{word.imagefile}}")
+                        img(id="image_{{word.link}}",src="{{word.imagefile}}").imgpreview
                         div(ng-show="word.imagefile",ng-click="deleteImg(word.link)").btn.btn-xs.btn-danger.delete-button x
                         input(type="file",id="image_{{word.link}}_file").fileupload
 
