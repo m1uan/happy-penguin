@@ -70,9 +70,13 @@ function dragImage(imageElement, fileElement, linkId){
                 loadImageFromResource(data);
                 uploadThumbIfNeed(data);
             },
-            error:function(data, status, headers, config) {
+            error:function(jqXHR, status, headers, config) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
+                var modalDialog = $('#modal-error');
+                modalDialog.modal('show');
+                modalDialog.find('#origin-message').text(jqXHR.responseText);
+
             }
         });
 
@@ -154,7 +158,11 @@ function dragImage(imageElement, fileElement, linkId){
                 loadImageFromResource(response);
             },
             error: function(jqXHR, textStatus, errorMessage) {
-                console.log(errorMessage); // Optional
+                // jqXHR.responseText
+                var modalDialog = $('#modal-error');
+                modalDialog.find('#origin-message').text(jqXHR.responseText);
+                modalDialog.modal('show');
+                console.log(errorMessage,jqXHR); // Optional
             }
         });
     }
