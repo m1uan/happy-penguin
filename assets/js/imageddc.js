@@ -29,9 +29,16 @@ function dragImage(imageElement, fileElement, linkId){
             console.log(e);
             imageElement.removeClass('imgpreview-draged');
 
+            if(e.originalEvent.dataTransfer.files && e.originalEvent.dataTransfer.files.length > 0){
+                previewFromFile(e.originalEvent.dataTransfer.files[0]);
+                return;
+            }
+
             // works in firefox 24.0
             // works for chrome 30.0
-            var src = e.originalEvent.dataTransfer.getData('text/html').match(/src\s*=\s*"(.+?)"/)[1];
+            var html = e.originalEvent.dataTransfer.getData('text/html')
+            var srca = html.match(/src\s*=\s*"(.+?)"/)
+            var src = srca[1];
             console.log(src);
 
 
