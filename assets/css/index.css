@@ -62,6 +62,7 @@
     border-width: 2px;
     border-style: dotted;
     border-color: blue;
+    background-color:lightgray;
     display:block;
 }
 
