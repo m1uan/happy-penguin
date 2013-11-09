@@ -29,10 +29,10 @@ describe('package operations', function(){
             }
 
             sqlMake(pgClient, [
-                "INSERT INTO image (iid,image,md5) VALUES (150000,'karel.jpg', 'karel');"
-                ,"INSERT INTO image (iid,image,md5) VALUES (150001,'karel2.jpg', 'karel2');"
-                ,"INSERT INTO link (lid,description,lesson) VALUES (160000,'descrpsdf sad fdas f',1);"
-                ,"INSERT INTO link (lid,description,image,lesson) VALUES (160001,'descrpsdf sad fdsafa ', 150000,1);"
+                "select remove_test_data();select create_test_data();",
+                //"SELECT create_test_data();",
+                "SELECT generate_langs();",
+                "DELETE FROM update_package;"
             ],cb);
 
         });
@@ -40,29 +40,34 @@ describe('package operations', function(){
 
     after(function(cb){
         sqlMake(pgClient, [
-            "DELETE FROM image WHERE iid = 150000;"
-            ,"DELETE FROM image WHERE iid = 150001;"
-            ,"DELETE FROM link WHERE lid= 160000;"
-            ,"DELETE FROM link WHERE lid= 160001;"
+            "SELECT remove_test_data();"
         ],cb);
     });
 
+    function testGetPackageForUpdate(lesson, cb){
+        package.getPackageForUpdate(pgClient, function(err, packages){
+            console.log(err || packages);
+            packages.should.be.Array;
+            packages.length.should.above(0);
+
+            var package = packages[0];
+            package.should.have.property('langs');
+            package.langs.should.be.Array;
+            package.langs.length.should.above(0);
+            package.langs[0].should.be.String;
+
+            cb();
+        });
+    }
 
     describe.only('download and store images', function(){
         it('update word', function(cb){
-           package.getPackageForUpdate(pgClient, function(err, packages){
-              console.log(err || packages);
-              packages.should.be.Array;
-              packages.length.should.above(0);
+            testGetPackageForUpdate([{lesson:1,langs: [ 'de', 'cs', 'en' ]}], function(){
 
-               var package = packages[0];
-               package.should.have.property('langs');
-               package.langs.should.be.Array;
-               package.langs.length.should.above(0);
-               package.langs[0].should.be.String;
 
-              cb();
-           });
+                cb();
+
+            })
 
         });
 
