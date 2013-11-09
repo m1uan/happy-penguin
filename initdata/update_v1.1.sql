@@ -51,7 +51,7 @@ SELECT generate_langs();
 DROP TABLE update_package;
 
 CREATE TABLE update_package (
-   updated TIMESTAMP DEFAULT now(),
+   changed TIMESTAMP DEFAULT now(),
    lesson INT,
    lang_mask BIGINT
 );
@@ -85,7 +85,7 @@ BEGIN
 
     UPDATE update_package SET lang_mask=lang_mask | mask WHERE update_package.lesson=lsn;
     IF NOT FOUND THEN
-        INSERT INTO update_package (updated, lesson, lang_mask)
+        INSERT INTO update_package (changed, lesson, lang_mask)
             VALUES (now(), lsn, mask );
     END IF;
 

@@ -1,5 +1,5 @@
 var assert = require("assert"),
-    link = require('../../engine/package.js'),
+    package = require('../../engine/package.js'),
     pg = require('pg'),
     should = require('should')
     , async = require('async')
@@ -48,12 +48,14 @@ describe('package operations', function(){
     });
 
 
-    describe('download and store images', function(){
+    describe.only('download and store images', function(){
         it('update word', function(cb){
-
-           icb(null);
-
-
+           package.getPackageForUpdate(pgClient, function(err, packages){
+              console.log(err || packages);
+              packages.should.be.Array;
+              packages.length.should.above(0);
+              cb();
+           });
 
         });
 
