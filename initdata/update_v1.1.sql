@@ -30,7 +30,7 @@ DROP TABLE update_package;
 
 CREATE TABLE update_package (
    updated TIMESTAMP DEFAULT now(),
-   link INT,
+   lesson INT,
    lang_mask BIGINT
 );
 
@@ -47,23 +47,24 @@ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_link_changed() RETURNS TRIGGER AS $$
 DECLARE
-    lid INT;
+    lsn INT;
     -- mask full house ;-)
     mask BIGINT := -1;
 BEGIN
     IF TG_TABLE_NAME = 'word' THEN
-        lid := NEW.link;
+        lsn := (SELECT link.lesson FROM link WHERE link.lid = NEW.link and version = 0);
     ELSE
-        lid := NEW.lid;
+        lsn := NEW.lesson;
     END IF;
+
     IF TG_TABLE_NAME = 'word' THEN
         mask := get_mask(NEW.lang);
     END IF;
 
-    UPDATE update_package SET lang_mask=lang_mask | mask WHERE link=lid;
+    UPDATE update_package SET lang_mask=lang_mask | mask WHERE update_package.lesson=lsn;
     IF NOT FOUND THEN
-        INSERT INTO update_package (updated, link, lang_mask)
-            VALUES (now(), lid, mask );
+        INSERT INTO update_package (updated, lesson, lang_mask)
+            VALUES (now(), lsn, mask );
     END IF;
 
     RETURN NEW;
@@ -86,9 +87,9 @@ CREATE TRIGGER update_package_word
       EXECUTE PROCEDURE update_link_changed();
 
 
-update word set word='test1' where link=1002 and lang='cs';
-update word set word='test2' where link=1003 and lang='en';
-update word set word='test3' where link=1003 and lang='cs';
+update word set word='test1' where link=2002 and lang='cs';
+update word set word='test2' where link=2003 and lang='en';
+update word set word='test3' where link=2003 and lang='cs';
 
 update word set word='test53',version=10 where link=1006 and lang='cs';
 update word set word='test3' where link=1004 and lang='cs';
