@@ -65,8 +65,6 @@ CREATE TABLE word (
 
 
 
-
-
 -- select link,word,'w' as type, lang from word where link > 10 and link < 15 union select link,image,'i' as type, '' as lang from image where link > 10 and link < 15;
 -- link |                                 word                                 | type | lang
 --------+----------------------------------------------------------------------+------+------
