@@ -67,6 +67,10 @@ describe('package operations', function(){
                     package.langs.should.include(lang);
                 });
 
+                package.should.have.property('lesson');
+                package.lesson.should.be.Integer;
+                package.lesson.should.eql(test.lesson);
+
             });
 
 
@@ -80,6 +84,9 @@ describe('package operations', function(){
                 "SELECT generate_langs();"
             ],function(){
                 testGetPackageForUpdate([
+                    { lesson: 101,
+                        lang_mask: '7',
+                        langs: [ 'de', 'cs', 'en' ] },
                     { lesson: 102,
                         lang_mask: '7',
                         langs: [ 'de', 'cs', 'en' ] },
@@ -87,9 +94,6 @@ describe('package operations', function(){
                         lang_mask: '7',
                         langs: [ 'de', 'cs', 'en' ] },
                     { lesson: 2004,
-                        lang_mask: '7',
-                        langs: [ 'de', 'cs', 'en' ] },
-                    { lesson: null,
                         lang_mask: '4',
                         langs: [ 'en', 'cs', 'en' ] },
                     { lesson: 4001,
@@ -101,7 +105,22 @@ describe('package operations', function(){
 
 
         });
+        it('update word', function(cb){
 
+            sqlMake(pgClient, [
+                "update word set word='test1' where link=2002 and lang='de'",
+                "update word set word='test1' where link=2002 and lang='en'"
+            ],function(){
+                testGetPackageForUpdate([
+                    { lesson: 4001,
+                        lang_mask: '7',
+                        langs: [ 'de', 'en' ] }], function(){
+                    cb();
+                })
+            });
+
+
+        });
     });
 
 
