@@ -2,7 +2,7 @@
 
 
 module.exports.getPackageForUpdate = function(pg, cb){
-    var sql = 'SELECT changed, lesson, lang_mask FROM update_package';
+    var sql = 'SELECT changed, lesson, lang_mask FROM update_package WHERE lesson IS NOT NULL';
     console.log(sql);
     loadLangs(pg, function(err, langs){
 

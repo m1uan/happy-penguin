@@ -29,10 +29,11 @@ describe('package operations', function(){
             }
 
             sqlMake(pgClient, [
-                "select remove_test_data();select create_test_data();",
-                //"SELECT create_test_data();",
-                "SELECT generate_langs();",
-                "DELETE FROM update_package;"
+                "select create_test_data();"
+                //, "SELECT generate_langs();"
+                //, "SELECT remove_test_data();"
+
+
             ],cb);
 
         });
@@ -44,17 +45,30 @@ describe('package operations', function(){
         ],cb);
     });
 
+    afterEach(function(cb){
+        sqlMake(pgClient, ["DELETE FROM update_package;"], cb);
+    });
+
     function testGetPackageForUpdate(lesson, cb){
         package.getPackageForUpdate(pgClient, function(err, packages){
             console.log(err || packages);
             packages.should.be.Array;
-            packages.length.should.above(0);
+            packages.length.should.equal(lesson.length);
 
-            var package = packages[0];
-            package.should.have.property('langs');
-            package.langs.should.be.Array;
-            package.langs.length.should.above(0);
-            package.langs[0].should.be.String;
+            packages.forEach(function(package, idx){
+
+                var test = lesson[idx];
+                package.should.have.property('langs');
+                package.langs.should.be.Array;
+                package.langs.length.should.equal(test.langs.length);
+                package.langs[0].should.be.String;
+
+                test.langs.forEach(function(lang){
+                    package.langs.should.include(lang);
+                });
+
+            });
+
 
             cb();
         });
@@ -62,12 +76,29 @@ describe('package operations', function(){
 
     describe.only('download and store images', function(){
         it('update word', function(cb){
-            testGetPackageForUpdate([{lesson:1,langs: [ 'de', 'cs', 'en' ]}], function(){
+            sqlMake(pgClient, [
+                "SELECT generate_langs();"
+            ],function(){
+                testGetPackageForUpdate([
+                    { lesson: 102,
+                        lang_mask: '7',
+                        langs: [ 'de', 'cs', 'en' ] },
+                    { lesson: 2001,
+                        lang_mask: '7',
+                        langs: [ 'de', 'cs', 'en' ] },
+                    { lesson: 2004,
+                        lang_mask: '7',
+                        langs: [ 'de', 'cs', 'en' ] },
+                    { lesson: null,
+                        lang_mask: '4',
+                        langs: [ 'en', 'cs', 'en' ] },
+                    { lesson: 4001,
+                        lang_mask: '7',
+                        langs: [ 'de', 'cs', 'en' ] }], function(){
+                    cb();
+                })
+            });
 
-
-                cb();
-
-            })
 
         });
 
