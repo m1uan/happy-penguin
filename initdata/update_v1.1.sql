@@ -61,6 +61,7 @@ CREATE OR REPLACE FUNCTION get_mask(mask CHAR) RETURNS BIGINT AS $$
 DECLARE
 result BIGINT;
 BEGIN
+
       result := (1 << ascii(mask));
 
       RETURN result;
@@ -80,10 +81,13 @@ BEGIN
     END IF;
 
     IF TG_TABLE_NAME = 'word' THEN
-        mask := get_mask(NEW.lang);
+        RAISE NOTICE 'lesson %',lsn;
+        RAISE NOTICE 'OLD.lang %',NEW;
+        mask := get_mask(NEW.langid);
     END IF;
 
-    UPDATE update_package SET lang_mask=lang_mask | mask WHERE update_package.lesson=lsn;
+    RAISE NOTICE 'PK is %',mask;
+    UPDATE update_package SET lang_mask= (lang_mask | mask) WHERE update_package.lesson=lsn;
     IF NOT FOUND THEN
         INSERT INTO update_package (changed, lesson, lang_mask)
             VALUES (now(), lsn, mask );
@@ -109,15 +113,17 @@ CREATE TRIGGER update_package_word
       EXECUTE PROCEDURE update_link_changed();
 
 
-update word set word='test1' where link=2002 and lang='cs';
+update word set word='test1' where link=2002 and lang='de';
 update word set word='test2' where link=2003 and lang='en';
 update word set word='test3' where link=2003 and lang='cs';
 
-update word set word='test53',version=10 where link=1006 and lang='cs';
+--update word set word='test53',version=10 where link=1006 and lang='cs';
 update word set word='test3' where link=1004 and lang='cs';
 
-insert into word (lang,word,link, version, langid) values('cs','ahoj',1005, 10, 2::"char");
-delete from word where lang='cs' and link = 1005 and version = 10;
-update link set image=1 where lid=1004;
+--insert into word (lang,word,link, version, langid) values('cs','ahoj',1005, 10, 2::"char");
+--delete from word where lang='cs' and link = 1005 and version = 10;
+--update link set image=1 where lid=1004;
 
 select *, lang_mask::bit(64) from update_package;
+
+select *, ascii(lang), ascii(lang)::bit(64), get_mask(lang), (1 | get_mask(lang))::bit(64) from t_lang;

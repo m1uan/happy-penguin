@@ -54,6 +54,13 @@ describe('package operations', function(){
               console.log(err || packages);
               packages.should.be.Array;
               packages.length.should.above(0);
+
+               var package = packages[0];
+               package.should.have.property('langs');
+               package.langs.should.be.Array;
+               package.langs.length.should.above(0);
+               package.langs[0].should.be.String;
+
               cb();
            });
 
