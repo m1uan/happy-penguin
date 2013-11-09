@@ -15,15 +15,37 @@ CREATE TABLE t_lang (
   code VARCHAR(2) NOT NULL
 );
 
-INSERT INTO t_lang (lang,code) VALUES
-(1::"char", 'ar'),
-(2::"char", 'de'),
-(3::"char", 'cs'),
-(4::"char", 'en');
+-- just for fun :-D
+CREATE OR REPLACE FUNCTION generate_langs() RETURNS INT AS $$
+DECLARE
+idx INT := 0;
+cd VARCHAR(2);
+BEGIN
+      DELETE FROM t_lang;
+      FOR cd IN SELECT lang FROM word GROUP BY lang
+      LOOP
+          INSERT INTO t_lang(lang, code) VALUES
+                (idx::"char", cd);
+          UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = cd) WHERE lang = cd;
 
-UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = 'de') WHERE lang = 'de';
-UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = 'cs') WHERE lang = 'cs';
-UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = 'en') WHERE lang = 'en';
+          idx:=idx+1;
+      END LOOP;
+      RETURN idx;
+END; $$
+LANGUAGE plpgsql;
+
+
+SELECT generate_langs();
+
+--INSERT INTO t_lang (lang,code) VALUES
+--(1::"char", 'ar'),
+--(2::"char", 'de'),
+--(3::"char", 'cs'),
+--(4::"char", 'en');
+
+--UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = 'de') WHERE lang = 'de';
+--UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = 'cs') WHERE lang = 'cs';
+--UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = 'en') WHERE lang = 'en';
 
 
 DROP TABLE update_package;
