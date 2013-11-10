@@ -1,6 +1,7 @@
 var fs = require('fs'),
     words = require('./words.js'),
-    Image = require('./image.js');
+    Image = require('./image.js'),
+    Async = require('async');
 
 
 module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
@@ -102,17 +103,53 @@ module.exports.generateLangFile = function(generateData, cb){
  */
 
 module.exports.copyImageFiles = function(copyImgData, cb){
+    var copies = [];
     copyImgData.images.forEach(function(image, idx)
     {
         if(image.imagefile){
-            var orig = Image.IMG_THUMB_DIR + image.imagefile;
-            var desc = copyImgData.outDir + image.imagefile;
-            console.log('copy : ', orig, ' -> ', desc);
-            fs.createReadStream(orig).pipe(fs.createWriteStream(desc));
-        }
+            var cp = function(icb){
+                var orig = Image.IMG_THUMB_DIR + image.imagefile;
+                var desc = copyImgData.outDir + image.imagefile;
 
+                copyFile(orig, desc, icb);
+            }
+
+            copies.push(cp);
+        }
     });
-    cb();
+
+    // changed to parallel task with copy file
+    // because afterEach was error with can't read file
+    // randomly in source
+    Async.parallel(copies, cb);
+
+}
+
+// stolen from :
+// http://stackoverflow.com/questions/11293857/fastest-way-to-copy-file-in-node-js
+function copyFile(source, target, cb) {
+    var cbCalled = false;
+    console.log('copy : ', source, ' -> ', target);
+
+    var rd = fs.createReadStream(source);
+    rd.on("error", function(err) {
+        done(err);
+    });
+    var wr = fs.createWriteStream(target);
+    wr.on("error", function(err) {
+        done(err);
+    });
+    wr.on("close", function(ex) {
+        done();
+    });
+    rd.pipe(wr);
+
+    function done(err) {
+        if (!cbCalled) {
+            cb(err);
+            cbCalled = true;
+        }
+    }
 }
 
 function getLanguagesFromMask(mask, langs){
