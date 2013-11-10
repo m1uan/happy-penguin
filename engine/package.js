@@ -1,9 +1,12 @@
 
 
 
-module.exports.getPackageForUpdate = function(pg, cb){
-    var sql = 'SELECT changed, lesson, lang_mask FROM update_package WHERE lesson IS NOT NULL';
-    console.log(sql);
+module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
+    var sql = 'SELECT changed, lesson, lang_mask FROM update_package ' +
+        'WHERE lesson IS NOT NULL AND changed > $1';
+
+    var sqlvar = [timeFrom];
+    console.log(sql, sqlvar);
     loadLangs(pg, function(err, langs){
 
         if(err){
@@ -14,7 +17,7 @@ module.exports.getPackageForUpdate = function(pg, cb){
 
         console.log('getPackageForUpdate', langs);
 
-        pg.query(sql, function(err, update_packages){
+        pg.query(sql, sqlvar, function(err, update_packages){
             if(err){
                 cb(err);
                 return;

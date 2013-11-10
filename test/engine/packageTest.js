@@ -49,8 +49,9 @@ describe('package operations', function(){
         sqlMake(pgClient, ["DELETE FROM update_package;"], cb);
     });
 
-    function testGetPackageForUpdate(lesson, cb){
-        package.getPackageForUpdate(pgClient, function(err, packages){
+    function testGetPackageForUpdate(timeFrom, lesson, cb){
+
+        package.getPackageForUpdate(pgClient, timeFrom, function(err, packages){
             console.log(err || packages);
             packages.should.be.Array;
             packages.length.should.equal(lesson.length);
@@ -79,11 +80,12 @@ describe('package operations', function(){
     }
 
     describe.only('download and store images', function(){
-        it('update word', function(cb){
+        it('inital test with generate_langs() which put all to update', function(cb){
+            var timeNow = new Date();
             sqlMake(pgClient, [
                 "SELECT generate_langs();"
             ],function(){
-                testGetPackageForUpdate([
+                testGetPackageForUpdate(timeNow, [
                     { lesson: 101,
                         lang_mask: '7',
                         langs: [ 'de', 'cs', 'en' ] },
@@ -105,21 +107,33 @@ describe('package operations', function(){
 
 
         });
-        it('update word', function(cb){
-
+        it('just two languages changed', function(cb){
+            var timeNow = new Date();
             sqlMake(pgClient, [
                 "update word set word='test1' where link=2002 and lang='de'",
                 "update word set word='test1' where link=2002 and lang='en'"
             ],function(){
-                testGetPackageForUpdate([
+                testGetPackageForUpdate(timeNow, [
                     { lesson: 4001,
                         lang_mask: '7',
                         langs: [ 'de', 'en' ] }], function(){
                     cb();
                 })
             });
+        });
 
-
+        it('whole link should be changed', function(cb){
+            var timeNow = new Date();
+            sqlMake(pgClient, [
+                "update link set image=1 where lid=2002 and version=0"
+            ],function(){
+                testGetPackageForUpdate(timeNow, [
+                    { lesson: 4001,
+                        lang_mask: '7',
+                        langs: [ 'de', 'en', 'cs' ] }], function(){
+                    cb();
+                })
+            });
         });
     });
 
