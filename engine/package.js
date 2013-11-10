@@ -3,6 +3,8 @@ var fs = require('fs'),
     Image = require('./image.js'),
     Async = require('async');
 
+module.exports.DIR_LANG = 'lang';
+module.exports.DIR_IMG = 'img';
 
 module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
     var sql = 'SELECT changed, lesson, lang_mask FROM update_package ' +
@@ -122,6 +124,15 @@ module.exports.copyImageFiles = function(copyImgData, cb){
     // because afterEach was error with can't read file
     // randomly in source
     Async.parallel(copies, cb);
+
+}
+
+module.exports.createPkgDirectory = function(dirWhere, cb){
+    fs.mkdir(dirWhere, function(){
+        fs.mkdirSync(dirWhere + module.exports.DIR_LANG);
+        fs.mkdirSync(dirWhere + module.exports.DIR_IMG);
+        cb();
+    });
 
 }
 
