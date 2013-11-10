@@ -141,7 +141,7 @@ describe('package operations', function(){
         });
     });
 
-    describe.only('download and store images', function(){
+    describe('download and store images', function(){
         beforeEach(function(cb){
             fs.mkdirSync(inDir);
             fs.mkdirSync(inDirLang);
@@ -253,7 +253,35 @@ describe('package operations', function(){
 
         });
 
+        it.only('inital test with copy images into test', function(done){
 
+            var lesson = 101;
+            var lang = 'cs';
+
+
+
+            words.getWordsWithImages(pgClient, [lang], lesson, function(err, testWords){
+                var generateData = {
+                    outDir : inDirImg,
+                    images : testWords[1]
+                };
+                package.copyImageFiles(generateData, function(err){
+                    var lastFile = '';
+                    testWords[1].some(function(img, idx){
+                        lastFile = 'missing : ' + img.imagefile;
+                        if(img.imagefile && !fs.existsSync(generateData.outDir + img.imagefile)){
+                            return true;
+                        }
+                        lastFile = '';
+                    })
+
+                    lastFile.should.be.eql('');
+
+                    done();
+                });
+            }); // words.getWords(pgClient, lesson, [lang], function(testWords){
+
+        });
     });
 
 

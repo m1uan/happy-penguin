@@ -1,5 +1,6 @@
 var fs = require('fs'),
-    words = require('./words.js');
+    words = require('./words.js'),
+    Image = require('./image.js');
 
 
 module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
@@ -87,6 +88,31 @@ module.exports.generateLangFile = function(generateData, cb){
         });
 
     //});
+}
+
+/**
+ *
+ * @param copyImgData = {
+ *    outDir : '/tmp/',
+ *    images : [ list..of..images ]
+ * }
+ *
+ * @param cb - callback
+ *
+ */
+
+module.exports.copyImageFiles = function(copyImgData, cb){
+    copyImgData.images.forEach(function(image, idx)
+    {
+        if(image.imagefile){
+            var orig = Image.IMG_THUMB_DIR + image.imagefile;
+            var desc = copyImgData.outDir + image.imagefile;
+            console.log('copy : ', orig, ' -> ', desc);
+            fs.createReadStream(orig).pipe(fs.createWriteStream(desc));
+        }
+
+    });
+    cb();
 }
 
 function getLanguagesFromMask(mask, langs){
