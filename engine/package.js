@@ -1,4 +1,5 @@
-
+var fs = require('fs'),
+    words = require('./words.js');
 
 
 module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
@@ -31,6 +32,61 @@ module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
         });
     })
 
+}
+
+/**
+ *
+ * @param generateData = {
+ *    outDir : '/tmp/',
+ *    lesson : 102,
+ *    lang ; 'cs',
+ *    words : [ list..of..words ]
+ *    images : [ list..of..images ]
+ * }
+ *
+ * @param cb - callback
+ *
+ *
+ * FORMAT:
+ * lesson;lang;num_words
+ * lid1;word1;*img1
+ * lid2;word2;*img2
+ * lid3;word3;*img3
+ */
+
+module.exports.generateLangFile = function(generateData, cb){
+    var file = generateData.outDir + generateData.lang + '.data';
+    //words.getWords(pg, lang, lesson, function(words){
+        var data = generateData.lesson + ';'
+            + generateData.lang
+            + ';' + generateData.words.length
+            + '\n';
+
+        generateData.words.forEach(function(w,idx){
+           data += w.link + ";";
+           data += w.word + ";";
+
+           generateData.images.some(function(image,ii){
+               if(w.link == image.lid){
+
+                   if(image.imagefile){
+                       data += image.imagefile;
+                   }
+
+
+                   return;
+               }
+           });
+
+           data += "\n";
+        });
+
+        console.log(data);
+        fs.writeFile(file, data, function (err) {
+           cb(err);
+        });
+
+    //});
 }
 
 function getLanguagesFromMask(mask, langs){

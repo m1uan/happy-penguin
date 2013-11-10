@@ -1,9 +1,11 @@
 var assert = require("assert"),
     package = require('../../engine/package.js'),
+    words = require('../../engine/words.js'),
     pg = require('pg'),
     should = require('should')
     , async = require('async')
-    ,config = require('../../config/local.js');
+    ,config = require('../../config/local.js')
+    ,fs = require('fs');
 
 var pgClient = null;
 
@@ -29,7 +31,7 @@ describe('package operations', function(){
             }
 
             sqlMake(pgClient, [
-                "select create_test_data();"
+                "-- select create_test_data();"
                 //, "SELECT generate_langs();"
                 //, "SELECT remove_test_data();"
 
@@ -41,7 +43,7 @@ describe('package operations', function(){
 
     after(function(cb){
         sqlMake(pgClient, [
-            "SELECT remove_test_data();"
+            "--SELECT remove_test_data();"
         ],cb);
     });
 
@@ -79,7 +81,7 @@ describe('package operations', function(){
         });
     }
 
-    describe.only('download and store images', function(){
+    describe('test getPackageForUpdate', function(){
         it('inital test with generate_langs() which put all to update', function(cb){
             var timeNow = new Date();
             sqlMake(pgClient, [
@@ -122,7 +124,7 @@ describe('package operations', function(){
             });
         });
 
-        it('whole link should be changed', function(cb){
+        it('whole link (all languages) should be changed', function(cb){
             var timeNow = new Date();
             sqlMake(pgClient, [
                 "update link set image=1 where lid=2002 and version=0"
@@ -137,7 +139,86 @@ describe('package operations', function(){
         });
     });
 
+    describe.only('download and store images', function(){
+        it('inital test with generate_langs() which put all to update', function(done){
+            var inDir = '/tmp/';
+            var lesson = 102;
+            var lang = 'cs';
 
+
+            words.getWordsWithImages(pgClient, [lang], lesson, function(err, testWords){
+            var generateData = {
+                    outDir : inDir,
+                    lesson : lesson,
+                    lang : lang,
+                    words : testWords[0],
+                    images : testWords[1]
+                };
+            package.generateLangFile(generateData, function(err){
+                assert(!err);
+                var file = inDir + 'cs.data';
+                fs.existsSync(file).should.be.eql(true);
+                var data = fs.readFileSync(file);
+                console.log(data);
+                var len = 0;
+                data.toString().split('\n').forEach(function(row, idx){
+                   if(idx == 0){
+                       testRow0(row);
+                   } else {
+                       if(len < testWords[0].length){
+                           testRowN(row, generateData.words[len]);
+                       }
+
+                       len += 1;
+                   }
+
+
+                });
+
+
+                len.should.be.eql(testWords[0].length+1);
+                done();
+            });
+                // first row should be in format:
+                // lesson;lang;words_len
+                function testRow0(row){
+                    var rowParams = row.split(';');
+                    rowParams.length.should.eql(3);
+                    rowParams[0].should.eql(lesson);
+                    rowParams[1].should.eql(lang);
+                    rowParams[2].should.eql(testWords[0].length);
+                }
+
+                function testRowN(row, w){
+
+                    var rowParams = row.split(';');
+                    rowParams.length.should.above(1);
+                    rowParams[0].should.eql(w.link);
+                    rowParams[1].should.eql(w.word);
+
+                    var foundImage = '';
+                    generateData.images.some(function(image){
+                        //console.log(image);
+                        if(w.link == image.lid){
+                            if(image.imagefile){
+                                foundImage = image.imagefile;
+                            }
+                            return true;
+                        }
+
+                        return false;
+                    });
+
+
+                    rowParams[2].should.eql(foundImage);
+
+
+                }
+
+            }); // words.getWords(pgClient, lesson, [lang], function(testWords){
+
+        });
+    });
 
 
 })
