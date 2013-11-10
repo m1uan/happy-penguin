@@ -11,8 +11,9 @@ var pgClient = null;
 
 var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 
-
-
+var inDir = '/tmp/3test021/';
+var inDirLang = inDir + 'lang/';
+var inDirImg = inDir + 'img/';
 
 describe('package operations', function(){
 
@@ -22,6 +23,8 @@ describe('package operations', function(){
         var dbname = config.DB_NAME_TEST;
         var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
         pgClient = new pg.Client(connection);
+
+
 
 
         pgClient.connect(function(err){
@@ -42,14 +45,13 @@ describe('package operations', function(){
     });
 
     after(function(cb){
+
+
         sqlMake(pgClient, [
             "--SELECT remove_test_data();"
         ],cb);
     });
 
-    afterEach(function(cb){
-        sqlMake(pgClient, ["DELETE FROM update_package;"], cb);
-    });
 
     function testGetPackageForUpdate(timeFrom, lesson, cb){
 
@@ -140,15 +142,39 @@ describe('package operations', function(){
     });
 
     describe.only('download and store images', function(){
+        beforeEach(function(cb){
+            fs.mkdirSync(inDir);
+            fs.mkdirSync(inDirLang);
+            fs.mkdirSync(inDirImg);
+            cb();
+        });
+
+        afterEach(function(cb){
+            fs.readdirSync(inDirLang).forEach(function(file){
+                fs.unlinkSync(inDirLang + file);
+            }) ;
+
+            fs.readdirSync(inDirImg).forEach(function(file){
+                fs.unlinkSync(inDirImg + file);
+            }) ;
+
+            fs.rmdirSync(inDirLang);
+            fs.rmdirSync(inDirImg);
+            fs.rmdirSync(inDir);
+
+            sqlMake(pgClient, ["DELETE FROM update_package;"], cb);
+        });
+
         it('inital test with generate_langs() which put all to update', function(done){
-            var inDir = '/tmp/';
+
             var lesson = 102;
             var lang = 'cs';
 
 
+
             words.getWordsWithImages(pgClient, [lang], lesson, function(err, testWords){
             var generateData = {
-                    outDir : inDir,
+                    outDir : inDirLang,
                     lesson : lesson,
                     lang : lang,
                     words : testWords[0],
@@ -156,7 +182,7 @@ describe('package operations', function(){
                 };
             package.generateLangFile(generateData, function(err){
                 assert(!err);
-                var file = inDir + 'cs.data';
+                var file = inDirLang + 'cs.data';
                 fs.existsSync(file).should.be.eql(true);
                 var data = fs.readFileSync(file);
                 console.log(data);
