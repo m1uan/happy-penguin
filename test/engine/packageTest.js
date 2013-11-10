@@ -298,6 +298,22 @@ describe('package operations', function(){
             done();
 
         });
+
+        it('inital test with copy images into test', function(done){
+            var lesson = 101;
+            var lang = 'cs';
+
+            var dir = inDir + lesson + '_' + new Date().getTime() + '/';
+
+            package.createLangFiles(dir, function(err){
+                fs.statSync(dir).isDirectory().should.eql(true);
+                fs.statSync(dir + 'lang/').isDirectory().should.eql(true);
+                fs.statSync(dir + 'img/').isDirectory().should.eql(true);
+            });
+
+            done();
+
+        });
     });
 
 
