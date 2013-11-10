@@ -11,7 +11,7 @@ var pgClient = null;
 
 var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 
-var inDir = '/tmp/3test021/';
+var inDir = '/tmp/7test021/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
 
@@ -150,17 +150,25 @@ describe('package operations', function(){
         });
 
         afterEach(function(cb){
-            fs.readdirSync(inDirLang).forEach(function(file){
-                fs.unlinkSync(inDirLang + file);
-            }) ;
+            unlinkDir(inDir);
 
-            fs.readdirSync(inDirImg).forEach(function(file){
-                fs.unlinkSync(inDirImg + file);
-            }) ;
+            function unlinkDir(dir){
+                fs.readdirSync(dir).forEach(function(file){
+                    var path = dir + file;
+                    console.log('delete', path);
+                    if(fs.statSync(path).isDirectory()) {
+                        unlinkDir(path + '/');
+                    } else {
+                        fs.unlinkSync(path);
+                    }
 
-            fs.rmdirSync(inDirLang);
-            fs.rmdirSync(inDirImg);
-            fs.rmdirSync(inDir);
+
+                }) ;
+
+                fs.rmdirSync(dir);
+            }
+
+
 
             sqlMake(pgClient, ["DELETE FROM update_package;"], cb);
         });
@@ -244,6 +252,8 @@ describe('package operations', function(){
             }); // words.getWords(pgClient, lesson, [lang], function(testWords){
 
         });
+
+
     });
 
 
