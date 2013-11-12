@@ -1,7 +1,13 @@
 var fs = require('fs'),
     words = require('./words.js'),
     Image = require('./image.js'),
-    Async = require('async');
+    Async = require('async'),
+    Config = require('../config/local.js'),
+    Archiver = require('archiver');
+
+/*
+    PKG_DIR = '/tmp/pkg/' in config
+ */
 
 module.exports.DIR_LANG = 'lang';
 module.exports.DIR_IMG = 'img';
@@ -106,26 +112,122 @@ module.exports.generateLangFile = function(generateData, cb){
 
 module.exports.copyImageFiles = function(copyImgData, cb){
     var copies = [];
+    var files = [];
     copyImgData.images.forEach(function(image, idx)
     {
         if(image.imagefile){
+            var img = image.imagefile;
             var cp = function(icb){
-                var orig = Image.IMG_THUMB_DIR + image.imagefile;
-                var desc = copyImgData.outDir + image.imagefile;
+
+                var orig = Image.IMG_THUMB_DIR + img;
+                var desc = copyImgData.outDir + img;
 
                 copyFile(orig, desc, icb);
             }
 
             copies.push(cp);
+            files.push(img);
         }
     });
 
     // changed to parallel task with copy file
     // because afterEach was error with can't read file
     // randomly in source
-    Async.parallel(copies, cb);
+    Async.parallel(copies, function(err){
+        cb(err, err ? null : files);
+    });
+}
+
+
+
+
+
+module.exports.createPackage = function(pg, lesson, cb){
+    var temp = new Date().getTime();
+    var tempDir = Config.DIR_TMP + temp + '/';
+    var fileName = lesson + '_'  + temp + '.lng';
+
+
+    var sqlLang = 'SELECT code FROM t_lang';
+    pg.query(sqlLang, function(err, langData){
+        var langs = langData.rows;
+        console.log('langs', langs);
+
+
+        module.exports.createPkgDirectory(tempDir, function(err){
+
+        words.getWordsWithImages(pg, langs, lesson, function(err, words){
+            var images = words[words.length-1];
+
+            var asyncFuncs = [];
+
+            for(var idx = 0; idx != words.length - 1; idx++){
+                var generateData = {
+                    outDir : tempDir,
+                    lesson : lesson,
+                    lang : langs[idx],
+                    words : words[idx],
+                    images : images
+                };
+
+                // the images are in end of words list
+                // but in async list have to be first
+                // because zip package expecting in data list of images
+                if(idx == 0){
+                    asyncFuncs.push(function(icb){
+                        module.exports.copyImageFiles(generateData, function(err){
+                            icb(err);
+                        });
+                    });
+                }
+
+                asyncFuncs.push(function(icb){
+                    module.exports.generateLangFile(generateData, function(err){
+                        icb(err);
+                    });
+                });
+
+            }
+
+            Async.parallel(asyncFuncs, function(err, data){
+                if(err){
+                    cb(err);
+                } else {
+                    console.log('Async.parallel(asyncFuncs, function(err, data)', data);
+                    zipPackage(fileName, tempDir, langs, data[0], cb);
+                }
+            });
+
+        });
+        }); // module.exports.createPkgDirectory(tempDir, function(err)
+    });
 
 }
+
+function zipPackage(fileName, tempDir, langs, images, cb){
+    var output = fs.createWriteStream(__dirname + '/example-output.zip');
+    var archive = Archiver('zip');
+
+    output.on('close', function() {
+        console.log('archiver has been finalized and the output file descriptor has closed.');
+        cb(null, fileName);
+    });
+
+    archive.on('error', function(err) {
+        throw err;
+    });
+
+    archive.pipe(output);
+
+    archive.finalize(function(err, bytes) {
+        if (err) {
+            throw err;
+        }
+
+        console.log(bytes + ' total bytes');
+    });
+}
+
 
 module.exports.createPkgDirectory = function(dirWhere, cb){
     fs.mkdir(dirWhere, function(){

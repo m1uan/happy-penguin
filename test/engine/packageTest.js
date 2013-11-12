@@ -1,3 +1,10 @@
+/*
+ mkdir /tmp/ahoj
+ ln -s ~/voc4u/initdata/img /tmp/ahoj/thumb
+ ln -s ~/voc4u/initdata/img /tmp/ahoj/orig
+
+*/
+
 var assert = require("assert"),
     package = require('../../engine/package.js'),
     words = require('../../engine/words.js'),
@@ -11,7 +18,7 @@ var pgClient = null;
 
 var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 
-var inDir = '/tmp/7test021/';
+var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
 
@@ -34,7 +41,7 @@ describe('package operations', function(){
             }
 
             sqlMake(pgClient, [
-                "-- select create_test_data();"
+                "select create_test_data();"
                 //, "SELECT generate_langs();"
                 //, "SELECT remove_test_data();"
 
@@ -48,7 +55,7 @@ describe('package operations', function(){
 
 
         sqlMake(pgClient, [
-            "--SELECT remove_test_data();"
+            "SELECT remove_test_data();"
         ],cb);
     });
 
@@ -253,7 +260,7 @@ describe('package operations', function(){
 
         });
 
-        it('inital test with copy images into test', function(done){
+        it.only('inital test with copy images into test', function(done){
 
             var lesson = 101;
             var lang = 'cs';
@@ -265,17 +272,43 @@ describe('package operations', function(){
                     outDir : inDirImg,
                     images : testWords[1]
                 };
-                package.copyImageFiles(generateData, function(err){
+                package.copyImageFiles(generateData, function(err, data){
                     var lastFile = '';
+
+                    console.log('data', data);
+
+                    data.should.be.Array;
+
                     testWords[1].some(function(img, idx){
                         lastFile = 'missing : ' + img.imagefile;
                         if(img.imagefile && !fs.existsSync(generateData.outDir + img.imagefile)){
                             return true;
                         }
+
+                        if(img.imagefile){
+                            data.should.contain(img.imagefile);
+                            console.log(lastFile);
+                        }
+
+
                         lastFile = '';
                     })
 
                     lastFile.should.be.eql('');
+
+                    data.some(function(img, idx){
+                        lastFile = 'file in advance : ' + img;
+
+                        if(!fs.existsSync(generateData.outDir + img)){
+                            return true;
+                        }
+
+                        lastFile = '';
+                    });
+
+                    // the data list have more files then are real
+                    lastFile.should.be.eql('');
+
 
                     done();
                 });
@@ -283,7 +316,7 @@ describe('package operations', function(){
 
         });
 
-        it.only('inital test with copy images into test', function(done){
+        it('inital test with copy images into test', function(done){
             var lesson = 101;
             var lang = 'cs';
 
@@ -299,7 +332,7 @@ describe('package operations', function(){
 
         });
 
-        it('inital test with copy images into test', function(done){
+        it.skip('inital test with copy images into test', function(done){
             var lesson = 101;
             var lang = 'cs';
 
@@ -314,6 +347,57 @@ describe('package operations', function(){
             done();
 
         });
+    });
+
+    describe('create package', function(){
+
+        before(function(cb){
+
+            if(fs.existsSync(config.PKG_DIR)){
+
+            } else {
+                fs.mkdirSync(config.PKG_DIR)
+            }
+            cb();
+        });
+
+
+
+        afterEach(function(cb){
+            unlinkDir(config.PKG_DIR);
+
+            function unlinkDir(dir){
+                fs.readdirSync(dir).forEach(function(file){
+                    var path = dir + file;
+                    console.log('delete', path);
+                    if(fs.statSync(path).isDirectory()) {
+                        unlinkDir(path + '/');
+                    } else {
+                        fs.unlinkSync(path);
+                    }
+
+
+                }) ;
+
+                //fs.rmdirSync(dir);
+            }
+
+
+
+            sqlMake(pgClient, ["DELETE FROM update_package;"], cb);
+        });
+
+        it('simple package cs 2001', function(cb){
+            package.createPackage(pgClient, 2001, function(err, pkgFile){
+                assert(pkgFile);
+                pkgFile.should.be.String;
+                fs.existsSync(config.PKG_DIR + pkgFile).should.be.eql(true);
+
+                cb();
+            });
+        });
+
+
     });
 
 

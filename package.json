@@ -33,7 +33,8 @@
     "pg": "~2.7.0",
     "async": "~0.2.9",
     "imagemagick": "~0.1.3",
-    "gm": "~1.13.3"
+    "gm": "~1.13.3",
+    "archiver": "~0.4.10"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
