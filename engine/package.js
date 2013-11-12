@@ -9,8 +9,10 @@ var fs = require('fs'),
     PKG_DIR = '/tmp/pkg/' in config
  */
 
-module.exports.DIR_LANG = 'lang';
-module.exports.DIR_IMG = 'img';
+module.exports.DIR_LANG = 'lang/';
+module.exports.DIR_IMG = 'img/';
+
+module.exports.LANG_EXT = '.data';
 
 module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
     var sql = 'SELECT changed, lesson, lang_mask FROM update_package ' +
@@ -65,7 +67,7 @@ module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
  */
 
 module.exports.generateLangFile = function(generateData, cb){
-    var file = generateData.outDir + generateData.lang + '.data';
+    var file = generateData.outDir + module.exports.DIR_LANG + generateData.lang + module.exports.LANG_EXT;
     //words.getWords(pg, lang, lesson, function(words){
         var data = generateData.lesson + ';'
             + generateData.lang
@@ -91,7 +93,7 @@ module.exports.generateLangFile = function(generateData, cb){
            data += "\n";
         });
 
-        console.log(data);
+        console.log('to tech dat moc neni ne?', data, file);
         fs.writeFile(file, data, function (err) {
            cb(err);
         });
@@ -120,7 +122,7 @@ module.exports.copyImageFiles = function(copyImgData, cb){
             var cp = function(icb){
 
                 var orig = Image.IMG_THUMB_DIR + img;
-                var desc = copyImgData.outDir + img;
+                var desc = copyImgData.outDir + module.exports.DIR_IMG + img;
 
                 copyFile(orig, desc, icb);
             }
@@ -148,7 +150,7 @@ module.exports.createPackage = function(pg, lesson, cb){
     var fileName = lesson + '_'  + temp + '.lng';
 
 
-    var sqlLang = 'SELECT code FROM t_lang';
+    var sqlLang = 'SELECT code as lang FROM t_lang';
     pg.query(sqlLang, function(err, langData){
         var langs = langData.rows;
         console.log('langs', langs);
@@ -161,40 +163,45 @@ module.exports.createPackage = function(pg, lesson, cb){
 
             var asyncFuncs = [];
 
-            for(var idx = 0; idx != words.length - 1; idx++){
+            // the images are in end of words list
+            // but in async list have to be first
+            // because zip package expecting in data list of images
+            asyncFuncs.push(function(icb){
+                    module.exports.copyImageFiles({
+                        outDir : tempDir,
+                        images : images
+                    }, function(err, copiedFiles){
+                        icb(err, copiedFiles);
+               });
+            });
+
+            // but if i put to for the lang is allways the last value in list
+            // for exaple list : ['ar','cs', 'ms'] ->
+            // in funciton(icb) the generalData -> allways 'ms'
+            function not_nice_solution(idx){
                 var generateData = {
                     outDir : tempDir,
                     lesson : lesson,
-                    lang : langs[idx],
-                    words : words[idx],
+                    lang : langs[idx2].lang,
+                    words : words[idx2],
                     images : images
                 };
-
-                // the images are in end of words list
-                // but in async list have to be first
-                // because zip package expecting in data list of images
-                if(idx == 0){
-                    asyncFuncs.push(function(icb){
-                        module.exports.copyImageFiles(generateData, function(err){
-                            icb(err);
-                        });
-                    });
-                }
-
-                asyncFuncs.push(function(icb){
+                return function(icb){
                     module.exports.generateLangFile(generateData, function(err){
                         icb(err);
                     });
-                });
+                }
+            }
 
+            for(var idx2 = 0; idx2 != words.length - 1; idx2++){
+                asyncFuncs.push(not_nice_solution(idx2));
             }
 
             Async.parallel(asyncFuncs, function(err, data){
                 if(err){
                     cb(err);
                 } else {
-                    console.log('Async.parallel(asyncFuncs, function(err, data)', data);
-                    zipPackage(fileName, tempDir, langs, data[0], cb);
+                    zipPackage(tempDir + fileName, tempDir, langs, data[0], cb);
                 }
             });
 
@@ -205,7 +212,10 @@ module.exports.createPackage = function(pg, lesson, cb){
 }
 
 function zipPackage(fileName, tempDir, langs, images, cb){
-    var output = fs.createWriteStream(__dirname + '/example-output.zip');
+    console.log('zipPackage', fileName, langs, images);
+
+    //var output = fs.createWriteStream(__dirname + '/example-output2.zip');
+    var output = fs.createWriteStream(fileName);
     var archive = Archiver('zip');
 
     output.on('close', function() {
@@ -218,6 +228,17 @@ function zipPackage(fileName, tempDir, langs, images, cb){
     });
 
     archive.pipe(output);
+
+    images.forEach(function(img){
+        var imgName = module.exports.DIR_IMG +  img;
+        archive.append(fs.createReadStream(tempDir + imgName), { name: imgName });
+    });
+
+    langs.forEach(function(lng){
+        var langName = module.exports.DIR_LANG + lng.lang + module.exports.LANG_EXT;
+        archive.append(fs.createReadStream(tempDir +  langName), { name:  langName });
+    });
+
 
     archive.finalize(function(err, bytes) {
         if (err) {

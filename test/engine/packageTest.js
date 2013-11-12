@@ -260,7 +260,7 @@ describe('package operations', function(){
 
         });
 
-        it.only('inital test with copy images into test', function(done){
+        it('inital test with copy images into test', function(done){
 
             var lesson = 101;
             var lang = 'cs';
@@ -387,11 +387,11 @@ describe('package operations', function(){
             sqlMake(pgClient, ["DELETE FROM update_package;"], cb);
         });
 
-        it('simple package cs 2001', function(cb){
+        it.only('simple package cs 2001', function(cb){
             package.createPackage(pgClient, 2001, function(err, pkgFile){
                 assert(pkgFile);
                 pkgFile.should.be.String;
-                fs.existsSync(config.PKG_DIR + pkgFile).should.be.eql(true);
+                fs.existsSync(pkgFile).should.be.eql(true);
 
                 cb();
             });
