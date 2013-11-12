@@ -113,6 +113,16 @@ CREATE TRIGGER update_package_word
       EXECUTE PROCEDURE update_link_changed();
 
 
+DROP TABLE package_t ;
+
+CREATE TABLE package_t (
+    lesson SMALLINT NOT NULL,
+    lang VARCHAR(2) NOT NULL,
+    changed TIMESTAMP,
+    alt CHAR(255),
+    file VARCHAR(50)
+);
+
 --update word set word='test1' where link=2002 and lang='de';
 --update word set word='test2' where link=2003 and lang='en';
 --update word set word='test3' where link=2003 and lang='cs';
