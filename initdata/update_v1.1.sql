@@ -1,33 +1,33 @@
 DROP TRIGGER update_package_link ON link;
 DROP TRIGGER update_package_word ON word;
 
-ALTER TABLE word DROP COLUMN langid;
+--ALTER TABLE word DROP COLUMN langid;
 
-ALTER TABLE word ADD COLUMN langid CHAR DEFAULT NULL;
-
-
+--ALTER TABLE word ADD COLUMN langid CHAR DEFAULT NULL;
 
 
-DROP TABLE t_lang;
 
-CREATE TABLE t_lang (
-  lang CHAR UNIQUE NOT NULL,
-  code VARCHAR(2) NOT NULL
+
+DROP TABLE lang_t;
+CREATE TABLE lang_t (
+  code SMALLINT NOT NULL,
+  lang VARCHAR(2) NOT NULL
 );
 
 -- just for fun :-D
 CREATE OR REPLACE FUNCTION generate_langs() RETURNS INT AS $$
 DECLARE
-idx INT := 0;
+idx SMALLINT := 0;
 cd VARCHAR(2);
 BEGIN
-      DELETE FROM t_lang;
+      DELETE FROM lang_t;
       FOR cd IN SELECT lang FROM word GROUP BY lang
       LOOP
-          INSERT INTO t_lang(lang, code) VALUES
-                (idx::"char", cd);
-          UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = cd) WHERE lang = cd;
-
+          INSERT INTO lang_t(code, lang) VALUES
+                (idx, cd);
+          --UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = cd) WHERE lang = cd;
+          RAISE NOTICE 'idx %',idx;
+          RAISE NOTICE 'cd %',cd;
           idx:=idx+1;
       END LOOP;
       RETURN idx;
@@ -57,12 +57,12 @@ CREATE TABLE update_package (
 );
 
 
-CREATE OR REPLACE FUNCTION get_mask(mask CHAR) RETURNS BIGINT AS $$
+CREATE OR REPLACE FUNCTION get_mask(mask SMALLINT) RETURNS BIGINT AS $$
 DECLARE
 result BIGINT;
 BEGIN
 
-      result := (1 << ascii(mask));
+      result := (1 << mask);
 
       RETURN result;
 END; $$
@@ -81,12 +81,13 @@ BEGIN
     END IF;
 
     IF TG_TABLE_NAME = 'word' THEN
-        RAISE NOTICE 'lesson %',lsn;
-        RAISE NOTICE 'OLD.lang %',NEW;
-        mask := get_mask(NEW.langid);
+        --RAISE NOTICE 'lesson %',lsn;
+        --RAISE NOTICE 'OLD.lang %',NEW;
+        -- TODO: switch
+        mask := get_mask((SELECT code FROM lang_t WHERE lang_t.lang = NEW.lang));
     END IF;
 
-    RAISE NOTICE 'PK is %',mask;
+    --RAISE NOTICE 'PK is %',mask;
     UPDATE update_package SET lang_mask= (lang_mask | mask) WHERE update_package.lesson=lsn;
     IF NOT FOUND THEN
         INSERT INTO update_package (changed, lesson, lang_mask)

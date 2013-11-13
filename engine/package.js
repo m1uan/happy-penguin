@@ -150,7 +150,7 @@ module.exports.createPackage = function(pg, lesson, cb){
     var fileName = lesson + '_'  + temp + '.lng';
 
 
-    var sqlLang = 'SELECT code as lang FROM t_lang';
+    var sqlLang = 'SELECT lang FROM lang_t';
     pg.query(sqlLang, function(err, langData){
         var langs = [];
 
