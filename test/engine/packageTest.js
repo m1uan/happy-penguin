@@ -1,7 +1,5 @@
 /*
- mkdir /tmp/ahoj
- ln -s ~/voc4u/initdata/img /tmp/ahoj/thumb
- ln -s ~/voc4u/initdata/img /tmp/ahoj/orig
+ mkdir /tmp/ahoj && ln -s ~/voc4u/initdata/img /tmp/ahoj/orig && mkdir /tmp/ahoj/thumb && cp /tmp/ahoj/orig/* /tmp/ahoj/thumb/
 
 */
 
@@ -41,7 +39,7 @@ describe('package operations', function(){
             }
 
             sqlMake(pgClient, [
-                "select create_test_data();"
+                "-- select create_test_data();"
                 //, "SELECT generate_langs();"
                 //, "SELECT remove_test_data();"
 
@@ -55,7 +53,7 @@ describe('package operations', function(){
 
 
         sqlMake(pgClient, [
-            "SELECT remove_test_data();"
+            "-- SELECT remove_test_data();"
         ],cb);
     });
 
@@ -384,16 +382,19 @@ describe('package operations', function(){
 
 
 
-            sqlMake(pgClient, ["DELETE FROM update_package;"], cb);
+            sqlMake(pgClient, ["DELETE FROM update_package;"
+            , "DELETE FROM package_t;"], cb);
         });
 
         it.only('simple package cs 2001', function(cb){
-            package.createPackage(pgClient, 2001, function(err, pkgFile){
+            package.createPackage(pgClient, 101, function(err, pkgFile){
                 assert(pkgFile);
                 pkgFile.should.be.String;
                 fs.existsSync(pkgFile).should.be.eql(true);
-
-                cb();
+                pgClient.query('SELECT * FROM package_t WHERE lesson = $1 AND lang = $2', [101, 'cs'], function(err, data){
+                    data.rows.length.should.be.above(0);
+                    cb();
+                });
             });
         });
 

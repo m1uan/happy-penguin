@@ -1,16 +1,22 @@
+
 listFiles = [];
 def listWords = [];
 
-def lang1 = ['ar','bg','cs','da','de','el','en','es','et','fi','fr','he','hi','hu','id','it','ja','ko','lt','lv','ms','nl','no','pl','pt','ro','ru','sl','sv','th','tr','uk','vi','zh'];
+def LAST_ID = 1;
+def LAST_IMG_ID = 1;
+def MAX = 10;
+
+def lang = ['ar','bg','cs','da','de','el','en','es','et','fi','fr','he','hi','hu','id','it','ja','ko','lt','lv','ms','nl','no','pl','pt','ro','ru','sl','sv','th','tr','uk','vi','zh', 'al', 'sk', 'sr', 'hr', 'ba', 'mk'];
 //def lang = ['en','cs','es','pt','it', 'de','ar','zh','ru'];
-def lessons1 = [ 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
-def lessons = [ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
+def lessons1 = [ 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
+def lessons3 = [ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
 def lang2 = ['en'];
 def lesson2 = [ 4009, 4010 ];
-def lang= ['al', 'sk', 'sr', 'hr', 'ba', 'mk'];
-def lessons3= [  2004,4001 ];
+def lang1= ['al', 'sk', 'sr', 'hr', 'ba', 'mk'];
+def lessons= [  101, 1001 ];
 
-def findOrCreateFile(fileName) {
+
+def findOrCreateFile(fileName, lastImgID) {
     fileName = fileName.trim();
     checksum = checkSum('img/' + fileName); 
     if(checksum.size() < 5) {
@@ -31,7 +37,7 @@ def findOrCreateFile(fileName) {
         def process = copy.execute();
         //println copy;
 
-        file = [md5:checksum, name: fileName, id: listFiles.size()+1];
+        file = [md5:checksum, name: fileName, id: (listFiles.size()+lastImgID)];
         listFiles.add( file);
         
         //println checksum  + ' ' + fileName + ' ' + listFiles.size();
@@ -51,7 +57,7 @@ lang : lng,
 lesson : lesson
 ];
     if( splited.size() > 1 && splited[1] != ''){
-        word.file = findOrCreateFile(splited[1]);
+        word.file = findOrCreateFile(splited[1], LAST_IMG_ID);
         }
     listWords.add(word);
     //println word;
@@ -72,7 +78,7 @@ lang.each{
     lng = it;
     count = 1;
     lessons.eachWithIndex(){ lsn,idx ->
-        count = (idx+1) * 1000;
+        count = (idx+1) * 1000 + LAST_ID;
         lesson = lsn
         def path = "outdatanew/${lng}/${lsn}.data";
         println path; 

@@ -118,8 +118,8 @@ DROP TABLE package_t ;
 CREATE TABLE package_t (
     lesson SMALLINT NOT NULL,
     lang VARCHAR(2) NOT NULL,
-    changed TIMESTAMP,
-    alt CHAR(255),
+    changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    examples CHAR(255),
     file VARCHAR(50)
 );
 

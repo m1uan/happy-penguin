@@ -93,7 +93,7 @@ module.exports.generateLangFile = function(generateData, cb){
            data += "\n";
         });
 
-        console.log('to tech dat moc neni ne?', data, file);
+        //console.log('to tech dat moc neni ne?', data, file);
         fs.writeFile(file, data, function (err) {
            cb(err);
         });
@@ -152,15 +152,17 @@ module.exports.createPackage = function(pg, lesson, cb){
 
     var sqlLang = 'SELECT code as lang FROM t_lang';
     pg.query(sqlLang, function(err, langData){
-        var langs = langData.rows;
-        console.log('langs', langs);
+        var langs = [];
 
+        langData.rows.forEach(function(lang){
+            langs.push(lang.lang);
+        });
 
         module.exports.createPkgDirectory(tempDir, function(err){
 
         words.getWordsWithImages(pg, langs, lesson, function(err, words){
             var images = words[words.length-1];
-
+            //console.log(words);
             var asyncFuncs = [];
 
             // the images are in end of words list
@@ -178,23 +180,27 @@ module.exports.createPackage = function(pg, lesson, cb){
             // but if i put to for the lang is allways the last value in list
             // for exaple list : ['ar','cs', 'ms'] ->
             // in funciton(icb) the generalData -> allways 'ms'
-            function not_nice_solution(idx){
+            function not_nice_solution(idx, fnc){
                 var generateData = {
                     outDir : tempDir,
                     lesson : lesson,
-                    lang : langs[idx2].lang,
+                    lang : langs[idx2],
                     words : words[idx2],
-                    images : images
+                    images : images,
+                    fileName : fileName
                 };
                 return function(icb){
-                    module.exports.generateLangFile(generateData, function(err){
+                    fnc(generateData, function(err){
                         icb(err);
-                    });
+                    },
+                        // not nice solution in not nice solution -> bat solution
+                        pg);
                 }
             }
 
             for(var idx2 = 0; idx2 != words.length - 1; idx2++){
-                asyncFuncs.push(not_nice_solution(idx2));
+                asyncFuncs.push(not_nice_solution(idx2, module.exports.generateLangFile));
+                asyncFuncs.push(not_nice_solution(idx2, storeInDbPackage));
             }
 
             Async.parallel(asyncFuncs, function(err, data){
@@ -207,6 +213,39 @@ module.exports.createPackage = function(pg, lesson, cb){
 
         });
         }); // module.exports.createPkgDirectory(tempDir, function(err)
+    });
+
+}
+
+function storeInDbPackage(generateData, cb, pg){
+    var thumb = generateData.words.slice(1,10);
+    console.log('generateData.words.slice(1,30)',generateData, generateData.words, thumb);
+
+    var wordsArray = [];
+    generateData.words.forEach(function(w){
+        wordsArray.push(w.word);
+    });
+
+    var words = wordsArray.join().substr(0, 255);
+
+    var sql = 'UPDATE package_t SET examples=$1, file=$2 WHERE lesson=$3 AND lang=$4';
+    var sqlval = [words, generateData.fileName, generateData.lesson, generateData.lang];
+    pg.query(sql, sqlval, function(err, update){
+        console.log('storeInDbPackage', sql, sqlval, update.rowCount);
+
+        if(update.rowCount < 1){
+            sql = 'INSERT INTO package_t (examples, file, lesson, lang) VALUES($1, $2, $3, $4) ';
+
+            pg.query(sql, sqlval, function(err, insert){
+                console.log('storeInDbPackage', sql, sqlval, err? err : insert);
+                cb(err);
+            });
+
+
+        } else {
+            cb(err);
+        }
+
     });
 
 }
@@ -235,7 +274,7 @@ function zipPackage(fileName, tempDir, langs, images, cb){
     });
 
     langs.forEach(function(lng){
-        var langName = module.exports.DIR_LANG + lng.lang + module.exports.LANG_EXT;
+        var langName = module.exports.DIR_LANG + lng + module.exports.LANG_EXT;
         archive.append(fs.createReadStream(tempDir +  langName), { name:  langName });
     });
 

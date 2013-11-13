@@ -17,6 +17,10 @@ module.exports.getWords = function(pgClient, lang, lesson, cb) {
         return cb(null);
     }
 
+    if(!lang || typeof lang !== 'string'){
+        console.log('lang is not defined or isn\' in good format :', lang);
+        return cb('lang is not defined or isn\' in good format :');
+    }
 
     //var lessonStart = (lesson-1) * module.exports.lessonSize;
     //var lessonEnd = lessonStart + module.exports.lessonSize;
@@ -31,8 +35,9 @@ module.exports.getWords = function(pgClient, lang, lesson, cb) {
     sql += ' ORDER BY word.link'
     //sql += ' LIMIT 50';
 
-    console.log(sql)  ;
-    pgClient.query(sql, [lang, lesson], function(err, data){
+    var sqlval = [lang, lesson];
+    console.log('module.exports.getWords', sql, sqlval)  ;
+    pgClient.query(sql, sqlval, function(err, data){
 
         if(err){
             console.log(err);
