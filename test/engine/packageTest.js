@@ -23,7 +23,7 @@ var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
 
-describe.only('package operations', function(){
+describe('package operations', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;

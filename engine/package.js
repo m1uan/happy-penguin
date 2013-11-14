@@ -28,7 +28,7 @@ module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
         }
 
 
-        console.log('getPackageForUpdate', langs);
+        //console.log('getPackageForUpdate', langs);
 
         pg.query(sql, sqlvar, function(err, update_packages){
             if(err){
