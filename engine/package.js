@@ -154,26 +154,35 @@ module.exports.createPackage = function(pg, lesson, cb){
             langs.push(lang.lang);
         });
 
-        createOrUpdatePkg(pg, langs, lesson, cb);
+        createOrUpdatePkg(pg, lesson, langs,  cb);
 
     });
 
 }
 
 
-module.exports.updatePackage = function(pg, lesson, langs, cb){
-    createOrUpdatePkg(pg, langs, lesson, true, cb);
+module.exports.updatePackage = function(pg, lesson, updateLangs, cb){
+    var sqlLang = 'SELECT lang FROM lang_t';
+    pg.query(sqlLang, function(err, langData){
+        var langs = [];
+
+        langData.rows.forEach(function(lang){
+            langs.push(lang.lang);
+        });
+
+        createOrUpdatePkg(pg, lesson,langs,  updateLangs, cb);
+    });
 }
 
 
-function createOrUpdatePkg(pg, langs, lesson, update, cb){
+function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
     var temp = lesson + '_'  + new Date().getTime();
     var tempDir = Config.DIR_TMP + temp + '/';
     var fileName =  temp + '.lng';
 
     if(!cb){
         cb = update;
-        update = false;
+        updateLangs = [];
     }
 
     module.exports.createPkgDirectory(tempDir, function(err){
@@ -199,14 +208,15 @@ function createOrUpdatePkg(pg, langs, lesson, update, cb){
             // for exaple list : ['ar','cs', 'ms'] ->
             // in funciton(icb) the generalData -> allways 'ms'
             function not_nice_solution(idx, fnc){
+                var lng = langs[idx2];
                 var generateData = {
                     outDir : tempDir,
                     lesson : lesson,
-                    lang : langs[idx2],
+                    lang : lng,
                     words : words[idx2],
                     images : images,
                     fileName : fileName,
-                    update : update
+                    update : updateLangs.indexOf(lng) != -1
                 };
                 return function(icb){
                     fnc(generateData, function(err){

@@ -60,6 +60,9 @@ function updatePackages(client, cb){
                 Package.updatePackage(client, lsn, langs, function(err){
                     console.log('UPDATE : ',lsn, langs);
 
+
+                    // TODO : remove from table update_package_t
+                    //client.query()
                     icb(null);
                 })
             };
