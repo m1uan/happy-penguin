@@ -36,7 +36,7 @@ module.exports.getWords = function(pgClient, lang, lesson, cb) {
     //sql += ' LIMIT 50';
 
     var sqlval = [lang, lesson];
-    console.log('module.exports.getWords', sql, sqlval)  ;
+    //console.log('module.exports.getWords', sql, sqlval)  ;
     pgClient.query(sql, sqlval, function(err, data){
 
         if(err){

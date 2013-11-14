@@ -20,7 +20,7 @@ var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
 
-describe('package operations', function(){
+describe.only('package operations', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -386,13 +386,31 @@ describe('package operations', function(){
             , "DELETE FROM package_t;"], cb);
         });
 
-        it.only('simple package cs 2001', function(cb){
+        it('simple package cs 2001', function(cb){
             package.createPackage(pgClient, 101, function(err, pkgFile){
                 assert(pkgFile);
                 pkgFile.should.be.String;
                 fs.existsSync(pkgFile).should.be.eql(true);
                 pgClient.query('SELECT * FROM package_t WHERE lesson = $1 AND lang = $2', [101, 'cs'], function(err, data){
                     data.rows.length.should.be.above(0);
+                    cb();
+                });
+            });
+        });
+
+        it('update package cs 2001', function(cb){
+            var now = new Date().getTime();
+            package.updatePackage(pgClient, 101, ['cs'], function(err, pkgFile){
+
+                assert(pkgFile);
+                pkgFile.should.be.String;
+                fs.existsSync(pkgFile).should.be.eql(true);
+                pgClient.query('SELECT * FROM package_t WHERE lesson = $1 AND lang = $2', [101, 'cs'], function(err, data){
+                    data.rows.length.should.be.eql(1);
+                    var row0 = data.rows[0];
+                    var changedDate = new Date(row0.changed).getTime();
+
+                    changedDate.should.be.above(now);
                     cb();
                 });
             });

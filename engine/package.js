@@ -145,10 +145,6 @@ module.exports.copyImageFiles = function(copyImgData, cb){
 
 
 module.exports.createPackage = function(pg, lesson, cb){
-    var temp = new Date().getTime();
-    var tempDir = Config.DIR_TMP + temp + '/';
-    var fileName = lesson + '_'  + temp + '.lng';
-
 
     var sqlLang = 'SELECT lang FROM lang_t';
     pg.query(sqlLang, function(err, langData){
@@ -158,7 +154,29 @@ module.exports.createPackage = function(pg, lesson, cb){
             langs.push(lang.lang);
         });
 
-        module.exports.createPkgDirectory(tempDir, function(err){
+        createOrUpdatePkg(pg, langs, lesson, cb);
+
+    });
+
+}
+
+
+module.exports.updatePackage = function(pg, lesson, langs, cb){
+    createOrUpdatePkg(pg, langs, lesson, true, cb);
+}
+
+
+function createOrUpdatePkg(pg, langs, lesson, update, cb){
+    var temp = lesson + '_'  + new Date().getTime();
+    var tempDir = Config.DIR_TMP + temp + '/';
+    var fileName =  temp + '.lng';
+
+    if(!cb){
+        cb = update;
+        update = false;
+    }
+
+    module.exports.createPkgDirectory(tempDir, function(err){
 
         words.getWordsWithImages(pg, langs, lesson, function(err, words){
             var images = words[words.length-1];
@@ -169,12 +187,12 @@ module.exports.createPackage = function(pg, lesson, cb){
             // but in async list have to be first
             // because zip package expecting in data list of images
             asyncFuncs.push(function(icb){
-                    module.exports.copyImageFiles({
-                        outDir : tempDir,
-                        images : images
-                    }, function(err, copiedFiles){
-                        icb(err, copiedFiles);
-               });
+                module.exports.copyImageFiles({
+                    outDir : tempDir,
+                    images : images
+                }, function(err, copiedFiles){
+                    icb(err, copiedFiles);
+                });
             });
 
             // but if i put to for the lang is allways the last value in list
@@ -187,13 +205,14 @@ module.exports.createPackage = function(pg, lesson, cb){
                     lang : langs[idx2],
                     words : words[idx2],
                     images : images,
-                    fileName : fileName
+                    fileName : fileName,
+                    update : update
                 };
                 return function(icb){
                     fnc(generateData, function(err){
-                        icb(err);
-                    },
-                        // not nice solution in not nice solution -> bat solution
+                            icb(err);
+                        },
+                        // not nice solution in not nice solution -> bad solution
                         pg);
                 }
             }
@@ -207,19 +226,17 @@ module.exports.createPackage = function(pg, lesson, cb){
                 if(err){
                     cb(err);
                 } else {
-                    zipPackage(tempDir + fileName, tempDir, langs, data[0], cb);
+                    zipPackage(tempDir + '../' +fileName, tempDir, langs, data[0], cb);
                 }
             });
 
         });
-        }); // module.exports.createPkgDirectory(tempDir, function(err)
-    });
-
+    }); // module.exports.createPkgDirectory(tempDir, function(err)
 }
 
 function storeInDbPackage(generateData, cb, pg){
     var thumb = generateData.words.slice(1,10);
-    console.log('generateData.words.slice(1,30)',generateData, generateData.words, thumb);
+    //console.log('generateData.words.slice(1,30)',generateData, generateData.words, thumb);
 
     var wordsArray = [];
     generateData.words.forEach(function(w){
@@ -228,16 +245,24 @@ function storeInDbPackage(generateData, cb, pg){
 
     var words = wordsArray.join().substr(0, 255);
 
-    var sql = 'UPDATE package_t SET examples=$1, file=$2 WHERE lesson=$3 AND lang=$4';
+    var sql = 'UPDATE package_t SET examples=$1, file=$2'
+    var sqlWhere =  ' WHERE lesson=$3 AND lang=$4';
     var sqlval = [words, generateData.fileName, generateData.lesson, generateData.lang];
-    pg.query(sql, sqlval, function(err, update){
-        console.log('storeInDbPackage', sql, sqlval, update.rowCount);
 
-        if(update.rowCount < 1){
+    if(generateData.update){
+        sql += ', changed=CURRENT_TIMESTAMP';
+    }
+
+    sql += sqlWhere;
+
+    pg.query(sql, sqlval, function(err, update){
+        console.log('storeInDbPackage', sql, sqlval, err ? err : update.rowCount);
+
+        if(!err && update.rowCount < 1){
             sql = 'INSERT INTO package_t (examples, file, lesson, lang) VALUES($1, $2, $3, $4) ';
 
             pg.query(sql, sqlval, function(err, insert){
-                console.log('storeInDbPackage', sql, sqlval, err? err : insert);
+                //console.log('storeInDbPackage', sql, sqlval, err? err : insert);
                 cb(err);
             });
 
@@ -250,8 +275,9 @@ function storeInDbPackage(generateData, cb, pg){
 
 }
 
+
 function zipPackage(fileName, tempDir, langs, images, cb){
-    console.log('zipPackage', fileName, langs, images);
+    //console.log('zipPackage', fileName, langs, images);
 
     //var output = fs.createWriteStream(__dirname + '/example-output2.zip');
     var output = fs.createWriteStream(fileName);
