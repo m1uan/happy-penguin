@@ -1,7 +1,10 @@
 /*
  mkdir /tmp/ahoj && ln -s ~/voc4u/initdata/img /tmp/ahoj/orig && mkdir /tmp/ahoj/thumb && cp /tmp/ahoj/orig/* /tmp/ahoj/thumb/
 
-*/
+ drop database voc4u_test; create database voc4u_test; alter database voc4u_test owner to uservoc4u;
+ psql -U uservoc4u voc4u_test < initdata/init.sql && psql -U uservoc4u voc4u_test < initdata/inittest.sql && psql -U uservoc4u voc4u_test < initdata/update_v1.1.sql
+
+ */
 
 var assert = require("assert"),
     package = require('../../engine/package.js'),
@@ -26,7 +29,7 @@ describe.only('package operations', function(){
         var dbuser = config.DB_USER_TEST;
         var dbpass = config.DB_PASS_TEST;
         var dbname = config.DB_NAME_TEST;
-        var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
+        var connection = 'postgres://uservoc4u:'+dbpass+'@localhost/voc4u_test';
         pgClient = new pg.Client(connection);
 
 
@@ -39,7 +42,8 @@ describe.only('package operations', function(){
             }
 
             sqlMake(pgClient, [
-                "-- select create_test_data();"
+                "SELECT remove_test_data();" ,
+                "select create_test_data();"
                 //, "SELECT generate_langs();"
                 //, "SELECT remove_test_data();"
 
@@ -53,46 +57,49 @@ describe.only('package operations', function(){
 
 
         sqlMake(pgClient, [
-            "-- SELECT remove_test_data();"
+            "SELECT remove_test_data();" ,
+            "delete from update_package_t;"
         ],cb);
     });
 
 
-    function testGetPackageForUpdate(timeFrom, lesson, cb){
 
-        package.getPackageForUpdate(pgClient, timeFrom, function(err, packages){
-            console.log(err || packages);
-            packages.should.be.Array;
-            packages.length.should.equal(lesson.length);
-
-            packages.forEach(function(package, idx){
-
-                var test = lesson[idx];
-                package.should.have.property('langs');
-                package.langs.should.be.Array;
-                package.langs.length.should.equal(test.langs.length);
-                package.langs[0].should.be.String;
-
-                test.langs.forEach(function(lang){
-                    package.langs.should.include(lang);
-                });
-
-                package.should.have.property('lesson');
-                package.lesson.should.be.Integer;
-                package.lesson.should.eql(test.lesson);
-
-            });
-
-
-            cb();
-        });
-    }
 
     describe('test getPackageForUpdate', function(){
+        function testGetPackageForUpdate(timeFrom, lesson, cb){
+
+            package.getPackageForUpdate(pgClient, timeFrom, function(err, packages){
+                console.log(err || packages);
+                packages.should.be.Array;
+                packages.length.should.equal(lesson.length);
+
+                packages.forEach(function(package, idx){
+
+                    var test = lesson[idx];
+                    package.should.have.property('langs');
+                    package.langs.should.be.Array;
+                    package.langs.length.should.equal(test.langs.length);
+                    package.langs[0].should.be.String;
+
+                    test.langs.forEach(function(lang){
+                        package.langs.should.include(lang);
+                    });
+
+                    package.should.have.property('lesson');
+                    package.lesson.should.be.Integer;
+                    package.lesson.should.eql(test.lesson);
+
+                });
+
+
+                cb();
+            });
+        }
+
         it('inital test with generate_langs() which put all to update', function(cb){
             var timeNow = new Date();
             sqlMake(pgClient, [
-                "SELECT generate_langs();"
+                "update word set word='ahoj';"
             ],function(){
                 testGetPackageForUpdate(timeNow, [
                     { lesson: 101,
@@ -144,6 +151,13 @@ describe.only('package operations', function(){
                 })
             });
         });
+
+        afterEach(function(cb){
+            sqlMake(pgClient, [
+                "delete from update_package_t;"
+            ],cb);
+        });
+
     });
 
     describe('download and store images', function(){
@@ -175,7 +189,7 @@ describe.only('package operations', function(){
 
 
 
-            sqlMake(pgClient, ["DELETE FROM update_package;"], cb);
+            sqlMake(pgClient, ["DELETE FROM update_package_t;"], cb);
         });
 
         it('inital test with generate_langs() which put all to update', function(done){
@@ -187,14 +201,14 @@ describe.only('package operations', function(){
 
             words.getWordsWithImages(pgClient, [lang], lesson, function(err, testWords){
             var generateData = {
-                    outDir : inDirLang,
+                    outDir : inDir,
                     lesson : lesson,
                     lang : lang,
                     words : testWords[0],
                     images : testWords[1]
                 };
             package.generateLangFile(generateData, function(err){
-                assert(!err);
+                assert(!err, err);
                 var file = inDirLang + 'cs.data';
                 fs.existsSync(file).should.be.eql(true);
                 var data = fs.readFileSync(file);
@@ -267,19 +281,19 @@ describe.only('package operations', function(){
 
             words.getWordsWithImages(pgClient, [lang], lesson, function(err, testWords){
                 var generateData = {
-                    outDir : inDirImg,
+                    outDir : inDir,
                     images : testWords[1]
                 };
                 package.copyImageFiles(generateData, function(err, data){
                     var lastFile = '';
 
-                    console.log('data', data);
+                    console.log('data', err? err : data);
 
                     data.should.be.Array;
 
                     testWords[1].some(function(img, idx){
                         lastFile = 'missing : ' + img.imagefile;
-                        if(img.imagefile && !fs.existsSync(generateData.outDir + img.imagefile)){
+                        if(img.imagefile && !fs.existsSync(generateData.outDir + 'img/' + img.imagefile)){
                             return true;
                         }
 
@@ -297,7 +311,7 @@ describe.only('package operations', function(){
                     data.some(function(img, idx){
                         lastFile = 'file in advance : ' + img;
 
-                        if(!fs.existsSync(generateData.outDir + img)){
+                        if(!fs.existsSync(generateData.outDir +'img/' + img)){
                             return true;
                         }
 
@@ -382,7 +396,7 @@ describe.only('package operations', function(){
 
 
 
-            sqlMake(pgClient, ["DELETE FROM update_package;"
+            sqlMake(pgClient, ["DELETE FROM update_package_t;"
             , "DELETE FROM package_t;"], cb);
         });
 

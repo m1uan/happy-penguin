@@ -17,7 +17,7 @@ CREATE TABLE lang_t (
 -- just for fun :-D
 CREATE OR REPLACE FUNCTION generate_langs() RETURNS INT AS $$
 DECLARE
-idx SMALLINT := 0;
+idx SMALLINT := 1;
 cd VARCHAR(2);
 BEGIN
       DELETE FROM lang_t;
@@ -26,8 +26,7 @@ BEGIN
           INSERT INTO lang_t(code, lang) VALUES
                 (idx, cd);
           --UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = cd) WHERE lang = cd;
-          RAISE NOTICE 'idx %',idx;
-          RAISE NOTICE 'cd %',cd;
+          RAISE NOTICE 'cd % %',cd, idx;
           idx:=idx+1;
       END LOOP;
       RETURN idx;
@@ -48,9 +47,9 @@ SELECT generate_langs();
 --UPDATE word SET langid=(SELECT lang FROM t_lang WHERE code = 'en') WHERE lang = 'en';
 
 
-DROP TABLE update_package;
+DROP TABLE update_package_t;
 
-CREATE TABLE update_package (
+CREATE TABLE update_package_t (
    changed TIMESTAMP DEFAULT now(),
    lesson INT,
    lang_mask BIGINT
@@ -63,7 +62,7 @@ result BIGINT;
 BEGIN
 
       result := (1 << mask);
-
+        RAISE NOTICE 'mask % result %',mask, result;
       RETURN result;
 END; $$
 LANGUAGE plpgsql;
@@ -71,6 +70,7 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION update_link_changed() RETURNS TRIGGER AS $$
 DECLARE
     lsn INT;
+    code SMALLINT;
     -- mask full house ;-)
     mask BIGINT := -1;
 BEGIN
@@ -81,16 +81,17 @@ BEGIN
     END IF;
 
     IF TG_TABLE_NAME = 'word' THEN
+        code := (SELECT lang_t.code FROM lang_t WHERE lang_t.lang = NEW.lang);
         --RAISE NOTICE 'lesson %',lsn;
         --RAISE NOTICE 'OLD.lang %',NEW;
         -- TODO: switch
-        mask := get_mask((SELECT code FROM lang_t WHERE lang_t.lang = NEW.lang));
+        mask := get_mask(code);
     END IF;
 
     --RAISE NOTICE 'PK is %',mask;
-    UPDATE update_package SET lang_mask= (lang_mask | mask) WHERE update_package.lesson=lsn;
+    UPDATE update_package_t SET lang_mask= (lang_mask | mask) WHERE update_package_t.lesson=lsn;
     IF NOT FOUND THEN
-        INSERT INTO update_package (changed, lesson, lang_mask)
+        INSERT INTO update_package_t (changed, lesson, lang_mask)
             VALUES (now(), lsn, mask );
     END IF;
 
@@ -135,6 +136,6 @@ CREATE TABLE package_t (
 --delete from word where lang='cs' and link = 1005 and version = 10;
 --update link set image=1 where lid=1004;
 
---select *, lang_mask::bit(64) from update_package;
+--select *, lang_mask::bit(64) from update_package_t;
 
 --select *, ascii(lang), ascii(lang)::bit(64), get_mask(lang), (1 | get_mask(lang))::bit(64) from t_lang;

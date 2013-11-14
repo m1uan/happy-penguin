@@ -15,7 +15,7 @@ module.exports.DIR_IMG = 'img/';
 module.exports.LANG_EXT = '.data';
 
 module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
-    var sql = 'SELECT changed, lesson, lang_mask FROM update_package ' +
+    var sql = 'SELECT changed, lesson, lang_mask FROM update_package_t ' +
         'WHERE lesson IS NOT NULL AND changed > $1';
 
     var sqlvar = [timeFrom];
@@ -355,11 +355,11 @@ function getLanguagesFromMask(mask, langs){
     var res = [];
 
     langs.forEach(function(val, idx){
-        var l = (1 << (val.lang));
+        var l = (1 << (val.code));
 
         console.log('getLanguagesFromMask', mask, l, val.lang);
         if(mask & l){
-            res.push(val.code);
+            res.push(val.lang);
         }
     });
 
@@ -367,10 +367,10 @@ function getLanguagesFromMask(mask, langs){
 }
 
 function loadLangs(pg, cb){
-    var sql = 'SELECT ascii(lang) as lang, code FROM t_lang';
+    var sql = 'SELECT lang, code FROM lang_t';
 
     pg.query(sql, function(err, data){
-        console.log(sql , err, data.rows);
+        console.log(sql , err ? err : data.rows);
         cb(err, data ? data.rows : null);
     });
 }
