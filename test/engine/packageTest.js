@@ -1,5 +1,5 @@
 /*
- mkdir /tmp/ahoj && ln -s ~/voc4u/initdata/img /tmp/ahoj/orig && mkdir /tmp/ahoj/thumb && cp /tmp/ahoj/orig/* /tmp/ahoj/thumb/
+ mkdir /tmp/ahoj && ln -s ~/voc4u/initdata/img /tmp/ahoj/orig && mkdir /tmp/ahoj/thumb && cp /tmp/ahoj/orig/* /tmp/ahoj/thumb/ && mkdir /tmp/ahoj/pkg
 
  drop database voc4u_test; create database voc4u_test; alter database voc4u_test owner to uservoc4u;
  psql -U uservoc4u voc4u_test < initdata/init.sql && psql -U uservoc4u voc4u_test < initdata/inittest.sql && psql -U uservoc4u voc4u_test < initdata/update_v1.1.sql

@@ -250,11 +250,14 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
                 asyncFuncs.push(not_nice_solution(idx2, storeInDbPackage));
             }
 
-            Async.parallel(asyncFuncs, function(err, data){
+            // series - posible problem with not end SQL stream
+            Async.series (asyncFuncs, function(err, data){
                 if(err){
+                    console.log(err);
                     cb(err);
                 } else {
-                    zipPackage(tempDir + '../' +fileName, tempDir, langs, data[0], cb);
+                    //cb(null);
+                    zipPackage(Config.DIR_DATA + 'pkg/' +fileName, tempDir, langs, data[0], cb);
                 }
             });
 
