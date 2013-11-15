@@ -56,13 +56,14 @@ CREATE TABLE update_package_t (
 );
 
 
-CREATE OR REPLACE FUNCTION get_mask(mask SMALLINT) RETURNS BIGINT AS $$
+CREATE OR REPLACE FUNCTION get_mask(langvc VARCHAR(2)) RETURNS BIGINT AS $$
 DECLARE
 result BIGINT;
+code SMALLINT;
 BEGIN
-
-      result := (1 << mask);
-        RAISE NOTICE 'mask % result %',mask, result;
+      code := (SELECT lang_t.code FROM lang_t WHERE lang_t.lang = langvc);
+      result := (1 << code);
+        RAISE NOTICE 'lang % mask % result %',langvc, code, result;
       RETURN result;
 END; $$
 LANGUAGE plpgsql;
@@ -70,7 +71,6 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION update_link_changed() RETURNS TRIGGER AS $$
 DECLARE
     lsn INT;
-    code SMALLINT;
     -- mask full house ;-)
     mask BIGINT := -1;
 BEGIN
@@ -81,11 +81,11 @@ BEGIN
     END IF;
 
     IF TG_TABLE_NAME = 'word' THEN
-        code := (SELECT lang_t.code FROM lang_t WHERE lang_t.lang = NEW.lang);
+        --code := (SELECT lang_t.code FROM lang_t WHERE lang_t.lang = NEW.lang);
         --RAISE NOTICE 'lesson %',lsn;
         --RAISE NOTICE 'OLD.lang %',NEW;
         -- TODO: switch
-        mask := get_mask(code);
+        mask := get_mask(NEW.lang);
     END IF;
 
     --RAISE NOTICE 'PK is %',mask;

@@ -433,5 +433,23 @@ describe('package operations', function(){
 
     });
 
+    describe.only('update_packages_t', function(){
+        it('remove', function(cb){
+            sqlMake(pgClient, ["UPDATE word SET word='ahoj1' WHERE lang='cs' AND link = 2001"],
+                function (icb){
+                    package.removeUpdatePackage(pgClient, 4001, function(err, pkgFile){
+                        pgClient.query('DELETE FROM update_package_t', function(err, data){
+                            console.log(err, data);
+                            data.rowCount.should.be.eql(0);
+                            cb();
+                        });
+
+                    });
+                });
+        });
+
+
+    });
+
 
 })

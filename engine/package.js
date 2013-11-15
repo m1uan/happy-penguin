@@ -174,6 +174,24 @@ module.exports.updatePackage = function(pg, lesson, updateLangs, cb){
     });
 }
 
+module.exports.removeUpdatePackage = function(pg, lesson, cb){
+    var sqladd = '';
+//    updateLangs.forEach(function(lang, idx){
+//        if(sqladd.length > 0){
+//            sqladd += '|'
+//        }
+//
+//        sqladd += "(select get_mask('" + lang + "'))";
+//
+//    });
+
+    var sql = "DELETE FROM update_package_t WHERE lesson = $1";// and lang_mask = (" + sqladd + ")";
+    pg.query(sql, [lesson], function(err, data){
+        console.log(sql, [lesson], err ? err : data);
+        cb(null);
+    });
+
+}
 
 function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
     var temp = lesson + '_'  + new Date().getTime();
@@ -181,7 +199,7 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
     var fileName =  temp + '.lng';
 
     if(!cb){
-        cb = update;
+        cb = updateLangs;
         updateLangs = [];
     }
 

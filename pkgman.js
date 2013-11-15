@@ -59,11 +59,11 @@ function updatePackages(client, cb){
 
                 Package.updatePackage(client, lsn, langs, function(err){
                     console.log('UPDATE : ',lsn, langs);
+                    Package.removeUpdatePackage(client, lsn, function(err){
+                        //client.query()
+                        icb(null);
+                    });
 
-
-                    // TODO : remove from table update_package_t
-                    //client.query()
-                    icb(null);
                 })
             };
 
@@ -76,3 +76,4 @@ function updatePackages(client, cb){
 
     });
 }
+
