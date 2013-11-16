@@ -299,16 +299,16 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
            + ' AND word2.lang = $2'
 
 
-            + ' AND (lower(word1.word) SIMILAR TO '
+            + ' AND ((lower(word1.word) SIMILAR TO '
             + "(SELECT '%(' || lower(word) || ')%' FROM word WHERE lang = $1 AND link =" + sw
-            + ')'
+            + ' AND version=0) AND word1.version=0 )'
 
-            + ' OR lower(word2.word) SIMILAR TO '
+            + ' OR (lower(word2.word) SIMILAR TO '
             + "(SELECT '%(' || lower(word) || ')%' FROM word WHERE lang = $2 AND link =" + sw
-            + '))';
+            + '  AND version=0) AND word2.version=0 ))';
 
 
-       return true;
+       return false;
     });
 
 

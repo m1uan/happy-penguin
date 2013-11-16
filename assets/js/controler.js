@@ -60,6 +60,8 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
     $scope.lessons =[ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010,101, 102, 103, 104, 105, 106, 107, 108, 109, 110 ];
 
+    var duplicityLoading = [];
+
     $scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
     $scope.words={
         /*'1' : {
@@ -75,16 +77,38 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     };
 
     $scope.location = $location.path();
+    loadDuplicity();
 
     $scope.$on('$locationChangeSuccess', function () {
         $scope.location = $location.path();
         console.log('$locationChangeSuccess changed!', $location.path());
         loadWords ($location.path());
+
     });
 
     var tempWord = [];
 
 
+    function loadDuplicity(location){
+
+        setTimeout(function() {
+            $http.post('/words/duplicity' + location, {links: duplicityLoading}).
+                success(function(data, status, headers, config) {
+                    console.log(data);
+                    tempWord = {};
+                    duplicityLoading = [];
+
+
+
+
+                }).
+                error(function(data, status, headers, config) {
+
+                });
+
+
+        }, 10);
+    }
 
     /**
      * loadWords
@@ -97,13 +121,15 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                 success(function(data, status, headers, config) {
                     console.log(data);
                     tempWord = {};
+                    duplicityLoading = [];
 
                     data[0].forEach(function(link){
                        tempWord[link.lid] = {
                           description : link.description,
                           link : link.lid,
                           w1 : '',
-                          w2 : ''
+                          w2 : '',
+                          duplicity : false
                        }
 
                        if(link.thumbfile){
@@ -111,6 +137,8 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                        } else if(link.imagefile) {
                            tempWord[link.lid].imagefile = 'assets/img/orig/' + link.imagefile;
                        }
+
+                        duplicityLoading.push(link.lid);
                     });
 
 
@@ -133,7 +161,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                     $scope.words = tempWord;
                     $scope.loading = false;
 
-
+                    loadDuplicity(lessonAndLang);
                 }).
                 error(function(data, status, headers, config) {
                     // called asynchronously if an error occurs

@@ -148,22 +148,37 @@ module.exports = {
 
 
     },
-    duplicity_get : function (request){
+    duplicity_post : function (request){
 
-        //console.log(request.getParam('l2'));
+        console.log('duplicity_post********', request.payload);
         //  http://localhost:8080/words/duplicity/de/cs
-        if(request.params.params && request.params.params.length > 0){
+        if(request.params.params && request.params.params.length > 0
+            && request.payload && request.payload.links
+            && request.payload.links.length > 0){
             var langs = request.params.params.split('/');
-
+            var lesson = langs.shift();
 
             console.log(langs);
 
 
-            wordsEngine.getRepeatWords(pgClient, langs, [100,1001], function(err, words){
-                request.reply(err ? err : words);
+            wordsEngine.getRepeatWords(pgClient, langs, request.payload.links, function(err, words){
+                if(err){
+                    err_response(err);
+                }else {
+                    request.reply(words);
+                }
+
+
             });
         } else {
-            request.reply('format : /lesson/lang1/lang2/{lang3?}');
+            err_response('not format : /lesson/lang1/lang2' +
+                ' or missing Array links in payload');
+        }
+
+        function err_response (err){
+            var error = Hapi.error.badRequest(err);
+            error.reformat();
+            request.reply(error);
         }
     }
 
