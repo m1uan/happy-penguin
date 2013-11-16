@@ -42,7 +42,34 @@ describe('getWords', function(){
         });
 
         it('get word', function(cb){
-            words.getRepeatWords(pgClient, ['cs', 'de'], [{l:1001,w1:'Litva'},{l:2,w1:'Smyk'},{l:1124,w2:'achte'}], function(err, rows){
+            var testData = [
+                {l:1001,w1:'Litva'},
+                {l:2,w1:'Smyk'},
+                {l:1125,w2:'achte'}
+            ];
+
+            words.getRepeatWords(pgClient, ['cs', 'de'], testData, function(err, rows){
+                console.log(err ? err : rows);
+                if(rows){
+                   rows.some(function(r, idx){
+                       r.should.have.property('l');
+                       var find = false;
+                       testData.some(function(t,i){
+                           if(t.l == r.l){
+                               r.should.have.property('lid');
+                               r.lid.should.be.not.eql(r.l);
+                               r.should.have.property('w1');
+                               r.should.have.property('w2');
+                               r.should.have.property('s');
+                               find = true;
+                               return false;
+                           }
+                       });
+                       assert(find) ;
+                       return false;
+                   });
+                }
+
                 //console.log(rows);
                 cb();
             });

@@ -320,7 +320,7 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
                 console.log(err, sql);
                 cb(err);
             } else {
-                console.log(data, sql);
+                //console.log(data, sql);
                 cb(err, data.rows);
             }
         })  ;
