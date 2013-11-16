@@ -95,7 +95,16 @@ html(ng-app="words")
                                 span(ng-click="showSeznam(word.l2,word.link)").btn.btn-xs.btn-default sl
                                 span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
 
-
+                        div
+                            div(ng-hide="word.duplicity")
+                                p loading duplicities from system...
+                            div(ng-show="word.duplicity")
+                                div.row(ng-repeat="duplicity in word.duplicity")
+                                    div.col-md-3
+                                        i {{duplicity.l}} {{duplicity.d}}
+                                    div.col-md-4 {{duplicity.w1}}
+                                    div.col-md-4 {{duplicity.w2}}
+                                    div.col-md-1 {{duplicity.s}}
                     div.clearfix
 
 
