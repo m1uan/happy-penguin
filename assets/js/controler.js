@@ -90,24 +90,45 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
 
     function loadDuplicity(location){
+        var maxDuplicityOnRow = 3;
 
-        setTimeout(function() {
-            $http.post('/words/duplicity' + location, {links: duplicityLoading}).
+        function loadDuplicityInline() {
+            if(duplicityLoading.length < 1) {
+                return;
+            }
+
+            var onRow = [];
+
+            while(duplicityLoading.length > 0 && onRow.length < maxDuplicityOnRow ) {
+                var link =  duplicityLoading.shift();
+                onRow.push(link);
+            }
+
+
+
+            $http.post('/words/duplicity' + location, {links: onRow}).
                 success(function(data, status, headers, config) {
                     console.log(data);
-                    tempWord = {};
-                    duplicityLoading = [];
-
-
-
-
+                    var tempWords = $scope.words;
+                    onRow.forEach(function(row, idx){
+                         if(data[row]){
+                             tempWords[row].duplicity = data[row];
+                         }
+                    });
+                    $scope.words = tempWords;
+                    /***
+                     *  recal duplicity with rest of duplicity list
+                     * */
+                    loadDuplicity(location);
                 }).
                 error(function(data, status, headers, config) {
 
                 });
 
 
-        }, 10);
+        }
+
+        setTimeout(loadDuplicityInline, 10);
     }
 
     /**
