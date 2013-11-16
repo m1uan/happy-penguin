@@ -9,7 +9,6 @@ html(ng-app="words")
     body(ng-controller="WordWebCtrl")#ahoj
 
         header
-            a(ng-click="langChange(0,'en')") en
             div.btn-group
                 button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lesson[0]}}
                     span.caret
@@ -30,9 +29,8 @@ html(ng-app="words")
                 ul(role="menu").dropdown-menu
                     li(ng-repeat="lang in languages")
                         a(ng-click="langChange(2,lang)") {{lang}}
-        div.shadow
 
-        h1 {{location}}
+
         div#modal-from-dom.modal.fade
             div.modal-dialog
                 div.modal-content
@@ -59,6 +57,7 @@ html(ng-app="words")
                         a(href="javascript:$('#modal-error').modal('hide')").btn.btn-primary ok
         div(ng-show="loading")
             h1 Loading please wait...
+            h2 {{location}}
         div(ng-hide="loading").wordwebctrl
             div(ng-repeat="word in words").wordrowcolor
                 div.text-center.description

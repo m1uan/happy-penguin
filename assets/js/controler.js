@@ -61,20 +61,18 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     $scope.lessons =[ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010,101, 102, 103, 104, 105, 106, 107, 108, 109, 110 ];
 
     $scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
-    $scope.words=[
-        {
+    $scope.words={
+        /*'1' : {
             l1:'cs',
             l2: 'en',
             w1:'ahoj',
             w2:'hello',
             o1:'ahoj',
             o2:'hello',
-            link: 1,
             image: 'blabla',
             status : WORD_STATUS.CURRENT
-
-        }
-    ];
+        }  */
+    };
 
     $scope.location = $location.path();
 
@@ -86,65 +84,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
     var tempWord = [];
 
-    function addToTemp(addingWord){
-        if(addingWord.version !== 0) {
-            return;
-        }
 
-        var founded = false;
-        for(var twindex in tempWord){
-            var tw = tempWord[twindex];
-            var link = addingWord.link || addingWord.lid;
-
-            // this link is not the same like in set
-            // hadle only version 0
-            if(tw.link != link){
-                //console.log(tw);
-                continue;
-            }
-
-            // addingWord is real word
-            if(addingWord.word){
-                if(tw.w1) {
-                    tw.o2 = tw.w2 = addingWord.word;
-                    tw.l2 = addingWord.lang;
-                    tw.status = WORD_STATUS.CURRENT;
-
-                }
-                founded = true;
-            }
-
-            if (addingWord.imagefile) {
-                // addingWord is image with description
-                tw.imagefile = IMAGE_DIR + 'orig/' + addingWord.imagefile;
-                founded = true;
-
-            }
-
-            if(addingWord.description){
-                tw.description = addingWord.description;
-                founded = true;
-            }
-
-            break;
-
-        }
-
-        if(!founded && addingWord.word){
-            tempWord.push({
-                w1 : addingWord.word,
-                o1 : addingWord.word,
-                l1 : addingWord.lang,
-                link : addingWord.link,
-                status : WORD_STATUS.CURRENT
-            });
-
-            //console.log('create:');
-            //console.log(tempWord);
-        }
-
-
-    }
 
     /**
      * loadWords
@@ -152,28 +92,58 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
      */
     function loadWords(lessonAndLang){
         $scope.loading = true;
-        $http({method: 'GET', url: '/words/lesson' +lessonAndLang }).
-            success(function(data, status, headers, config) {
-                tempWord = [];
+        setTimeout(function() {
+            $http({method: 'GET', url: '/words/lesson' +lessonAndLang }).
+                success(function(data, status, headers, config) {
+                    console.log(data);
+                    tempWord = {};
 
-                //console.error('ahoj');
-                data.forEach(function(data2, idx){
+                    data[0].forEach(function(link){
+                       tempWord[link.lid] = {
+                          description : link.description,
+                          link : link.lid,
+                          w1 : '',
+                          w2 : ''
+                       }
 
-                    data2.forEach(function(link, idx){
-
-                        addToTemp(link);
+                       if(link.thumbfile){
+                           tempWord[link.lid].imagefile = 'assets/img/thumb/' + link.thumbfile;
+                       } else if(link.imagefile) {
+                           tempWord[link.lid].imagefile = 'assets/img/orig/' + link.imagefile;
+                       }
                     });
+
+
+                    data[1].forEach(function(w){
+                        var l = tempWord[w.link];
+                        l.w1 = w.word;
+                        l.o1 = w.word;
+                        l.l1 = w.lang;
+                    });
+
+                    data[2].forEach(function(w){
+                        var l = tempWord[w.link];
+                        l.w2 = w.word;
+                        l.o2 = w.word;
+                        l.l2 = w.lang;
+                    });
+                    //console.error('ahoj');
+
+
+                    $scope.words = tempWord;
+                    $scope.loading = false;
+
+
+                }).
+                error(function(data, status, headers, config) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                    $scope.loading = false;
                 });
 
-                $scope.words = tempWord;
-                $scope.loading = false;
 
+        }, 300);
 
-            }).
-            error(function(data, status, headers, config) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-            });
     }
 
 
@@ -194,17 +164,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     }
 
     function getWordByLink(link){
-
-
-        for(var idx in $scope.words){
-           var w = $scope.words[idx];
-           if(w.link==link){
-               return w;
-           }
-           //console.log(w);
-        };
-
-        return null;
+        return $scope.words[link];
     }
 
 

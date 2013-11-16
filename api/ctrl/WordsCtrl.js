@@ -1,5 +1,6 @@
 var wordsEngine = require(process.cwd() + '/engine/words.js')
-    ,async = require('async');
+    ,async = require('async'),
+    Hapi = require('hapi');
 
 var pgClient = null;
 
@@ -48,7 +49,10 @@ module.exports = {
                 request.reply(err ? err : words);
             });
         } else {
-            request.reply('format : /lesson/lang1/lang2/{lang3?}');
+            var error = Hapi.error.badRequest('format : /lesson/lang1/lang2/{lang3?}');
+            error.response.code = 402;    // Assign a custom error code
+            error.reformat();
+            request.reply(error);
         }
     },
     update_post : function(request){
