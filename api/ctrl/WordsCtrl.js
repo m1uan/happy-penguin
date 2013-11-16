@@ -143,6 +143,24 @@ module.exports = {
 
 
 
+    },
+    duplicity_get : function (request){
+
+        //console.log(request.getParam('l2'));
+        //  http://localhost:8080/words/duplicity/de/cs
+        if(request.params.params && request.params.params.length > 0){
+            var langs = request.params.params.split('/');
+
+
+            console.log(langs);
+
+
+            wordsEngine.getRepeatWords(pgClient, langs, [100,1001], function(err, words){
+                request.reply(err ? err : words);
+            });
+        } else {
+            request.reply('format : /lesson/lang1/lang2/{lang3?}');
+        }
     }
 
 
