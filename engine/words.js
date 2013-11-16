@@ -267,10 +267,12 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
  *
  *
  * @param cb(err, data)
- * { s: lesson, lid: current_link, l: link_of_search_word, w1: 'word in lang 1', w2: 'word in lang 2' },
- * { s: 2004, lid: 1125, l: 1124, w1: 'Osmý 8.', w2: 'achte 8.' },
- * { s: 4001, lid: 2039, l: 1001, w1: 'Litva', w2: 'zerstören' },
- * { s: 4001, lid: 2099, l: 1001, w1: 'Litva', w2: 'stattfinden' } ]
+ * [
+ *  'link_of_search_word' : { s: lesson, lid: current_link, w1: 'word in lang 1', w2: 'word in lang 2' },
+ * 'link_of_search_word' : { s: 2004, lid: 1125, w1: 'Osmý 8.', w2: 'achte 8.' },
+ * 'link_of_search_word' : { s: 4001, lid: 2039, w1: 'Litva', w2: 'zerstören' },
+ * 'link_of_search_word' :  { s: 4001, lid: 2099, w1: 'Litva', w2: 'stattfinden' }
+ * ]
  */
 module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
     var sql = '';
@@ -286,7 +288,7 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
            sql += ' UNION ';
        }
        sql += 'SELECT link.lesson as s, link.lid, '
-           + sw + ' as l,'
+           + sw + ' as l, link.description as d,'
            + ' word1.word as w1, word2.word as w2'
            + ' FROM link'
            + ' LEFT JOIN word as word1 ON word1.link = link.lid'
@@ -294,14 +296,14 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
            + ' WHERE'
            + ' link.lid != ' + sw
            + ' AND word1.lang = $1'
-           + ' AND word2.lang = $2';
+           + ' AND word2.lang = $2'
 
 
-        sql += ' AND (lower(word1.word) SIMILAR TO '
+            + ' AND (lower(word1.word) SIMILAR TO '
             + "(SELECT '%(' || lower(word) || ')%' FROM word WHERE lang = $1 AND link =" + sw
-            + ')';
+            + ')'
 
-        sql += ' OR lower(word2.word) SIMILAR TO '
+            + ' OR lower(word2.word) SIMILAR TO '
             + "(SELECT '%(' || lower(word) || ')%' FROM word WHERE lang = $2 AND link =" + sw
             + '))';
 
@@ -317,7 +319,24 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
                 cb(err);
             } else {
                 console.log(data, sql);
-                cb(err, data.rows);
+
+                var result = {};
+                searchWords.forEach(function(sw){
+                    result[sw] = [];
+                });
+
+                data.rows.forEach(function(rw){
+                    result[rw.l].push({
+                       s : rw.s,
+                       l : rw.lid,
+                       w1 : rw.w1,
+                       w2 : rw.w2,
+                       d: rw.d
+                    });
+                });
+
+
+                cb(err, result);
             }
         })  ;
     } else {
