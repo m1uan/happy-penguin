@@ -247,8 +247,86 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
                 results.push(images);
                 cb(err, results);
             });
-
-
-
         });
+}
+
+/**
+ *
+ * @param pg
+ * @param lang
+ * [ 'lang 1', 'lang 2'
+ * ]
+ * @param searchWords
+ * [
+ *  { w1 : 'word from lang 1', l: link_of_search_word },
+ *  { w1 : 'word from lang 1', l: link_of_search_word },
+ *  { w2 : 'word from lang 2!!!!', l: link_of_search_word },
+ *  ...
+ * ]
+ *
+ *
+ *
+ *
+ * @param cb(err, data)
+ * { s: lesson, lid: current_link, l: link_of_search_word, w1: 'word in lang 1', w2: 'word in lang 2' },
+ * { s: 2004, lid: 1125, l: 1124, w1: 'Osmý 8.', w2: 'achte 8.' },
+ * { s: 4001, lid: 2039, l: 1001, w1: 'Litva', w2: 'zerstören' },
+ * { s: 4001, lid: 2099, l: 1001, w1: 'Litva', w2: 'stattfinden' } ]
+ */
+module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
+    var sql = '';
+    var err = '';
+
+    if(langs.length != 2){
+        return cb('getRepeatWords: langs param should contain two param for languages');
+    }
+
+
+    searchWords.some(function(sw, idx){
+       if(sql.length > 0) {
+           sql += ' UNION ';
+       }
+       sql += 'SELECT link.lesson as s, link.lid, '
+           + sw.l + ' as l,'
+           + ' word1.word as w1, word2.word as w2'
+           + ' FROM link'
+           + ' LEFT JOIN word as word1 ON word1.link = link.lid'
+           + ' LEFT JOIN word as word2 ON word2.link = link.lid'
+           + ' WHERE link.lid != ' + sw.l
+           + ' AND word1.lang = \'' + langs[0] + '\''
+           + ' AND word2.lang = \'' + langs[1] +'\'';
+
+
+       if(sw.w1){
+           sql += ' AND lower(word1.word) SIMILAR TO \'%('
+               + sw.w1.toLowerCase()
+               + ')%\'';
+       } else if(sw.w2){
+           sql += ' AND lower(word2.word) SIMILAR TO \'%('
+               + sw.w2.toLowerCase()
+               + ')%\'';
+       } else {
+           err = 'getRepeatWords: in searchWords missing identifier w1 or w2, no processing it!'
+           return true;
+       }
+
+       return false;
+    });
+
+
+    if(!err) {
+        pg.query(sql, function(err, data){
+            if(err){
+                console.log(err, sql);
+                cb(err);
+            } else {
+                console.log(data, sql);
+                cb(err, data.rows);
+            }
+        })  ;
+    } else {
+        return cb(err);
+    }
+
+
 }

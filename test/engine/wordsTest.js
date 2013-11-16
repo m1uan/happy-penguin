@@ -11,6 +11,8 @@ var dbpass = config.DB_PASS_TEST;
 var dbname = config.DB_NAME_TEST;
 var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
 
+var sqlMake = require('../../lib/helps/helps.js').sqlMake;
+
 describe('getWords', function(){
 
     before(function(){
@@ -30,6 +32,23 @@ describe('getWords', function(){
         console.info('db connection close');
     });
 
+    describe.only('repeatedWord', function(){
+        before(function(cb){
+            sqlMake(pgClient, ['select create_test_data();'], cb);
+        });
+
+        after(function(cb){
+            sqlMake(pgClient, ['select remove_test_data();'], cb);
+        });
+
+        it('get word', function(cb){
+            words.getRepeatWords(pgClient, ['cs', 'de'], [{l:1001,w1:'Litva'},{l:2,w1:'Smyk'},{l:1124,w2:'achte'}], function(err, rows){
+                //console.log(rows);
+                cb();
+            });
+        });
+
+    });
 
     describe('getWords(cs)', function(){
         it('should return null because wrong lesson index', function(cb){

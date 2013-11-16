@@ -29,7 +29,7 @@ describe('package operations', function(){
         var dbuser = config.DB_USER_TEST;
         var dbpass = config.DB_PASS_TEST;
         var dbname = config.DB_NAME_TEST;
-        var connection = 'postgres://uservoc4u:'+dbpass+'@localhost/voc4u_test';
+        var connection = 'postgres://'+dbname+':'+dbpass+'@localhost/voc4u_test';
         pgClient = new pg.Client(connection);
 
 
@@ -433,7 +433,7 @@ describe('package operations', function(){
 
     });
 
-    describe.only('update_packages_t', function(){
+    describe('update_packages_t', function(){
         it('remove', function(cb){
             sqlMake(pgClient, ["UPDATE word SET word='ahoj1' WHERE lang='cs' AND link = 2001"],
                 function (icb){
