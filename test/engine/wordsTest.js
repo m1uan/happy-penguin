@@ -37,7 +37,7 @@ describe('getWords', function(){
 
     });
 
-    describe('repeatedWord', function(){
+    describe.only('repeatedWord', function(){
 
 
         it('get word', function(cb){
@@ -62,6 +62,32 @@ describe('getWords', function(){
 
                     }
                 });
+                //console.log(rows);
+                cb();
+            });
+        });
+
+        it('get word', function(cb){
+            var testData = [ 1003];
+
+
+            words.getRepeatWords(pgClient, ['cs', 'de'], testData, function(err, rows){
+                console.log(err ? err : rows);
+
+                rows.should.be.a.Object;
+                rows.should.have.property(1003);
+
+                var find = 'have not object with preposition (das) object';
+                rows[1003].some(function(td, idx){
+
+                    if(td.l == 2090){
+                        find = '';
+                        return true;
+                    }
+                    return false;
+                });
+
+                find.should.be.empty;
                 //console.log(rows);
                 cb();
             });

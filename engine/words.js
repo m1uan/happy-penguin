@@ -287,7 +287,7 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
        if(sql.length > 0) {
            sql += ' UNION ';
        }
-       sql += 'SELECT link.lesson as s, link.lid, '
+       sql += '(SELECT link.lesson as s, link.lid, '
            + sw + ' as l, link.description as d,'
            + ' word1.word as w1, word2.word as w2'
            + ' FROM link'
@@ -300,12 +300,14 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
 
 
             + ' AND ((lower(word1.word) SIMILAR TO '
-            + "(SELECT '%(' || lower(word) || ')%' FROM word WHERE lang = $1 AND link =" + sw
+            + "(SELECT '(% )?(' || lower(word) || ')' FROM word WHERE lang = $1 AND link =" + sw
             + ' AND version=0) AND word1.version=0 )'
 
             + ' OR (lower(word2.word) SIMILAR TO '
-            + "(SELECT '%(' || lower(word) || ')%' FROM word WHERE lang = $2 AND link =" + sw
-            + '  AND version=0) AND word2.version=0 ))';
+            + "(SELECT '(% )?(' || lower(word) || ')' FROM word WHERE lang = $2 AND link =" + sw
+            + '  AND version=0) AND word2.version=0 ))'
+
+            + ' LIMIT 5)';
 
 
        return false;
