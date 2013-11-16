@@ -244,7 +244,7 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
         function(err, results){
 
             module.exports.getImages(pgClient, lesson, function(err, images){
-                results.push(images);
+                results.unshift(images);
                 cb(err, results);
             });
         });

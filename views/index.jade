@@ -57,7 +57,9 @@ html(ng-app="words")
                         p#origin-message
                     div.modal-footer
                         a(href="javascript:$('#modal-error').modal('hide')").btn.btn-primary ok
-        div.wordwebctrl
+        div(ng-show="loading")
+            h1 Loading please wait...
+        div(ng-hide="loading").wordwebctrl
             div(ng-repeat="word in words").wordrowcolor
                 div.text-center.description
                     span(id="in_{{word.link}}").identifer {{word.link}}

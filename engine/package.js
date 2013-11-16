@@ -11,6 +11,7 @@ var fs = require('fs'),
 
 module.exports.DIR_LANG = 'lang/';
 module.exports.DIR_IMG = 'img/';
+module.exports.DIR_PKG = 'pkg/';
 
 module.exports.LANG_EXT = '.data';
 
@@ -206,7 +207,7 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
     module.exports.createPkgDirectory(tempDir, function(err){
 
         words.getWordsWithImages(pg, langs, lesson, function(err, words){
-            var images = words[words.length-1];
+            var images = words[0];
             //console.log(words);
             var asyncFuncs = [];
 
@@ -231,7 +232,7 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
                     outDir : tempDir,
                     lesson : lesson,
                     lang : lng,
-                    words : words[idx2],
+                    words : words[idx2 + 1], // because words contain first index just link of words
                     images : images,
                     fileName : fileName,
                     update : updateLangs.indexOf(lng) != -1
@@ -245,7 +246,7 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
                 }
             }
 
-            for(var idx2 = 0; idx2 != words.length - 1; idx2++){
+            for(var idx2 = 0; idx2 != words.length-1; idx2++){
                 asyncFuncs.push(not_nice_solution(idx2, module.exports.generateLangFile));
                 asyncFuncs.push(not_nice_solution(idx2, storeInDbPackage));
             }
@@ -257,7 +258,7 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
                     cb(err);
                 } else {
                     //cb(null);
-                    zipPackage(Config.DIR_DATA + 'pkg/' +fileName, tempDir, langs, data[0], cb);
+                    zipPackage(Config.DIR_DATA + module.exports.DIR_PKG +fileName, tempDir, langs, data[0], cb);
                 }
             });
 

@@ -15,7 +15,7 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 
 describe('getWords', function(){
 
-    before(function(){
+    before(function(cb){
 
         console.info('db connection: ' + connection);
         pgClient = new pg.Client(connection);
@@ -23,23 +23,22 @@ describe('getWords', function(){
             if(err){
                 return console.info('could not connect to postgres', err);
             }
-
-        });
-    });
-
-    after(function(){
-       pgClient.end();
-        console.info('db connection close');
-    });
-
-    describe.only('repeatedWord', function(){
-        before(function(cb){
             sqlMake(pgClient, ['select create_test_data();'], cb);
         });
+    });
 
-        after(function(cb){
-            sqlMake(pgClient, ['select remove_test_data();'], cb);
-        });
+    after(function(cb){
+       sqlMake(pgClient, ['select remove_test_data();'], function(){
+           pgClient.end();
+           cb();
+           console.info('db connection close');
+       });
+
+
+    });
+
+    describe('repeatedWord', function(){
+
 
         it('get word', function(cb){
             var testData = [ 1001, 1002, 1125];
@@ -109,26 +108,29 @@ describe('getWords', function(){
                     rows[0].should.be.Array;
                     rows[1].should.be.Array;
                     rows[2].should.be.Array;
+
+                    rows[0].should.not.be.Null
+                    rows[0].length.should.be.above(0);
                     var rows00 = rows[0][0];
-                    rows00.should.have.property('link');
-                    rows00.should.have.property('word');
+                    rows00.should.have.property('lid');
+                    rows00.should.have.property('imagefile');
                     rows00.should.have.property('version');
-                    rows00.should.have.property('lang');
-                    rows00.lang.should.eql('en');
+                    rows00.should.have.property('description');
+
                     var rows10 = rows[1][0];
                     rows10.should.have.property('link');
                     rows10.should.have.property('word');
                     rows10.should.have.property('version');
                     rows10.should.have.property('lang');
-                    rows10.lang.should.eql('cs');
-
-                    rows[2].should.not.be.Null
-                    rows[2].length.should.be.above(0);
+                    rows10.lang.should.eql('en');
                     var rows20 = rows[2][0];
-                    rows20.should.have.property('lid');
-                    rows20.should.have.property('imagefile');
+                    rows20.should.have.property('link');
+                    rows20.should.have.property('word');
                     rows20.should.have.property('version');
-                    rows20.should.have.property('description');
+                    rows20.should.have.property('lang');
+                    rows20.lang.should.eql('cs');
+
+
                     cb();
                 })
 
