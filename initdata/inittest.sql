@@ -1320,7 +1320,7 @@ BEGIN
       ,(2095,E'Schritt', 'de')
       ,(2096,E'sicherlich', 'de')
       ,(2097,E'Badeanzug', 'de')
-      ,(2098,E'teilnehmen', 'de')
+      ,(2098,E'Litauen', 'de')
       ,(2099,E'stattfinden', 'de');
 
 

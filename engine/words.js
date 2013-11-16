@@ -258,9 +258,8 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
  * ]
  * @param searchWords
  * [
- *  { w1 : 'word from lang 1', l: link_of_search_word },
- *  { w1 : 'word from lang 1', l: link_of_search_word },
- *  { w2 : 'word from lang 2!!!!', l: link_of_search_word },
+ *  'link_of_search_word 1',
+ *  'link_of_search_word 2',
  *  ...
  * ]
  *
@@ -287,46 +286,41 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
            sql += ' UNION ';
        }
        sql += 'SELECT link.lesson as s, link.lid, '
-           + sw.l + ' as l,'
+           + sw + ' as l,'
            + ' word1.word as w1, word2.word as w2'
            + ' FROM link'
            + ' LEFT JOIN word as word1 ON word1.link = link.lid'
            + ' LEFT JOIN word as word2 ON word2.link = link.lid'
-           + ' WHERE link.lid != ' + sw.l
-           + ' AND word1.lang = \'' + langs[0] + '\''
-           + ' AND word2.lang = \'' + langs[1] +'\'';
+           + ' WHERE'
+           + ' link.lid != ' + sw
+           + ' AND word1.lang = $1'
+           + ' AND word2.lang = $2';
 
 
-       if(sw.w1){
-           sql += ' AND lower(word1.word) SIMILAR TO \'%('
-               + sw.w1.toLowerCase()
-               + ')%\'';
-       } else if(sw.w2){
-           sql += ' AND lower(word2.word) SIMILAR TO \'%('
-               + sw.w2.toLowerCase()
-               + ')%\'';
-       } else {
-           err = 'getRepeatWords: in searchWords missing identifier w1 or w2, no processing it!'
-           return true;
-       }
+        sql += ' AND (lower(word1.word) SIMILAR TO '
+            + "(SELECT '%(' || lower(word) || ')%' FROM word WHERE lang = $1 AND link =" + sw
+            + ')';
 
-       return false;
+        sql += ' OR lower(word2.word) SIMILAR TO '
+            + "(SELECT '%(' || lower(word) || ')%' FROM word WHERE lang = $2 AND link =" + sw
+            + '))';
+
+
+       return true;
     });
 
 
     if(!err) {
-        pg.query(sql, function(err, data){
+        pg.query(sql, langs, function(err, data){
             if(err){
                 console.log(err, sql);
                 cb(err);
             } else {
-                //console.log(data, sql);
+                console.log(data, sql);
                 cb(err, data.rows);
             }
         })  ;
     } else {
         return cb(err);
     }
-
-
 }

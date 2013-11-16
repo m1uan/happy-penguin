@@ -42,11 +42,8 @@ describe('getWords', function(){
         });
 
         it('get word', function(cb){
-            var testData = [
-                {l:1001,w1:'Litva'},
-                {l:2,w1:'Smyk'},
-                {l:1125,w2:'achte'}
-            ];
+            var testData = [ 1001, 1002, 1125];
+
 
             words.getRepeatWords(pgClient, ['cs', 'de'], testData, function(err, rows){
                 console.log(err ? err : rows);
