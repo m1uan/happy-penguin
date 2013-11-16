@@ -96,8 +96,9 @@ html(ng-app="words")
                                 span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
 
                         div
-                            div(ng-hide="word.duplicity")
-                                p loading duplicities from system...
+                            div(ng-hide="word.duplicity").duplicities_loading
+                                img(src="assets/img/loading64.gif")
+                                span loading duplicities from system...
                             div(ng-show="word.duplicity")
                                 div.row(ng-repeat="duplicity in word.duplicity")
                                     div.col-md-3

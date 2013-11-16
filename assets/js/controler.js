@@ -111,8 +111,11 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                     console.log(data);
                     var tempWords = $scope.words;
                     onRow.forEach(function(row, idx){
-                         if(data[row]){
+                         if(data[row].length > 0){
                              tempWords[row].duplicity = data[row];
+                         } else {
+                             // let angular know about already loaded and hide loading
+                             tempWords[row].duplicity = true;
                          }
                     });
                     $scope.words = tempWords;
