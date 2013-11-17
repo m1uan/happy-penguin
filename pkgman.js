@@ -6,9 +6,9 @@ var Package = require('./engine/package.js')
     ,Async = require('async');
 
 
-var dbuser = config.DB_USER_TEST;
-var dbpass = config.DB_PASS_TEST;
-var dbname = config.DB_NAME_TEST;
+var dbuser = config.DB_USER;
+var dbpass = config.DB_PASS;
+var dbname = config.DB_NAME;
 var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
 pgClient = new pg.Client(connection);
 

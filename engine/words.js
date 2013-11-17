@@ -325,7 +325,7 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
             + '  AND version=0))'
             + ')'
 
-            + ' LIMIT 25)';
+            + ' LIMIT 6)';
 
 
        return false;
