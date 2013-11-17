@@ -306,6 +306,51 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         }
     }
 
+
+    $scope.showLeo = function(lang, link){
+
+        console.log('showSeznam', lang, link);
+
+        $scope.isSeznamShowed = true;
+
+        var word= getWordByLink(link);
+
+        if(word){
+            var langVal = 1;
+            var wordTxt;
+            if(word.l1 == 'de'){
+                wordTxt = word.o1;
+            } else {
+                wordTxt = word.o2;
+            }
+
+            /*if(lang != 'de'){
+                langVal = 1;
+            }*/
+
+            var url = 'http://dict.leo.org/ende/index_de.html#/search='+wordTxt+'&searchLoc='+langVal+'&resultOrder=basic&multiwordShowSingle=on';
+            var seznam = $('#slovnik_seznam_cz');
+
+            //var win = window.open(url, 'seznam_cz');
+            //win.blur();
+            var key = lang + '_' + (link);
+            var obj = $('#ed_' + key);
+
+
+
+            if(seznam.attr('src') != url){
+                console.log('furl', url + '  attr("src"):' +seznam.attr('src'));
+                seznam.attr('src', url);
+                seznam.ready(function(data, data2){
+                    var key = lang + '_' + (link);
+                    //$('#ed_' + key).focus();
+                    console.log('load', seznam.attr('src'));
+                });
+            }
+
+        }
+    }
+
     $scope.isGoogleImageShowed = false;
     $scope.showGImage = function(lang, link){
 

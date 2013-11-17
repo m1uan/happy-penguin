@@ -56,12 +56,14 @@ html(ng-app="words")
                     div.modal-footer
                         a(href="javascript:$('#modal-error').modal('hide')").btn.btn-primary ok
         div(ng-show="loading")
-            h1 Loading please wait...
+            h1
+                img(src="assets/img/loading64.gif")
+                span Loading please wait...
             h2 {{location}}
         div(ng-hide="loading").wordwebctrl
             div(ng-repeat="word in words").wordrowcolor
                 div.text-center.description
-                    span(id="in_{{word.link}}").identifer {{word.link}}
+                    span(id="in_{{word.link}}").identifer {{word.link}}#
                     span {{word.description}}
                 div.head-row
                     div.row
@@ -90,22 +92,33 @@ html(ng-app="words")
                                 span(id="in_{{word.l1}}_{{word.link}}",ng-click="updateWord(word.l1,word.link)").label.label-danger.hide save!
                                 span(ng-click="showSeznam(word.l1,word.link)").btn.btn-xs.btn-default sl
                                 span(ng-click="showGImage(word.l1,word.link)").btn.btn-xs.btn-default gi
+                                span(ng-click="showLeo(word.l1,word.link)").btn.btn-xs.btn-default lo
                             div.col-md-6
                                 span(id="in_{{word.l2}}_{{word.link}}",ng-click="updateWord(word.l2,word.link)").label.label-danger.hide save!
                                 span(ng-click="showSeznam(word.l2,word.link)").btn.btn-xs.btn-default sl
                                 span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
+                                span(ng-click="showLeo(word.l1,word.link)").btn.btn-xs.btn-default lo
 
                         div
                             div(ng-hide="word.duplicity").duplicities_loading
                                 img(src="assets/img/loading64.gif")
                                 span loading duplicities from system...
-                            div(ng-show="word.duplicity")
-                                div.row(ng-repeat="duplicity in word.duplicity")
+                            div(ng-show="word.duplicity.length").duplicities
+                                div.row(ng-show="word.duplicity")
                                     div.col-md-3
-                                        i {{duplicity.l}} {{duplicity.d}}
+                                        b lesson (#)
+                                    div.col-md-4
+                                        b word 1
+                                    div.col-md-4
+                                        b word 2
+                                    div.col-md-1
+                                        b desc
+                                div.row(ng-repeat="duplicity in word.duplicity")
+                                    div.col-md-3 {{duplicity.s}} ({{duplicity.l}}#)
                                     div.col-md-4 {{duplicity.w1}}
                                     div.col-md-4 {{duplicity.w2}}
-                                    div.col-md-1 {{duplicity.s}}
+                                    div.col-md-1
+                                        i {{duplicity.d}}
                     div.clearfix
 
 
