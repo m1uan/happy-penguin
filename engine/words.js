@@ -91,14 +91,17 @@ module.exports.updateWord = function(pgClient, wordForUpdate, userId, cb) {
         return cb('pgClient not setup', null);
     }
 
-    if(!wordForUpdate || !wordForUpdate.link || !wordForUpdate.lang || !wordForUpdate.word){
-        cb('wordForUpdate must contains : link, lang, word', false);
+    if(!wordForUpdate || !wordForUpdate.link
+        || !wordForUpdate.lang || !wordForUpdate.word || !wordForUpdate.record){
+        cb('wordForUpdate must contains : link, lang, word, record', false);
     }
 
+    wordForUpdate.record = wordForUpdate.record.substr(0, 50);
+
     var sqlTest = 'SELECT version FROM word' +
-        ' WHERE lang = $1 AND link = $2 AND word = $3'
+        ' WHERE lang = $1 AND link = $2 AND word = $3 AND record = $4'
 
-
+    var sqlTestValues = [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word, wordForUpdate.record];
     function retAllVersion(err, results){
         if(!err){
             module.exports.getWordWithHistory(pgClient, wordForUpdate.lang, wordForUpdate.link, function(err, data){
@@ -110,7 +113,7 @@ module.exports.updateWord = function(pgClient, wordForUpdate, userId, cb) {
 
     }
 
-    pgClient.query(sqlTest, [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word], function(err, data){
+    pgClient.query(sqlTest, sqlTestValues, function(err, data){
         if(err) {
            cb(err, false);
         } else if(data.rows.length == 0){
@@ -163,7 +166,7 @@ function updateVersionToWord(pgClient, wordForUpdate, version, cb){
         // ----------------
         // version to value
         getMaxVersion = '$3';
-        sqlParams.push(0);
+        sqlParams.push(version);
 
 
         // specified words to update version
@@ -174,13 +177,23 @@ function updateVersionToWord(pgClient, wordForUpdate, version, cb){
             cb('you can not update specific word version without wordForUpdate.word', null);
         }
 
+        if(wordForUpdate.record){
+            updateWhere += ' AND record = $5'
+            sqlParams.push(wordForUpdate.record);
+        }
+
     }
 
-    var updateVersion = 'UPDATE word SET version = '
-        + getMaxVersion
-        + updateWhere;
+    var updateVersion = 'UPDATE word SET version=' + getMaxVersion;
 
-    console.log(updateVersion);
+
+    if(version == 0) {
+        updateVersion += ',uts=now()';
+    }
+
+    updateVersion += updateWhere;
+
+    console.log(updateVersion, sqlParams);
 
     pgClient.query(updateVersion, sqlParams, function(err, data){
         if(err) {
@@ -202,13 +215,14 @@ function createNewWordAndSetNewVersionToOld(pgClient, wordForUpdate, userId, cb)
 
 
         var insertSql = 'INSERT INTO word ' +
-            '(lang, link, word, usr) ' +
+            '(lang, link, word, usr, record) ' +
             'VALUES' +
-            '($1, $2, $3, $4)';
+            '($1, $2, $3, $4, $5)';
+        var sqlData = [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word, userId, wordForUpdate.record];
+        console.log(insertSql, sqlData);
 
-        console.log(insertSql);
 
-        pgClient.query(insertSql, [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word, userId], function(err, data){
+        pgClient.query(insertSql, sqlData, function(err, data){
             if(err) {
                 cb(err, null);
             } else {

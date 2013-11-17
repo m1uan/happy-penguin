@@ -1,10 +1,14 @@
 DROP TRIGGER update_package_link ON link;
 DROP TRIGGER update_package_word ON word;
 
---ALTER TABLE word DROP COLUMN langid;
+ALTER TABLE word DROP COLUMN record;
+ALTER TABLE word ADD COLUMN record VARCHAR(50) DEFAULT NULL;
 
---ALTER TABLE word ADD COLUMN langid CHAR DEFAULT NULL;
+ALTER TABLE word DROP COLUMN uts; -- update timestamp
+ALTER TABLE word ADD COLUMN uts TIMESTAMP DEFAULT current_timestamp;
 
+--ALTER TABLE link DROP COLUMN uts; -- update timestamp
+--ALTER TABLE link ADD COLUMN uts TIMESTAMP DEFAULT current_timestamp();
 
 
 
@@ -94,6 +98,8 @@ BEGIN
         INSERT INTO update_package_t (changed, lesson, lang_mask)
             VALUES (now(), lsn, mask );
     END IF;
+
+
 
     RETURN NEW;
 END; $$

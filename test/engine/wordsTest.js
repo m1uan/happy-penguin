@@ -37,7 +37,7 @@ describe('getWords', function(){
 
     });
 
-    describe.only('repeatedWord', function(){
+    describe('repeatedWord', function(){
 
 
         it('get word', function(cb){
@@ -185,7 +185,7 @@ describe('getWords', function(){
 
 
 
-    describe('updateWord(lesson)', function(){
+    describe.only('updateWord(lesson)', function(){
         it('update multiple word', function(cb){
             function updateWord(wordWord, icb){
 
@@ -193,15 +193,15 @@ describe('getWords', function(){
                 var word = {
                     word : wordWord
                     ,lang : 'cs'
-                    ,link : 12 };
+                    ,link : 12
+                    ,record : 'ahoj|de|predtim'};
 
 
                 console.log(word);
                 words.updateWord(pgClient, word, 2, function(err, rows){
-                    console.error(err);
-
-
-                    assert(rows);
+                    console.log(err ? err : rows);
+                    //err.should.be.Null;
+                    rows.should.be.a.Array;
 
 
                     var finded = false;
