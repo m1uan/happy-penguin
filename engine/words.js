@@ -289,7 +289,7 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
        }
        sql += '(SELECT link.lesson as s, link.lid, '
            + sw + ' as l, link.description as d,'
-           + ' (word1.word || word1.version) as w1, word2.word as w2'
+           + ' (word1.word) as w1, word2.word as w2'
            + ' FROM link'
            + ' LEFT JOIN word as word1 ON word1.link = link.lid'
            + ' LEFT JOIN word as word2 ON word2.link = link.lid'
