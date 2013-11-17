@@ -37,14 +37,14 @@ describe('getWords', function(){
 
     });
 
-    describe('repeatedWord', function(){
+    describe.only('repeatedWord', function(){
 
 
         it('get word', function(cb){
-            var testData = [ 1001, 1002, 1125];
+            var testData = [[ 'v','fenster'],['paprsek', 'litva'],[ 'paprsek', 'litva']];
 
 
-            words.getRepeatWords(pgClient, ['cs', 'de'], testData, function(err, rows){
+            words.getRepeatWords(pgClient, ['cs','de'], testData, function(err, rows){
                 console.log(err ? err : rows);
 
                 rows.should.be.a.Object;
@@ -66,33 +66,6 @@ describe('getWords', function(){
                 cb();
             });
         });
-
-        it('get word', function(cb){
-            var testData = [ 1003];
-
-
-            words.getRepeatWords(pgClient, ['cs', 'de'], testData, function(err, rows){
-                console.log(err ? err : rows);
-
-                rows.should.be.a.Object;
-                rows.should.have.property(1003);
-
-                var find = 'have not object with preposition (das) object';
-                rows[1003].some(function(td, idx){
-
-                    if(td.l == 2090){
-                        find = '';
-                        return true;
-                    }
-                    return false;
-                });
-
-                find.should.be.empty;
-                //console.log(rows);
-                cb();
-            });
-        });
-
     });
 
     describe('getWords(cs)', function(){
@@ -185,7 +158,7 @@ describe('getWords', function(){
 
 
 
-    describe.only('updateWord(lesson)', function(){
+    describe('updateWord(lesson)', function(){
         it('update multiple word', function(cb){
             function updateWord(wordWord, icb){
 

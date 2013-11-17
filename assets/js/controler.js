@@ -93,28 +93,32 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         // 75 the response is ~1:27s  (SQL LIMIT 25)
         // 2 the response is ~3s  (SQL LIMIT 6)
         // 80 the response is ~2:00s  (SQL LIMIT 6) and 502
-        var maxDuplicityOnRow = 10;
+        var maxDuplicityOnRow = 1;
 
         if(duplicityLoading.length < 1) {
             return;
         }
 
         var onRow = [];
+        var links = [];
 
         while(duplicityLoading.length > 0 && onRow.length < maxDuplicityOnRow ) {
-            var link =  duplicityLoading.shift();
-            onRow.push(link);
+            var word =  duplicityLoading.shift();
+            // TODO: tolowercase
+            onRow.push([word.w1, word.w2]);
+            links.push(word.link);
         }
 
 
-
+        // TODO: lang put to parameter and select by alphabet
         $http.post('/words/duplicity' + location, {links: onRow}).
             success(function(data, status, headers, config) {
                 console.log(data);
                 var tempWords = $scope.words;
-                onRow.forEach(function(row, idx){
-                    if(data[row].length > 0){
-                        tempWords[row].duplicity = data[row];
+                links.forEach(function(row, idx){
+                    if(data[idx] && data[idx].length > 0){
+                        // TODO : ton't add rows with the same link
+                        tempWords[row].duplicity = data[idx];
                     } else {
                         // let angular know about already loaded and hide loading
                         tempWords[row].duplicity = true;
@@ -156,7 +160,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                     duplicityLoading = [];
 
                     data[0].forEach(function(link){
-                       tempWord[link.lid] = {
+                       var tw = {
                           description : link.description,
                           link : link.lid,
                           w1 : '',
@@ -165,12 +169,13 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                        }
 
                        if(link.thumbfile){
-                           tempWord[link.lid].imagefile = 'assets/img/thumb/' + link.thumbfile;
+                           tw.imagefile = 'assets/img/thumb/' + link.thumbfile;
                        } else if(link.imagefile) {
-                           tempWord[link.lid].imagefile = 'assets/img/orig/' + link.imagefile;
+                           tw.imagefile = 'assets/img/orig/' + link.imagefile;
                        }
 
-                        duplicityLoading.push(link.lid);
+                        duplicityLoading.push(tw);
+                        tempWord[link.lid] = tw;
                     });
 
 

@@ -292,43 +292,40 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
     var sql = '';
     var err = '';
 
-    if(langs.length != 2){
-        return cb('getRepeatWords: langs param should contain two param for languages');
-    }
 
 
-    searchWords.some(function(sw, idx){
+
+    searchWords.forEach(function(sw, idx){
        if(sql.length > 0) {
            sql += ' UNION ';
        }
-       sql += '(SELECT link.lesson as s, link.lid, '
-           + sw + ' as l, link.description as d,'
+       sql += '(SELECT link.lesson as s, link.lid,'
+           +   idx + " AS idx"
+           +  ',link.description as d,'
            + ' (word1.word) as w1, word2.word as w2'
            + ' FROM link'
            + ' LEFT JOIN word as word1 ON word1.link = link.lid'
            + ' LEFT JOIN word as word2 ON word2.link = link.lid'
            + ' WHERE'
-           + ' link.lid != ' + sw
-           + ' AND word1.lang = $1'
+           + ' word1.lang = $1'
            + ' AND word2.lang = $2'
            + ' AND word1.version=0'
            + ' AND word2.version=0'
 
             + ' AND '
             + '('
-            + '(lower(word1.word) SIMILAR TO '
-            + "(SELECT '(% )?(' || lower(word) || ')' FROM word WHERE lang = $1 AND link =" + sw
-            + ' AND version=0))'
+            + '(lower(word1.word) SIMILAR TO'
+            + " '(% )?("+sw[0]+")')"
 
-            + ' OR (lower(word2.word) SIMILAR TO '
-            + "(SELECT '(% )?(' || lower(word) || ')' FROM word WHERE lang = $2 AND link =" + sw
-            + '  AND version=0))'
-            + ')'
+
+           + 'OR (lower(word1.word) SIMILAR TO'
+           + " '(% )?("+sw[1]+")')"
+           + ')'
 
             + ' LIMIT 6)';
 
 
-       return false;
+       //return false;
     });
 
 
@@ -341,12 +338,12 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
                 console.log(data, sql);
 
                 var result = {};
-                searchWords.forEach(function(sw){
-                    result[sw] = [];
+                data.rows.forEach(function(rw){
+                    result[rw.idx] = [];
                 });
 
                 data.rows.forEach(function(rw){
-                    result[rw.l].push({
+                    result[rw.idx].push({
                        s : rw.s,
                        l : rw.lid,
                        w1 : rw.w1,
