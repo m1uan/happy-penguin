@@ -93,10 +93,10 @@ module.exports.updateWord = function(pgClient, wordForUpdate, userId, cb) {
 
     if(!wordForUpdate || !wordForUpdate.link
         || !wordForUpdate.lang || !wordForUpdate.word || !wordForUpdate.record){
-        cb('wordForUpdate must contains : link, lang, word, record', false);
+        return cb('wordForUpdate must contains : link, lang, word, record', false);
     }
 
-    wordForUpdate.record = wordForUpdate.record.substr(0, 50);
+    wordForUpdate.record = wordForUpdate.record.substring(0, 50);
 
     var sqlTest = 'SELECT version FROM word' +
         ' WHERE lang = $1 AND link = $2 AND word = $3 AND record = $4'

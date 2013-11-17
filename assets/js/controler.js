@@ -223,20 +223,42 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         return $scope.words[link];
     }
 
+    function generateRecord(word, forLang){
+        var gr = [];
+
+        if(forLang == word.l1){
+            gr.push(word.o1);
+            gr.push(word.l2);
+            gr.push(word.w2);
+        } else {
+            gr.push(word.o2);
+            gr.push(word.l1);
+            gr.push(word.w1);
+        }
+
+        // format:
+        //      old-word|second-lang|second-lang-word
+        // max length: 50
+        return gr.join('|').substring(0,50);
+    }
 
     $scope.updateWord = function(lang, link) {
         var key = lang + '_' + link;
         var val = $('#ed_' + key).val();
 
+
+        var w = getWordByLink(link);
+        var record = generateRecord(w, lang);
+
         // upload just in case the word is changed
         if($scope.checkWord(lang, link)){
-            updateWord(lang,link, val, function(data){
+            updateWord(lang, link, val, record, function(data){
                 data.forEach(function(word){
                     if(word.version == 0){
                         $('#tv_' + key).text(word.word);
                         $scope.checkWord(lang, link);
 
-                        var w = getWordByLink(link);
+
                         w.duplicity = false;
                         duplicityLoading.unshift(link);
                         loadDuplicity($scope.location);
@@ -531,11 +553,12 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     }
 
 
-    function updateWord(lang,link,word,cb){
+    function updateWord(lang,link,word, record,cb){
         var dataContainer = {
             lang : lang,
             link : link,
-            word: word
+            word: word,
+            record: record
         };
 
 
