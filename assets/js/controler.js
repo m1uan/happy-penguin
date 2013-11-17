@@ -91,7 +91,8 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     function loadDuplicity(location) {
         // 15 the response is ~27s (SQL LIMIT 25)
         // 75 the response is ~1:27s  (SQL LIMIT 25)
-        var maxDuplicityOnRow = 2;
+        // 2 the response is ~3s  (SQL LIMIT 6)
+        var maxDuplicityOnRow = 80;
 
         if(duplicityLoading.length < 1) {
             return;
