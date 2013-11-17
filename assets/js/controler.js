@@ -77,7 +77,6 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     };
 
     $scope.location = $location.path();
-    loadDuplicity();
 
     $scope.$on('$locationChangeSuccess', function () {
         $scope.location = $location.path();
@@ -89,49 +88,54 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     var tempWord = [];
 
 
-    function loadDuplicity(location){
-        var maxDuplicityOnRow = 3;
+    function loadDuplicity(location) {
+        var maxDuplicityOnRow = 15;
 
-        function loadDuplicityInline() {
-            if(duplicityLoading.length < 1) {
-                return;
-            }
-
-            var onRow = [];
-
-            while(duplicityLoading.length > 0 && onRow.length < maxDuplicityOnRow ) {
-                var link =  duplicityLoading.shift();
-                onRow.push(link);
-            }
-
-
-
-            $http.post('/words/duplicity' + location, {links: onRow}).
-                success(function(data, status, headers, config) {
-                    console.log(data);
-                    var tempWords = $scope.words;
-                    onRow.forEach(function(row, idx){
-                         if(data[row].length > 0){
-                             tempWords[row].duplicity = data[row];
-                         } else {
-                             // let angular know about already loaded and hide loading
-                             tempWords[row].duplicity = true;
-                         }
-                    });
-                    $scope.words = tempWords;
-                    /***
-                     *  recal duplicity with rest of duplicity list
-                     * */
-                    loadDuplicity(location);
-                }).
-                error(function(data, status, headers, config) {
-
-                });
-
-
+        if(duplicityLoading.length < 1) {
+            return;
         }
 
-        setTimeout(loadDuplicityInline, 10);
+        var onRow = [];
+
+        while(duplicityLoading.length > 0 && onRow.length < maxDuplicityOnRow ) {
+            var link =  duplicityLoading.shift();
+            onRow.push(link);
+        }
+
+
+
+        $http.post('/words/duplicity' + location, {links: onRow}).
+            success(function(data, status, headers, config) {
+                console.log(data);
+                var tempWords = $scope.words;
+                onRow.forEach(function(row, idx){
+                    if(data[row].length > 0){
+                        tempWords[row].duplicity = data[row];
+                    } else {
+                        // let angular know about already loaded and hide loading
+                        tempWords[row].duplicity = true;
+                    }
+                });
+                $scope.words = tempWords;
+                /***
+                 *  recal duplicity with rest of duplicity list
+                 * */
+                loadDuplicityTimer(location);
+            }).
+            error(function(data, status, headers, config) {
+
+            });
+
+
+    }
+
+    function loadDuplicityTimer(location){
+        var loc = location;
+
+
+        setTimeout(function(){
+            loadDuplicity(loc);
+        }, 3000);
     }
 
     /**
@@ -185,7 +189,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                     $scope.words = tempWord;
                     $scope.loading = false;
 
-                    loadDuplicity(lessonAndLang);
+                    loadDuplicityTimer(lessonAndLang);
                 }).
                 error(function(data, status, headers, config) {
                     // called asynchronously if an error occurs
@@ -231,6 +235,12 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                     if(word.version == 0){
                         $('#tv_' + key).text(word.word);
                         $scope.checkWord(lang, link);
+
+                        var w = getWordByLink(link);
+                        w.duplicity = false;
+                        duplicityLoading.unshift(link);
+                        loadDuplicity($scope.location);
+
                         return;
                     }
                 })

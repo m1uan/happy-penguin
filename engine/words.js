@@ -289,7 +289,7 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
        }
        sql += '(SELECT link.lesson as s, link.lid, '
            + sw + ' as l, link.description as d,'
-           + ' word1.word as w1, word2.word as w2'
+           + ' (word1.word || word1.version) as w1, word2.word as w2'
            + ' FROM link'
            + ' LEFT JOIN word as word1 ON word1.link = link.lid'
            + ' LEFT JOIN word as word2 ON word2.link = link.lid'
@@ -297,17 +297,21 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
            + ' link.lid != ' + sw
            + ' AND word1.lang = $1'
            + ' AND word2.lang = $2'
+           + ' AND word1.version=0'
+           + ' AND word2.version=0'
 
-
-            + ' AND ((lower(word1.word) SIMILAR TO '
+            + ' AND '
+            + '('
+            + '(lower(word1.word) SIMILAR TO '
             + "(SELECT '(% )?(' || lower(word) || ')' FROM word WHERE lang = $1 AND link =" + sw
-            + ' AND version=0) AND word1.version=0 )'
+            + ' AND version=0))'
 
             + ' OR (lower(word2.word) SIMILAR TO '
             + "(SELECT '(% )?(' || lower(word) || ')' FROM word WHERE lang = $2 AND link =" + sw
-            + '  AND version=0) AND word2.version=0 ))'
+            + '  AND version=0))'
+            + ')'
 
-            + ' LIMIT 5)';
+            + ' LIMIT 25)';
 
 
        return false;
