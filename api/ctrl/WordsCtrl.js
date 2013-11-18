@@ -1,5 +1,6 @@
 var wordsEngine = require(process.cwd() + '/engine/words.js')
-    ,async = require('async');
+    ,async = require('async'),
+    Hapi = require('hapi');
 
 var pgClient = null;
 
@@ -48,7 +49,10 @@ module.exports = {
                 request.reply(err ? err : words);
             });
         } else {
-            request.reply('format : /lesson/lang1/lang2/{lang3?}');
+            var error = Hapi.error.badRequest('format : /lesson/lang1/lang2/{lang3?}');
+            error.response.code = 402;    // Assign a custom error code
+            error.reformat();
+            request.reply(error);
         }
     },
     update_post : function(request){
@@ -143,6 +147,46 @@ module.exports = {
 
 
 
+    },
+    duplicity_post : function (request){
+
+        console.log('duplicity_post********', request.payload);
+        //  http://localhost:8080/words/duplicity/de/cs
+        if(request.payload && request.payload.links
+            && request.payload.links.length > 0){
+
+            var words = request.payload.links;
+            var langs = words.shift();
+
+            console.log(langs);
+
+
+            wordsEngine.getRepeatWords(pgClient, langs, words, function(err, words){
+                if(err){
+                    err_response(request, err);
+                }else {
+                    request.reply(words);
+                }
+
+
+            });
+        } else {
+            err_response(request, 'not format : /lesson/lang1/lang2' +
+                ' or missing Array links in payload');
+        }
+
+    },
+    deletelink_post: function (request){
+        var linksEngine = require(process.cwd() + '/engine/link.js');
+
+        linksEngine.deleteLink(pgClient, request.payload.links, function(err, data){
+            if(err) {
+                err_response(request, err);
+            } else {
+                request.reply(data);
+            }
+
+        });
     }
 
 
@@ -163,4 +207,10 @@ module.exports = {
 //      }
 //    }
 
+}
+
+function err_response(request, err){
+    var error = Hapi.error.badRequest(err);
+    error.reformat();
+    request.reply(error);
 }

@@ -1,5 +1,6 @@
 /*
- mkdir /tmp/ahoj && ln -s ~/voc4u/initdata/img /tmp/ahoj/orig && mkdir /tmp/ahoj/thumb && cp /tmp/ahoj/orig/* /tmp/ahoj/thumb/
+ mkdir /tmp/ahoj && mkdir /tmp/ahoj/orig && mkdir /tmp/ahoj/thumb && mkdir /tmp/ahoj/pkg && ln -s /tmp/ahoj/orig/ ~/nodejs/voc4u/assets/img/orig && ln -s /tmp/ahoj/thumb/ ~/nodejs/voc4u/assets/img/thumb && ln -s /tmp/ahoj/pkg/ ~/nodejs/voc4u/assets/pkg && cp /tmp/ahoj/orig/* /tmp/ahoj/thumb/
+
 
  drop database voc4u_test; create database voc4u_test; alter database voc4u_test owner to uservoc4u;
  psql -U uservoc4u voc4u_test < initdata/init.sql && psql -U uservoc4u voc4u_test < initdata/inittest.sql && psql -U uservoc4u voc4u_test < initdata/update_v1.1.sql
@@ -29,7 +30,7 @@ describe('package operations', function(){
         var dbuser = config.DB_USER_TEST;
         var dbpass = config.DB_PASS_TEST;
         var dbname = config.DB_NAME_TEST;
-        var connection = 'postgres://uservoc4u:'+dbpass+'@localhost/voc4u_test';
+        var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
         pgClient = new pg.Client(connection);
 
 
@@ -204,8 +205,8 @@ describe('package operations', function(){
                     outDir : inDir,
                     lesson : lesson,
                     lang : lang,
-                    words : testWords[0],
-                    images : testWords[1]
+                    words : testWords[1],
+                    images : testWords[0]
                 };
             package.generateLangFile(generateData, function(err){
                 assert(!err, err);
@@ -218,7 +219,7 @@ describe('package operations', function(){
                    if(idx == 0){
                        testRow0(row);
                    } else {
-                       if(len < testWords[0].length){
+                       if(len < testWords[1].length){
                            testRowN(row, generateData.words[len]);
                        }
 
@@ -229,7 +230,7 @@ describe('package operations', function(){
                 });
 
 
-                len.should.be.eql(testWords[0].length+1);
+                len.should.be.eql(testWords[1].length+1);
                 done();
             });
                 // first row should be in format:
@@ -239,7 +240,7 @@ describe('package operations', function(){
                     rowParams.length.should.eql(3);
                     rowParams[0].should.eql(lesson);
                     rowParams[1].should.eql(lang);
-                    rowParams[2].should.eql(testWords[0].length);
+                    rowParams[2].should.eql(testWords[1].length);
                 }
 
                 function testRowN(row, w){
@@ -282,7 +283,7 @@ describe('package operations', function(){
             words.getWordsWithImages(pgClient, [lang], lesson, function(err, testWords){
                 var generateData = {
                     outDir : inDir,
-                    images : testWords[1]
+                    images : testWords[0]
                 };
                 package.copyImageFiles(generateData, function(err, data){
                     var lastFile = '';
@@ -365,10 +366,10 @@ describe('package operations', function(){
 
         before(function(cb){
 
-            if(fs.existsSync(config.PKG_DIR)){
+            if(fs.existsSync(config.DIR_DATA + package.DIR_PKG)){
 
             } else {
-                fs.mkdirSync(config.PKG_DIR)
+                fs.mkdirSync(config.DIR_PKG+ package.DIR_PKG )
             }
             cb();
         });
@@ -376,7 +377,7 @@ describe('package operations', function(){
 
 
         afterEach(function(cb){
-            unlinkDir(config.PKG_DIR);
+            unlinkDir(config.DIR_DATA + package.DIR_PKG);
 
             function unlinkDir(dir){
                 fs.readdirSync(dir).forEach(function(file){
@@ -433,7 +434,7 @@ describe('package operations', function(){
 
     });
 
-    describe.only('update_packages_t', function(){
+    describe('update_packages_t', function(){
         it('remove', function(cb){
             sqlMake(pgClient, ["UPDATE word SET word='ahoj1' WHERE lang='cs' AND link = 2001"],
                 function (icb){

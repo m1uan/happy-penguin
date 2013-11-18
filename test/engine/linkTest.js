@@ -33,6 +33,8 @@ describe('link operations', function(){
                 ,"INSERT INTO image (iid,image,md5) VALUES (150001,'karel2.jpg', 'karel2');"
                 ,"INSERT INTO link (lid,description,lesson) VALUES (160000,'descrpsdf sad fdas f',1);"
                 ,"INSERT INTO link (lid,description,image,lesson) VALUES (160001,'descrpsdf sad fdsafa ', 150000,1);"
+                ,"INSERT INTO link (lid,description,image,lesson) VALUES (160002,'descrpsdf sad fdsafa ', 150000,1);"
+                ,"INSERT INTO link (lid,description,image,lesson,del) VALUES (160003,'descrpsdf sad fdsafa ', 150000,1,4);"
             ],cb);
 
         });
@@ -43,7 +45,7 @@ describe('link operations', function(){
             "DELETE FROM image WHERE iid = 150000;"
             ,"DELETE FROM image WHERE iid = 150001;"
             ,"DELETE FROM link WHERE lid= 160000;"
-            ,"DELETE FROM link WHERE lid= 160001;"
+            ,"DELETE FROM link WHERE lid= 160001;DELETE FROM link WHERE lid= 160002;DELETE FROM link WHERE lid= 160003;"
         ],cb);
     });
 
@@ -196,6 +198,31 @@ describe('link operations', function(){
             //link.update(pgClient, linkData,
         });
 
+    });
+
+    describe('delete link', function(){
+        it('should return several rows', function(cb){
+            link.deleteLink(pgClient, [160002, 160003], function(err, rows){
+                console.log(rows);
+                rows.should.be.Array;
+                rows.length.should.be.eql(2);
+                var row0 = rows[0];
+                row0.should.be.a.Object;
+                row0.should.have.property('lid');
+                row0.should.have.property('del');
+                row0.lid.should.be.eql(160002);
+                row0.del.should.be.eql(1);
+
+                var row1 = rows[1];
+                row1.should.be.a.Object;
+                row1.should.have.property('lid');
+                row1.should.have.property('del');
+                row1.lid.should.be.eql(160003);
+                row1.del.should.be.eql(5);
+                cb();
+            })
+
+        })
     });
 
 

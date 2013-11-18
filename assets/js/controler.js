@@ -1,6 +1,6 @@
 var app = angular.module('words',['angularFileUpload']);
 
-
+//lscache.flush();
 
 app.directive('onEnter',function(){
 
@@ -38,9 +38,12 @@ app.directive('myRepeatDirective', function() {
 
         //console.log('im', attrs.id);
         //console.log('element', attrs('id'));
-        //if (scope.$last){
+        if (scope.$last){
+            $('#all_words_here').fadeOut();
+            $('#all_words_here').removeClass('hide');
+            $('#all_words_here').fadeIn();
             //window.alert("im the last!");
-        //}
+        }
     };
 })  ;
 
@@ -54,25 +57,27 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
     };
 
-    $scope.languages =['en','cs', 'de','it','es','pt','ru', 'zh']
+    $scope.loading = false;
 
-    $scope.lessons =[ 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
+    $scope.languages =['en','cs', 'de','it','es','pt','ru','sr','zh']
+
+    $scope.lessons =[ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010,101, 102, 103, 104, 105, 106, 107, 108, 109, 110 ];
+
+    var duplicityLoading = [];
 
     $scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
-    $scope.words=[
-        {
+    $scope.words={
+        /*'1' : {
             l1:'cs',
             l2: 'en',
             w1:'ahoj',
             w2:'hello',
             o1:'ahoj',
             o2:'hello',
-            link: 1,
             image: 'blabla',
             status : WORD_STATUS.CURRENT
-
-        }
-    ];
+        }  */
+    };
 
     $scope.location = $location.path();
 
@@ -80,68 +85,141 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         $scope.location = $location.path();
         console.log('$locationChangeSuccess changed!', $location.path());
         loadWords ($location.path());
+
     });
 
     var tempWord = [];
 
-    function addToTemp(addingWord){
-        if(addingWord.version !== 0) {
+
+    function loadDuplicity(location) {
+        // 15 the response is ~27s (SQL LIMIT 25)
+        // 75 the response is ~1:27s  (SQL LIMIT 25)
+        // 2 the response is ~3s  (SQL LIMIT 6)
+        // 80 the response is ~2:00s  (SQL LIMIT 6) and 502
+        var maxDuplicityOnRow = 1;
+
+        if(duplicityLoading.length < 1) {
             return;
         }
 
-        var founded = false;
-        for(var twindex in tempWord){
-            var tw = tempWord[twindex];
-            var link = addingWord.link || addingWord.lid;
+        var onRow = [];
+        var links = [];
 
-            // this link is not the same like in set
-            // hadle only version 0
-            if(tw.link != link){
-                //console.log(tw);
-                continue;
-            }
-
-            // addingWord is real word
-            if(addingWord.word){
-                if(tw.w1) {
-                    tw.o2 = tw.w2 = addingWord.word;
-                    tw.l2 = addingWord.lang;
-                    tw.status = WORD_STATUS.CURRENT;
-
-                }
-                founded = true;
-            }
-
-            if (addingWord.imagefile) {
-                // addingWord is image with description
-                tw.imagefile = IMAGE_DIR + 'orig/' + addingWord.imagefile;
-                founded = true;
-
-            }
-
-            if(addingWord.description){
-                tw.description = addingWord.description;
-                founded = true;
-            }
-
-            break;
-
+        // TODO: lang put to parameter and select by alphabet
+        var l = location;
+        if(l.indexOf('/') == 0){
+            l = l.substring(1);
         }
 
-        if(!founded && addingWord.word){
-            tempWord.push({
-                w1 : addingWord.word,
-                o1 : addingWord.word,
-                l1 : addingWord.lang,
-                link : addingWord.link,
-                status : WORD_STATUS.CURRENT
+        var langs = l.split('/');
+        langs.shift();
+        var changeLang = langs[0];
+        // #00000001
+        // lang are sort alphabeticaly for caching result
+        // example:
+        // 	 ["cs","de"] or ["de","cs"]
+        //	allways will be request like ["cs","de"]
+        langs = langs.sort();
+        changeLang = langs[0] != changeLang;
+
+        onRow.push(langs);
+
+	// +1 because onRow already are the langs
+        while(duplicityLoading.length > 0 && onRow.length < maxDuplicityOnRow +1) {
+            console.log('ahoj',duplicityLoading[0]);
+            var word =  duplicityLoading.shift();
+            console.log('ahoj2',word,duplicityLoading);
+            //var word = getWordByLink(wordLink);
+
+            // langs was changed in #00000001 alphabeticaly
+            if(changeLang){
+                onRow.push([word.w2.toLowerCase(), word.w1.toLowerCase()]);
+            } else {
+                onRow.push([word.w1.toLowerCase(), word.w2.toLowerCase()]);
+            }
+
+            links.push(word.link);
+        }
+
+        console.log(onRow);
+
+	function generateStorageKey(langs, rows){
+		var key = 'dp_' + langs.join('_');
+		rows.forEach(function(ln){
+			key+= '|' + ln.join('_');
+		});
+
+		return key;
+	}
+
+	function handleData(data){
+		console.log(data,links);
+        var tempWords = $scope.words;
+        links.forEach(function(link, idx){
+            var tw = tempWords[link];
+            tw.duplicity = [];
+            // it is "na bednu" but its connection between data and links
+            // the same index in links is the same index for data
+            // links is conection for words
+            if(data[idx] && data[idx].length > 0){
+
+                data[idx].forEach(function(row){
+                    if(row.l != link)
+                    {
+                        // the order of langs have been changed #00000001
+                        // change the words
+                        if(!changeLang) {
+                            var tw1 = row.w1;
+                            row.w1 = row.w2;
+                            row.w2 = tw1;
+                        }
+                        tw.duplicity.push(row);
+                    }
+                });
+                console.log(idx, link, tw.duplicity);
+            }
+        });
+        $scope.words = tempWords;
+
+	}
+
+	var storageKey = generateStorageKey(langs, onRow);	
+	// try re-store data from local data file	
+	// https://github.com/pamelafox/lscache
+	var data = lscache.get(storageKey);
+
+	if(data){
+		handleData(data);
+        loadDuplicity(location);
+        if(duplicityLoading.length == 0){
+            $scope.$apply();
+        }
+	} else {
+
+        $http.post('/words/duplicity', {links: onRow}).
+            success(function(data, status, headers, config) {
+                handleData(data);
+                /***
+                 *  recal duplicity with rest of duplicity list
+                 * */
+                loadDuplicityTimer(location);
+                // store data in local data file
+                lscache.set(storageKey, data, 24*60*7);
+            }).
+            error(function(data, status, headers, config) {
+                loadDuplicityTimer(location);
             });
+	}
 
-            //console.log('create:');
-            //console.log(tempWord);
-        }
+    }
+
+    function loadDuplicityTimer(location){
+        var loc = location;
 
 
+        setTimeout(function(){
+            loadDuplicity(loc);
+        }, 1000);
     }
 
     /**
@@ -149,28 +227,81 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
      * @param lessonAndLang - /2002/en/cs
      */
     function loadWords(lessonAndLang){
-        $http({method: 'GET', url: '/words/lesson' +lessonAndLang }).
-            success(function(data, status, headers, config) {
-                tempWord = [];
+        $scope.loading = true;
+        setTimeout(function() {
+            $http({method: 'GET', url: '/words/lesson' +lessonAndLang }).
+                success(function(data, status, headers, config) {
+                    console.log(data);
+                    tempWord = {};
+                    duplicityLoading = [];
 
-                //console.error('ahoj');
-                data.forEach(function(data2, idx){
+                    data[0].forEach(function(link){
+                        if(link.version){
+                           return ;
+                        }
 
-                    data2.forEach(function(link, idx){
+                        var tw = {
+                          description : link.description,
+                          link : link.lid,
+                          w1 : '',
+                          w2 : '',
+                          del : link.del
+                        }
 
-                        addToTemp(link);
+                        if(link.thumbfile){
+                           tw.imagefile = 'assets/img/thumb/' + link.thumbfile;
+                        } else if(link.imagefile) {
+                           tw.imagefile = 'assets/img/orig/' + link.imagefile;
+                        }
+
+
+                        // for removed not loading any duplicities
+                        if(link.del){
+                            tw.duplicity = true;
+                        } else {
+                            // duplicity loading
+                            tw.duplicity = false;
+                            duplicityLoading.push(tw);
+                        }
+                        tempWord[link.lid] = tw;
                     });
+
+
+                    data[1].forEach(function(w){
+                        if(tempWord[w.link]){
+                            var l = tempWord[w.link];
+                            l.w1 = w.word;
+                            l.o1 = w.word;
+                            l.l1 = w.lang;
+                        }
+
+                    });
+
+                    data[2].forEach(function(w){
+                        if(tempWord[w.link]){
+                            var l = tempWord[w.link];
+                            l.w2 = w.word;
+                            l.o2 = w.word;
+                            l.l2 = w.lang;
+                        }
+                    });
+                    //console.error('ahoj');
+
+
+                    $scope.words = tempWord;
+                    $scope.loading = false;
+
+                    loadDuplicityTimer(lessonAndLang);
+                }).
+                error(function(data, status, headers, config) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                    $scope.loading = false;
                 });
 
-                $scope.words = tempWord;
 
+        }, 300);
 
-
-            }).
-            error(function(data, status, headers, config) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-            });
     }
 
 
@@ -191,31 +322,49 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     }
 
     function getWordByLink(link){
-
-
-        for(var idx in $scope.words){
-           var w = $scope.words[idx];
-           if(w.link==link){
-               return w;
-           }
-           //console.log(w);
-        };
-
-        return null;
+        return $scope.words[link];
     }
 
+    function generateRecord(word, forLang){
+        var gr = [];
+
+        if(forLang == word.l1){
+            gr.push(word.o1);
+            gr.push(word.l2);
+            gr.push(word.w2);
+        } else {
+            gr.push(word.o2);
+            gr.push(word.l1);
+            gr.push(word.w1);
+        }
+
+        // format:
+        //      old-word|second-lang|second-lang-word
+        // max length: 50
+        return gr.join('|').substring(0,50);
+    }
 
     $scope.updateWord = function(lang, link) {
         var key = lang + '_' + link;
         var val = $('#ed_' + key).val();
 
+
+        var w = getWordByLink(link);
+        var record = generateRecord(w, lang);
+
         // upload just in case the word is changed
         if($scope.checkWord(lang, link)){
-            updateWord(lang,link, val, function(data){
+            updateWord(lang, link, val, record, function(data){
                 data.forEach(function(word){
                     if(word.version == 0){
                         $('#tv_' + key).text(word.word);
                         $scope.checkWord(lang, link);
+
+
+                        w.duplicity = false;
+                        duplicityLoading.unshift(getWordByLink(link));
+                        loadDuplicity($scope.location);
+
                         return;
                     }
                 })
@@ -259,6 +408,51 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
             langTxt = langTxt.replace('cs','cz');
 
             var url = 'http://slovnik.seznam.cz/'+langTxt+'/word/?q=' + wordTxt;
+            var seznam = $('#slovnik_seznam_cz');
+
+            //var win = window.open(url, 'seznam_cz');
+            //win.blur();
+            var key = lang + '_' + (link);
+            var obj = $('#ed_' + key);
+
+
+
+            if(seznam.attr('src') != url){
+                console.log('furl', url + '  attr("src"):' +seznam.attr('src'));
+                seznam.attr('src', url);
+                seznam.ready(function(data, data2){
+                    var key = lang + '_' + (link);
+                    //$('#ed_' + key).focus();
+                    console.log('load', seznam.attr('src'));
+                });
+            }
+
+        }
+    }
+
+
+    $scope.showLeo = function(lang, link){
+
+        console.log('showSeznam', lang, link);
+
+        $scope.isSeznamShowed = true;
+
+        var word= getWordByLink(link);
+
+        if(word){
+            var langVal = 1;
+            var wordTxt;
+            if(word.l1 == 'de'){
+                wordTxt = word.o1;
+            } else {
+                wordTxt = word.o2;
+            }
+
+            /*if(lang != 'de'){
+                langVal = 1;
+            }*/
+
+            var url = 'http://dict.leo.org/ende/index_de.html#/search='+wordTxt+'&searchLoc='+langVal+'&resultOrder=basic&multiwordShowSingle=on';
             var seznam = $('#slovnik_seznam_cz');
 
             //var win = window.open(url, 'seznam_cz');
@@ -388,19 +582,27 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         });
     }
 
-    $scope.deleteImg = function(link){
-
+    function showDialog(title, message, yesevent){
         var modalDialog = $('#modal-from-dom');
-
+        modalDialog.find('#warning_dialog_title').text(title);
+        modalDialog.find('#warning_dialog_message').text(message);
         modalDialog.find('#yesbutton').click(function(event) {
-            deleteImg(link, function(data){
-                var word = getWordByLink(link);
-                word.image = null;//'http://uncletim.com/store/media/ecom/prodlg/none.gif';
-            });
+            yesevent(event);
             modalDialog.modal('hide');
         });
 
         modalDialog.modal('show');
+    }
+
+    $scope.deleteImg = function(link){
+        showDialog('Delete image', 'Are you sure about delete image?', function(){
+            deleteImg(link, function(data){
+                var word = getWordByLink(link);
+                word.image = null;//'http://uncletim.com/store/media/ecom/prodlg/none.gif';
+                $scope.$apply();
+            });
+        });
+
 
 //
     }
@@ -437,6 +639,37 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     }
 
 
+    $scope.deleteLinks = function(links){
+        showDialog('Delete word!', 'Are you sure about delete word?', function(){
+            deleteLinks(links);
+        });
+    }
+
+    deleteLinks = function(links){
+        $http({
+            method: 'POST',
+            url: '/words/deletelink',
+            data: {links:links}}).
+            success(function(data, status, headers, config) {
+
+                console.log(data);
+                data.forEach(function(dl){
+                   var w = getWordByLink(dl.lid);
+                    w.del = dl.del;
+                });
+
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+    }
+
+    $scope.isDeleted = function(word){
+        return word.del != 0;
+    }
+
+
     function saveImgUrl(link,url,cb){
         var dataContainer = {
             url : url,
@@ -461,11 +694,12 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     }
 
 
-    function updateWord(lang,link,word,cb){
+    function updateWord(lang,link,word, record,cb){
         var dataContainer = {
             lang : lang,
             link : link,
-            word: word
+            word: word,
+            record: record
         };
 
 
@@ -507,4 +741,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
 
     }
+
+
+
 }

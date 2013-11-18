@@ -1,10 +1,14 @@
 DROP TRIGGER update_package_link ON link;
 DROP TRIGGER update_package_word ON word;
 
---ALTER TABLE word DROP COLUMN langid;
+ALTER TABLE word DROP COLUMN record;
+ALTER TABLE word ADD COLUMN record VARCHAR(50) DEFAULT NULL;
 
---ALTER TABLE word ADD COLUMN langid CHAR DEFAULT NULL;
+ALTER TABLE word DROP COLUMN uts; -- update timestamp
+ALTER TABLE word ADD COLUMN uts TIMESTAMP DEFAULT current_timestamp;
 
+--ALTER TABLE link DROP COLUMN uts; -- update timestamp
+--ALTER TABLE link ADD COLUMN uts TIMESTAMP DEFAULT current_timestamp();
 
 
 
@@ -95,6 +99,8 @@ BEGIN
             VALUES (now(), lsn, mask );
     END IF;
 
+
+
     RETURN NEW;
 END; $$
 LANGUAGE plpgsql;
@@ -139,3 +145,8 @@ CREATE TABLE package_t (
 --select *, lang_mask::bit(64) from update_package_t;
 
 --select *, ascii(lang), ascii(lang)::bit(64), get_mask(lang), (1 | get_mask(lang))::bit(64) from t_lang;
+
+-- 1.1.1
+
+ALTER TABLE link DROP COLUMN del;
+ALTER TABLE link ADD COLUMN del SMALLINT DEFAULT 0;

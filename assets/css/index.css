@@ -148,3 +148,19 @@
     height:20px;
     margin:4px;
 }
+
+.duplicities_loading img{
+
+  width:15px;
+  height:15px;
+  margin-left:10px;
+  margin-right:10px;
+}
+
+.duplicities {
+    font-size:x-small;
+}
+
+.linkdelete {
+    opacity:0.3;
+}

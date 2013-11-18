@@ -55,7 +55,7 @@ module.exports.getImages = function(pgClient, lesson, cb) {
         return cb('pgClient not setup', null);
     }
 
-    var sql = 'SELECT lid, description, image.image as imagefile, iid as imageid, image.thumb as thumbfile, version FROM link' +
+    var sql = 'SELECT lid, description, image.image as imagefile, iid as imageid, image.thumb as thumbfile, version, del FROM link' +
         ' LEFT JOIN image ON link.image = image.iid' +
         ' WHERE link.lesson = $1';
     var sqlData = [lesson];
@@ -91,14 +91,17 @@ module.exports.updateWord = function(pgClient, wordForUpdate, userId, cb) {
         return cb('pgClient not setup', null);
     }
 
-    if(!wordForUpdate || !wordForUpdate.link || !wordForUpdate.lang || !wordForUpdate.word){
-        cb('wordForUpdate must contains : link, lang, word', false);
+    if(!wordForUpdate || !wordForUpdate.link
+        || !wordForUpdate.lang || !wordForUpdate.word || !wordForUpdate.record){
+        return cb('wordForUpdate must contains : link, lang, word, record', false);
     }
 
+    wordForUpdate.record = wordForUpdate.record.substring(0, 50);
+
     var sqlTest = 'SELECT version FROM word' +
-        ' WHERE lang = $1 AND link = $2 AND word = $3'
+        ' WHERE lang = $1 AND link = $2 AND word = $3 AND record = $4'
 
-
+    var sqlTestValues = [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word, wordForUpdate.record];
     function retAllVersion(err, results){
         if(!err){
             module.exports.getWordWithHistory(pgClient, wordForUpdate.lang, wordForUpdate.link, function(err, data){
@@ -110,7 +113,7 @@ module.exports.updateWord = function(pgClient, wordForUpdate, userId, cb) {
 
     }
 
-    pgClient.query(sqlTest, [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word], function(err, data){
+    pgClient.query(sqlTest, sqlTestValues, function(err, data){
         if(err) {
            cb(err, false);
         } else if(data.rows.length == 0){
@@ -163,7 +166,7 @@ function updateVersionToWord(pgClient, wordForUpdate, version, cb){
         // ----------------
         // version to value
         getMaxVersion = '$3';
-        sqlParams.push(0);
+        sqlParams.push(version);
 
 
         // specified words to update version
@@ -174,13 +177,23 @@ function updateVersionToWord(pgClient, wordForUpdate, version, cb){
             cb('you can not update specific word version without wordForUpdate.word', null);
         }
 
+        if(wordForUpdate.record){
+            updateWhere += ' AND record = $5'
+            sqlParams.push(wordForUpdate.record);
+        }
+
     }
 
-    var updateVersion = 'UPDATE word SET version = '
-        + getMaxVersion
-        + updateWhere;
+    var updateVersion = 'UPDATE word SET version=' + getMaxVersion;
 
-    console.log(updateVersion);
+
+    if(version == 0) {
+        updateVersion += ',uts=now()';
+    }
+
+    updateVersion += updateWhere;
+
+    console.log(updateVersion, sqlParams);
 
     pgClient.query(updateVersion, sqlParams, function(err, data){
         if(err) {
@@ -202,13 +215,14 @@ function createNewWordAndSetNewVersionToOld(pgClient, wordForUpdate, userId, cb)
 
 
         var insertSql = 'INSERT INTO word ' +
-            '(lang, link, word, usr) ' +
+            '(lang, link, word, usr, record) ' +
             'VALUES' +
-            '($1, $2, $3, $4)';
+            '($1, $2, $3, $4, $5)';
+        var sqlData = [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word, userId, wordForUpdate.record];
+        console.log(insertSql, sqlData);
 
-        console.log(insertSql);
 
-        pgClient.query(insertSql, [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word, userId], function(err, data){
+        pgClient.query(insertSql, sqlData, function(err, data){
             if(err) {
                 cb(err, null);
             } else {
@@ -229,6 +243,12 @@ function createNewWordAndSetNewVersionToOld(pgClient, wordForUpdate, userId, cb)
 module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
     var asyncLangsLoad = [];
 
+    asyncLangsLoad.push(function(callback){
+        module.exports.getImages(pgClient, lesson, function(err, images){
+            callback(err, images);
+        });
+    });
+
     langs.forEach(function(val, idx){
         console.log(val);
         asyncLangsLoad.push(function(callback){
@@ -239,16 +259,115 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
     });
 
 
-    async.parallel(asyncLangsLoad,
-// optional callback
-        function(err, results){
+    async.parallel(asyncLangsLoad, cb);
+}
 
-            module.exports.getImages(pgClient, lesson, function(err, images){
-                results.push(images);
-                cb(err, results);
-            });
+/**
+ *
+ * @param pg
+ * @param lang
+ * [ 'lang 1', 'lang 2'
+ * ]
+ * @param searchWords
+ * [
+ *  'link_of_search_word 1',
+ *  'link_of_search_word 2',
+ *  ...
+ * ]
+ *
+ *
+ *
+ *
+ * @param cb(err, data)
+ * [
+ *  'link_of_search_word' : { s: lesson, lid: current_link, w1: 'word in lang 1', w2: 'word in lang 2' },
+ * 'link_of_search_word' : { s: 2004, lid: 1125, w1: 'Osmý 8.', w2: 'achte 8.' },
+ * 'link_of_search_word' : { s: 4001, lid: 2039, w1: 'Litva', w2: 'zerstören' },
+ * 'link_of_search_word' :  { s: 4001, lid: 2099, w1: 'Litva', w2: 'stattfinden' }
+ * ]
+ */
+module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
+    var sql = '';
+    var err = '';
 
 
 
-        });
+
+    searchWords.forEach(function(sw, idx){
+       if(sql.length > 0) {
+           sql += ' UNION ';
+       }
+       sql += '(SELECT link.lesson as s, link.lid,'
+           +   idx + " AS idx"
+           +  ',link.description as d,'
+           + ' (word1.word) as w1, word2.word as w2'
+           + ' FROM link'
+           + ' LEFT JOIN word as word1 ON word1.link = link.lid'
+           + ' LEFT JOIN word as word2 ON word2.link = link.lid'
+           + ' WHERE'
+           + ' link.del < 1'
+           + ' AND word1.lang = $1'
+           + ' AND word2.lang = $2'
+           + ' AND word1.version=0'
+           + ' AND word2.version=0'
+
+            + ' AND '
+            + '('
+            + '(lower(word1.word) SIMILAR TO'
+            + " '(% )?("+sw[0]+")')"
+
+
+           + 'OR (lower(word1.word) SIMILAR TO'
+           + " '(% )?("+sw[1]+")')"
+           + ')'
+
+            + ' LIMIT 6)';
+
+
+       //return false;
+    });
+
+
+    if(!err) {
+        pg.query(sql, langs, function(err, data){
+            if(err){
+                console.log(err, sql);
+                cb(err);
+            } else {
+                console.log(data, sql);
+
+                var result = {};
+                data.rows.forEach(function(rw){
+                    result[rw.idx] = [];
+                });
+
+                data.rows.forEach(function(rw){
+                    result[rw.idx].push({
+                       s : rw.s,
+                       l : rw.lid,
+                       w1 : rw.w1,
+                       w2 : rw.w2,
+                       d: rw.d
+                    });
+                });
+
+
+                cb(err, result);
+            }
+        })  ;
+    } else {
+        return cb(err);
+    }
+}
+
+
+/**
+ *
+ * @param pg
+
+ * @param searchWords
+ * @param cb
+ */
+module.exports.addWord = function(pg, addWords, cb){
+
 }

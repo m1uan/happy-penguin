@@ -203,5 +203,28 @@ module.exports = {
             }
 
         });
+    } , deleteLink : function(pgClient, links, cb){
+        var ids = '';
+
+        links.forEach(function(link){
+           ids += ',' + link;
+        });
+
+        if(ids || 0 !== ids.length){
+            // remove colon
+            ids = ids.substring(1);
+
+            var sqldel = 'UPDATE link SET del=(del+1) WHERE lid IN ('+ids+') RETURNING lid, del'
+            pgClient.query(sqldel, function(err, data){
+                if(err){
+                    console.log(err, sqldel, ids);
+                }
+
+                cb(err, data ? data.rows : null);
+            });
+
+        } else {
+            cb('links must be a array with links');
+        }
     }
 }

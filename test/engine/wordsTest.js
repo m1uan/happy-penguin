@@ -11,9 +11,11 @@ var dbpass = config.DB_PASS_TEST;
 var dbname = config.DB_NAME_TEST;
 var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
 
+var sqlMake = require('../../lib/helps/helps.js').sqlMake;
+
 describe('getWords', function(){
 
-    before(function(){
+    before(function(cb){
 
         console.info('db connection: ' + connection);
         pgClient = new pg.Client(connection);
@@ -21,15 +23,50 @@ describe('getWords', function(){
             if(err){
                 return console.info('could not connect to postgres', err);
             }
-
+            sqlMake(pgClient, ['select create_test_data();'], cb);
         });
     });
 
-    after(function(){
-       pgClient.end();
-        console.info('db connection close');
+    after(function(cb){
+       sqlMake(pgClient, ['select remove_test_data();'], function(){
+           pgClient.end();
+           cb();
+           console.info('db connection close');
+       });
+
+
     });
 
+    describe('repeatedWord', function(){
+
+
+        it('get word', function(cb){
+            var testData = [[ 'v','fenster'],['paprsek', 'litva'],[ 'paprsek', 'litva']];
+
+
+            words.getRepeatWords(pgClient, ['cs','de'], testData, function(err, rows){
+                console.log(err ? err : rows);
+
+                rows.should.be.a.Object;
+                testData.forEach(function(td, idx){
+                    var tdr = rows[td];
+                    tdr.should.be.Array;
+                    if(idx == 0){
+                       tdr.length.should.above(1);
+                       var tdr0 = tdr[0];
+                       tdr0.should.have.a.property('l') ;
+                       tdr0.should.have.a.property('s') ;
+                       tdr0.should.have.a.property('w1') ;
+                       tdr0.should.have.a.property('w2') ;
+                       tdr0.should.have.a.property('d') ;
+
+                    }
+                });
+                //console.log(rows);
+                cb();
+            });
+        });
+    });
 
     describe('getWords(cs)', function(){
         it('should return null because wrong lesson index', function(cb){
@@ -60,7 +97,7 @@ describe('getWords', function(){
     });
 
     describe('getWordsWithImages(cs)', function(){
-            it('should return several rows', function(cb){
+            it.only('should return several rows', function(cb){
                 words.getWordsWithImages(pgClient, ['en','cs'], 2001, function(err, rows){
                     //console.log(rows) ;
                     assert(rows);
@@ -70,26 +107,30 @@ describe('getWords', function(){
                     rows[0].should.be.Array;
                     rows[1].should.be.Array;
                     rows[2].should.be.Array;
+
+                    rows[0].should.not.be.Null
+                    rows[0].length.should.be.above(0);
                     var rows00 = rows[0][0];
-                    rows00.should.have.property('link');
-                    rows00.should.have.property('word');
+                    rows00.should.have.property('lid');
+                    rows00.should.have.property('imagefile');
                     rows00.should.have.property('version');
-                    rows00.should.have.property('lang');
-                    rows00.lang.should.eql('en');
+                    rows00.should.have.property('description');
+                    rows00.should.have.property('del');
+
                     var rows10 = rows[1][0];
                     rows10.should.have.property('link');
                     rows10.should.have.property('word');
                     rows10.should.have.property('version');
                     rows10.should.have.property('lang');
-                    rows10.lang.should.eql('cs');
-
-                    rows[2].should.not.be.Null
-                    rows[2].length.should.be.above(0);
+                    rows10.lang.should.eql('en');
                     var rows20 = rows[2][0];
-                    rows20.should.have.property('lid');
-                    rows20.should.have.property('imagefile');
+                    rows20.should.have.property('link');
+                    rows20.should.have.property('word');
                     rows20.should.have.property('version');
-                    rows20.should.have.property('description');
+                    rows20.should.have.property('lang');
+                    rows20.lang.should.eql('cs');
+
+
                     cb();
                 })
 
@@ -126,15 +167,15 @@ describe('getWords', function(){
                 var word = {
                     word : wordWord
                     ,lang : 'cs'
-                    ,link : 12 };
+                    ,link : 12
+                    ,record : 'ahoj|de|predtim'};
 
 
                 console.log(word);
                 words.updateWord(pgClient, word, 2, function(err, rows){
-                    console.error(err);
-
-
-                    assert(rows);
+                    console.log(err ? err : rows);
+                    //err.should.be.Null;
+                    rows.should.be.a.Array;
 
 
                     var finded = false;
@@ -261,4 +302,6 @@ describe('getWords', function(){
         });
 
     });
+
+
 })
