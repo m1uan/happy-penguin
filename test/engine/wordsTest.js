@@ -96,7 +96,7 @@ describe('getWords', function(){
     });
 
     describe('getWordsWithImages(cs)', function(){
-            it.only('should return several rows', function(cb){
+            it('should return several rows', function(cb){
                 words.getWordsWithImages(pgClient, ['en','cs'], 2001, function(err, rows){
                     //console.log(rows) ;
                     assert(rows);
@@ -155,7 +155,32 @@ describe('getWords', function(){
 
     });
 
+    describe('add words', function(){
+        it.only('add word without exist link', function(cb){
+            sqlMake(pgClient, ['Delete from word where link = 2095 and lang = \'cs\''], function(){
+                var word = {
+                    n1 : 'cs',
+                    n2 : 'de',
+                    w1 : 'hello',
+                    w2 : 'tchus',
+                    r1 : 'thus|de|hello',
+                    r2 : 'hello|cs|tschus',
+                    l : 2095,
+                    d : 'ahoj'
+                };
 
+                words.addWord(pgClient, word, 2, function(err, rows){
+                    console.log(err? err : rows);
+                    assert(!err) ;
+                    cb();
+                });
+            }) ;
+
+
+
+        });
+
+    });
 
 
     describe('updateWord(lesson)', function(){

@@ -1,4 +1,5 @@
-var async = require('async');
+var async = require('async'),
+    Link = require('./link.js');
 
 module.exports.lessonSize = 80;
 
@@ -364,11 +365,124 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
 /**
  *
  * @param pg
-
- * @param searchWords
+ * @param addWords
  * @param cb
  */
-module.exports.addWord = function(pg, addWords, cb){
+module.exports.addWord = function(pg, addWord, userId, cb){
+   var errInfo = '';
+
+   if(!addWord){
+       errInfo = 'required parameter addWord is empty';
+   } else {
 
 
+       if(!addWord.n1){
+           errInfo += 'missing param n1 (lang1)\n';
+       }
+
+       if(!addWord.w1){
+           errInfo += 'missing param w1\n';
+       }
+
+       if(!addWord.r1){
+           errInfo += 'missing param r1 (record1)\n';
+       }
+
+       if(!addWord.r2){
+           errInfo += 'missing param r2 (record2)\n';
+       }
+
+       if(!addWord.n2){
+           errInfo += 'missing param n2 (lang1)\n';
+       }
+
+       if(!addWord.w2){
+           errInfo += 'missing param w2\n';
+       }
+
+       if(!addWord.s && !addWord.l){
+           errInfo += 'missing param s (lesson) or l (link)\n';
+       }
+
+       if(!addWord.d){
+           errInfo += 'missing param d (description)\n';
+       }
+   }
+
+
+
+   //console.log(errInfo);
+
+   if(errInfo){
+       return cb(errInfo);
+   }
+
+   Link.update(pg, userId, {lid:addWord.l, description: addWord.d}, function(err, data){
+       //console.log('error:',err, );
+       if(!data[0]) {
+           cb('link does not exists!');
+       }
+       addWordFromLink(pg, addWord, userId, cb);
+
+
+   });
+   //updateDescription(pg, addWord.l, addWord)
+
+
+}
+
+/***
+ * crete new word on link, if exist both sides -> just update them
+ * @param pg
+ * @param addWord
+ * @param link
+ * @param cb
+ */
+function addWordFromLink(pg, addWord, userId, cb){
+
+    async.parallel([
+        function(icb) {
+            var wu1 = {
+                word : addWord.w1,
+                lang : addWord.n1,
+                record : addWord.r1,
+                link : addWord.l
+            } ;
+
+
+
+            module.exports.updateWord(pg, wu1, userId, function(err){
+                icb(err);
+            });
+        },function(icb) {
+            var wu1 = {
+                word : addWord.w2,
+                lang : addWord.n2,
+                record : addWord.r2,
+                link : addWord.l
+            } ;
+
+
+
+            module.exports.updateWord(pg, wu1, userId, function(err){
+                icb(err);
+            });
+        }
+    ], cb)
+
+
+
+}
+
+function updateDescription(pg, link, desc, cb){
+    var sql = 'UPDATE link SET description=$1 WHERE lid=$2';
+    var sqlData = [link, desc];
+    pg.query(sql, sqlData, function(err, data){
+        console.log(sql, sqlData);
+        if(err){
+            cb(err);
+        } else {
+            cb(null, data.rowCount > 0);
+        }
+    });
 }
