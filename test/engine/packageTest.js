@@ -1,7 +1,6 @@
 /*
  mkdir /tmp/ahoj && mkdir /tmp/ahoj/orig && mkdir /tmp/ahoj/thumb && mkdir /tmp/ahoj/pkg && ln -s /tmp/ahoj/orig/ ~/nodejs/voc4u/assets/img/orig && ln -s /tmp/ahoj/thumb/ ~/nodejs/voc4u/assets/img/thumb && ln -s /tmp/ahoj/pkg/ ~/nodejs/voc4u/assets/pkg && cp /tmp/ahoj/orig/* /tmp/ahoj/thumb/
 
-
  drop database voc4u_test; create database voc4u_test; alter database voc4u_test owner to uservoc4u;
  psql -U uservoc4u voc4u_test < initdata/init.sql && psql -U uservoc4u voc4u_test < initdata/inittest.sql && psql -U uservoc4u voc4u_test < initdata/update_v1.1.sql
 

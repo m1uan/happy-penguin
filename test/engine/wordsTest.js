@@ -37,9 +37,8 @@ describe('getWords', function(){
 
     });
 
+
     describe('repeatedWord', function(){
-
-
         it('get word', function(cb){
             var testData = [[ 'v','fenster'],['paprsek', 'litva'],[ 'paprsek', 'litva']];
 

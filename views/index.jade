@@ -67,6 +67,7 @@ html(ng-app="words")
                         span(id="in_{{word.link}}").identifer {{word.link}}#
                         span {{word.description}}
 
+
                     div.head-row
                         div.row
                             span.col-md-6
@@ -123,7 +124,6 @@ html(ng-app="words")
                                             i {{duplicity.d}}
                                     div(ng-click="deleteLinks([word.link])",ng-hide="isDeleted(word)").btn.btn-xs.btn-danger delete
                         div.clearfix
-
 
         div#helpers
             div(ng-show="isSeznamShowed")

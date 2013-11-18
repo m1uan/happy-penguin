@@ -152,6 +152,7 @@ module.exports = {
 
         console.log('duplicity_post********', request.payload);
         //  http://localhost:8080/words/duplicity/de/cs
+
         if(request.payload && request.payload.links
             && request.payload.links.length > 0){
 
@@ -159,6 +160,7 @@ module.exports = {
             var langs = words.shift();
 
             console.log(langs);
+
 
 
             wordsEngine.getRepeatWords(pgClient, langs, words, function(err, words){
@@ -187,6 +189,7 @@ module.exports = {
             }
 
         });
+
     }
 
 
