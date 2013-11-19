@@ -1,6 +1,7 @@
 var app = angular.module('words',['angularFileUpload']);
 
 //lscache.flush();
+//http://voc4u-miuan.rhcloud.com/#/1001/de/es
 
 app.directive('onEnter',function(){
 
