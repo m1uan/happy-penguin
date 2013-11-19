@@ -50,7 +50,7 @@ app.directive('myRepeatDirective', function() {
 function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     var IMAGE_DIR = 'assets/img/';
     var WORD_STATUS = {
-        CURRENT : 1 ,
+        CURRENT : 1,
         EDITED : 2,
         SAVING : 3,
         SAVED : 4
@@ -59,7 +59,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
     $scope.loading = false;
 
-    $scope.languages =['en','cs', 'de','it','es','pt','ru','sr','zh']
+    $scope.languages =['cs', 'de','en', 'es','fr','it','pt','ru','sr','zh']
 
 
     $scope.lessons =[ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010,101, 102, 103, 104, 105, 106, 107, 108, 109, 110 ];
@@ -96,7 +96,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         // 75 the response is ~1:27s  (SQL LIMIT 25)
         // 2 the response is ~3s  (SQL LIMIT 6)
         // 80 the response is ~2:00s  (SQL LIMIT 6) and 502
-        var maxDuplicityOnRow = 1;
+        var maxDuplicityOnRow = 10;
 
         if(duplicityLoading.length < 1) {
             return;
@@ -114,6 +114,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         var langs = l.split('/');
         langs.shift();
         var changeLang = langs[0];
+
         // #00000001
         // lang are sort alphabeticaly for caching result
         // example:
@@ -131,85 +132,99 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
             console.log('ahoj2',word,duplicityLoading);
             //var word = getWordByLink(wordLink);
 
+            var onRowData = null;
+
             // langs was changed in #00000001 alphabeticaly
             if(changeLang){
-                onRow.push([word.w2.toLowerCase(), word.w1.toLowerCase()]);
+                onRowData = [word.w2.toLowerCase(), word.w1.toLowerCase()];
             } else {
-                onRow.push([word.w1.toLowerCase(), word.w2.toLowerCase()]);
+                onRowData = [word.w1.toLowerCase(), word.w2.toLowerCase()];
             }
 
-            links.push(word.link);
+            var storageKey = generateStorageKey(langs, onRowData);
+            // try re-store data from local data file
+            // https://github.com/pamelafox/lscache
+            var data = lscache.get(storageKey);
+
+            // if the data isn't in cache please put
+            // to onRow which will be load from server
+            if(data){
+                dataToDuplicies(data, word.link, -1);
+            } else {
+                onRow.push(onRowData);
+                links.push(word.link);
+            }
+
+
         }
 
         console.log(onRow);
 
-	function generateStorageKey(langs, rows){
-		var key = 'dp_' + langs.join('_');
-		rows.forEach(function(ln){
-			key+= '|' + ln.join('_');
-		});
+        // if any row is in onRow - load from server
+        // because everything can be previosly loaded from cache...
+        if(onRow.length > 0) {
+            $http.post('/words/duplicity', {links: onRow}).
+                success(function(data, status, headers, config) {
+                    handleData(data);
+                    /***
+                     *  recal duplicity with rest of duplicity list
+                     * */
+                    loadDuplicityTimer(location);
 
-		return key;
-	}
+                }).
+                error(function(data, status, headers, config) {
+                    loadDuplicityTimer(location);
+                });
+        }
 
-	function handleData(data){
-		console.log(data,links);
-        var tempWords = $scope.words;
-        links.forEach(function(link, idx){
-            var tw = tempWords[link];
-            tw.duplicity = [];
+        function dataToDuplicies(data, link, idxAndCacheIt){
+            if(data && data.length > 0){
+
+
+                var duplicities = [];
+                data.forEach(function(row){
+
+                    if(idxAndCacheIt > -1){
+                        var storageKey = generateStorageKey(langs, [row.w1.toLowerCase(), row.w2.toLowerCase()]);
+                        // try re-store data from local data file
+                        // https://github.com/pamelafox/lscache
+                        lscache.set(storageKey, row, 60* 12* 14);
+                    }
+
+
+                    if(changeLang) {
+                        // the order of langs have been changed #00000001
+                        // change the words
+                        var tw1 = row.w1;
+                        row.w1 = row.w2;
+                        row.w2 = tw1;
+                    }
+
+                    duplicities.push(row);
+                });
+                $scope.words[link].duplicity = duplicities;
+
+                console.log(idxAndCacheIt, link, duplicities);
+            }
+        }
+
+        function generateStorageKey(langs, row){
+            var key = 'dp' + langs.join('_');
+            key+= '|' + row.join('_');
+
+            return key;
+        }
+
+        function handleData(data){
+            console.log(data, links);
             // it is "na bednu" but its connection between data and links
             // the same index in links is the same index for data
             // links is conection for words
-            if(data[idx] && data[idx].length > 0){
-
-                data[idx].forEach(function(row){
-                    if(row.l != link)
-                    {
-                        // the order of langs have been changed #00000001
-                        // change the words
-                        if(!changeLang) {
-                            var tw1 = row.w1;
-                            row.w1 = row.w2;
-                            row.w2 = tw1;
-                        }
-                        tw.duplicity.push(row);
-                    }
-                });
-                console.log(idx, link, tw.duplicity);
-            }
-        });
-        $scope.words = tempWords;
-
-	}
-
-	var storageKey = generateStorageKey(langs, onRow);	
-	// try re-store data from local data file	
-	// https://github.com/pamelafox/lscache
-	var data = lscache.get(storageKey);
-
-	if(data){
-		handleData(data);
-        loadDuplicity(location);
-        if(duplicityLoading.length == 0){
-            $scope.$apply();
-        }
-	} else {
-
-        $http.post('/words/duplicity', {links: onRow}).
-            success(function(data, status, headers, config) {
-                handleData(data);
-                /***
-                 *  recal duplicity with rest of duplicity list
-                 * */
-                loadDuplicityTimer(location);
-                // store data in local data file
-                lscache.set(storageKey, data, 24*60*7);
-            }).
-            error(function(data, status, headers, config) {
-                loadDuplicityTimer(location);
+            links.forEach(function(link, idx){
+                dataToDuplicies(data[idx], link, idx);
             });
-	}
+
+        }
 
     }
 
@@ -219,7 +234,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
         setTimeout(function(){
             loadDuplicity(loc);
-        }, 1000);
+        }, 10);
     }
 
     /**
