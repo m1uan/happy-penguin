@@ -156,27 +156,120 @@ describe('getWords', function(){
     });
 
     describe('add words', function(){
-        it.only('add word without exist link', function(cb){
-            sqlMake(pgClient, ['Delete from word where link = 2095 and lang = \'cs\''], function(){
+        it('with exist link', function(cb){
+            sqlMake(pgClient, ['Delete from word where link = 2094 and lang = \'cs\''], function(){
                 var word = {
                     n1 : 'cs',
                     n2 : 'de',
-                    w1 : 'hello',
-                    w2 : 'tchus',
+                    w1 : 'hello1',
+                    w2 : 'Erklärung',
                     r1 : 'thus|de|hello',
                     r2 : 'hello|cs|tschus',
-                    l : 2095,
+                    l : 2094,
                     d : 'ahoj'
                 };
 
                 words.addWord(pgClient, word, 2, function(err, rows){
                     console.log(err? err : rows);
                     assert(!err) ;
+
+                    rows.should.have.property('l');
+                    rows.l.should.be.eql(word.l);
+                    rows.should.have.property('d');
+                    rows.d.should.be.eql(word.d);
+
+                    rows.should.have.property('w1');
+                    rows.w1.should.be.a.Array;
+                    rows.w1.length.should.eql(1);
+                    rows.w1[0].should.have.property('word');
+                    rows.w1[0].word.should.eql(word.w1);
+
+                    rows.should.have.property('w2');
+                    rows.w2.should.be.a.Array;
+                    rows.w2.length.should.above(0);
+                    rows.w2[0].should.have.property('word');
+
+                    words.getWords(pgClient, 'cs', 4001, ['link','word','record'], function(words){
+                        var find = false;
+                        words.some(function(w){
+                            if(w.link == 2094){
+                                w.word.should.be.eql('hello1');
+                                w.record.should.be.eql('thus|de|hello');
+                                find = true;
+                            }
+                            return find;
+                        });
+
+                        assert(find);
+                        cb();
+                    });
+
+                });
+            });
+
+        });
+
+
+        it('for lesson 4002', function(cb){
+            //sqlMake(pgClient, ['Delete from word where link = 2094 and lang = \'cs\''], function(){
+            var userId = 2;
+            var word = {
+                    n1 : 'cs',
+                    n2 : 'de',
+                    w1 : 'hello1',
+                    w2 : 'tchus',
+                    r1 : 'thus|de|hello',
+                    r2 : 'hello|cs|tschus',
+                    s : 4002,
+                    d : 'ahoj'
+                };
+
+                words.addWord(pgClient, word, userId, function(err, rows){
+                    console.log(err? err : rows);
+                    assert(!err) ;
+
+
+                    rows.should.have.property('l');
+                    rows.l.should.be.eql(word.l);
+                    rows.should.have.property('d');
+                    rows.d.should.be.eql(word.d);
+
+                    rows.should.have.property('w1');
+                    rows.w1.should.be.a.Array;
+                    rows.w1.length.should.eql(1);
+                    rows.w1[0].should.have.property('word');
+                    rows.w1[0].word.should.eql(word.w1);
+
+                    rows.should.have.property('w2');
+                    rows.w2.should.be.a.Array;
+                    rows.w2.length.should.eql(1);
+                    rows.w2[0].should.have.property('word');
+                    rows.w2[0].word.should.eql(word.w2);
+
+                    words.getWordsWithImages(pgClient, ['cs','de'], 4002, [['description', 'lesson','usr'], ['word', 'lang', 'record', 'word.usr as usr']], function(err, words){
+                        var find = false;
+                        assert(!err) ;
+                        var link0 = words[0][0];
+                        var cs0 = words[1][0];
+                        var de0 = words[2][0];
+
+                        link0.description.should.equal(word.d);
+                        link0.lesson.should.equal(word.s);
+                        link0.usr.should.equal(userId);
+                        cs0.word.should.equal(word.w1);
+                        de0.word.should.equal(word.w2);
+                        cs0.lang.should.equal(word.n1);
+                        de0.lang.should.equal(word.n2);
+                        cs0.record.should.equal(word.r1);
+                        de0.record.should.equal(word.r2);
+                        cs0.usr.should.equal(userId);
+                        de0.usr.should.equal(userId);
+
+                        console.log(words);
+                    });
                     cb();
                 });
-            }) ;
-
-
+            //});
 
         });
 

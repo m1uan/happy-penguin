@@ -127,9 +127,9 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
 	// +1 because onRow already are the langs
         while(duplicityLoading.length > 0 && onRow.length < maxDuplicityOnRow +1) {
-            console.log('ahoj',duplicityLoading[0]);
+            //console.log('ahoj',duplicityLoading[0]);
             var word =  duplicityLoading.shift();
-            console.log('ahoj2',word,duplicityLoading);
+            //console.log('ahoj2',word,duplicityLoading);
             //var word = getWordByLink(wordLink);
 
             var onRowData = null;
@@ -144,15 +144,16 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
             var storageKey = generateStorageKey(langs, onRowData);
             // try re-store data from local data file
             // https://github.com/pamelafox/lscache
-            var data = lscache.get(storageKey);
+            var cachedData = lscache.get(storageKey);
 
             // if the data isn't in cache please put
             // to onRow which will be load from server
-            if(data){
-                dataToDuplicies(data, word.link, -1);
+            if(cachedData && typeof cachedData !== 'undefined'){
+                console.log('cachedData:', cachedData);
+                dataToDuplicies(cachedData, word.link, -1);
             } else {
                 onRow.push(onRowData);
-                links.push(word.link);
+                links.push({link : word.link, storageKey : storageKey});
             }
 
 
@@ -166,6 +167,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
             $http.post('/words/duplicity', {links: onRow}).
                 success(function(data, status, headers, config) {
                     handleData(data);
+                    //$scope.$apply();
                     /***
                      *  recal duplicity with rest of duplicity list
                      * */
@@ -177,20 +179,10 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                 });
         }
 
-        function dataToDuplicies(data, link, idxAndCacheIt){
-            if(data && data.length > 0){
-
-
+        function dataToDuplicies(dataOnIdx, link){
+            if(dataOnIdx && dataOnIdx.length > 0){
                 var duplicities = [];
-                data.forEach(function(row){
-
-                    if(idxAndCacheIt > -1){
-                        var storageKey = generateStorageKey(langs, [row.w1.toLowerCase(), row.w2.toLowerCase()]);
-                        // try re-store data from local data file
-                        // https://github.com/pamelafox/lscache
-                        lscache.set(storageKey, row, 60* 12* 14);
-                    }
-
+                dataOnIdx.forEach(function(row){
 
                     if(changeLang) {
                         // the order of langs have been changed #00000001
@@ -204,8 +196,10 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                 });
                 $scope.words[link].duplicity = duplicities;
 
-                console.log(idxAndCacheIt, link, duplicities);
+                console.log(link, $scope.words[link].duplicity);
             }
+
+
         }
 
         function generateStorageKey(langs, row){
@@ -221,7 +215,18 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
             // the same index in links is the same index for data
             // links is conection for words
             links.forEach(function(link, idx){
-                dataToDuplicies(data[idx], link, idx);
+                var dataOnIdx = data[idx];
+
+                if(dataOnIdx){
+                    dataToDuplicies(dataOnIdx, link.link);
+
+                    // try re-store data from local data file
+                    // https://github.com/pamelafox/lscache
+                    lscache.set(link.storageKey, dataOnIdx, 60* 12* 14);
+                    var cachedData = lscache.get(link.storageKey);
+                    //console.log('dataOnIdx:', dataOnIdx,'cacheData:', cachedData);
+                }
+
             });
 
         }

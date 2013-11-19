@@ -190,6 +190,16 @@ module.exports = {
 
         });
 
+    },
+    addword_post: function (request){
+        wordsEngine.addWord(pgClient, request.payload.links, function(err, data){
+            if(err) {
+                err_response(request, err);
+            } else {
+                request.reply(data);
+            }
+
+        });
     }
 
 

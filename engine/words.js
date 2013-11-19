@@ -7,7 +7,7 @@ var SQL_SELECT_WORD = 'SELECT link, word, lang,' +
     'word.version as version' +
     ' FROM word '
 
-module.exports.getWords = function(pgClient, lang, lesson, cb) {
+module.exports.getWords = function(pgClient, lang, lesson, colums, cb) {
     if(!pgClient){
         cb(null);
         return;
@@ -23,13 +23,22 @@ module.exports.getWords = function(pgClient, lang, lesson, cb) {
         return cb('lang is not defined or isn\' in good format :');
     }
 
+    if(!cb){
+        cb = colums;
+        colums = null;
+    }
+
+    if(!colums) {
+        colums = ['link','lang','word','word.version as version'];
+    }
+
     //var lessonStart = (lesson-1) * module.exports.lessonSize;
     //var lessonEnd = lessonStart + module.exports.lessonSize;
 
     //var sql = SQL_SELECT_WORD + ' WHERE lang = $1 OFFSET $2 LIMIT $3';
     // changed from limit to link, otherwise after update the updated
     // words not in words sed more
-    var sql = SQL_SELECT_WORD;
+    var sql = 'SELECT ' + colums.join(',') + ' FROM word';
     sql += ' JOIN link ON link.lid = word.link' ;
     sql += ' WHERE lang = $1 AND link.lesson = $2'
     sql += ' AND word.version = 0'
@@ -51,17 +60,33 @@ module.exports.getWords = function(pgClient, lang, lesson, cb) {
 
 }
 
-module.exports.getImages = function(pgClient, lesson, cb) {
+module.exports.getImages = function(pgClient, lesson, colums, cb) {
     if(!pgClient){
         return cb('pgClient not setup', null);
     }
 
-    var sql = 'SELECT lid, description, image.image as imagefile, iid as imageid, image.thumb as thumbfile, version, del FROM link' +
-        ' LEFT JOIN image ON link.image = image.iid' +
-        ' WHERE link.lesson = $1';
+    if(!cb){
+        cb = colums;
+        colums = null;
+    }
+
+    if(!colums){
+        colums = ['lid','description','image.image as imagefile','iid as imageid','image.thumb as thumbfile','version','del'];
+    }
+
+    var join = '';
+    if(colums.indexOf('image.image as imagefile') != -1){
+       join = ' LEFT JOIN image ON link.image = image.iid';
+    }
+
+
+    var sql = 'SELECT ' + colums.join(',') +  ' FROM link'
+        + join
+        + ' WHERE link.lesson = $1';
+
     var sqlData = [lesson];
     console.log(sql, sqlData)  ;
-    pgClient.query(sql,sqlData , function(err, data){
+    pgClient.query(sql, sqlData , function(err, data){
        if(err){
            cb(err, null);
        } else {
@@ -99,10 +124,17 @@ module.exports.updateWord = function(pgClient, wordForUpdate, userId, cb) {
 
     wordForUpdate.record = wordForUpdate.record.substring(0, 50);
 
+    // EDIT:
+    // remove record because otherwise when you are add word
+    // and system trying if is word in db and because the
+    // record will be in system differend when the record on update word
+    // system will add new word with new version but only change will be the record
+    // this record also will be recorded in word from second language
+    // which will be created (in add proces are contain booth words - w1 and w2)
     var sqlTest = 'SELECT version FROM word' +
-        ' WHERE lang = $1 AND link = $2 AND word = $3 AND record = $4'
+        ' WHERE lang = $1 AND link = $2 AND word = $3' // AND record = $4
 
-    var sqlTestValues = [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word, wordForUpdate.record];
+    var sqlTestValues = [wordForUpdate.lang, wordForUpdate.link, wordForUpdate.word]; //, wordForUpdate.record];
     function retAllVersion(err, results){
         if(!err){
             module.exports.getWordWithHistory(pgClient, wordForUpdate.lang, wordForUpdate.link, function(err, data){
@@ -241,11 +273,21 @@ function createNewWordAndSetNewVersionToOld(pgClient, wordForUpdate, userId, cb)
 
 }
 
-module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
+module.exports.getWordsWithImages = function(pgClient, langs, lesson, colums, cb){
     var asyncLangsLoad = [];
 
+    if(!cb){
+        cb = colums;
+        colums = null;
+    }
+
+    if(!colums){
+        colums = [null, null];
+    }
+
+
     asyncLangsLoad.push(function(callback){
-        module.exports.getImages(pgClient, lesson, function(err, images){
+        module.exports.getImages(pgClient, lesson, colums[0], function(err, images){
             callback(err, images);
         });
     });
@@ -253,7 +295,7 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, cb){
     langs.forEach(function(val, idx){
         console.log(val);
         asyncLangsLoad.push(function(callback){
-           module.exports.getWords(pgClient, val, lesson, function(words){
+           module.exports.getWords(pgClient, val, lesson, colums[1], function(words){
                callback(null, words);
            });
        });
@@ -417,15 +459,34 @@ module.exports.addWord = function(pg, addWord, userId, cb){
        return cb(errInfo);
    }
 
-   Link.update(pg, userId, {lid:addWord.l, description: addWord.d}, function(err, data){
-       //console.log('error:',err, );
-       if(!data[0]) {
-           cb('link does not exists!');
-       }
-       addWordFromLink(pg, addWord, userId, cb);
+   if(addWord.l){
+       Link.update(pg, userId, {lid:addWord.l, description: addWord.d}, function(err, data){
+
+           //console.log(data);
+           //console.log('error:',err, );
+           if(!data[0]) {
+               cb('link does not exists!');
+           }
+           addWordFromLink(pg, addWord, userId, cb);
 
 
-   });
+       });
+   } else {
+       var sql = 'INSERT INTO link (lid,lesson,description,usr) VALUES ((SELECT max(lid) + 1 FROM link),$1,$2,$3) RETURNING lid, description';
+       var sqlData = [addWord.s, addWord.d, userId];
+
+       pg.query(sql, sqlData, function(err, linkData){
+           var resultWord = {};
+           console.log('error:',err, linkData );
+           if(err) {
+               cb('link does not created!');
+           }
+           addWord.l = linkData.rows[0].lid;
+           addWord.d = linkData.rows[0].description;
+           addWordFromLink(pg, addWord, userId, cb);
+       });
+   }
+
    //updateDescription(pg, addWord.l, addWord)
 
 
@@ -451,8 +512,8 @@ function addWordFromLink(pg, addWord, userId, cb){
 
 
 
-            module.exports.updateWord(pg, wu1, userId, function(err){
-                icb(err);
+            module.exports.updateWord(pg, wu1, userId, function(err, data){
+                icb(err,data);
             });
         },function(icb) {
             var wu1 = {
@@ -462,13 +523,24 @@ function addWordFromLink(pg, addWord, userId, cb){
                 link : addWord.l
             } ;
 
-
-
-            module.exports.updateWord(pg, wu1, userId, function(err){
-                icb(err);
+            module.exports.updateWord(pg, wu1, userId, function(err, data){
+                icb(err, data);
             });
         }
-    ], cb)
+    ], function(err, wordData){
+        if(err){
+            return cb(err);
+        }
+
+        console.log(wordData[0], wordData[1]);
+
+        var resultWord = {};
+        resultWord.l = addWord.l;
+        resultWord.d = addWord.d;
+        resultWord.w1 = wordData[0];
+        resultWord.w2 = wordData[1];
+        cb(null, resultWord);
+    })
 
 
 
