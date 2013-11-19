@@ -116,6 +116,7 @@ module.exports.updateWord = function(pgClient, wordForUpdate, userId, cb) {
     if(!pgClient){
         return cb('pgClient not setup', null);
     }
+    console.log(wordForUpdate);
 
     if(!wordForUpdate || !wordForUpdate.link
         || !wordForUpdate.lang || !wordForUpdate.word || !wordForUpdate.record){
@@ -340,6 +341,10 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
        if(sql.length > 0) {
            sql += ' UNION ';
        }
+
+        var w0 = sw[0];
+        var w1 = sw[0];
+
        sql += '(SELECT link.lesson as s, link.lid,'
            +   idx + " AS idx"
            +  ',link.description as d,'
@@ -357,11 +362,11 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
             + ' AND '
             + '('
             + '(lower(word1.word) SIMILAR TO'
-            + " '(% )?("+sw[0]+")')"
+            + " '(% )?("+w0+")')"
 
 
            + 'OR (lower(word1.word) SIMILAR TO'
-           + " '(% )?("+sw[1]+")')"
+           + " '(% )?("+w1+")')"
            + ')'
 
             + ' LIMIT 6)';
@@ -402,6 +407,12 @@ module.exports.getRepeatWords = function(pg, langs, searchWords, cb){
         return cb(err);
     }
 }
+
+// http://phpjs.org/functions/addslashes/
+function cleanTextForSql(textData){
+    return (textData + '').replace(/'/g, '$&');
+}
+
 
 
 /**
@@ -451,8 +462,8 @@ module.exports.addWord = function(pg, addWord, userId, cb){
        }
    }
 
-
-
+    addWord.w1 = cleanTextForSql(addWord.w1);
+    addWord.w2 = cleanTextForSql(addWord.w2);
    //console.log(errInfo);
 
    if(errInfo){

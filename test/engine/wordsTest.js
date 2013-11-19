@@ -37,7 +37,13 @@ describe('getWords', function(){
 
     });
 
-
+    /**
+     * [ 'cs', 'fr' ],
+     [ 'mít šanci', 'une chance' ],
+     [ 'v centru pozornosti', 'le centre de l\'attention' ],
+     [ 'druhý večer', 'l\'autre soir' ],
+     [ '', '' ] ]
+     */
     describe('repeatedWord', function(){
         it('get word', function(cb){
             var testData = [[ 'v','fenster'],['paprsek', 'litva'],[ 'paprsek', 'litva']];
@@ -61,6 +67,20 @@ describe('getWords', function(){
 
                     }
                 });
+                //console.log(rows);
+                cb();
+            });
+        });
+
+        it.only('possible mistace like le centre de l\'attention', function(cb){
+            var testData = [[ 'v','le c\'entre de l\'attention']];
+
+
+            words.getRepeatWords(pgClient, ['cs','de'], testData, function(err, rows){
+                console.log(err ? err : rows);
+
+                rows.should.be.a.Object;
+
                 //console.log(rows);
                 cb();
             });
@@ -161,7 +181,7 @@ describe('getWords', function(){
                 var word = {
                     n1 : 'cs',
                     n2 : 'de',
-                    w1 : 'hello1',
+                    w1 : 'le c\'entre de l\'attention',
                     w2 : 'Erklärung',
                     r1 : 'thus|de|hello',
                     r2 : 'hello|cs|tschus',
@@ -193,7 +213,7 @@ describe('getWords', function(){
                         var find = false;
                         words.some(function(w){
                             if(w.link == 2094){
-                                w.word.should.be.eql('hello1');
+                                w.word.should.be.eql('le c\'entre de l\'attention');
                                 w.record.should.be.eql('thus|de|hello');
                                 find = true;
                             }
