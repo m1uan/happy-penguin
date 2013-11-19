@@ -72,7 +72,7 @@ describe('getWords', function(){
             });
         });
 
-        it.only('possible mistace like le centre de l\'attention', function(cb){
+        it('possible mistace like le centre de l\'attention', function(cb){
             var testData = [[ 'v','le c\'entre de l\'attention']];
 
 

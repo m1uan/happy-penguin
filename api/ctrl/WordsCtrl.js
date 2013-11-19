@@ -181,7 +181,7 @@ module.exports = {
     deletelink_post: function (request){
         var linksEngine = require(process.cwd() + '/engine/link.js');
 
-        linksEngine.deleteLink(pgClient, request.payload.links, function(err, data){
+        linksEngine.deleteLink(pgClient, request.payload.links, request.user.id, function(err, data){
             if(err) {
                 err_response(request, err);
             } else {

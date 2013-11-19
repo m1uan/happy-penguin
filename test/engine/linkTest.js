@@ -201,9 +201,9 @@ describe('link operations', function(){
     });
 
     describe('delete link', function(){
-        it('should return several rows', function(cb){
-            link.deleteLink(pgClient, [160002, 160003], function(err, rows){
-                console.log(rows);
+        it.only('should return several rows', function(cb){
+            link.deleteLink(pgClient, [160002, 160003], 3, function(err, rows){
+                console.log(err, rows);
                 rows.should.be.Array;
                 rows.length.should.be.eql(2);
                 var row0 = rows[0];

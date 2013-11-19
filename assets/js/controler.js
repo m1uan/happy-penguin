@@ -675,7 +675,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
             success(function(data, status, headers, config) {
 
                 console.log(data);
-                data.forEach(function(dl){
+                data[0].forEach(function(dl){
                    var w = getWordByLink(dl.lid);
                     w.del = dl.del;
                 });

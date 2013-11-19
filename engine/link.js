@@ -89,15 +89,26 @@ module.exports = {
                 imageId = linkData.imageId;
             }
 
-            var sql = 'UPDATE link SET version = 0, usr = $2 WHERE lid = $1 AND description = $3 AND image';
-            var params = [linkId, userId, linkData.description];
+            var del = 0;
+            if(linkData.del){
+                console.log('del apply');
+                del = linkData.del;
+            }
+
+            var sql = 'UPDATE link SET version=0,usr=$2,del=$4 WHERE lid = $1 AND description = $3 AND image';
+            var params = [linkId, userId, linkData.description, del];
 
             if(imageId) {
-                sql += ' = $4';
+                sql += ' = $5'
                 params.push(imageId);
             }else {
                 sql += ' IS NULL';
             }
+
+
+
+            params.push(del);
+            sql += ' AND del = $' + params.length;
 
             console.log('tryUpdateOld:', sql, params)  ;
             pgClient.query(sql, params, function(err, data){
@@ -130,11 +141,17 @@ module.exports = {
                 return;
             }
 
-            var sql = 'INSERT INTO link (lid,image,description,usr,lesson)' +
-                ' VALUES($1,$2,$3,$4,' +
+            var del = 0;
+            if(linkData.del){
+                console.log('del apply');
+                del = linkData.del;
+            }
+
+            var sql = 'INSERT INTO link (lid,image,description,usr,del,lesson)' +
+                ' VALUES($1,$2,$3,$4,$5,' +
                 '(SELECT min(lesson) FROM link WHERE lid = $1)' +
                 ');';
-            var sqlData = [linkId, image, linkData.description, userId];
+            var sqlData = [linkId, image, linkData.description, userId,del];
             console.log(sql, sqlData)  ;
             pgClient.query(sql, sqlData, function(err, data){
                 if(err ){
@@ -203,28 +220,33 @@ module.exports = {
             }
 
         });
-    } , deleteLink : function(pgClient, links, cb){
-        var ids = '';
+    } , deleteLink : function(pgClient, links, userId, cb){
+        var asyncFunc = [];
 
-        links.forEach(function(link){
-           ids += ',' + link;
-        });
+        if(!links || !links.length){
+            cb('links must be a array with links');
+        }else{
+            links.forEach(function(linkId){
 
-        if(ids || 0 !== ids.length){
-            // remove colon
-            ids = ids.substring(1);
+                var linkData = {
+                    lid : linkId,
+                    del : 1,
+                    imageId : null
+                };
 
-            var sqldel = 'UPDATE link SET del=(del+1) WHERE lid IN ('+ids+') RETURNING lid, del'
-            pgClient.query(sqldel, function(err, data){
-                if(err){
-                    console.log(err, sqldel, ids);
-                }
-
-                cb(err, data ? data.rows : null);
+                asyncFunc.push(function(icb){
+                    module.exports.update(pgClient, userId, linkData, icb);
+                });
             });
 
-        } else {
-            cb('links must be a array with links');
+
+            async.parallel(asyncFunc, function(err, data){
+                cb(err, data);
+            });
         }
+
+
+
+
     }
 }
