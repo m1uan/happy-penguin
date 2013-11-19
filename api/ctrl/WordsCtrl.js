@@ -192,7 +192,7 @@ module.exports = {
 
     },
     addword_post: function (request){
-        wordsEngine.addWord(pgClient, request.payload.links, function(err, data){
+        wordsEngine.addWord(pgClient, request.payload.word, request.user.id, function(err, data){
             if(err) {
                 err_response(request, err);
             } else {

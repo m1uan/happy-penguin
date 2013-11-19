@@ -602,20 +602,28 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         });
     }
 
-    function showDialog(title, message, yesevent){
-        var modalDialog = $('#modal-from-dom');
-        modalDialog.find('#warning_dialog_title').text(title);
-        modalDialog.find('#warning_dialog_message').text(message);
+    function showDialogById(dialogId, yesevent) {
+        var modalDialog = $(dialogId);
+
         modalDialog.find('#yesbutton').click(function(event) {
             yesevent(event);
             modalDialog.modal('hide');
         });
 
         modalDialog.modal('show');
+
+        return modalDialog;
+    }
+
+    function showConfirmDialog(title, message, yesevent){
+        var modalDialog = showDialogById('#modal-from-dom', yesevent);
+
+        modalDialog.find('#warning_dialog_title').text(title);
+        modalDialog.find('#warning_dialog_message').text(message);
     }
 
     $scope.deleteImg = function(link){
-        showDialog('Delete image', 'Are you sure about delete image?', function(){
+        showConfirmDialog('Delete image', 'Are you sure about delete image?', function(){
             deleteImg(link, function(data){
                 $scope.$apply(function(){
                     var word = getWordByLink(link);
@@ -663,7 +671,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
 
     $scope.deleteLinks = function(links){
-        showDialog('Delete word!', 'Are you sure about delete word?', function(){
+        showConfirmDialog('Delete word!', 'Are you sure about delete word?', function(){
             deleteLinks(links);
         });
     }
@@ -774,11 +782,73 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         var langs = l.split('/');
 
 
-        //$scope.lesson = langs[0];
+        $scope.lessonId = langs[0];
         $scope.lang1 = langs[1];
         $scope.lang2 = langs[2];
         //console.log(lessonAndLang, lal);
 
+    }
+
+
+    $scope.new_word_d = '';
+    $scope.new_word_w1 = '';
+    $scope.new_word_w2 = '';
+
+    $scope.showAddWord = function(){
+        console.log('assets/img/flags/flag_'+$scope.lang1+'.png') ;
+        var modalDialog = showDialogById('#modal-add-word', function(){
+            //modalDialog.find('')
+            var dataContainer = {'word' : {
+                s : $scope.lessonId,
+                w1 : $scope.new_word_w1,
+                w2 : $scope.new_word_w2,
+                d : $scope.new_word_d,
+                n1 : $scope.lang1,
+                n2 : $scope.lang2,
+                r1 : '|'+$scope.lang2+'|' +$scope.new_word_w2,
+                r2 : '|'+$scope.lang1+'|' +$scope.new_word_w1
+            }};
+
+
+            $http({
+                method: 'POST',
+                url: '/words/addword',
+                data: dataContainer}).
+                success(function(data, status, headers, config) {
+                    console.log(data, $scope.words);
+
+                    var newWord = {
+                        l1 : data.w1[0].lang,
+                        w1 : data.w1[0].word,
+                        o1 : data.w1[0].word,
+                        l2 : data.w2[0].lang,
+                        w2 : data.w2[0].word,
+                        o2 : data.w2[0].word,
+                        link : data.l,
+                        description : data.d,
+                        del :0,
+                        imagefile : null,
+                        duplicity : false
+                    }
+
+                    $scope.words[newWord.link] = newWord;
+
+                    duplicityLoading.unshift(newWord);
+                    loadDuplicity($scope.location);
+
+                    $scope.new_word_d = '';
+                    $scope.new_word_w1 = '';
+                    $scope.new_word_w2 = '';
+                    //cb(data);
+                }).
+                error(function(data, status, headers, config) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                });
+        });
+
+        modalDialog.find('#add_word_icon1').attr('src','assets/img/flags/flag_'+$scope.lang1+'.png');
+        modalDialog.find('#add_word_icon2').attr('src','assets/img/flags/flag_'+$scope.lang2+'.png');
     }
 
 }
