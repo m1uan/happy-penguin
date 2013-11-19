@@ -71,11 +71,11 @@ html(ng-app="words")
                     div.head-row
                         div.row
                             span.col-md-6
-                                span(id="tv_{{word.l1}}_{{word.link}}").word {{word.o1}}
-                                img(src="assets/img/flags/flag_{{word.l1}}.png").flag-left
+                                span(id="tv_{{lang1}}_{{word.link}}").word {{word.o1}}
+                                img(src="assets/img/flags/flag_{{lang1}}.png").flag-left
                             span.col-md-6
-                                img(src="assets/img/flags/flag_{{word.l2}}.png").flag-right
-                                span(id="tv_{{word.l2}}_{{word.link}}").word {{word.o2}}
+                                img(src="assets/img/flags/flag_{{lang2}}.png").flag-right
+                                span(id="tv_{{lang2}}_{{word.link}}").word {{word.o2}}
 
                     div.wordrow
                         div(id="{{word.link}}_image_select",my-repeat-directive).imagepart
@@ -86,18 +86,18 @@ html(ng-app="words")
                         div.wordcontainer
                             div.row
                                div.col-md-6
-                                    input(id="ed_{{word.l1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(word.l1,word.link)",ng-change="checkWord(word.l1,word.link)",ng-model="word.w1", ng-focus="focusWord(word.l1,word.link)")
+                                    input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)")
                                div.col-md-6
-                                    input(id="ed_{{word.l2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(word.l2,word.link)",ng-change="checkWord(word.l2,word.link)",ng-model="word.w2", ng-focus="focusWord(word.l2,word.link)")
+                                    input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)")
 
                             div.row
                                 div.col-md-6
-                                    span(id="in_{{word.l1}}_{{word.link}}",ng-click="updateWord(word.l1,word.link)").label.label-danger.hide save!
+                                    span(id="in_{{lang1}}_{{word.link}}",ng-click="updateWord(lang1,word.link)").label.label-danger.hide save!
                                     span(ng-click="showSeznam(word.l1,word.link)").btn.btn-xs.btn-default sl
                                     span(ng-click="showGImage(word.l1,word.link)").btn.btn-xs.btn-default gi
                                     span(ng-click="showLeo(word.l1,word.link)").btn.btn-xs.btn-default lo
                                 div.col-md-6
-                                    span(id="in_{{word.l2}}_{{word.link}}",ng-click="updateWord(word.l2,word.link)").label.label-danger.hide save!
+                                    span(id="in_{{lang2}}_{{word.link}}",ng-click="updateWord(lang2,word.link)").label.label-danger.hide save!
                                     span(ng-click="showSeznam(word.l2,word.link)").btn.btn-xs.btn-default sl
                                     span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
                                     span(ng-click="showLeo(word.l1,word.link)").btn.btn-xs.btn-default lo

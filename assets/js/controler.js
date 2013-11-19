@@ -24,11 +24,11 @@ app.directive('myRepeatDirective', function() {
     return function(scope, element, attrs) {
         var el = angular.element(element);
         el.css('color','blue');
-        console.log(el);
+        //console.log(el);
 
         var im = el.find('img');
         var inp = el.find('input');
-        console.log(attrs);
+        //console.log(attrs);
 
         var linkId  = attrs.id.split('_')[0];
 
@@ -56,6 +56,9 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         SAVED : 4
 
     };
+
+    $scope.lang1 = '';
+    $scope.lang2 = '';
 
     $scope.loading = false;
 
@@ -105,14 +108,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         var onRow = [];
         var links = [];
 
-        // TODO: lang put to parameter and select by alphabet
-        var l = location;
-        if(l.indexOf('/') == 0){
-            l = l.substring(1);
-        }
-
-        var langs = l.split('/');
-        langs.shift();
+        var langs = [$scope.lang1, $scope.lang2];
         var changeLang = langs[0];
 
         // #00000001
@@ -149,7 +145,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
             // if the data isn't in cache please put
             // to onRow which will be load from server
             if(cachedData && typeof cachedData !== 'undefined'){
-                console.log('cachedData:', cachedData);
+                //console.log('cachedData:', cachedData);
                 dataToDuplicies(cachedData, word.link, -1);
             } else {
                 onRow.push(onRowData);
@@ -196,7 +192,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                 });
                 $scope.words[link].duplicity = duplicities;
 
-                console.log(link, $scope.words[link].duplicity);
+                //console.log(link, $scope.words[link].duplicity);
             }
 
 
@@ -251,6 +247,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         setTimeout(function() {
             $http({method: 'GET', url: '/words/lesson' +lessonAndLang }).
                 success(function(data, status, headers, config) {
+                    setupLessonAndLangs(lessonAndLang);
                     console.log(data);
                     tempWord = {};
                     duplicityLoading = [];
@@ -371,7 +368,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
         var w = getWordByLink(link);
         var record = generateRecord(w, lang);
-
+        console.log(lang,link);
         // upload just in case the word is changed
         if($scope.checkWord(lang, link)){
             updateWord(lang, link, val, record, function(data){
@@ -547,11 +544,13 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         var val = $('#ed_' + key).val();
         var orig = $('#tv_' + key).text();
 
-        console.log('checkWord (val:' + val + ";" + orig);
+
 
         var word = getWordByLink(link);
 
         var indicator = $('#in_' + key);
+
+        console.log('checkWord (val:' + lang + ";" + key, word);
 
         var readyForUpdate = false;
 
@@ -617,9 +616,12 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     $scope.deleteImg = function(link){
         showDialog('Delete image', 'Are you sure about delete image?', function(){
             deleteImg(link, function(data){
-                var word = getWordByLink(link);
-                word.image = null;//'http://uncletim.com/store/media/ecom/prodlg/none.gif';
-                $scope.$apply();
+                $scope.$apply(function(){
+                    var word = getWordByLink(link);
+                    word.image = null;//'http://uncletim.com/store/media/ecom/prodlg/none.gif';
+                });
+
+
             });
         });
 
@@ -762,6 +764,20 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
 
     }
 
+    function setupLessonAndLangs(lessonAndLang){
+        var l = lessonAndLang;
+        if(l.indexOf('/') == 0){
+            l = l.substring(1);
+        }
 
+        var langs = l.split('/');
+
+
+        //$scope.lesson = langs[0];
+        $scope.lang1 = langs[1];
+        $scope.lang2 = langs[2];
+        //console.log(lessonAndLang, lal);
+
+    }
 
 }

@@ -1,7 +1,7 @@
 
 function dragImage(imageElement, fileElement, linkId){
     var IMAGE_ORIG = '/assets/img/orig/';
-    console.log('dragImage', imageElement.attr('id'), linkId);
+    //console.log('dragImage', imageElement.attr('id'), linkId);
     imageElement.on(
         'dragover',
         function(e) {
