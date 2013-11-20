@@ -1,3 +1,4 @@
+var Async = require('async');
 var pg = null;
 
 module.exports = {
@@ -24,15 +25,46 @@ module.exports = {
 
 
         if(params.length > 1 && params[0].length > 0 && params[1].length > 0){
-            var sql = 'SELECT record, lang, word'
-                //+ ' ,(SELECT count(*) FROM link linkadd where linkadd.usr=$1 and linkadd.lesson=link.lesson AND linkadd.image IS NOT NULL) AS images_add'
-                //+ ' ,(SELECT count(*) FROM link linkdel where linkdel.usr=$1 and linkdel.lesson=link.lesson AND linkdel.image IS NULL) AS image_del'
-                + ' FROM word JOIN link ON link.lid=word.link WHERE word.usr=$1';
-            var sqlData = [params[0]]
-            pg.query(sql, sqlData, function(err, data){
-                console.log(err, sql, sqlData[0]);
-                request.reply(err ? err : data.rows);
-            });
+
+
+            Async.waterfall([
+                  function(icb){
+                        var sql = 'SELECT link, lang'
+                           // + ' ,(SELECT w1.record || \'->\' || w2.record FROM link '
+                          //+ ' JOIN word w1 ON link.lid=w1.link'
+                         // + ' JOIN word w2 ON link.lid=w2.link'
+                           // + ' WHERE w1.usr=$1 AND w2.usr > 0 AND w2.usr != w1.usr AND link.lesson = $2) as conflict'
+                        + ' FROM word JOIN link ON link.lid=word.link WHERE word.usr=$1 AND link.lesson=$2';
+                        +' UNION SELECT lid, null as lang'
+                            //+ ' ,(SELECT count(*) FROM link linkadd where linkadd.usr=$1 and linkadd.lesson=link.lesson AND linkadd.image IS NOT NULL) AS images_add'
+                            //+ ' ,(SELECT count(*) FROM link linkdel where linkdel.usr=$1 and linkdel.lesson=link.lesson AND linkdel.image IS NULL) AS image_del'
+                        + ' FROM link WHERE link.lesson=$2 AND link.usr=$1';
+                        var sqlData = [params[0],params[1]];
+                        pg.query(sql, sqlData,icb);
+                  },function(arg, icb){
+                        var sql = '';
+                        arg.rows.forEach(function(linkData){
+                            if(linkData.lang){
+                                sql += ' UNION SELECT word, record, version, null as image, lang'
+                                    + ' FROM word WHERE word.link=' + linkData.link;
+                            } else {
+                                sql += ' UNION SELECT description as word, \'\' as record, version, image, null as lang'
+                                    + ' FROM link WHERE link.lid=' + linkData.link;
+                            }
+
+                        });
+
+                        var sql = sql.substring(7);
+                        var sqlData = [params[0],params[1]];
+                        pg.query(sql,icb);
+                }
+            ], function(err, results){
+                console.log(err, results);
+                request.reply(err ? err : [results.rows]);
+            })
+
+
+
         }
         else if(params.length > 0 && params[0].length > 0){
 
