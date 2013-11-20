@@ -24,7 +24,6 @@ module.exports = {
         }
     }
     ,index_get : function (request){
-
         request.reply.view('index');
     }
     ,login_get : function(request){

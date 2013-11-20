@@ -40,7 +40,7 @@ app.directive('myRepeatDirective', function() {
         //console.log('im', attrs.id);
         //console.log('element', attrs('id'));
         if (scope.$last){
-            $('#all_words_here').fadeOut();
+            //
             $('#all_words_here').removeClass('hide');
             $('#all_words_here').fadeIn();
             //window.alert("im the last!");
@@ -244,6 +244,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
      * @param lessonAndLang - /2002/en/cs
      */
     function loadWords(lessonAndLang){
+        $('#all_words_here').fadeOut();
         $scope.loading = true;
         setTimeout(function() {
             $http({method: 'GET', url: '/words/lesson' +lessonAndLang }).
@@ -808,6 +809,11 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
                 r1 : '|'+$scope.lang2+'|' +$scope.new_word_w2,
                 r2 : '|'+$scope.lang1+'|' +$scope.new_word_w1
             }};
+
+            if(!$scope.new_word_d || !$scope.new_word_w1 || !$scope.new_word_w2){
+                alert('sorry all imput box must contain a value ;-)')
+                return ;
+            }
 
 
             $http({

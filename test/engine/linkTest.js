@@ -1,3 +1,4 @@
+//http://www.zdrojak.cz/clanky/javascript-na-serveru-testovani-a-kontinualni-integrace/
 var assert = require("assert"),
     link = require('../../engine/link.js'),
     pg = require('pg'),
