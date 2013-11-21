@@ -1,4 +1,4 @@
-var app = angular.module('words',['angularFileUpload']);
+var app = angular.module('words',[]);
 
 //lscache.flush();
 //http://voc4u-miuan.rhcloud.com/#/1001/de/es
@@ -48,7 +48,7 @@ app.directive('myRepeatDirective', function() {
     };
 })  ;
 
-function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
+function WordWebCtrl($scope, $rootScope,$http, $location) {
     var IMAGE_DIR = 'assets/img/';
     var WORD_STATUS = {
         CURRENT : 1,
@@ -57,6 +57,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
         SAVED : 4
 
     };
+
 
     $scope.lang1 = '';
     $scope.lang2 = '';
@@ -858,3 +859,6 @@ function WordWebCtrl($scope, $rootScope,$http, $location, $upload) {
     }
 
 }
+
+
+

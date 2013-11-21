@@ -29,13 +29,16 @@ module.exports = {
 
             Async.waterfall([
                   function(icb){
-                        var sql = 'SELECT link, lang'
+                        var sql;
+                        sql =
+                        'SELECT link, lang'
                            // + ' ,(SELECT w1.record || \'->\' || w2.record FROM link '
                           //+ ' JOIN word w1 ON link.lid=w1.link'
                          // + ' JOIN word w2 ON link.lid=w2.link'
                            // + ' WHERE w1.usr=$1 AND w2.usr > 0 AND w2.usr != w1.usr AND link.lesson = $2) as conflict'
-                        + ' FROM word JOIN link ON link.lid=word.link WHERE word.usr=$1 AND link.lesson=$2';
-                        +' UNION SELECT lid, null as lang'
+                        + ' FROM word JOIN link ON link.lid=word.link WHERE word.usr=$1 AND link.lesson=$2'
+                        +' UNION ' +
+                        'SELECT lid, null as lang'
                             //+ ' ,(SELECT count(*) FROM link linkadd where linkadd.usr=$1 and linkadd.lesson=link.lesson AND linkadd.image IS NOT NULL) AS images_add'
                             //+ ' ,(SELECT count(*) FROM link linkdel where linkdel.usr=$1 and linkdel.lesson=link.lesson AND linkdel.image IS NULL) AS image_del'
                         + ' FROM link WHERE link.lesson=$2 AND link.usr=$1';
@@ -43,16 +46,36 @@ module.exports = {
                         pg.query(sql, sqlData,icb);
                   },function(arg, icb){
                         var sql = '';
+                        var sql1 = ' UNION SELECT word, record, version, null as image, lang, usr, link'
+                                    + ' FROM word WHERE ';
+
+                        var sqlWhere1 = '';
+
+                        var sql2 = ' UNION SELECT description as word, \'\' as record, link.version, image.image as image, null as lang, link.usr, lid as link'
+                            + ' FROM link JOIN image ON link.image = image.iid WHERE ';
+                        var sqlWhere2 = '';
+
+                        console.log(arg.rows);
+
+
                         arg.rows.forEach(function(linkData){
                             if(linkData.lang){
-                                sql += ' UNION SELECT word, record, version, null as image, lang'
-                                    + ' FROM word WHERE word.link=' + linkData.link;
+                                sqlWhere1 +=' OR (word.link=' + linkData.link + " AND lang='" + linkData.lang + "')";
                             } else {
-                                sql += ' UNION SELECT description as word, \'\' as record, version, image, null as lang'
-                                    + ' FROM link WHERE link.lid=' + linkData.link;
+                                sqlWhere2 += ' OR link.lid=' + linkData.link;
                             }
 
                         });
+
+                        if(sqlWhere1){
+                            sql = sql1 + sqlWhere1.substring(3);
+                        }
+
+                        if(sqlWhere2) {
+                            sql += sql2 + sqlWhere2.substring(3) ;
+                        }
+                        sql += ' order by link';
+                        console.log(sql);
 
                         var sql = sql.substring(7);
                         var sqlData = [params[0],params[1]];

@@ -20,11 +20,15 @@ module.exports = {
         return {
             index_get : {
                 auth : 'passport'
+            },stat_get : {
+                auth : 'passport'
             }
         }
     }
     ,index_get : function (request){
         request.reply.view('index');
+    },stats_get : function(request){
+        request.reply.view('stats');
     }
     ,login_get : function(request){
         if (request.session._isAuthenticated()) {

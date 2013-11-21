@@ -3,20 +3,48 @@
 
 html(ng-app="words")
     head
-        link(rel='stylesheet', href='/assets/css/index.css')
+        link(rel='stylesheet', href='/assets/css/stats.css')
         link(rel='stylesheet', href='/assets/css/bootstrap.min.css', rel="stylesheet",media="screen")
         meta(name="viewport",content="width=device-width, initial-scale=1.0")
     body(ng-controller="StatsCtrl")
-        div {{user.name}}
+        div#content
 
-        div(ng-repeat="lesson in lessons")
-            span {{lesson.name}}
-            span {{lesson.numchagnes}}
+            div
+                span User name : {{user.name}}
+                span.label-danger BETA (EXPERIMENTAL)
+            hr
+            div.row.header
+                span.col-md-1 lesson
+                span.col-md-1 edit words
+                span.col-md-1 conflict words
+                span.col-md-1 images add
+                span.col-md-1 images del
+                span.col-md-1 images conflict
+            hr
+            div(ng-repeat="lesson in lessons")
+                div(ng-click="showDetail(lesson.lesson)")
+                    div.row.info-row
+                        span.col-md-1.lesson_span.badge-info {{lesson.lesson}}
+                        span.col-md-1.badge-success {{lesson.count}}
+                        span.col-md-1 {{lesson.conflicts}}
+                        span.col-md-1 {{lesson.images_add}}
+                        span.col-md-1 {{lesson.image_del}}
+                        span.col-md-1 {{lesson.image_conf}}
+                    div(ng-show="lesson.detail.show",ng-click="lesson.lesson.detail.show=false;").details
+                        div(ng-repeat="detail in lesson.detail.data")
+                            div.change-info
+                                b {{detail.change.word}}
+                                i <- {{detail.orig.word}}
+                            div(ng-show="haveChangedImage(detail)").change-info
+                                img(src="{{detail.change.image}}")
+                                i <-
+                                img(src="{{detail.orig.image}}")
+                        div.clearfix
+
 
 
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
-    script(src="assets/js/bootstrap.min.js")
+    script(src="/assets/js/bootstrap.min.js")
     script(src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js")
-    script(src="assets/js/imageddc.js")
-    script(src="assets/js/lscache.js")
-    script(src="assets/js/stats.js")
+    script(src="/assets/js/controler.js")
+    script(src="/assets/js/stats.js")
