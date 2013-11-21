@@ -1,5 +1,7 @@
 drop table question_t;
+drop sequence question_t_qid_seq;
 drop table question_message_t;
+drop sequence question_message_t_qid_seq ;
 
 create table question_t (
     qid SERIAL,
