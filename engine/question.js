@@ -21,14 +21,14 @@ module.exports.create = function(pg, questionData, cb){
 
     pg.query(sqlu, sqluData, function(err, update){
         if(err || update.rowCount > 0){
-            cb(err, update ? update.rows : null);
+            cb(err, update ? update.rows[0] : null);
             return ;
         }
 
         var sql = 'INSERT INTO question_t (usr,link,lang1,lang2,status) VALUES ($1,$2,$3,$4,$5) RETURNING status;'
         var sqlData = [questionData.userId, questionData.link, questionData.lang1, questionData.lang2, questionData.status];
         pg.query(sql, sqlData, function(err, data){
-            cb(err, data ? data.rows : null);
+            cb(err, data ? data.rows[0] : null);
         });
     });
 

@@ -34,13 +34,17 @@ module.exports = {
                 ,lang2 : params[2]
             }
 
+            if(params.length > 3){
+                questionData.status = params[3];
+            }
+
             questionEngine.create(pg, questionData, function(err, data){
                 request.reply(err ? err : data);
             });
 
 
         } else {
-            request.reply('format : /link/lang1/lang2');
+            request.reply('format : /link/lang1/lang2/*status');
         }
 
     }
