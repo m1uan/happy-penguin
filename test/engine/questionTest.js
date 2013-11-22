@@ -59,10 +59,25 @@ describe('package operations', function(){
         it.only('create message without message', function(cb){
             var questionData = {
                  userId : 3,
-                link: 1230
+                link: 1230,
+                lang1 : 'cs'
+                ,lang2 : 'en'
                 //, message :  'i dont understand meaning on this word'
             } ;
-            question.create(pgClient, questionData, cb)
+            question.create(pgClient, questionData, function(err, data){
+                console.log(err ? err : data);
+                pgClient.query('SELECT status FROM question_t WHERE usr=$1 AND link=$2 AND lang1=$3 AND lang2=$4',
+                    [questionData.userId, questionData.link, questionData.lang1, questionData.lang2],
+                    function(err, td){
+                        console.log(err ? err : td);
+                        td.rows.should.be.a.Array;
+                        td.rows.length.should.eql(1);
+                        var r0 = td.rows[0];
+                        r0.status.should.be.eql(1);
+                        cb();
+                    });
+
+            })
 
 
         });
