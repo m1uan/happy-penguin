@@ -96,7 +96,7 @@ describe('getWords', function(){
 
         });
 
-        it.only('should return several rows', function(cb){
+        it('should return several rows', function(cb){
             words.getWords(pgClient, 'en', 2001, function(rows){
                 assert(rows);
                 console.log(rows) ;

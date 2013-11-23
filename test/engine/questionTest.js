@@ -49,7 +49,7 @@ describe('package operations', function(){
 
         sqlMake(pgClient, [
             "SELECT remove_test_data();"  ,
-            "delete from question_message_t;",
+            //"delete from question_message_t;",
             "delete from question_t;"
         ],cb);
     });
@@ -86,10 +86,10 @@ describe('package operations', function(){
         });
 
 
-        it('with message', function(cb){
+        it.only('with message', function(cb){
             var questionData = {
                 userId : 3,
-                link: 1230,
+                linkId: 1230,
                 lang1 : 'cs'
                 ,lang2 : 'en'
                 , message :  'i dont understand meaning on this word'
@@ -97,11 +97,11 @@ describe('package operations', function(){
             question.create(pgClient, questionData, function(err, data){
                 console.log('test1', err ? err : data);
                 assert(data);
-                data.should.have.property('qid');
-                data.should.have.property('status');
+                data.should.have.property('link');
+                data.should.have.property('q_status');
                 data.should.have.property('message');
-                data.should.have.property('qmid');
-                pgClient.query('SELECT message FROM question_message_t WHERE usr=$1 AND question=$2 AND lang1=$3 AND lang2=$4',
+                data.should.have.property('qid');
+                pgClient.query('SELECT message FROM question_t WHERE usr=$1 AND qid=$2 AND lang1=$3 AND lang2=$4',
                     [questionData.userId, data.qid, questionData.lang1, questionData.lang2],
                     function(err, td){
                         console.log(err ? err : td);

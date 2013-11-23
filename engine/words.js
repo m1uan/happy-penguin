@@ -20,7 +20,7 @@ var SQL = function(table, fields){
             where += ' AND ';
         }
 
-        if(!expressionValue){
+        if(!expressionValue && expressionValue !== 0){
             where += expression;
 
         } else {
@@ -68,6 +68,7 @@ var SQL = function(table, fields){
 
 function WORDS(pg, lesson){
     var langs = [];
+    var actual = true;
 
 
     this.addLang = function (lang){
@@ -92,9 +93,16 @@ function WORDS(pg, lesson){
             sql.whereAnd('link.lesson=',lesson);
         }
 
+        if(actual){
+            sql.whereAnd('link.version=',0);
+        }
+
         if(langs.length == 1){
             sql.join('word', 'word.link=link.lid');
             sql.whereAnd('word.lang=',langs[0]);
+            if(actual){
+                sql.whereAnd('word.version=',0);
+            }
         }
 
 
