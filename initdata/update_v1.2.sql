@@ -22,8 +22,13 @@ create table question_message_t (
     qmid SERIAL,
     message TEXT,
     question INTEGER,
+    lang1 VARCHAR(2) NOT NULL,
+    lang2 VARCHAR(2) NOT NULL,
     FOREIGN KEY (question) REFERENCES question_t (qid) ,
+    usr INTEGER NOT NULL,
+    FOREIGN KEY (usr) REFERENCES usr (id) ,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(qmid)
 );
 

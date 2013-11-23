@@ -7,6 +7,112 @@ var SQL_SELECT_WORD = 'SELECT link, word, lang,' +
     'word.version as version' +
     ' FROM word '
 
+
+var SQL = function(table, fields){
+    var where  = '';
+    var sqlData = [] ;
+    var sqljoin = '';
+
+    this.whereAnd = function(expression, expressionValue){
+        if(!where){
+            where = 'WHERE '
+        } else {
+            where += ' AND ';
+        }
+
+        if(!expressionValue){
+            where += expression;
+
+        } else {
+            // expresion is without value
+            // value is in expressionValue
+            sqlData.push(expressionValue);
+            where += expression +'$'+sqlData.length;
+        }
+
+        return this;
+    }
+
+    this.join = function (join, expression) {
+        if(sqljoin){
+           sqljoin += ' ';
+        }
+
+
+        sqljoin += 'JOIN ' + join + ' ON ' + expression;
+        return this;
+    }
+
+    this.select = function(pg, callback){
+        var sql = 'SELECT ' + fields.join(',') + ' FROM ' + table;
+        if(sqljoin) {
+            sql += ' ' + sqljoin;
+        }
+
+        if(where) {
+            sql += ' ' + where;
+        }
+
+        pg.query(sql, sqlData, function(err, data){
+            console.log(err ? '#sql-generator-ERROR:':'#sql-generator:', sql, sqlData, err ?  err : '');
+            callback(err, data ? data.rows : null);
+        });
+
+    }
+
+    return this;
+}
+
+
+
+
+function WORDS(pg, lesson){
+    this.langs = [];
+
+
+    this.add = function (lang){
+       this.langs.push(lang);
+    };
+
+    this.getLinks = function(fields, cb){
+        var join = '';
+
+        if(!fields){
+            fields = ['lid as link'];
+        }
+
+        if(fields.indexOf('image.image as imagefile') != -1){
+            join = ' LEFT JOIN image ON link.image = image.iid';
+        }
+
+        var sql = new SQL('link', fields).join('image','link.image=image.iid');
+
+        if(lesson){
+            sql.whereAnd('link.lesson=',lesson);
+        }
+
+        sql.select(pg, cb);
+    };
+
+
+    this.plain = function (fields, callback){
+
+    };
+
+    this.get = function (fields, callback){
+        plain(fields, function(err, data){
+            // nice format
+            callback(err, data);
+        })
+    }
+
+
+    return this;
+
+};
+
+module.exports.WORDS = WORDS;
+
 module.exports.getWords = function(pgClient, lang, lesson, colums, cb) {
     if(!pgClient){
         cb(null);
@@ -73,26 +179,8 @@ module.exports.getImages = function(pgClient, lesson, colums, cb) {
     if(!colums){
         colums = ['lid','description','image.image as imagefile','iid as imageid','image.thumb as thumbfile','version','del'];
     }
+    new module.exports.WORDS(pgClient, lesson).getLinks(colums, cb);
 
-    var join = '';
-    if(colums.indexOf('image.image as imagefile') != -1){
-       join = ' LEFT JOIN image ON link.image = image.iid';
-    }
-
-
-    var sql = 'SELECT ' + colums.join(',') +  ' FROM link'
-        + join
-        + ' WHERE link.lesson = $1';
-
-    var sqlData = [lesson];
-    console.log(sql, sqlData)  ;
-    pgClient.query(sql, sqlData , function(err, data){
-       if(err){
-           cb(err, null);
-       } else {
-           cb(err, data.rows);
-       }
-    });
 }
 
 

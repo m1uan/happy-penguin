@@ -42,7 +42,7 @@ app.directive('myRepeatDirective', function() {
         if (scope.$last){
             //
             $('#all_words_here').removeClass('hide');
-            $('#all_words_here').fadeIn();
+            //$('#all_words_here').fadeIn();
             //window.alert("im the last!");
         }
     };

@@ -48,15 +48,15 @@ describe('package operations', function(){
     after(function(cb){
 
         sqlMake(pgClient, [
-            "SELECT remove_test_data();" ,
-            "delete from question_t;" ,
-            "delete from question_message_t;"
+            "SELECT remove_test_data();"  ,
+            "delete from question_message_t;",
+            "delete from question_t;"
         ],cb);
     });
 
 
     describe('test questions', function(){
-        it.only('create message without message', function(cb){
+        it('without message', function(cb){
             var questionData = {
                  userId : 3,
                 link: 1230,
@@ -65,6 +65,69 @@ describe('package operations', function(){
                 //, message :  'i dont understand meaning on this word'
             } ;
             question.create(pgClient, questionData, function(err, data){
+                console.log(err ? err : data);
+                assert(data);
+                data.should.have.property('qid');
+                data.should.have.property('status');
+                pgClient.query('SELECT status FROM question_t WHERE usr=$1 AND link=$2 AND lang1=$3 AND lang2=$4',
+                    [questionData.userId, questionData.link, questionData.lang1, questionData.lang2],
+                    function(err, td){
+                        console.log(err ? err : td);
+                        td.rows.should.be.a.Array;
+                        td.rows.length.should.eql(1);
+                        var r0 = td.rows[0];
+                        r0.status.should.be.eql(1);
+                        cb();
+                    });
+
+            })
+
+
+        });
+
+
+        it('with message', function(cb){
+            var questionData = {
+                userId : 3,
+                link: 1230,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'i dont understand meaning on this word'
+            } ;
+            question.create(pgClient, questionData, function(err, data){
+                console.log('test1', err ? err : data);
+                assert(data);
+                data.should.have.property('qid');
+                data.should.have.property('status');
+                data.should.have.property('message');
+                data.should.have.property('qmid');
+                pgClient.query('SELECT message FROM question_message_t WHERE usr=$1 AND question=$2 AND lang1=$3 AND lang2=$4',
+                    [questionData.userId, data.qid, questionData.lang1, questionData.lang2],
+                    function(err, td){
+                        console.log(err ? err : td);
+                        td.rows.should.be.a.Array;
+                        td.rows.length.should.eql(1);
+                        var r0 = td.rows[0];
+                        r0.should.have.property('message');
+                        cb();
+                    });
+
+            })
+
+
+        });
+
+        it('create message 2x should be there generic message', function(cb){
+            var questionData = {
+                userId : 3,
+                link: 1230,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                //, message :  'i dont understand meaning on this word'
+            } ;
+            question.create(pgClient, questionData, function(err1, data1){
+                console.log(err1 ? err1 : data1);
+                question.create(pgClient, questionData, function(err, data){
                 console.log(err ? err : data);
                 pgClient.query('SELECT status FROM question_t WHERE usr=$1 AND link=$2 AND lang1=$3 AND lang2=$4',
                     [questionData.userId, questionData.link, questionData.lang1, questionData.lang2],
@@ -76,6 +139,7 @@ describe('package operations', function(){
                         r0.status.should.be.eql(1);
                         cb();
                     });
+                });
 
             })
 
