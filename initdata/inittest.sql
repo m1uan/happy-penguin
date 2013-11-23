@@ -1709,6 +1709,10 @@ BEGIN
       ,(2098,E'take part',NULL,4001)
       ,(2099,E'take place',NULL,4001);
 
+
+      update link set q_status=1 where lid = 2083;
+      update link set q_status=2 where lid = 2023;
+      update link set q_status=3 where lid = 2033;
       --SELECT pg_size_pretty(pg_database_size('voc4u'));
 
       RETURN 0; --(SELECT pg_size_pretty(pg_database_size('voc4u')));

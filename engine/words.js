@@ -42,8 +42,9 @@ var SQL = function(table, mfields){
            sqljoin += ' ';
         }
 
-
-        sqljoin += 'JOIN ' + join + ' ON ' + expression;
+        // must be left join otherwise
+        // the link images return just link with images not null
+        sqljoin += 'LEFT JOIN ' + join + ' ON ' + expression;
         return this;
     }
 
@@ -78,12 +79,17 @@ var SQL = function(table, mfields){
 function WORDS(pg, lesson){
     var langs = [];
     var actual = true;
-
+    var sql = new SQL('link');
 
     this.addLang = function (lang){
         langs.push(lang);
         return this;
     };
+
+    this.question = function(fields, cb){
+        sql.whereAnd('q_status>0');
+        this.get(fields, cb);
+    }
 
     this.get = function(fields, cb){
 
@@ -92,7 +98,7 @@ function WORDS(pg, lesson){
             return;
         }
 
-        var sql = new SQL('link');
+
 
         if(fields.indexOf('image.image as imagefile') != -1){
             sql.join('image','link.image=image.iid');

@@ -37,7 +37,7 @@ describe('getWords', function(){
 
     describe('WORDS', function(){
 
-        it.only('get cs and en', function(cb){
+        it('get cs and en', function(cb){
             words.WORDS(pgClient, 2001)
                 .addLang('cs')
                 .addLang('en').get(['link','q_status','word as w','lang as n','image.image as imagefile'], function(err, data){
@@ -57,6 +57,29 @@ describe('getWords', function(){
                     data0.n2.should.have.eql('en');
 
                    cb();
+                });
+        })
+
+        it.only('get only with question', function(cb){
+            words.WORDS(pgClient)
+                .addLang('de')
+                .addLang('en').question(['link','q_status','word as w','lang as n','image.image as imagefile'], function(err, data){
+                    console.log(err,data);
+                    assert(data);
+                    data.should.be.a.Array;
+                    data.length.should.above(0);
+                    var data0 = data[0];
+                    data0.should.have.property('link');
+                    data0.should.have.property('q_status');
+                    data0.should.have.property('w1');
+                    data0.should.have.property('n1');
+                    data0.n1.should.have.eql('de');
+                    data0.should.have.property('w2');
+                    data0.should.have.property('n2');
+                    data0.should.have.property('imagefile');
+                    data0.n2.should.have.eql('en');
+
+                    cb();
                 });
         })
     });
