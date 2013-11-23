@@ -98,8 +98,6 @@ function WORDS(pg, lesson){
             return;
         }
 
-
-
         if(fields.indexOf('image.image as imagefile') != -1){
             sql.join('image','link.image=image.iid');
         }

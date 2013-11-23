@@ -26,6 +26,24 @@ module.exports = {
     test_get : function(request){
       request.reply('heelo');
     },
+    get_get : function (request){
+        var langs = request.params.params.split('/');
+        var lesson = langs.shift();
+
+        var word = new wordsEngine.WORDS(pgClient, lesson);
+
+        langs.forEach(function(val){
+           word.addLang(val);
+        });
+
+        var fields = request.query.fields.split(',') ;
+        console.log(request);
+        console.log(request.query);
+        word.get(fields, function(err, words){
+            request.reply(words);
+        });
+
+    },
     index_get : function (request){
 
 
