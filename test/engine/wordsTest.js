@@ -94,8 +94,9 @@ describe('getWords', function(){
                 cb();
             })
 
-        }),
-        it('should return several rows', function(cb){
+        });
+
+        it.only('should return several rows', function(cb){
             words.getWords(pgClient, 'en', 2001, function(rows){
                 assert(rows);
                 console.log(rows) ;
@@ -157,7 +158,7 @@ describe('getWords', function(){
     });
 
     describe('getImages(lesson)', function(){
-        it.only('get images from lesson 1', function(cb){
+        it('get images from lesson 1', function(cb){
             words.getImages(pgClient, 101, function(err, rows){
                 //console.log(rows);
 

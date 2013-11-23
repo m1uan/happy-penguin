@@ -54,7 +54,7 @@ var SQL = function(table, fields){
         }
 
         pg.query(sql, sqlData, function(err, data){
-            console.log(err ? '#sql-generator-ERROR:':'#sql-generator:', sql, sqlData, err ?  err : '');
+            console.log(err ? '#sql-generator-ERROR:':'#sql-generator:', sql, sqlData, err ?  err : '',data);
             callback(err, data ? data.rows : null);
         });
 
@@ -67,44 +67,43 @@ var SQL = function(table, fields){
 
 
 function WORDS(pg, lesson){
-    this.langs = [];
+    var langs = [];
 
 
-    this.add = function (lang){
-       this.langs.push(lang);
+    this.addLang = function (lang){
+        langs.push(lang);
+        return this;
     };
 
-    this.getLinks = function(fields, cb){
-        var join = '';
+    this.get = function(fields, cb){
 
         if(!fields){
-            fields = ['lid as link'];
+            cb('fileds missing');
+            return;
         }
+
+        var sql = new SQL('link', fields);
 
         if(fields.indexOf('image.image as imagefile') != -1){
-            join = ' LEFT JOIN image ON link.image = image.iid';
+            sql.join('image','link.image=image.iid');
         }
-
-        var sql = new SQL('link', fields).join('image','link.image=image.iid');
 
         if(lesson){
             sql.whereAnd('link.lesson=',lesson);
         }
 
+        if(langs.length == 1){
+            sql.join('word', 'word.link=link.lid');
+            sql.whereAnd('word.lang=',langs[0]);
+        }
+
+
+
         sql.select(pg, cb);
     };
 
 
-    this.plain = function (fields, callback){
 
-    };
-
-    this.get = function (fields, callback){
-        plain(fields, function(err, data){
-            // nice format
-            callback(err, data);
-        })
-    }
 
 
     return this;
@@ -138,32 +137,9 @@ module.exports.getWords = function(pgClient, lang, lesson, colums, cb) {
         colums = ['link','lang','word','word.version as version'];
     }
 
-    //var lessonStart = (lesson-1) * module.exports.lessonSize;
-    //var lessonEnd = lessonStart + module.exports.lessonSize;
-
-    //var sql = SQL_SELECT_WORD + ' WHERE lang = $1 OFFSET $2 LIMIT $3';
-    // changed from limit to link, otherwise after update the updated
-    // words not in words sed more
-    var sql = 'SELECT ' + colums.join(',') + ' FROM word';
-    sql += ' JOIN link ON link.lid = word.link' ;
-    sql += ' WHERE lang = $1 AND link.lesson = $2'
-    sql += ' AND word.version = 0'
-    sql += ' ORDER BY word.link'
-    //sql += ' LIMIT 50';
-
-    var sqlval = [lang, lesson];
-    //console.log('module.exports.getWords', sql, sqlval)  ;
-    pgClient.query(sql, sqlval, function(err, data){
-
-        if(err){
-            console.log(err);
-        }
-
-        //console.log(data);
-        //cb(err, {words: data.rows});
-        cb(data.rows);
+    new module.exports.WORDS(pgClient, lesson).addLang(lang).get(colums, function(err,data){
+        cb(data);
     });
-
 }
 
 module.exports.getImages = function(pgClient, lesson, colums, cb) {
@@ -179,7 +155,7 @@ module.exports.getImages = function(pgClient, lesson, colums, cb) {
     if(!colums){
         colums = ['lid','description','image.image as imagefile','iid as imageid','image.thumb as thumbfile','version','del'];
     }
-    new module.exports.WORDS(pgClient, lesson).getLinks(colums, cb);
+    new module.exports.WORDS(pgClient, lesson).get(colums, cb);
 
 }
 
