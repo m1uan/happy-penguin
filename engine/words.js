@@ -8,10 +8,14 @@ var SQL_SELECT_WORD = 'SELECT link, word, lang,' +
     ' FROM word '
 
 
-var SQL = function(table, fields){
+var SQL = function(table, mfields){
     var where  = '';
     var sqlData = [] ;
     var sqljoin = '';
+
+    if(!mfields){
+        mfields = [];
+    }
 
     this.whereAnd = function(expression, expressionValue){
         if(!where){
@@ -44,7 +48,7 @@ var SQL = function(table, fields){
     }
 
     this.select = function(pg, callback){
-        var sql = 'SELECT ' + fields.join(',') + ' FROM ' + table;
+        var sql = 'SELECT ' + mfields.join(',') + ' FROM ' + table;
         if(sqljoin) {
             sql += ' ' + sqljoin;
         }
@@ -58,6 +62,11 @@ var SQL = function(table, fields){
             callback(err, data ? data.rows : null);
         });
 
+    }
+
+    this.fields = function(f){
+        mfields = f;
+        return this;
     }
 
     return this;
@@ -79,11 +88,11 @@ function WORDS(pg, lesson){
     this.get = function(fields, cb){
 
         if(!fields){
-            cb('fileds missing');
+            cb('fields missing');
             return;
         }
 
-        var sql = new SQL('link', fields);
+        var sql = new SQL('link');
 
         if(fields.indexOf('image.image as imagefile') != -1){
             sql.join('image','link.image=image.iid');
@@ -103,15 +112,91 @@ function WORDS(pg, lesson){
             if(actual){
                 sql.whereAnd('word.version=',0);
             }
+        } else if(langs.length > 1){
+            langs.forEach(function(lang,midx){
+                var idx = midx + 1;
+                sql.join('word as word'+idx, 'word'+idx+'.link=link.lid');
+                sql.whereAnd('word'+idx+'.lang=',lang);
+                if(actual){
+                    sql.whereAnd('word'+idx+'.version=',0);
+                }
+            });
+
+            var newFields = [];
+
+            fields.forEach(function(f,idx){
+
+               if(isWordsFields(f)){
+
+                   langs.forEach(function(lang,mlidx){
+                       var lidx =mlidx +1;
+                       // convert word.col -> word1.col
+                       var fnew = f.replace('word.','word'+lidx+'.');
+
+                       // convert word -> word1.word
+                       fnew = fnew.replace('word','word'+lidx+'.word');
+                       // convert lang -> word1.lang
+                       fnew = fnew.replace('lang','word'+lidx+'.lang');
+                       // convert version -> word1.version
+                       fnew = fnew.replace('version','word'+lidx+'.version');
+                       // convert record -> word1.record
+                       fnew = fnew.replace('record','word'+lidx+'.record');
+
+                       // convert word1.col as col -> word1.col as col1
+                       if(fnew.toLowerCase().indexOf(' as ') > 0){
+                           fnew += lidx;
+                       } else {
+                          // convert: word1.col -> word1.col as col1
+                           fnew += ' AS ' + fnew.split('.')[1] + lidx;
+                       }
+                       newFields.push(fnew);
+
+                   });
+
+               } else {
+                   if(f.indexOf('link') > -1){
+                       f = 'lid as link';
+                   }
+
+                   newFields.push(f);
+               }
+            });
+
+            fields = newFields;
+
         }
 
 
 
-        sql.select(pg, cb);
+        sql.fields(fields).select(pg, cb);
     };
 
 
+    function isWordsFields(field){
+        if(typeof(String.prototype.trim) === "undefined")
+        {
+            String.prototype.trim = function()
+            {
+                return String(this).replace(/^\s+|\s+$/g, '');
+            };
+        }
 
+        field = field.trim();
+        if(field.indexOf('word.') == 0){
+            return true;
+        }
+
+        var wordFields = ['word','lang','record','version'];
+
+        var found = false;
+        wordFields.some(function(val){
+            found = field.indexOf(val) == 0;
+            return found;
+        });
+
+
+        return found;
+    }
 
 
     return this;
