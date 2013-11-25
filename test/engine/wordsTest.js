@@ -60,7 +60,7 @@ describe('getWords', function(){
                 });
         })
 
-        it.only('get only with question', function(cb){
+        it('get only with question', function(cb){
             words.WORDS(pgClient)
                 .addLang('de')
                 .addLang('en').question(['link','q_status','word as w','lang as n','image.image as imagefile'], function(err, data){

@@ -542,23 +542,6 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
     }
 
 
-
-    $scope.deleteImg = function(link){
-        $rootScope.showConfirmDialog('Delete image', 'Are you sure about delete image?', function(){
-            deleteImg(link, function(data){
-                $scope.$apply(function(){
-                    var word = getWordByLink(link);
-                    word.image = null;//'http://uncletim.com/store/media/ecom/prodlg/none.gif';
-                });
-
-
-            });
-        });
-
-
-//
-    }
-
     $scope.onFileSelect = function($files, linkId) {
         console.log($files);
 
@@ -591,11 +574,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
     }
 
 
-    $scope.deleteLinks = function(links){
-        showConfirmDialog('Delete word!', 'Are you sure about delete word?', function(){
-            deleteLinks(links);
-        });
-    }
+
 
     deleteLinks = function(links){
         $http({
@@ -694,21 +673,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
 
     }
 
-    function setupLessonAndLangs(lessonAndLang){
-        var l = lessonAndLang;
-        if(l.indexOf('/') == 0){
-            l = l.substring(1);
-        }
 
-        var langs = l.split('/');
-
-
-        $scope.lessonId = langs[0];
-        $scope.lang1 = langs[1];
-        $scope.lang2 = langs[2];
-        //console.log(lessonAndLang, lal);
-
-    }
 
 
     $scope.new_word_d = '';

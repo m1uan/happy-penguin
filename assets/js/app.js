@@ -24,21 +24,7 @@ var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
             name: 'Naomi',
             address: '1600 Amphitheatre'
         };
-    }).directive('myCustomer', function () {
-    return {
-        restrict: 'A',   // 'A' is the default, so you could remove this line
-        scope: {
-           word: '=word'
-        },
-        templateUrl : 'templates/word-row',
-        link: function(scope, elemnt, attr){
-            scope.word.o1 =  scope.word.w1;
-            scope.word.o2 =  scope.word.w2;
-            scope.lang1 =  scope.word.n1;
-            scope.lang2 =  scope.word.n2;
-        }
-    };
-});
+    });
 
 function MainCtrl($scope, $route, $routeParams, $location, $cookieStore) {
     $scope.lang1 = '';
