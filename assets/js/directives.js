@@ -5,14 +5,16 @@ app.directive('myCustomer', function () {
             word: '=word'
         },
         controller: function($rootScope, $scope){
+            var dialogCtrl = $scope;
+
             $scope.deleteLinks = function(links){
-                $rootScope.showConfirmDialog('Delete word!', 'Are you sure about delete word?', function(){
+                dialogCtrl.showConfirmDialog('Delete word!', 'Are you sure about delete word?', function(){
                     deleteLinks(links);
                 });
             }
 
             $scope.deleteImg = function(link){
-                $rootScope.showConfirmDialog('Delete image', 'Are you sure about delete image?', function(){
+                dialogCtrl.showConfirmDialog('Delete image', 'Are you sure about delete image?', function(){
                     deleteImg(link, function(data){
                         $scope.$apply(function(){
                             var word = getWordByLink(link);
@@ -22,7 +24,27 @@ app.directive('myCustomer', function () {
 
                     });
                 });
+            }
 
+
+            showDialogById = function(dialogId, yesevent) {
+                var modalDialog = $(dialogId);
+
+                modalDialog.find('#yesbutton').click(function(event) {
+                    yesevent(event);
+                    modalDialog.modal('hide');
+                });
+
+                modalDialog.modal('show');
+
+                return modalDialog;
+            }
+
+            $scope.showConfirmDialog = function(title, message, yesevent){
+                var modalDialog = showDialogById('#modal-from-dom', yesevent);
+
+                modalDialog.find('#warning_dialog_title').text(title);
+                modalDialog.find('#warning_dialog_message').text(message);
             }
         },
         templateUrl : 'templates/word-row',

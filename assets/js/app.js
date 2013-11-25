@@ -43,25 +43,7 @@ function MainCtrl($scope, $route, $routeParams, $location, $cookieStore) {
     this.$routeParams = $routeParams;
 
 
-    function showDialogById(dialogId, yesevent) {
-        var modalDialog = $(dialogId);
 
-        modalDialog.find('#yesbutton').click(function(event) {
-            yesevent(event);
-            modalDialog.modal('hide');
-        });
-
-        modalDialog.modal('show');
-
-        return modalDialog;
-    }
-
-    function showConfirmDialog(title, message, yesevent){
-        var modalDialog = showDialogById('#modal-from-dom', yesevent);
-
-        modalDialog.find('#warning_dialog_title').text(title);
-        modalDialog.find('#warning_dialog_message').text(message);
-    }
 
 
     var cookieLessonFields =  $cookieStore.get('lessonFields');

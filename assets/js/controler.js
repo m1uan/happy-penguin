@@ -741,6 +741,28 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
         modalDialog.find('#add_word_icon1').attr('src','assets/img/flags/flag_'+$scope.lang1+'.png');
         modalDialog.find('#add_word_icon2').attr('src','assets/img/flags/flag_'+$scope.lang2+'.png');
     }
+
+    $scope.deleteLinks = function(links){
+        $rootScope.showConfirmDialog('Delete word!', 'Are you sure about delete word?', function(){
+            deleteLinks(links);
+        });
+    }
+
+    $scope.deleteImg = function(link){
+        $rootScope.showConfirmDialog('Delete image', 'Are you sure about delete image?', function(){
+            deleteImg(link, function(data){
+                $scope.$apply(function(){
+                    var word = getWordByLink(link);
+                    word.image = null;//'http://uncletim.com/store/media/ecom/prodlg/none.gif';
+                });
+
+
+            });
+        });
+
+    }
+
+
 }
 
 
