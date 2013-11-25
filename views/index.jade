@@ -1,34 +1,37 @@
 !!!
 //https://www.google.co.nz/search?q=mamka&source=lnms&tbm=isch
 
-html(ng-app="words")
+html(ng-app="voc4u")
     head
+        link(rel='stylesheet', href='/assets/css/app.css')
         link(rel='stylesheet', href='/assets/css/index.css')
         link(rel='stylesheet', href='/assets/css/bootstrap.min.css', rel="stylesheet",media="screen")
         meta(name="viewport",content="width=device-width, initial-scale=1.0")
-    body(ng-controller="WordWebCtrl")#ahoj
+    body(ng-controller="MainCtrl as main")
 
         header
-            div.btn-group
-                button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lesson[0]}}
-                    span.caret
-                ul(role="menu").dropdown-menu
-                    li(ng-repeat="lesson in lessons")
-                        a(ng-click="langChange(0,lesson)") {{lesson}}
 
             div.btn-group
-                button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lesson[1]}}
+                button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[1]}}
                     span.caret
                 ul(role="menu").dropdown-menu
                     li(ng-repeat="lang in languages")
                         a(ng-click="langChange(1,lang)") {{lang}}
 
             div.btn-group
-                button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lesson[2]}}
+                button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[2]}}
                     span.caret
                 ul(role="menu").dropdown-menu
                     li(ng-repeat="lang in languages")
                         a(ng-click="langChange(2,lang)") {{lang}}
+
+            div.btn-group
+                button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[0]}}
+                    span.caret
+                ul(role="menu").dropdown-menu
+                    li(ng-repeat="lesson in lessons")
+                        a(ng-click="langChange(0,lesson)") {{lesson}}
+
 
 
         div#modal-add-word.modal.fade
@@ -77,76 +80,20 @@ html(ng-app="words")
                         p#origin-message
                     div.modal-footer
                         a(href="javascript:$('#modal-error').modal('hide')").btn.btn-primary ok
-        div(ng-show="loading")
-            h1
-                img(src="assets/img/loading64.gif")
-                span Loading please wait...
-            h2 {{location}}
-        div(ng-hide="loading").wordwebctrl
-            div(ng-repeat="word in words")#all_words_here
-                div(ng-class="{linkdelete: isDeleted(word)}").wordrowcolor
-                    div.text-center.description
-                        span(id="in_{{word.link}}").identifer {{word.link}}#
-                        span {{word.description}}
+        div.hide#content
 
+            div#menu
+                a(href="#/{{lessonFields[0]}}/{{lessonFields[1]}}/{{lessonFields[2]}}") Words
+                span |
+                a(href="#/Questions") Questions
+                span |
+                a(href="#/Questions/My") My Questions
+                span |
+                a(href="#/Stats") Stats
 
-                    div.head-row
-                        div.row
-                            span.col-md-6
-                                span(id="tv_{{lang1}}_{{word.link}}").word {{word.o1}}
-                                img(src="assets/img/flags/flag_{{lang1}}.png").flag-left
-                            span.col-md-6
-                                img(src="assets/img/flags/flag_{{lang2}}.png").flag-right
-                                span(id="tv_{{lang2}}_{{word.link}}").word {{word.o2}}
+            div(class="view-animate-container")
+                div(ng-view).view-animate
 
-                    div.wordrow
-                        div(id="{{word.link}}_image_select",my-repeat-directive).imagepart
-                            img(id="image_{{word.link}}",src="{{word.imagefile}}").imgpreview
-                            div(ng-show="word.imagefile",ng-click="deleteImg(word.link)").btn.btn-xs.btn-danger.delete-button x
-                            input(type="file",id="image_{{word.link}}_file").fileupload
-
-                        div.wordcontainer
-                            div.row
-                               div.col-md-6
-                                    input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)")
-                               div.col-md-6
-                                    input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)")
-
-                            div.row
-                                div.col-md-6
-                                    span(id="in_{{lang1}}_{{word.link}}",ng-click="updateWord(lang1,word.link)").label.label-danger.hide save!
-                                    span(ng-click="showSeznam(word.l1,word.link)").btn.btn-xs.btn-default sl
-                                    span(ng-click="showGImage(word.l1,word.link)").btn.btn-xs.btn-default gi
-                                    span(ng-click="showLeo(word.l1,word.link)").btn.btn-xs.btn-default lo
-                                div.col-md-6
-                                    span(id="in_{{lang2}}_{{word.link}}",ng-click="updateWord(lang2,word.link)").label.label-danger.hide save!
-                                    span(ng-click="showSeznam(word.l2,word.link)").btn.btn-xs.btn-default sl
-                                    span(ng-click="showGImage(word.l2,word.link)").btn.btn-xs.btn-default gi
-                                    span(ng-click="showLeo(word.l1,word.link)").btn.btn-xs.btn-default lo
-
-                            div
-                                div(ng-hide="word.duplicity").duplicities_loading
-                                    img(src="assets/img/loading64.gif")
-                                    span counting duplicities on server...
-                                div(ng-show="word.duplicity.length").duplicities
-                                    div.row(ng-show="word.duplicity")
-                                        div.col-md-3
-                                            b lesson (#)
-                                        div.col-md-4
-                                            b word 1
-                                        div.col-md-4
-                                            b word 2
-                                        div.col-md-1
-                                            b desc
-                                    div.row(ng-repeat="duplicity in word.duplicity")
-                                        div.col-md-3 {{duplicity.s}} ({{duplicity.l}}#)
-                                        div.col-md-4 {{duplicity.w1}}
-                                        div.col-md-4 {{duplicity.w2}}
-                                        div.col-md-1
-                                            i {{duplicity.d}}
-                                    div(ng-click="deleteLinks([word.link])",ng-hide="isDeleted(word)").btn.btn-xs.btn-danger delete
-                        div.clearfix
-            div(ng-click="showAddWord()").btn.btn-primary add word
         div#helpers
             div(ng-show="isSeznamShowed")
                 span(ng-click="isSeznamShowed=false").btn.btn-xs.btn-default close x
@@ -159,8 +106,13 @@ html(ng-app="words")
 
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
     script(src="assets/js/bootstrap.min.js")
-    script(src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js")
+    script(src="http://code.angularjs.org/1.2.1/angular.min.js")
+    script(src="http://code.angularjs.org/1.2.1/angular-animate.min.js")
+    script(src="http://code.angularjs.org/1.2.1/angular-route.min.js")
+    script(src="http://code.angularjs.org/1.2.1/angular-cookies.min.js")
     script(src="assets/js/imageddc.js")
     script(src="assets/js/lscache.js")
     script(src="assets/js/controler.js")
+    script(src="assets/js/app.js")
+
     //script(src="assets/js/angular-file-upload.min.js")

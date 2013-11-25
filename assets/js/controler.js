@@ -1,8 +1,8 @@
-var app = angular.module('words',[]);
+
 
 //lscache.flush();
 //http://voc4u-miuan.rhcloud.com/#/1001/de/es
-
+/*
 app.directive('onEnter',function(){
 
     var linkFn = function(scope,element,attrs) {
@@ -48,7 +48,10 @@ app.directive('myRepeatDirective', function() {
     };
 })  ;
 
-function WordWebCtrl($scope, $rootScope,$http, $location) {
+*/
+function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
+    this.params = $routeParams;
+
     var IMAGE_DIR = 'assets/img/';
     var WORD_STATUS = {
         CURRENT : 1,
@@ -59,19 +62,10 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
     };
 
 
-    $scope.lang1 = '';
-    $scope.lang2 = '';
-
-    $scope.loading = false;
-
-    $scope.languages =['cs', 'de','en', 'es','fr','it','pt','ru','sr','zh']
-
-
-    $scope.lessons =[ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010,101, 102, 103, 104, 105, 106, 107, 108, 109, 110 ];
 
     var duplicityLoading = [];
 
-    $scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
+    //$scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
     $scope.words={
         /*'1' : {
             l1:'cs',
@@ -85,18 +79,62 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         }  */
     };
 
-    $scope.location = $location.path();
+    this.lesson = this.params.lesson;
+    this.lang1 = this.params.lang1;
+    this.lang2 = this.params.lang2;
 
-    $scope.$on('$locationChangeSuccess', function () {
-        $scope.location = $location.path();
-        console.log('$locationChangeSuccess changed!', $location.path());
-        loadWords ($location.path());
+    var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile, image.thumb as imagethumb';
 
-    });
+    $scope.loading = true;
+    setTimeout(function() {
+        $http({method: 'GET', url: url }).
+            success(function(data, status, headers, config) {
+                console.log(data);
+                tempWord = {};
+                duplicityLoading = [];
+
+                data.forEach(function(tw){
+
+
+                    if(tw.thumbfile){
+                        tw.imagefile = 'assets/img/thumb/' + tw.thumbfile;
+                    } else if(tw.imagefile) {
+                        tw.imagefile = 'assets/img/orig/' + tw.imagefile;
+                    }
+
+
+                    // for removed not loading any duplicities
+                    if(tw.del){
+                        tw.duplicity = true;
+                    } else {
+                        // duplicity loading
+                        tw.duplicity = false;
+                        duplicityLoading.push(tw);
+                    }
+
+                    tempWord[tw.link] = tw;
+                });
+
+                $scope.words = tempWord;
+                $scope.loading = false;
+
+                loadDuplicityTimer();
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                $scope.loading = false;
+            });
+
+
+    }, 300);
+
+    //var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile, image.thumb as imagethumb';
+
 
     var tempWord = [];
 
-    function loadDuplicity(location) {
+    function loadDuplicity() {
         // 15 the response is ~27s (SQL LIMIT 25)
         // 75 the response is ~1:27s  (SQL LIMIT 25)
         // 2 the response is ~3s  (SQL LIMIT 6)
@@ -110,8 +148,8 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         var onRow = [];
         var links = [];
 
-        var langs = [$scope.lang1, $scope.lang2];
-        var changeLang = langs[0];
+        var langs = [$routeParams.lang1, $routeParams.lang2];
+        var changeLang = $routeParams.lesson;
 
         // #00000001
         // lang are sort alphabeticaly for caching result
@@ -169,11 +207,11 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
                     /***
                      *  recal duplicity with rest of duplicity list
                      * */
-                    loadDuplicityTimer(location);
+                    loadDuplicityTimer();
 
                 }).
                 error(function(data, status, headers, config) {
-                    loadDuplicityTimer(location);
+                    loadDuplicityTimer();
                 });
         }
 
@@ -232,113 +270,12 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
     }
 
 
-    function loadDuplicityTimer(location){
-        var loc = location;
+    function loadDuplicityTimer(){
+
 
         setTimeout(function(){
-            loadDuplicity(loc);
+            loadDuplicity();
         }, 10);
-    }
-
-    /**
-     * loadWords
-     * @param lessonAndLang - /2002/en/cs
-     */
-    function loadWords(lessonAndLang){
-        $('#all_words_here').fadeOut();
-        $scope.loading = true;
-        setTimeout(function() {
-            $http({method: 'GET', url: '/words/lesson' +lessonAndLang }).
-                success(function(data, status, headers, config) {
-                    setupLessonAndLangs(lessonAndLang);
-                    console.log(data);
-                    tempWord = {};
-                    duplicityLoading = [];
-
-                    data[0].forEach(function(link){
-                        if(link.version){
-                           return ;
-                        }
-
-                        var tw = {
-
-                          description : link.description,
-                          link : link.lid,
-                          w1 : '',
-                          w2 : '',
-                          del : link.del
-                        }
-
-                        if(link.thumbfile){
-                           tw.imagefile = 'assets/img/thumb/' + link.thumbfile;
-                        } else if(link.imagefile) {
-                           tw.imagefile = 'assets/img/orig/' + link.imagefile;
-                        }
-
-
-                        // for removed not loading any duplicities
-                        if(link.del){
-                            tw.duplicity = true;
-                        } else {
-                            // duplicity loading
-                            tw.duplicity = false;
-                            duplicityLoading.push(tw);
-                        }
-                        tempWord[link.lid] = tw;
-                    });
-
-
-                    data[1].forEach(function(w){
-                        if(tempWord[w.link]){
-                            var l = tempWord[w.link];
-                            l.w1 = w.word;
-                            l.o1 = w.word;
-                            l.l1 = w.lang;
-                        }
-
-                    });
-
-                    data[2].forEach(function(w){
-                        if(tempWord[w.link]){
-                            var l = tempWord[w.link];
-                            l.w2 = w.word;
-                            l.o2 = w.word;
-                            l.l2 = w.lang;
-                        }
-                    });
-                    //console.error('ahoj');
-
-
-                    $scope.words = tempWord;
-                    $scope.loading = false;
-
-                    loadDuplicityTimer(lessonAndLang);
-                }).
-                error(function(data, status, headers, config) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                    $scope.loading = false;
-                });
-
-
-        }, 300);
-    }
-
-
-    $scope.langChange = function(idx, value){
-        var lesson = $scope.lesson;
-
-        lesson[idx] = value;
-
-        if(lesson[0] != 'lesson'
-            && lesson[1] != 'lang 1'
-            && lesson[2] != 'lang 2'){
-            $location.path('/' + lesson.join('/'));
-
-        }
-
-        $scope.lesson = lesson;
-        //alert(idx + value);
     }
 
     function getWordByLink(link){
@@ -604,28 +541,10 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         });
     }
 
-    function showDialogById(dialogId, yesevent) {
-        var modalDialog = $(dialogId);
 
-        modalDialog.find('#yesbutton').click(function(event) {
-            yesevent(event);
-            modalDialog.modal('hide');
-        });
-
-        modalDialog.modal('show');
-
-        return modalDialog;
-    }
-
-    function showConfirmDialog(title, message, yesevent){
-        var modalDialog = showDialogById('#modal-from-dom', yesevent);
-
-        modalDialog.find('#warning_dialog_title').text(title);
-        modalDialog.find('#warning_dialog_message').text(message);
-    }
 
     $scope.deleteImg = function(link){
-        showConfirmDialog('Delete image', 'Are you sure about delete image?', function(){
+        $rootScope.showConfirmDialog('Delete image', 'Are you sure about delete image?', function(){
             deleteImg(link, function(data){
                 $scope.$apply(function(){
                     var word = getWordByLink(link);
@@ -798,7 +717,7 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
 
     $scope.showAddWord = function(){
         console.log('assets/img/flags/flag_'+$scope.lang1+'.png') ;
-        var modalDialog = showDialogById('#modal-add-word', function(){
+        var modalDialog = $rootScope.showDialogById('#modal-add-word', function(){
             //modalDialog.find('')
             var dataContainer = {'word' : {
                 s : $scope.lessonId,
@@ -857,7 +776,6 @@ function WordWebCtrl($scope, $rootScope,$http, $location) {
         modalDialog.find('#add_word_icon1').attr('src','assets/img/flags/flag_'+$scope.lang1+'.png');
         modalDialog.find('#add_word_icon2').attr('src','assets/img/flags/flag_'+$scope.lang2+'.png');
     }
-
 }
 
 

@@ -18,12 +18,19 @@ module.exports = {
     // get Hapi Config
     ,$getConfig : function(){
         return {
-            index_get : {
+            templates_get : {
+                params : '{params*}'
+            }, index_get : {
                 auth : 'passport'
             },stat_get : {
                 auth : 'passport'
             }
         }
+    },templates_get : function (request){
+        console.log(request.params) ;
+        var template = request.params.params;
+
+        request.reply.view('templates/' + template + '.jade');
     }
     ,index_get : function (request){
         request.reply.view('index');
