@@ -133,6 +133,137 @@ app.directive('myWord', function () {
                 $scope.word = $scope.$parent.words[ $scope.word.link];
                 //console.log('duplicity',$scope.word.link, $scope.word.duplicity, $scope.$parent.words[ $scope.word.link].duplicity);
             });
+
+            $scope.isSeznamShowed = false;
+            $scope.showSeznam = function(lang, link){
+
+                console.log('showSeznam', lang, link);
+
+                $scope.isSeznamShowed = true;
+
+                var word = $scope.word;
+
+                if(word){
+                    var langTxt;
+                    var wordTxt;
+                    if(word.n1 != lang){
+                        langTxt = word.n1 + '-' + word.n2;
+                        wordTxt = word.o2;
+                    } else {
+                        langTxt = word.n2 + '-' + word.n1;
+                        wordTxt = word.o1;
+                    }
+
+                    langTxt = langTxt.replace('cs','cz');
+
+                    var url = 'http://slovnik.seznam.cz/'+langTxt+'/word/?q=' + wordTxt;
+                    var seznam = $('#slovnik_seznam_cz');
+
+                    //var win = window.open(url, 'seznam_cz');
+                    //win.blur();
+                    var key = lang + '_' + (link);
+                    var obj = $('#ed_' + key);
+
+
+                    var win = window.open(url, 'seznam_name_cz');
+                    if(seznam.attr('src') != url){
+                        console.log('furl', url + '  attr("src"):' +seznam.attr('src'));
+                        seznam.attr('src', url);
+                        seznam.ready(function(data, data2){
+                            var key = lang + '_' + (link);
+                            //$('#ed_' + key).focus();
+                            console.log('load', seznam.attr('src'));
+                        });
+                    }
+
+                }
+            }
+
+
+            $scope.showLeo = function(lang, link){
+
+                console.log('showSeznam', lang, link);
+
+                $scope.isSeznamShowed = true;
+
+                var word= $scope.word;
+
+                if(word){
+                    var langVal = 1;
+                    var wordTxt;
+                    if(word.n1 == 'de'){
+                        wordTxt = word.o1;
+                    } else {
+                        wordTxt = word.o2;
+                    }
+
+                    /*if(lang != 'de'){
+                     langVal = 1;
+                     }*/
+
+                    var url = 'http://dict.leo.org/ende/index_de.html#/search='+wordTxt+'&searchLoc='+langVal+'&resultOrder=basic&multiwordShowSingle=on';
+                    var seznam = $('#slovnik_seznam_cz');
+
+                    //var win = window.open(url, 'seznam_cz');
+                    //win.blur();
+                    var key = lang + '_' + (link);
+                    var obj = $('#ed_' + key);
+
+                    var win = window.open(url, 'leo_name_cz');
+
+                    if(seznam.attr('src') != url){
+                        console.log('furl', url + '  attr("src"):' +seznam.attr('src'));
+                        seznam.attr('src', url);
+                        seznam.ready(function(data, data2){
+                            var key = lang + '_' + (link);
+                            //$('#ed_' + key).focus();
+                            console.log('load', seznam.attr('src'));
+                        });
+                    }
+
+                }
+            }
+
+            $scope.isGoogleImageShowed = false;
+            $scope.showGImage = function(lang, link){
+
+                console.log('showGImage', lang, link);
+
+                //$scope.isGoogleImageShowed = true;
+
+                var word= $scope.word;
+
+                if(word){
+                    //var langTxt;
+                    var wordTxt;
+                    if(word.n1 != lang){
+                        //    langTxt = word.l1 + '-' + word.l2;
+                        wordTxt = word.o2;
+                    } else {
+                        //    langTxt = word.l2 + '-' + word.l1;
+                        wordTxt = word.o1;
+                    }
+
+                    //langTxt = langTxt.replace('cs','cz');
+
+                    var url = 'https://www.google.co.nz/search?source=lnms&tbm=isch&q='+wordTxt;
+                    var googleImage = $('#google_image_com');
+
+                    var win = window.open(url, 'name_cz');
+                    console.log('name', win.name);
+
+                    if(googleImage.attr('src') != url){
+                        console.log('furl', url + '  attr("src"):' +googleImage.attr('src'));
+                        //googleImage.attr('src', url);
+                        googleImage.ready(function(data, data2){
+                            //var key = lang + '_' + (link);
+                            //$('#ed_' + key).focus();
+                            console.log('load', googleImage.attr('src'));
+                        });
+                    }
+
+                }
+            }
         },
         templateUrl : 'templates/word-row'
     };
