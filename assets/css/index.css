@@ -1,5 +1,5 @@
-#ahoj {
-    margin:20px;
+#body {
+    margin:3px;
 }
 
 .wordrowcolor{
@@ -10,7 +10,7 @@
     background-color: white;
     margin-bottom: 2px;
     padding:0px;
-    width:650px;
+    width:850px;
 }
 
 .test{
@@ -163,4 +163,9 @@
 
 .linkdelete {
     opacity:0.3;
+}
+
+
+#loading {
+    margin: 80px;
 }

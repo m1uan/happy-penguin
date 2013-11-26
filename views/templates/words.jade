@@ -1,26 +1,33 @@
-div#modal-add-word.modal.fade
-    div.modal-dialog
-        div.modal-content
-            div.modal-header
-                a.close &times;
-                h3#warning_dialog_title Add word
-            div.modal-body
-                div.row
-                    div.col-md-4 description:
-                    input.col-md-8(ng-model="new_word_d")
-                div.row
-                    div.col-md-6
-                        input(ng-model="new_word_w1")
-                        img#add_word_icon1.flag-left
-                    div.col-md-6
-                        img#add_word_icon2.flag-right
-                        input(ng-model="new_word_w2")
+div(ng-show="loading")#loading
+    span loading please wait...
 
-            div.modal-footer
-                a#yesbutton.btn.btn-danger Save
-                a(href="javascript:$('#modal-add-word').modal('hide')").btn.btn-primary Close
+div(ng-hide="loading")
+    div#modal-add-word.modal.fade
+        div.modal-dialog
+            div.modal-content
+                div.modal-header
+                    a.close &times;
+                    h3#warning_dialog_title Add word
+                div.modal-body
+                    div.row
+                        div.col-md-4 description:
+                        input.col-md-8(ng-model="new_word_d")
+                    div.row
+                        div.col-md-6
+                            input(ng-model="new_word_w1")
+                            img#add_word_icon1.flag-left
+                        div.col-md-6
+                            img#add_word_icon2.flag-right
+                            input(ng-model="new_word_w2")
+
+                div.modal-footer
+                    a#yesbutton.btn.btn-danger Save
+                    a(href="javascript:$('#modal-add-word').modal('hide')").btn.btn-primary Close
 
 
-div(ng-click="showAddWord()").btn.btn-success add word
-div(ng-repeat="word in words")
-    div(my-word word="word")
+
+    div(ng-repeat="word in words")
+        div(my-word word="word")
+
+
+    div(ng-click="showAddWord()").btn.btn-success add word

@@ -8,80 +8,79 @@ html(ng-app="voc4u")
         link(rel='stylesheet', href='/assets/css/bootstrap.min.css', rel="stylesheet",media="screen")
         meta(name="viewport",content="width=device-width, initial-scale=1.0")
     body(ng-controller="MainCtrl as main")
+        div#body
+            header
 
-        header
+                div.btn-group
+                    button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[1]}}
+                        span.caret
+                    ul(role="menu").dropdown-menu
+                        li(ng-repeat="lang in languages")
+                            a(ng-click="langChange(1,lang)") {{lang}}
 
-            div.btn-group
-                button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[1]}}
-                    span.caret
-                ul(role="menu").dropdown-menu
-                    li(ng-repeat="lang in languages")
-                        a(ng-click="langChange(1,lang)") {{lang}}
+                div.btn-group
+                    button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[2]}}
+                        span.caret
+                    ul(role="menu").dropdown-menu
+                        li(ng-repeat="lang in languages")
+                            a(ng-click="langChange(2,lang)") {{lang}}
 
-            div.btn-group
-                button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[2]}}
-                    span.caret
-                ul(role="menu").dropdown-menu
-                    li(ng-repeat="lang in languages")
-                        a(ng-click="langChange(2,lang)") {{lang}}
-
-            div.btn-group
-                button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[0]}}
-                    span.caret
-                ul(role="menu").dropdown-menu
-                    li(ng-repeat="lesson in lessons")
-                        a(ng-click="langChange(0,lesson)") {{lesson}}
-
-
+                div.btn-group
+                    button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[0]}}
+                        span.caret
+                    ul(role="menu").dropdown-menu
+                        li(ng-repeat="lesson in lessons")
+                            a(ng-click="langChange(0,lesson)") {{lesson}}
 
 
 
-        div#modal-from-dom.modal.fade
-            div.modal-dialog
-                div.modal-content
-                    div.modal-header
-                        a.close &times;
-                        h3#warning_dialog_title delete image1
-                    div.modal-body
-                        p#warning_dialog_message do you realy want delete the picture1
-                    div.modal-footer
-                        a#yesbutton.btn.btn-danger Yes
-                        a(href="javascript:$('#modal-from-dom').modal('hide')").btn.btn-primary No
+                div.hide.content#menu
+                    a(href="#/{{lessonFields[0]}}/{{lessonFields[1]}}/{{lessonFields[2]}}") Words
+                    span |
+                    a(href="#/Questions") Questions
+                    span |
+                    a(href="#/Questions/My") My Questions
+                    span |
+                    a(href="#/Stats") Stats
 
-        div#modal-error.modal.fade
-            div.modal-dialog
-                div.modal-content
-                    div.modal-header
-                        a.close &times;
-                        h3 error :-(
-                    div.modal-body
-                        p The picture are very probably so big, should be less then 600kB.
-                        h4 server message
-                        p#origin-message
-                    div.modal-footer
-                        a(href="javascript:$('#modal-error').modal('hide')").btn.btn-primary ok
-        div.hide#content
 
-            div#menu
-                a(href="#/{{lessonFields[0]}}/{{lessonFields[1]}}/{{lessonFields[2]}}") Words
-                span |
-                a(href="#/Questions") Questions
-                span |
-                a(href="#/Questions/My") My Questions
-                span |
-                a(href="#/Stats") Stats
 
-            div(class="view-animate-container")
-                div(ng-view)
+            div#modal-from-dom.modal.fade
+                div.modal-dialog
+                    div.modal-content
+                        div.modal-header
+                            a.close &times;
+                            h3#warning_dialog_title delete image1
+                        div.modal-body
+                            p#warning_dialog_message do you realy want delete the picture1
+                        div.modal-footer
+                            a#yesbutton.btn.btn-danger Yes
+                            a(href="javascript:$('#modal-from-dom').modal('hide')").btn.btn-primary No
 
-        div#helpers
-            div(ng-show="isSeznamShowed")
-                span(ng-click="isSeznamShowed=false").btn.btn-xs.btn-default close x
-                div
-                    iframe.helpers_i#slovnik_seznam_cz
-        div
-            img#canvasHelper
-            canvas(width="128",height="128")#myCanvas
+            div#modal-error.modal.fade
+                div.modal-dialog
+                    div.modal-content
+                        div.modal-header
+                            a.close &times;
+                            h3 error :-(
+                        div.modal-body
+                            p The picture are very probably so big, should be less then 600kB.
+                            h4 server message
+                            p#origin-message
+                        div.modal-footer
+                            a(href="javascript:$('#modal-error').modal('hide')").btn.btn-primary ok
+
+
+            div(ng-view).content
+
+            div#helpers
+                div(ng-show="isSeznamShowed")
+                    span(ng-click="isSeznamShowed=false").btn.btn-xs.btn-default close x
+                    div
+                        iframe.helpers_i#slovnik_seznam_cz
+            div
+                img#canvasHelper
+                canvas(width="128",height="128")#myCanvas
 
 
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")

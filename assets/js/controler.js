@@ -1,5 +1,5 @@
 
-function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService) {
+function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, duplicityService) {
     this.params = $routeParams;
 
     var IMAGE_DIR = 'assets/img/';
@@ -13,7 +13,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService) {
 
 
 
-    var duplicityLoading = [];
+
 
     //$scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
     $scope.words={
@@ -41,7 +41,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService) {
             success(function(data, status, headers, config) {
                 console.log(data);
                 tempWord = {};
-                duplicityLoading = [];
+                duplicityService.clear();
 
                 data.forEach(function(tw){
 
@@ -58,17 +58,17 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService) {
                         tw.duplicity = true;
                     } else {
                         // duplicity loading
-                        tw.duplicity = [tw]; // HAVE TO BE false
-                        duplicityLoading.push(tw);
+                        tw.duplicity = false; // HAVE TO BE false
+                        duplicityService.checkDuplicity(tw);
                     }
 
                     tempWord[tw.link] = tw;
                 });
 
                 $scope.words = tempWord;
-                $scope.loading = true;
+                $scope.loading = false;
 
-                //loadDuplicityTimer();
+                duplicityService.loadDuplicityTimer();
             }).
             error(function(data, status, headers, config) {
                 // called asynchronously if an error occurs
@@ -84,151 +84,6 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService) {
 
     var tempWord = [];
 
-    function loadDuplicity() {
-        // 15 the response is ~27s (SQL LIMIT 25)
-        // 75 the response is ~1:27s  (SQL LIMIT 25)
-        // 2 the response is ~3s  (SQL LIMIT 6)
-        // 80 the response is ~2:00s  (SQL LIMIT 6) and 502
-        var maxDuplicityOnRow = 10;
-
-        if(duplicityLoading.length < 1) {
-            return;
-        }
-
-        var onRow = [];
-        var links = [];
-
-        var langs = [$routeParams.lang1, $routeParams.lang2];
-        var changeLang = $routeParams.lesson;
-
-        // #00000001
-        // lang are sort alphabeticaly for caching result
-        // example:
-        // 	 ["cs","de"] or ["de","cs"]
-        //	allways will be request like ["cs","de"]
-        langs = langs.sort();
-        changeLang = langs[0] != changeLang;
-
-        onRow.push(langs);
-
-	// +1 because onRow already are the langs
-        while(duplicityLoading.length > 0 && onRow.length < maxDuplicityOnRow +1) {
-            //console.log('ahoj',duplicityLoading[0]);
-            var word =  duplicityLoading.shift();
-            //console.log('ahoj2',word,duplicityLoading);
-            //var word = getWordByLink(wordLink);
-
-            var onRowData = null;
-
-            // langs was changed in #00000001 alphabeticaly
-            if(changeLang){
-                onRowData = [word.w2.toLowerCase(), word.w1.toLowerCase()];
-            } else {
-                onRowData = [word.w1.toLowerCase(), word.w2.toLowerCase()];
-            }
-
-            var storageKey = generateStorageKey(langs, onRowData);
-            // try re-store data from local data file
-            // https://github.com/pamelafox/lscache
-            var cachedData = lscache.get(storageKey);
-
-            // if the data isn't in cache please put
-            // to onRow which will be load from server
-            if(cachedData && typeof cachedData !== 'undefined'){
-                //console.log('cachedData:', cachedData);
-                dataToDuplicies(cachedData, word.link, -1);
-            } else {
-                onRow.push(onRowData);
-                links.push({link : word.link, storageKey : storageKey});
-            }
-
-
-        }
-
-        console.log('onRow', onRow, links);
-
-        // if any row is in onRow - load from server
-        // because everything can be previosly loaded from cache...
-        if(onRow.length > 0) {
-            $http.post('/words/duplicity', {links: onRow}).
-                success(function(data, status, headers, config) {
-                    handleData(data);
-                    //$scope.$apply();
-                    /***
-                     *  recal duplicity with rest of duplicity list
-                     * */
-                    loadDuplicityTimer();
-
-                }).
-                error(function(data, status, headers, config) {
-                    loadDuplicityTimer();
-                });
-        }
-
-        function dataToDuplicies(dataOnIdx, link){
-            console.log(dataOnIdx, link, $scope.words[link].duplicity);
-            if(dataOnIdx && dataOnIdx.length > 0){
-                var duplicities = [];
-                dataOnIdx.forEach(function(row){
-
-                    if(changeLang) {
-                        // the order of langs have been changed #00000001
-                        // change the words
-                        var tw1 = row.w1;
-                        row.w1 = row.w2;
-                        row.w2 = tw1;
-                    }
-
-                    duplicities.push(row);
-                });
-                $scope.words[link].duplicity = duplicities;
-                //console.log(dataOnIdx, link, $scope.words[link].duplicity);
-
-                console.log(link, $scope.words[link].duplicity);
-            }
-            $rootScope.$broadcast('duplicity');
-
-        }
-
-        function generateStorageKey(langs, row){
-            var key = 'dp' + langs.join('_');
-            key+= '|' + row.join('_');
-
-            return key;
-        }
-
-        function handleData(data){
-            console.log(data, links);
-            // it is "na bednu" but its connection between data and links
-            // the same index in links is the same index for data
-            // links is conection for words
-            links.forEach(function(link, idx){
-                var dataOnIdx = data[idx];
-
-                if(dataOnIdx){
-                    dataToDuplicies(dataOnIdx, link.link);
-
-                    // try re-store data from local data file
-                    // https://github.com/pamelafox/lscache
-                    lscache.set(link.storageKey, dataOnIdx, 60* 12* 14);
-                    var cachedData = lscache.get(link.storageKey);
-                    //console.log('dataOnIdx:', dataOnIdx,'cacheData:', cachedData);
-                }
-
-            });
-
-        }
-
-    }
-
-
-    function loadDuplicityTimer(){
-
-
-        setTimeout(function(){
-            loadDuplicity();
-        }, 10);
-    }
 
     function getWordByLink(link){
         return $scope.words[link];
@@ -351,10 +206,10 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService) {
                     console.log(data, $scope.words);
 
                     var newWord = {
-                        l1 : data.w1[0].lang,
+                        n1 : data.w1[0].lang,
                         w1 : data.w1[0].word,
                         o1 : data.w1[0].word,
-                        l2 : data.w2[0].lang,
+                        n2 : data.w2[0].lang,
                         w2 : data.w2[0].word,
                         o2 : data.w2[0].word,
                         link : data.l,
@@ -366,8 +221,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService) {
 
                     $scope.words[newWord.link] = newWord;
 
-                    duplicityLoading.unshift(newWord);
-                    loadDuplicity($scope.location);
+                    duplicityService.checkDuplicity(newWord, true);
 
                     $scope.new_word_d = '';
                     $scope.new_word_w1 = '';

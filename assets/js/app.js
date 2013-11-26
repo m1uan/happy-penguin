@@ -68,9 +68,9 @@ function MainCtrl($scope, $route, $routeParams, $location, $cookieStore) {
 
     function moveToLesson(){
         $location.path('/' + $scope.lessonFields.join('/'));
-        $('#content').fadeOut();
-        $('#content').removeClass('hide');
-        $('#content').fadeIn('slow');
+        $('.content').fadeOut();
+        $('.content').removeClass('hide');
+        $('.content').fadeIn('slow');
     }
 
     $scope.langChange = function(idx, value){

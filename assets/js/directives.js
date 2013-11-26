@@ -33,7 +33,7 @@ app.directive('myWord', function () {
             scope.lang1 =  scope.word.n1;
             scope.lang2 =  scope.word.n2;
         },
-        controller: function($rootScope, $scope, dialogService, wordService){
+        controller: function($rootScope, $scope, dialogService, wordService, duplicityService){
 
             $scope.updateWord = function(lang, link) {
                 var key = lang + '_' + link;
@@ -53,6 +53,7 @@ app.directive('myWord', function () {
 
 
                                 w.duplicity = false;
+                                duplicityService.checkDuplicity(w, true);
                                 //duplicityLoading.unshift(getWordByLink(link));
                                 //loadDuplicity($scope.location);
 
