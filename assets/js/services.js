@@ -284,7 +284,7 @@ app.service('duplicityService', function($http) {
 
                     // try re-store data from local data file
                     // https://github.com/pamelafox/lscache
-                    lscache.set(word.storageKey, dataOnIdx, 60* 12* 14);
+                    lscache.set(word.storageKey, dataOnIdx, 60* 12* 90);
                     //var cachedData = lscache.get(word.storageKey);
                     //console.log('dataOnIdx:', dataOnIdx,'cacheData:', cachedData);
                 }
