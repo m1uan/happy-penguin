@@ -19,14 +19,19 @@ app.directive('myWord', function () {
             dragImage(im, inp, scope.word.link);
 
 
-            //console.log('im', attrs.id);
-            //console.log('element', attrs('id'));
-            if (scope.$last){
-                //
-                $('#all_words_here').removeClass('hide');
-                //$('#all_words_here').fadeIn();
-                //window.alert("im the last!");
-            }
+            el.hover(function () {
+                el.find('.focused-hide').hide();
+                el.find('.focused-show').fadeIn();
+                el.find('.focused-image').removeClass('image-out-focus');
+                el.find('.focused-image').addClass('image-in-focus');
+                console.log('hover') ;
+            }, function () {
+                el.find('.focused-show').hide();
+                el.find('.focused-hide').show();
+                el.find('.focused-image').removeClass('image-in-focus');
+                el.find('.focused-image').addClass('image-out-focus');
+                console.log('hover-off') ;
+            });
 
             scope.word.o1 =  scope.word.w1;
             scope.word.o2 =  scope.word.w2;

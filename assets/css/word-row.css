@@ -1,0 +1,154 @@
+
+.focused {
+    color: red;
+    background-color: black;
+}
+
+.image-out-focus {
+    width:50px;
+    height:50px;
+}
+
+.image-in-focus {
+    width:150px;
+    height:150px;
+}
+
+
+.focused-image {
+
+}
+
+.focused .focusedimage {
+    width:50px;
+    height:50px;
+}
+
+.focused-show {
+    display: none;
+}
+
+
+.focuset-hide {
+    display: block;
+}
+
+
+/*
+* old : remove it
+*/
+.wordcontainer {
+    float:left;
+    padding:5px;
+}
+.wordspaner{
+    color: darkred;
+    margin-right : 10px;
+}
+
+.wordspaner {
+    margin-left: 10px;
+
+    font-size: smaller;
+}
+.word {
+    font-size: 25px;
+    font-weight: bolder;
+}
+
+.wordrowcolor{
+
+    border-style:solid;
+    border-width: 1px;
+    border-color: darkblue;
+    background-color: white;
+    margin-bottom: 2px;
+    padding:0px;
+    width:850px;
+}
+
+
+.imgpreview {
+    width:128px;
+    height:128px;
+}
+.imgpreview {
+    border-width: 2px;
+    border-style: dotted;
+    border-color: blue;
+    background-color:lightgray;
+    display:block;
+}
+
+.imgpreview-draged {
+    border-color: red;
+}
+
+.identifer{
+    height:70px;
+    margin:5px;
+}
+
+.imagepart{
+    position:relative;
+    float:left;
+    margin-top:-55px;
+
+}
+
+.delete-button {
+    position:absolute;
+    top:0px;
+    right:0;
+    margin:5px;
+}
+
+.fileupload{
+    position:absolute;
+    left:0px;
+    bottom:0px;
+    width:128px;
+}
+
+.description,.head-row {
+    position: relative;
+    font-size:18px;
+    font-style:italic;
+    color:white;
+    padding:0px;
+    padding-left:138px;
+    margin:0px;
+    background-color:#3071a9;
+}
+
+.description {
+    font-size:18px;
+    background-color:#0d3349;
+}
+
+
+.wordrow {
+
+}
+
+.flag-right, .flag-left {
+    width: 30px;
+    height:20px;
+    margin:4px;
+}
+
+.duplicities_loading img{
+
+    width:15px;
+    height:15px;
+    margin-left:10px;
+    margin-right:10px;
+}
+
+.duplicities {
+    font-size:x-small;
+}
+
+.linkdelete {
+    opacity:0.3;
+}

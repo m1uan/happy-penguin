@@ -27,7 +27,7 @@ div(ng-hide="loading")
 
 
     div(ng-repeat="word in words")
-        div(my-word word="word")
+        div(my-word word="word",ng-class="{linkdelete: word.del > 0}")
 
 
     div(ng-click="showAddWord()").btn.btn-success add word

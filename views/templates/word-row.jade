@@ -1,62 +1,34 @@
-div(ng-class="{linkdelete: word.del > 0}").wordrowcolor
-    div.text-center.description
-        span(id="in_{{word.link}}").identifer {{word.link}}#
-        span {{word.description}}
-
-
-    div.head-row
+div.row
+    div.col-md-2
+        img(src="{{word.imagefile}}").focused-image.image-out-focus
+    div.col-md-10
         div.row
-            span.col-md-6
-                span(id="tv_{{lang1}}_{{word.link}}").word {{word.o1}}
-                img(src="assets/img/flags/flag_{{lang1}}.png").flag-left
-            span.col-md-6
-                img(src="assets/img/flags/flag_{{lang2}}.png").flag-right
-                span(id="tv_{{lang2}}_{{word.link}}").word {{word.o2}}
+            div.col-md-3
+                div.focused-hide {{word.w1}}
+                input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)").focused-show
+            div.col-md-3
+                div.focused-hide {{word.w2}}
+                input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)").focused-show
+            div.col-md-6 {{word.description}}
+        div.focused-show
+            div(ng-hide="word.duplicity").duplicities_loading
+                img(src="assets/img/loading64.gif")
+                span counting duplicities on server...
+            div(ng-show="word.duplicity.length").duplicities
+                div.row(ng-show="word.duplicity")
+                    div.col-md-3
+                        b lesson (#)
+                    div.col-md-4
+                        b word 1
+                    div.col-md-4
+                        b word 2
+                    div.col-md-1
+                        b desc
+                div.row(ng-repeat="duplicity in word.duplicity")
+                    div.col-md-3 {{duplicity.s}} ({{duplicity.l}}#)
+                    div.col-md-4 {{duplicity.w1}}
+                    div.col-md-4 {{duplicity.w2}}
+                    div.col-md-1
+                        i {{duplicity.d}}
+                div(ng-click="deleteLinks([word.link])",ng-hide="isDeleted(word)").btn.btn-xs.btn-danger delete
 
-    div.wordrow
-        div(id="{{word.link}}_image_select").imagepart
-            img(id="image_{{word.link}}",src="{{word.imagefile}}").imgpreview
-            div(ng-show="word.imagefile",ng-click="deleteImg(word.link)").btn.btn-xs.btn-danger.delete-button x
-            input(type="file",id="image_{{word.link}}_file").fileupload
-
-        div.wordcontainer
-            div.row
-                div.col-md-6
-                    input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)")
-                div.col-md-6
-                    input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)")
-
-            div.row
-                div.col-md-6
-                    span(id="in_{{lang1}}_{{word.link}}",ng-click="updateWord(lang1,word.link)").label.label-danger.hide save!
-                    span(ng-click="showSeznam(word.n1,word.link)").btn.btn-xs.btn-default sl
-                    span(ng-click="showGImage(word.n1,word.link)").btn.btn-xs.btn-default gi
-                    span(ng-click="showLeo(word.n1,word.link)").btn.btn-xs.btn-default lo
-                div.col-md-6
-                    span(id="in_{{lang2}}_{{word.link}}",ng-click="updateWord(lang2,word.link)").label.label-danger.hide save!
-                    span(ng-click="showSeznam(word.n2,word.link)").btn.btn-xs.btn-default sl
-                    span(ng-click="showGImage(word.n2,word.link)").btn.btn-xs.btn-default gi
-                    span(ng-click="showLeo(word.n1,word.link)").btn.btn-xs.btn-default lo
-
-            div
-                div(ng-hide="word.duplicity").duplicities_loading
-                    img(src="assets/img/loading64.gif")
-                    span counting duplicities on server...
-                div(ng-show="word.duplicity.length").duplicities
-                    div.row(ng-show="word.duplicity")
-                        div.col-md-3
-                            b lesson (#)
-                        div.col-md-4
-                            b word 1
-                        div.col-md-4
-                            b word 2
-                        div.col-md-1
-                            b desc
-                    div.row(ng-repeat="duplicity in word.duplicity")
-                        div.col-md-3 {{duplicity.s}} ({{duplicity.l}}#)
-                        div.col-md-4 {{duplicity.w1}}
-                        div.col-md-4 {{duplicity.w2}}
-                        div.col-md-1
-                            i {{duplicity.d}}
-                    div(ng-click="deleteLinks([word.link])",ng-hide="isDeleted(word)").btn.btn-xs.btn-danger delete
-        div.clearfix
