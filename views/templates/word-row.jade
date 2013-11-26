@@ -1,15 +1,16 @@
-div.row
+div(id="word_{{word.link}}").row
     div.col-md-2
         img(src="{{word.imagefile}}").focused-image.image-out-focus
     div.col-md-10
         div.row
+            div.col-md-1 {{word.link}}#
             div.col-md-3
                 div.focused-hide {{word.w1}}
                 input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)").focused-show
             div.col-md-3
                 div.focused-hide {{word.w2}}
-                input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)").focused-show
-            div.col-md-6 {{word.description}}
+                input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)").focused-show
+            div.col-md-4 {{word.description}}
         div.focused-show
             div(ng-hide="word.duplicity").duplicities_loading
                 img(src="assets/img/loading64.gif")

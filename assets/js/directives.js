@@ -1,3 +1,18 @@
+function focusElement(el,focusShow){
+     if(focusShow){
+         el.find('.focused-hide').hide();
+         el.find('.focused-show').fadeIn();
+         el.find('.focused-image').removeClass('image-out-focus');
+         el.find('.focused-image').addClass('image-in-focus');
+     } else {
+         el.find('.focused-show').hide();
+         el.find('.focused-hide').show();
+         el.find('.focused-image').removeClass('image-in-focus');
+         el.find('.focused-image').addClass('image-out-focus');
+     }
+}
+
+
 app.directive('myWord', function () {
     return {
         restrict: 'A',   // 'A' is the default, so you could remove this line
@@ -20,17 +35,11 @@ app.directive('myWord', function () {
 
 
             el.hover(function () {
-                el.find('.focused-hide').hide();
-                el.find('.focused-show').fadeIn();
-                el.find('.focused-image').removeClass('image-out-focus');
-                el.find('.focused-image').addClass('image-in-focus');
-                console.log('hover') ;
+                focusElement(el, true);
+                //console.log('hover') ;
             }, function () {
-                el.find('.focused-show').hide();
-                el.find('.focused-hide').show();
-                el.find('.focused-image').removeClass('image-in-focus');
-                el.find('.focused-image').addClass('image-out-focus');
-                console.log('hover-off') ;
+                focusElement(el, false);
+                //console.log('hover-off') ;
             });
 
             scope.word.o1 =  scope.word.w1;
@@ -69,9 +78,18 @@ app.directive('myWord', function () {
                     });
                 }
 
+
+
+
+                var wordEl = $('#word_' + $scope.word.link);
+                focusElement(wordEl, false);
+                var wordEl2 = $('#word_' + ($scope.word.link + 1));
+                console.log('wordEl2', wordEl, wordEl2);
+                // wordEl2.text('ahoj');
+                focusElement(wordEl2, true);
+
                 var key2 = lang + '_' + (link+1);
                 $('#ed_' + key2).focus();
-
                 //alert('Submitted' + lang + lang + val);
             };
 
