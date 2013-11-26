@@ -4,48 +4,29 @@ app.directive('myCustomer', function () {
         scope: {
             word: '=word'
         },
-        controller: function($rootScope, $scope){
-            var dialogCtrl = $scope;
+        controller: function($rootScope, $scope, dialogService, wordService){
 
             $scope.deleteLinks = function(links){
-                dialogCtrl.showConfirmDialog('Delete word!', 'Are you sure about delete word?', function(){
-                    deleteLinks(links);
+                dialogService.showConfirmDialog('Delete word!', 'Are you sure about delete word?', function(){
+                    wordService.deleteLink($scope.word);
                 });
             }
 
             $scope.deleteImg = function(link){
-                dialogCtrl.showConfirmDialog('Delete image', 'Are you sure about delete image?', function(){
-                    deleteImg(link, function(data){
-                        $scope.$apply(function(){
-                            var word = getWordByLink(link);
-                            word.image = null;//'http://uncletim.com/store/media/ecom/prodlg/none.gif';
-                        });
-
-
+                dialogService.showConfirmDialog('Delete image', 'Are you sure about delete image?', function(){
+                    wordService.deleteImg(link, function(data){
+                        $scope.word.imagefile = null;//'http://uncletim.com/store/media/ecom/prodlg/none.gif';
                     });
                 });
             }
 
 
-            showDialogById = function(dialogId, yesevent) {
-                var modalDialog = $(dialogId);
 
-                modalDialog.find('#yesbutton').click(function(event) {
-                    yesevent(event);
-                    modalDialog.modal('hide');
-                });
 
-                modalDialog.modal('show');
-
-                return modalDialog;
-            }
-
-            $scope.showConfirmDialog = function(title, message, yesevent){
-                var modalDialog = showDialogById('#modal-from-dom', yesevent);
-
-                modalDialog.find('#warning_dialog_title').text(title);
-                modalDialog.find('#warning_dialog_message').text(message);
-            }
+            $scope.$on('duplicity', function() {
+                $scope.word = $scope.$parent.words[ $scope.word.link];
+                //console.log('duplicity',$scope.word.link, $scope.word.duplicity, $scope.$parent.words[ $scope.word.link].duplicity);
+            });
         },
         templateUrl : 'templates/word-row',
         link: function(scope, elemnt, attr){

@@ -83,7 +83,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
     this.lang1 = this.params.lang1;
     this.lang2 = this.params.lang2;
 
-    var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile, image.thumb as imagethumb';
+    var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del';
 
     $scope.loading = true;
     setTimeout(function() {
@@ -108,7 +108,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
                         tw.duplicity = true;
                     } else {
                         // duplicity loading
-                        tw.duplicity = false;
+                        tw.duplicity = [tw]; // HAVE TO BE false
                         duplicityLoading.push(tw);
                     }
 
@@ -116,9 +116,9 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
                 });
 
                 $scope.words = tempWord;
-                $scope.loading = false;
+                $scope.loading = true;
 
-                loadDuplicityTimer();
+                //loadDuplicityTimer();
             }).
             error(function(data, status, headers, config) {
                 // called asynchronously if an error occurs
@@ -195,7 +195,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
 
         }
 
-        console.log(onRow);
+        console.log('onRow', onRow, links);
 
         // if any row is in onRow - load from server
         // because everything can be previosly loaded from cache...
@@ -216,6 +216,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
         }
 
         function dataToDuplicies(dataOnIdx, link){
+            console.log(dataOnIdx, link, $scope.words[link].duplicity);
             if(dataOnIdx && dataOnIdx.length > 0){
                 var duplicities = [];
                 dataOnIdx.forEach(function(row){
@@ -231,10 +232,11 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
                     duplicities.push(row);
                 });
                 $scope.words[link].duplicity = duplicities;
+                //console.log(dataOnIdx, link, $scope.words[link].duplicity);
 
-                //console.log(link, $scope.words[link].duplicity);
+                console.log(link, $scope.words[link].duplicity);
             }
-
+            $rootScope.$broadcast('duplicity');
 
         }
 
@@ -334,6 +336,49 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
 
         //alert('Submitted' + lang + lang + val);
     };
+
+    /**
+     * show button save if the word is diferent like orig
+     * @param lang
+     * @param link
+     * @returns {boolean} - word is diferent from orig
+     */
+    $scope.checkWord = function(lang, link) {
+        var key = lang + '_' + link;
+        var val = $('#ed_' + key).val();
+        var orig = $('#tv_' + key).text();
+
+
+
+        var word = getWordByLink(link);
+
+        var indicator = $('#in_' + key);
+
+        console.log('checkWord (val:' + lang + ";" + key, word);
+
+        var readyForUpdate = false;
+
+        if(val == orig){
+            indicator.addClass('hide');
+            //if(word.status != WORD_STATUS.SAVED) {
+            //     word.status = WORD_STATUS.CURRENT;
+            //}
+
+        } else {
+            indicator.removeClass('hide');
+            readyForUpdate = true;
+            //word.status = WORD_STATUS.EDITED;
+        }
+
+        var indicator2 = $('#in_' + link);
+        //if(word.status== WORD_STATUS.CURRENT){
+        //indicator2.removeClass('label-default');
+        // } else {
+        //indicator2.addClass('label-primary');
+        //}
+
+        return readyForUpdate;
+    }
 
 
     $scope.focusWord = function(lang, link){
@@ -473,48 +518,6 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
         }
     }
 
-    /**
-     * show button save if the word is diferent like orig
-     * @param lang
-     * @param link
-     * @returns {boolean} - word is diferent from orig
-     */
-    $scope.checkWord = function(lang, link) {
-        var key = lang + '_' + link;
-        var val = $('#ed_' + key).val();
-        var orig = $('#tv_' + key).text();
-
-
-
-        var word = getWordByLink(link);
-
-        var indicator = $('#in_' + key);
-
-        console.log('checkWord (val:' + lang + ";" + key, word);
-
-        var readyForUpdate = false;
-
-        if(val == orig){
-            indicator.addClass('hide');
-            //if(word.status != WORD_STATUS.SAVED) {
-           //     word.status = WORD_STATUS.CURRENT;
-            //}
-
-        } else {
-            indicator.removeClass('hide');
-            readyForUpdate = true;
-            //word.status = WORD_STATUS.EDITED;
-        }
-
-        var indicator2 = $('#in_' + link);
-        //if(word.status== WORD_STATUS.CURRENT){
-            //indicator2.removeClass('label-default');
-       // } else {
-            //indicator2.addClass('label-primary');
-        //}
-
-        return readyForUpdate;
-    }
 
     $scope.updateImageFromURL = function(link){
         var editorId = '#image_url_' + link;
@@ -576,102 +579,9 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
 
 
 
-    deleteLinks = function(links){
-        $http({
-            method: 'POST',
-            url: '/words/deletelink',
-            data: {links:links}}).
-            success(function(data, status, headers, config) {
-
-                console.log(data);
-                data[0].forEach(function(dl){
-                   var w = getWordByLink(dl.lid);
-                    w.del = dl.del;
-                });
-
-            }).
-            error(function(data, status, headers, config) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-            });
-    }
-
-    $scope.isDeleted = function(word){
-        return word.del != 0;
-    }
 
 
-    function saveImgUrl(link,url,cb){
-        var dataContainer = {
-            url : url,
-            link : link
-        };
 
-
-        $http({
-            method: 'POST',
-            url: '/words/saveimgurl',
-            data: dataContainer}).
-            success(function(data, status, headers, config) {
-                console.log(data);
-                cb(data);
-            }).
-            error(function(data, status, headers, config) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-            });
-
-
-    }
-
-
-    function updateWord(lang,link,word, record,cb){
-        var dataContainer = {
-            lang : lang,
-            link : link,
-            word: word,
-            record: record
-        };
-
-
-        $http({
-            method: 'POST',
-            url: '/words/update',
-            data: dataContainer}).
-            success(function(data, status, headers, config) {
-                console.log(data);
-                cb(data);
-            }).
-            error(function(data, status, headers, config) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-            });
-
-
-    }
-
-
-    function deleteImg(link,cb){
-        var dataContainer = {
-            link : link
-        };
-
-
-        $http({
-            method: 'POST',
-            url: '/words/deleteimg',
-            data: dataContainer}).
-            success(function(data, status, headers, config) {
-                console.log(data);
-                cb(data);
-            }).
-            error(function(data, status, headers, config) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-            });
-
-
-    }
 
 
 
@@ -741,28 +651,6 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
         modalDialog.find('#add_word_icon1').attr('src','assets/img/flags/flag_'+$scope.lang1+'.png');
         modalDialog.find('#add_word_icon2').attr('src','assets/img/flags/flag_'+$scope.lang2+'.png');
     }
-
-    $scope.deleteLinks = function(links){
-        $rootScope.showConfirmDialog('Delete word!', 'Are you sure about delete word?', function(){
-            deleteLinks(links);
-        });
-    }
-
-    $scope.deleteImg = function(link){
-        $rootScope.showConfirmDialog('Delete image', 'Are you sure about delete image?', function(){
-            deleteImg(link, function(data){
-                $scope.$apply(function(){
-                    var word = getWordByLink(link);
-                    word.image = null;//'http://uncletim.com/store/media/ecom/prodlg/none.gif';
-                });
-
-
-            });
-        });
-
-    }
-
-
 }
 
 

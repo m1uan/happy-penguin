@@ -1,4 +1,4 @@
-div(ng-class="{linkdelete: isDeleted(word)}").wordrowcolor
+div(ng-class="{linkdelete: word.del > 0}").wordrowcolor
     div.text-center.description
         span(id="in_{{word.link}}").identifer {{word.link}}#
         span {{word.description}}
