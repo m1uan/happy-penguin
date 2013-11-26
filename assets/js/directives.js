@@ -1,4 +1,4 @@
-app.directive('myCustomer', function () {
+app.directive('myWord', function () {
     return {
         restrict: 'A',   // 'A' is the default, so you could remove this line
         scope: {

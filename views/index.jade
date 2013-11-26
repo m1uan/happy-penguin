@@ -34,27 +34,7 @@ html(ng-app="voc4u")
 
 
 
-        div#modal-add-word.modal.fade
-            div.modal-dialog
-                div.modal-content
-                    div.modal-header
-                        a.close &times;
-                        h3#warning_dialog_title Add word
-                    div.modal-body
-                        div.row
-                            div.col-md-4 description:
-                            input.col-md-8(ng-model="new_word_d")
-                        div.row
-                            div.col-md-6
-                                input(ng-model="new_word_w1")
-                                img#add_word_icon1.flag-left
-                            div.col-md-6
-                                img#add_word_icon2.flag-right
-                                input(ng-model="new_word_w2")
 
-                    div.modal-footer
-                        a#yesbutton.btn.btn-danger Save
-                        a(href="javascript:$('#modal-add-word').modal('hide')").btn.btn-primary Close
 
         div#modal-from-dom.modal.fade
             div.modal-dialog
@@ -92,7 +72,7 @@ html(ng-app="voc4u")
                 a(href="#/Stats") Stats
 
             div(class="view-animate-container")
-                div(ng-view).view-animate
+                div(ng-view)
 
         div#helpers
             div(ng-show="isSeznamShowed")

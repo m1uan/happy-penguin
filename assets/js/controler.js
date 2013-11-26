@@ -1,55 +1,5 @@
 
-
-//lscache.flush();
-//http://voc4u-miuan.rhcloud.com/#/1001/de/es
-/*
-app.directive('onEnter',function(){
-
-    var linkFn = function(scope,element,attrs) {
-        element.bind("keypress", function(event) {
-            if(event.which === 13) {
-                scope.$apply(function() {
-                    console.log('enter boy');
-                    scope.$eval(attrs.onEnter)
-                });
-            }
-        });
-    };
-
-    return {
-        link:linkFn
-    };
-});
-
-app.directive('myRepeatDirective', function() {
-    return function(scope, element, attrs) {
-        var el = angular.element(element);
-        el.css('color','blue');
-        //console.log(el);
-
-        var im = el.find('img');
-        var inp = el.find('input');
-        //console.log(attrs);
-
-        var linkId  = attrs.id.split('_')[0];
-
-        //console.log('link', linkId, im, inp);
-        dragImage(im, inp, linkId);
-
-
-        //console.log('im', attrs.id);
-        //console.log('element', attrs('id'));
-        if (scope.$last){
-            //
-            $('#all_words_here').removeClass('hide');
-            //$('#all_words_here').fadeIn();
-            //window.alert("im the last!");
-        }
-    };
-})  ;
-
-*/
-function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
+function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService) {
     this.params = $routeParams;
 
     var IMAGE_DIR = 'assets/img/';
@@ -83,7 +33,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
     this.lang1 = this.params.lang1;
     this.lang2 = this.params.lang2;
 
-    var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del';
+    var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del,description';
 
     $scope.loading = true;
     setTimeout(function() {
@@ -503,38 +453,28 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
 
     }
 
-
-
-
-
-
-
-
-
-
-
     $scope.new_word_d = '';
     $scope.new_word_w1 = '';
     $scope.new_word_w2 = '';
 
     $scope.showAddWord = function(){
         console.log('assets/img/flags/flag_'+$scope.lang1+'.png') ;
-        var modalDialog = $rootScope.showDialogById('#modal-add-word', function(){
+        var modalDialog = dialogService.showDialogById('#modal-add-word', function(){
             //modalDialog.find('')
             var dataContainer = {'word' : {
-                s : $scope.lessonId,
+                s : $routeParams.lesson,
                 w1 : $scope.new_word_w1,
                 w2 : $scope.new_word_w2,
                 d : $scope.new_word_d,
-                n1 : $scope.lang1,
-                n2 : $scope.lang2,
-                r1 : '|'+$scope.lang2+'|' +$scope.new_word_w2,
-                r2 : '|'+$scope.lang1+'|' +$scope.new_word_w1
+                n1 : $routeParams.lang1,
+                n2 : $routeParams.lang2,
+                r1 : '|'+$routeParams.lang2+'|' +$scope.new_word_w2,
+                r2 : '|'+$routeParams.lang1+'|' +$scope.new_word_w1
             }};
 
             if(!$scope.new_word_d || !$scope.new_word_w1 || !$scope.new_word_w2){
                 alert('sorry all imput box must contain a value ;-)')
-                return ;
+                return true;
             }
 
 
@@ -575,8 +515,8 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams) {
                 });
         });
 
-        modalDialog.find('#add_word_icon1').attr('src','assets/img/flags/flag_'+$scope.lang1+'.png');
-        modalDialog.find('#add_word_icon2').attr('src','assets/img/flags/flag_'+$scope.lang2+'.png');
+        modalDialog.find('#add_word_icon1').attr('src','assets/img/flags/flag_'+$routeParams.lang1+'.png');
+        modalDialog.find('#add_word_icon2').attr('src','assets/img/flags/flag_'+$routeParams.lang2+'.png');
     }
 }
 

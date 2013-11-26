@@ -1,11 +1,13 @@
 app.service('dialogService', function($http) {
 
-        showDialogById = function(dialogId, yesevent) {
+        this.showDialogById = function(dialogId, yesevent) {
             var modalDialog = $(dialogId);
 
             modalDialog.find('#yesbutton').click(function(event) {
-                yesevent(event);
-                modalDialog.modal('hide');
+                if(!yesevent(event)){
+                    modalDialog.modal('hide');
+                }
+
             });
 
             modalDialog.modal('show');
@@ -14,7 +16,7 @@ app.service('dialogService', function($http) {
         }
 
         this.showConfirmDialog = function(title, message, yesevent){
-            var modalDialog = showDialogById('#modal-from-dom', yesevent);
+            var modalDialog = this.showDialogById('#modal-from-dom', yesevent);
 
             modalDialog.find('#warning_dialog_title').text(title);
             modalDialog.find('#warning_dialog_message').text(message);
