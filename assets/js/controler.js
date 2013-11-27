@@ -89,24 +89,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
         return $scope.words[link];
     }
 
-    function generateRecord(word, forLang){
-        var gr = [];
 
-        if(forLang == word.l1){
-            gr.push(word.o1);
-            gr.push(word.l2);
-            gr.push(word.w2);
-        } else {
-            gr.push(word.o2);
-            gr.push(word.l1);
-            gr.push(word.w1);
-        }
-
-        // format:
-        //      old-word|second-lang|second-lang-word
-        // max length: 50
-        return gr.join('|').substring(0,50);
-    }
 
 
 

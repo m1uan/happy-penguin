@@ -1,12 +1,12 @@
 function focusElement(el, focusShow){
     if(focusShow){
-        //el.addClass('focused-row');
+        el.addClass('focused-row');
         el.find('.focused-hide').hide();
         el.find('.focused-show').show();
         el.find('.focused-image').removeClass('image-out-focus');
         el.find('.focused-image').addClass('image-in-focus');
     } else {
-        //el.removeClass('focused-row');
+        el.removeClass('focused-row');
         el.find('.focused-show').hide();
         el.find('.focused-hide').show();
         el.find('.focused-image').removeClass('image-in-focus');

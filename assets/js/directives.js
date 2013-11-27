@@ -43,14 +43,21 @@ app.directive('myWord', function () {
 
 
                 var w = $scope.word;
-                var record = 'sfsdfs'; //generateRecord(w, lang);
+                var record = generateRecord(w, lang);
                 console.log(lang,link);
                 // upload just in case the word is changed
                 if($scope.checkWord(lang, link)){
                     wordService.updateWord(lang, link, val, record, function(data){
                         data.forEach(function(word){
                             if(word.version == 0){
-                                $('#tv_' + key).text(word.word);
+
+                                if(lang == $scope.word.n1){
+                                    $scope.word.o1 = word.word;
+                                } else {
+                                    $scope.word.o2 = word.word;
+                                }
+
+                                //$('#tv_' + key).text(word.word);
                                 $scope.checkWord(lang, link);
 
 
@@ -67,6 +74,24 @@ app.directive('myWord', function () {
                 }
 
 
+                function generateRecord(word, forLang){
+                    var gr = [];
+
+                    if(forLang == word.n1){
+                        gr.push(word.o1);
+                        gr.push(word.n2);
+                        gr.push(word.w2);
+                    } else {
+                        gr.push(word.o2);
+                        gr.push(word.n1);
+                        gr.push(word.w1);
+                    }
+
+                    // format:
+                    //      old-word|second-lang|second-lang-word
+                    // max length: 50
+                    return gr.join('|').substring(0,50);
+                }
 
 
                 var wordEl = $('#word_' + $scope.word.link);
