@@ -74,11 +74,7 @@ html(ng-app="voc4u")
 
             div(ng-view).content
 
-            div#helpers
-                div(ng-show="isSeznamShowed")
-                    span(ng-click="isSeznamShowed=false").btn.btn-xs.btn-default close x
-                    div
-                        iframe.helpers_i#slovnik_seznam_cz
+
             div
                 img#canvasHelper
                 canvas(width="128",height="128")#myCanvas

@@ -1,6 +1,4 @@
-div(id="word_{{word.link}}").row
-    div.col-md-2
-        img(src="{{word.imagefile}}").focused-image.image-out-focus
+div(id="word_{{word.link}}").row.word-row
     div.col-md-10
         div.row
             div.col-md-1 {{word.link}}#
@@ -11,6 +9,7 @@ div(id="word_{{word.link}}").row
                 div.focused-hide {{word.w2}}
                 input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)").focused-show
             div.col-md-4 {{word.description}}
+
         div.focused-show
             div(ng-hide="word.duplicity").duplicities_loading
                 img(src="assets/img/loading64.gif")
@@ -32,4 +31,5 @@ div(id="word_{{word.link}}").row
                     div.col-md-1
                         i {{duplicity.d}}
                 div(ng-click="deleteLinks([word.link])",ng-hide="isDeleted(word)").btn.btn-xs.btn-danger delete
-
+    div.col-md-2
+        img(src="{{word.imagefile}}").focused-image.image-out-focus.imgpreview

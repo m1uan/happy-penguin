@@ -1,16 +1,4 @@
-function focusElement(el,focusShow){
-     if(focusShow){
-         el.find('.focused-hide').hide();
-         el.find('.focused-show').fadeIn();
-         el.find('.focused-image').removeClass('image-out-focus');
-         el.find('.focused-image').addClass('image-in-focus');
-     } else {
-         el.find('.focused-show').hide();
-         el.find('.focused-hide').show();
-         el.find('.focused-image').removeClass('image-in-focus');
-         el.find('.focused-image').addClass('image-out-focus');
-     }
-}
+
 
 
 app.directive('myWord', function () {
@@ -21,7 +9,7 @@ app.directive('myWord', function () {
         },
         link: function(scope, element, attrs) {
             var el = angular.element(element);
-            el.css('color','blue');
+
             //console.log(el);
 
             var im = el.find('img');
@@ -31,7 +19,7 @@ app.directive('myWord', function () {
 
 
             //console.log('link', linkId, im, inp);
-            dragImage(im, inp, scope.word.link);
+            dragImage(el, im, inp, scope.word.link);
 
 
             el.hover(function () {

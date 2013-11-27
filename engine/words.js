@@ -286,7 +286,7 @@ module.exports.updateWord = function(pgClient, wordForUpdate, userId, cb) {
 
     wordForUpdate.record = wordForUpdate.record.substring(0, 50);
 
-    // EDIT:
+    // #RECORD EDIT:
     // remove record because otherwise when you are add word
     // and system trying if is word in db and because the
     // record will be in system differend when the record on update word
@@ -300,6 +300,7 @@ module.exports.updateWord = function(pgClient, wordForUpdate, userId, cb) {
     function retAllVersion(err, results){
         if(!err){
             module.exports.getWordWithHistory(pgClient, wordForUpdate.lang, wordForUpdate.link, function(err, data){
+
                 cb(err, data);
             });
         } else {
@@ -372,10 +373,11 @@ function updateVersionToWord(pgClient, wordForUpdate, version, cb){
             cb('you can not update specific word version without wordForUpdate.word', null);
         }
 
-        if(wordForUpdate.record){
-            updateWhere += ' AND record = $5'
-            sqlParams.push(wordForUpdate.record);
-        }
+//        LOOK TO : #RECORD EDIT:
+//        if(wordForUpdate.record){
+//            updateWhere += ' AND record = $5'
+//            sqlParams.push(wordForUpdate.record);
+//        }
 
     }
 

@@ -1,7 +1,13 @@
+.word-row{
+    z-index:-100000;
 
-.focused {
+}
+
+.focused-row {
     color: red;
     background-color: black;
+    margin-bottom:-60px;
+    z-index:100;
 }
 
 .image-out-focus {
@@ -10,8 +16,8 @@
 }
 
 .image-in-focus {
-    width:150px;
-    height:150px;
+    width:128px;
+    height:128px;
 }
 
 
@@ -33,6 +39,24 @@
     display: block;
 }
 
+
+.imgpreview {
+    border-width: 2px;
+    border-style: dotted;
+    border-color: blue;
+    background-color:lightgray;
+    display:block;
+
+}
+
+.imgpreview-draged {
+    border-color: red;
+}
+
+.img-draged {
+    background-color:darkblue;
+    color:white;
+}
 
 /*
 * old : remove it
@@ -68,21 +92,6 @@
 }
 
 
-.imgpreview {
-    width:128px;
-    height:128px;
-}
-.imgpreview {
-    border-width: 2px;
-    border-style: dotted;
-    border-color: blue;
-    background-color:lightgray;
-    display:block;
-}
-
-.imgpreview-draged {
-    border-color: red;
-}
 
 .identifer{
     height:70px;

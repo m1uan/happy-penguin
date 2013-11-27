@@ -202,24 +202,24 @@ describe('link operations', function(){
     });
 
     describe('delete link', function(){
-        it('should return several rows', function(cb){
+        it.only('should return several rows', function(cb){
             link.deleteLink(pgClient, [160002, 160003], 3, function(err, rows){
                 console.log(err, rows);
                 rows.should.be.Array;
                 rows.length.should.be.eql(2);
-                var row0 = rows[0];
+                var row0 = rows[0][0];
                 row0.should.be.a.Object;
                 row0.should.have.property('lid');
                 row0.should.have.property('del');
                 row0.lid.should.be.eql(160002);
                 row0.del.should.be.eql(1);
 
-                var row1 = rows[1];
+                var row1 = rows[1][0];
                 row1.should.be.a.Object;
                 row1.should.have.property('lid');
                 row1.should.have.property('del');
                 row1.lid.should.be.eql(160003);
-                row1.del.should.be.eql(5);
+                row1.del.should.be.eql(1);
                 cb();
             })
 
