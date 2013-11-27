@@ -1,35 +1,51 @@
-div(id="word_{{word.link}}").row
-    div.col-md-2
-        img(src="{{word.imagefile}}").focused-image.image-out-focus
+div.hr
+div(id="word_{{word.link}}").row.word-row
     div.col-md-10
         div.row
             div.col-md-1 {{word.link}}#
             div.col-md-3
-                div.focused-hide {{word.w1}}
-                input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)").focused-show
+                span.focused-hide {{word.o1}}
+                span.focused-show
+                    input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)")
+                    span(ng-click="showSeznam(lang1,word.link)").btn.btn-xs.btn-default sl
+                    span(ng-click="showGImage(lang1,word.link)").btn.btn-xs.btn-default gi
+                    span(ng-click="showLeo(lang1,word.link)").btn.btn-xs.btn-default lo
+                span(id="in_{{lang1}}_{{word.link}}",ng-click="updateWord(lang1,word.link)",ng-hide="word.w1==word.o1").label.label-danger save!
             div.col-md-3
-                div.focused-hide {{word.w2}}
-                input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)").focused-show
+                span.focused-hide {{word.o2}}
+                span.focused-show
+                    input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)")
+                    span(ng-click="showSeznam(lang2,word.link)").btn.btn-xs.btn-default sl
+                    span(ng-click="showGImage(lang2,word.link)").btn.btn-xs.btn-default gi
+                    span(ng-click="showLeo(lang2,word.link)").btn-xs.btn-default.btn lo
+                span(id="in_{{lang2}}_{{word.link}}",ng-click="updateWord(lang2,word.link)",ng-hide="word.w2==word.o2").label.label-danger save!
+
             div.col-md-4 {{word.description}}
+
         div.focused-show
             div(ng-hide="word.duplicity").duplicities_loading
                 img(src="assets/img/loading64.gif")
                 span counting duplicities on server...
             div(ng-show="word.duplicity.length").duplicities
                 div.row(ng-show="word.duplicity")
-                    div.col-md-3
-                        b lesson (#)
-                    div.col-md-4
-                        b word 1
-                    div.col-md-4
-                        b word 2
                     div.col-md-1
+                        b lesson (#)
+                    div.col-md-3
+                        b word 1
+                    div.col-md-3
+                        b word 2
+                    div.col-md-4
                         b desc
                 div.row(ng-repeat="duplicity in word.duplicity")
-                    div.col-md-3 {{duplicity.s}} ({{duplicity.l}}#)
-                    div.col-md-4 {{duplicity.w1}}
-                    div.col-md-4 {{duplicity.w2}}
-                    div.col-md-1
+                    div.col-md-1 {{duplicity.s}} ({{duplicity.l}}#)
+                    div.col-md-3 {{duplicity.w1}}
+                    div.col-md-3 {{duplicity.w2}}
+                    div.col-md-4
                         i {{duplicity.d}}
                 div(ng-click="deleteLinks([word.link])",ng-hide="isDeleted(word)").btn.btn-xs.btn-danger delete
-
+    div.col-md-2
+        div(id="{{word.link}}_image_select").imagepart.focused-show
+            img(id="image_{{word.link}}",src="{{word.imagefile}}").focused-image.image-out-focus.imgpreview
+            div(ng-show="word.imagefile",ng-click="deleteImg(word.link)").btn.btn-xs.btn-danger.delete-button x
+            input(type="file",id="image_{{word.link}}_file").fileupload
+        img(src="{{word.imagefile}}").image-out-focus.imgpreview.focused-hide

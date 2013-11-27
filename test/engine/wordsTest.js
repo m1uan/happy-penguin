@@ -391,12 +391,12 @@ describe('getWords', function(){
             async.series(ser,cb);
         });
 
-        it.skip('update 3 cs', function(cb){
+        it('update 3 cs', function(cb){
 
 
 
             function getVersion(icb){
-                words.getWordWithHistory(pgClient, 'cs', 11, icb);
+                words.getWordWithHistory(pgClient, 'cs', 1008, icb);
             }
 
             function updateWord(resultFromVersion, icb2){
@@ -412,14 +412,15 @@ describe('getWords', function(){
                 var wordOrig = {
                     word : word.word
                     ,lang : word.lang
-                    ,link : word.link };
+                    ,link : word.link
+                };
 
                 word.word += (word.version + 1);
-
+                word.record = 'love you';
                 console.log(word);
 
                 words.updateWord(pgClient, word, 2, function(err, rows){
-                    console.error(err);
+                    console.error('#words.updateWord',err,rows);
 
 
                     assert(rows);
@@ -441,6 +442,7 @@ describe('getWords', function(){
 
 
             function reuseWord(rowsFromUpdate, wordOrig, icb){
+                wordOrig.record = 'love you';
                 words.updateWord(pgClient, wordOrig, 3, function(err, rows){
                     console.error(err);
                     console.log(rows);
@@ -463,7 +465,7 @@ describe('getWords', function(){
                 var link = updatedRows[0].link;
 
                 console.log('testInWordset lang,link : (' + lang + ',' + link + ')');
-                words.getWords(pgClient, lang, 2001, function(rows){
+                words.getWords(pgClient, lang, 101, function(rows){
 
                     var linkNotMissing = false;
                     // test if wordOrig have again version == 0

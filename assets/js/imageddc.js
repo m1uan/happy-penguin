@@ -1,33 +1,67 @@
+function focusElement(el, focusShow){
+    if(focusShow){
+        el.addClass('focused-row');
+        el.find('.focused-hide').hide();
+        el.find('.focused-show').show();
+        el.find('.focused-image').removeClass('image-out-focus');
+        el.find('.focused-image').addClass('image-in-focus');
+    } else {
+        el.removeClass('focused-row');
+        el.find('.focused-show').hide();
+        el.find('.focused-hide').show();
+        el.find('.focused-image').removeClass('image-in-focus');
+        el.find('.focused-image').addClass('image-out-focus');
+    }
+}
 
-function dragImage(imageElement, fileElement, linkId){
+function dragImage(element, imageElement, fileElement, linkId){
     var IMAGE_ORIG = '/assets/img/orig/';
     //console.log('dragImage', imageElement.attr('id'), linkId);
-    imageElement.on(
-        'dragover',
+    element.on(
+        'dragenter',
         function(e) {
             imageElement.addClass('imgpreview-draged');
+            element.addClass('img-draged');
+            focusElement(element, true);
             e.preventDefault();
             e.stopPropagation();
         }
+
     )
-    imageElement.on(
+
+//    element.on(
+//        'dragover',
+//        function(e) {
+//            imageElement.addClass('imgpreview-draged');
+//            element.addClass('img-draged');
+//            focusElement(element, true);
+//            e.preventDefault();
+//            e.stopPropagation();
+//        }
+//    )
+    element.on(
         'dragleave',
 
         function(e) {
             imageElement.removeClass('imgpreview-draged');
+            element.removeClass('img-draged');
+
+            focusElement(element, false);
             //console.log(e);
             e.preventDefault();
             e.stopPropagation();
         }
     )
 
-    imageElement.on(
+    element.on(
         'drop',
         function(e){
             e.preventDefault();
             e.stopPropagation();
             console.log(e);
             imageElement.removeClass('imgpreview-draged');
+            element.removeClass('img-draged');
+            focusElement(element, false);
 
             if(e.originalEvent.dataTransfer.files && e.originalEvent.dataTransfer.files.length > 0){
                 previewFromFile(e.originalEvent.dataTransfer.files[0]);
