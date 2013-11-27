@@ -12,6 +12,7 @@ var SQL = function(table, mfields){
     var where  = '';
     var sqlData = [] ;
     var sqljoin = '';
+    var sqlOrderBy = [];
 
     if(!mfields){
         mfields = [];
@@ -58,6 +59,11 @@ var SQL = function(table, mfields){
             sql += ' ' + where;
         }
 
+        var orderBy = sqlOrderBy.join(',');
+        if(orderBy){
+            sql += ' ORDER BY ' + orderBy;
+        }
+
         pg.query(sql, sqlData, function(err, data){
             console.log(err ? '#sql-generator-ERROR:':'#sql-generator:', sql, sqlData, err ?  err : '',data);
             callback(err, data ? data.rows : null);
@@ -68,6 +74,10 @@ var SQL = function(table, mfields){
     this.fields = function(f){
         mfields = f;
         return this;
+    }
+
+    this.addOrderBy = function(field){
+        sqlOrderBy.push(field);
     }
 
     return this;
@@ -109,6 +119,8 @@ function WORDS(pg, lesson){
         if(actual){
             sql.whereAnd('link.version=',0);
         }
+
+        sql.addOrderBy('link.lid');
 
         if(langs.length == 1){
             sql.join('word', 'word.link=link.lid');

@@ -6,7 +6,7 @@ div(id="word_{{word.link}}").row.word-row
             div.col-md-3
                 span.focused-hide {{word.o1}}
                 span.focused-show
-                    input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)")
+                    input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)",arrowLink="{{word.link}}",arrowPrev="{{word.prevLink}}",arrowNext="{{word.nextLink}}",arrowLang="{{lang1}}")
                     span(ng-click="showSeznam(lang1,word.link)").btn.btn-xs.btn-default sl
                     span(ng-click="showGImage(lang1,word.link)").btn.btn-xs.btn-default gi
                     span(ng-click="showLeo(lang1,word.link)").btn.btn-xs.btn-default lo
@@ -14,7 +14,7 @@ div(id="word_{{word.link}}").row.word-row
             div.col-md-3
                 span.focused-hide {{word.o2}}
                 span.focused-show
-                    input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)")
+                    input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)",arrowLink="{{word.link}}",arrowPrev="{{word.prevLink}}",arrowNext="{{word.nextLink}}",arrowLang="{{lang2}}")
                     span(ng-click="showSeznam(lang2,word.link)").btn.btn-xs.btn-default sl
                     span(ng-click="showGImage(lang2,word.link)").btn.btn-xs.btn-default gi
                     span(ng-click="showLeo(lang2,word.link)").btn-xs.btn-default.btn lo

@@ -94,15 +94,7 @@ app.directive('myWord', function () {
                 }
 
 
-                var wordEl = $('#word_' + $scope.word.link);
-                focusElement(wordEl, false);
-                var wordEl2 = $('#word_' + ($scope.word.link + 1));
-                console.log('wordEl2', wordEl, wordEl2);
-                // wordEl2.text('ahoj');
-                focusElement(wordEl2, true);
 
-                var key2 = lang + '_' + (link+1);
-                $('#ed_' + key2).focus();
                 //alert('Submitted' + lang + lang + val);
             };
 
@@ -308,14 +300,40 @@ app.directive('myWord', function () {
 
 
 app.directive('onEnter',function(){
+    var move = function(currentLink, moveLink, lang){
+        var wordEl = $('#word_' + currentLink);
+        focusElement(wordEl, false);
+        if(moveLink){
+            var wordEl2 = $('#word_' + (moveLink));
+            console.log('wordEl2', wordEl, wordEl2);
+            // wordEl2.text('ahoj');
+            focusElement(wordEl2, true);
 
+            var key2 = lang + '_' + (moveLink);
+            $('#ed_' + key2).focus();
+        }
+    }
     var linkFn = function(scope,element,attrs) {
         element.bind("keypress", function(event) {
-            if(event.which === 13) {
+            var keyCode = event.keyCode || event.which;
+            if(keyCode === 13) {
                 scope.$apply(function() {
-                    console.log('enter boy');
-                    scope.$eval(attrs.onEnter)
+                    console.log('enter boy',attrs);
+                    scope.$eval(attrs.onEnter);
+
+
+                    move(attrs.arrowlink, attrs.arrownext, attrs.arrowlang);
+
                 });
+            } else if(keyCode === 38) {   // UP
+                event.preventDefault();
+                move(attrs.arrowlink, attrs.arrowprev, attrs.lang);
+            } else if(keyCode === 40) {   // DOWN
+                event.preventDefault();
+                move(attrs.arrowlink, attrs.arrownext, attrs.lang);
+            } else if(keyCode === 9) {   // TAB
+                event.preventDefault();
+                move(attrs.arrowlink, attrs.arrownext, attrs.lang);
             }
         });
     };

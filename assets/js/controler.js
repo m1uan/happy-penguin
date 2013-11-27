@@ -40,7 +40,8 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
         $http({method: 'GET', url: url }).
             success(function(data, status, headers, config) {
                 console.log(data);
-                tempWord = {};
+                var tempWord = {};
+                var prevWord = null;
                 duplicityService.clear();
 
                 data.forEach(function(tw){
@@ -62,7 +63,10 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
                         duplicityService.checkDuplicity(tw);
                     }
 
+                    addLinksForArrow(tw, prevWord);
+
                     tempWord[tw.link] = tw;
+                    prevWord = tw;
                 });
 
                 $scope.words = tempWord;
@@ -90,7 +94,15 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
     }
 
 
-
+    function addLinksForArrow(word, prevWord){
+        if(prevWord) {
+            prevWord.nextLink = word.link;
+            word.prevLink = prevWord.link;
+        } else {
+            word.prevLink = null;
+        }
+        word.nextLink = null;
+    }
 
 
 
@@ -203,6 +215,13 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
                     }
 
                     $scope.words[newWord.link] = newWord;
+
+                    $scope.words.some(function(prevWord){
+                        if(!prevWord.nextLink){
+                            addLinksForArrow(newWord, prevWord) ;
+                            return true;
+                        }
+                    })
 
                     duplicityService.checkDuplicity(newWord, true);
 
