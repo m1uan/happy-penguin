@@ -59,7 +59,7 @@ function addQuestionMessage(pg, linkId, questionData, cb){
     var sqlData = [linkId, questionData.userId, genericText, questionData.lang1, questionData.lang2 ];
 
     pg.query(sqlu, sqlData, function(err, update){
-        console.log('#3', update);
+        console.log('#3', update, err);
         if(err || update.rowCount > 0){
             cb(err, update ? update.rows[0] : null);
             return ;

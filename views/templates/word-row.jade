@@ -2,7 +2,11 @@ div.hr
 div(id="word_{{word.link}}").row.word-row
     div.col-md-10
         div.row
-            div.col-md-1 {{word.link}}#
+            div.col-md-1
+                i {{word.link}}#
+                span.focused-show
+                    span(ng-click="request(1)").btn.btn-xs.btn-default ?
+                    span(ng-click="request(-1)").btn.btn-xs.btn-default !
             div.col-md-3
                 span.focused-hide {{word.o1}}
                 span.focused-show

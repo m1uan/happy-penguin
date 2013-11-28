@@ -294,6 +294,10 @@ app.directive('myWord', function () {
                 }
             }
 
+            $scope.request = function(status){
+                wordService.setQuestionState($scope.word, status);
+            }
+
             $scope.updateLink = function(word){
                 var link = word.link;
                 var desc = word.description;

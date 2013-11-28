@@ -33,7 +33,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
     this.lang1 = this.params.lang1;
     this.lang2 = this.params.lang2;
 
-    var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del,description';
+    var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del,description,q_status';
 
     $scope.loading = true;
     setTimeout(function() {
