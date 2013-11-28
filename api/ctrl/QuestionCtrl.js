@@ -16,11 +16,8 @@ module.exports = {
             ,params : '{params*}'
 
         }
-    },create_get : function(request){
-        if(!request.params){
-            request.reply.view('stats');
-            return;
-        }
+    },setstate_post : function(request){
+
 
         var params = request.params.params.split('/');
 

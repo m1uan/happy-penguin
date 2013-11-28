@@ -53,8 +53,10 @@ module.exports = {
                     }
 
 
+                    if(!linkData.description){
+                        linkData.description  = row.description;
+                    }
 
-                    linkData.description  = row.description;
                     if(!linkData.image){
                         linkData.image  = row.image;
                     }

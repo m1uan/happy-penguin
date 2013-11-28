@@ -3,7 +3,8 @@ app.service('dialogService', function($http) {
         this.showDialogById = function(dialogId, yesevent) {
             var modalDialog = $(dialogId);
 
-            modalDialog.find('#yesbutton').click(function(event) {
+            modalDialog.find('#yesbutton').one('click', function(event) {
+                console.log('yes button call!');
                 if(!yesevent(event)){
                     modalDialog.modal('hide');
                 }
@@ -115,6 +116,43 @@ app.service('wordService', function($http) {
 
                 });
 
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+    }
+
+    this.updateLinkDescription = function(word, description){
+        var url = '/words/updatelink/';
+
+
+        $http({
+            method: 'POST',
+            url: url,
+            data: {lid: word.link, description:description}}).
+            success(function(data, status, headers, config) {
+                if(word.description){
+                    word.description = data[0].description;
+                } else if(word.d){
+                    word.d = data[0].description;
+                }
+
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+    }
+
+    this.setQuestionState = function(word, state){
+        var url = '/question/setstate/' + word.link + '/' + word.n1 + '/' + word.n2 + '/' + state;
+        $http({
+            method: 'POST',
+            url: url,
+            data: {message:''}}).
+            success(function(data, status, headers, config) {
+                word.q_state = data.word.q_state;
             }).
             error(function(data, status, headers, config) {
                 // called asynchronously if an error occurs

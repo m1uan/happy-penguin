@@ -1,8 +1,8 @@
 var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
     function($routeProvider, $locationProvider) {
-        $routeProvider.when('/Book/:bookId', {
-            templateUrl: '/assets/book.html',
-            controller: BookCntl,
+        $routeProvider.when('/stats/:userId', {
+            templateUrl: 'templates/stats',
+            controller: StatsCtrl,
             controllerAs: 'book'
         });
         $routeProvider.when('/Book/:bookId/ch/:chapterId', {
@@ -19,11 +19,6 @@ var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
 
         // configure html5 to get links working on jsfiddle
         //$locationProvider.html5Mode(true);
-    }).controller('Ctrl', function($scope) {
-        $scope.customer = {
-            name: 'Naomi',
-            address: '1600 Amphitheatre'
-        };
     });
 
 function MainCtrl($scope, $route, $routeParams, $location, $cookieStore) {
@@ -63,6 +58,7 @@ function MainCtrl($scope, $route, $routeParams, $location, $cookieStore) {
     }
 
     if(haveAllLessonFields()){
+        console.log('MainCtrl', $routeParams);
         moveToLesson();
     }
 

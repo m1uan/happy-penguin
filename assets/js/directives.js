@@ -293,6 +293,54 @@ app.directive('myWord', function () {
 
                 }
             }
+
+            $scope.updateLink = function(word){
+                var link = word.link;
+                var desc = word.description;
+                var w1 = word.w1;
+                var w2 = word.w2;
+
+                // compatibility with duplicity
+                if(!link && word.l){
+                    link = word.l;
+                    // for wordService.updateLinkDescription -- he looking for word.link
+                    word.link = word.l;
+                }
+
+                if(!desc && word.d){
+                    desc = word.d;
+                }
+
+                console.log('assets/img/flags/flag_'+$scope.lang1+'.png') ;
+                var modalDialog = dialogService.showDialogById('#modal-add-word', function(){
+                    var newDesc = inputLink.val();
+                    console.log('1 yes button call!');
+                    if(desc != newDesc){
+                        console.log(newDesc, desc);
+                        wordService.updateLinkDescription(word, newDesc);
+                    }
+
+
+                });
+
+                var input1 = modalDialog.find('#add_word_input1');
+                var input2 = modalDialog.find('#add_word_input2');
+                var inputLink = modalDialog.find('#add_word_input_desc');
+                modalDialog.find('#warning_dialog_title').text('Edit link: #' + link);
+
+
+
+                input1.attr('readonly', true);
+                input1.val(w1);
+                input2.attr('readonly', true);
+                input2.val(w2);
+                inputLink.val(desc);
+                inputLink.focus();
+                modalDialog.find('#add_word_icon1').attr('src','assets/img/flags/flag_'+$scope.lang1+'.png');
+                modalDialog.find('#add_word_icon2').attr('src','assets/img/flags/flag_'+$scope.lang2+'.png');
+
+
+            }
         },
         templateUrl : 'templates/word-row'
     };
@@ -302,7 +350,10 @@ app.directive('myWord', function () {
 app.directive('onEnter',function(){
     var move = function(currentLink, moveLink, lang){
         var wordEl = $('#word_' + currentLink);
-        focusElement(wordEl, false);
+       	if(currentLink != moveLink){
+		focusElement(wordEl, false);
+	}
+
         if(moveLink){
             var wordEl2 = $('#word_' + (moveLink));
             console.log('wordEl2', wordEl, wordEl2);

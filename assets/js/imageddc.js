@@ -20,25 +20,26 @@ function dragImage(element, imageElement, fileElement, linkId){
     element.on(
         'dragenter',
         function(e) {
-            imageElement.addClass('imgpreview-draged');
-            element.addClass('img-draged');
-            focusElement(element, true);
+            //imageElement.addClass('imgpreview-draged');
+            //element.addClass('img-draged');
+            //focusElement(element, true);
             e.preventDefault();
             e.stopPropagation();
         }
 
     )
 
-//    element.on(
-//        'dragover',
-//        function(e) {
-//            imageElement.addClass('imgpreview-draged');
-//            element.addClass('img-draged');
-//            focusElement(element, true);
-//            e.preventDefault();
-//            e.stopPropagation();
-//        }
-//    )
+    element.on(
+        'dragover',
+        function(e) {
+            imageElement.addClass('imgpreview-draged');
+            element.addClass('img-draged');
+            //element.addClass('img-draged');
+            //focusElement(element, true);
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    )
     element.on(
         'dragleave',
 
@@ -46,7 +47,7 @@ function dragImage(element, imageElement, fileElement, linkId){
             imageElement.removeClass('imgpreview-draged');
             element.removeClass('img-draged');
 
-            focusElement(element, false);
+            //focusElement(element, false);
             //console.log(e);
             e.preventDefault();
             e.stopPropagation();
@@ -61,7 +62,7 @@ function dragImage(element, imageElement, fileElement, linkId){
             console.log(e);
             imageElement.removeClass('imgpreview-draged');
             element.removeClass('img-draged');
-            focusElement(element, false);
+            //focusElement(element, false);
 
             if(e.originalEvent.dataTransfer.files && e.originalEvent.dataTransfer.files.length > 0){
                 previewFromFile(e.originalEvent.dataTransfer.files[0]);

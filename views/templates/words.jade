@@ -10,15 +10,20 @@ div(ng-hide="loading")
                     h3#warning_dialog_title Add word
                 div.modal-body
                     div.row
+                        div.col-md-4
+                            img#add_word_icon1
+                        div.col-md-4
+                            img#add_word_icon2
                         div.col-md-4 description:
-                        input.col-md-8(ng-model="new_word_d")
+
+
                     div.row
-                        div.col-md-6
-                            input(ng-model="new_word_w1")
-                            img#add_word_icon1.flag-left
-                        div.col-md-6
-                            img#add_word_icon2.flag-right
-                            input(ng-model="new_word_w2")
+                        div.col-md-4
+                            input#add_word_input1(ng-model="new_word_w1")
+                        div.col-md-4
+                            input#add_word_input2(ng-model="new_word_w2")
+                        div.col-md-4
+                            input#add_word_input_desc(ng-model="new_word_d")
 
                 div.modal-footer
                     a#yesbutton.btn.btn-danger Save

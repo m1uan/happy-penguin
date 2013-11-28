@@ -1,6 +1,7 @@
 var wordsEngine = require(process.cwd() + '/engine/words.js')
     ,async = require('async'),
-    Hapi = require('hapi');
+    Hapi = require('hapi')
+    ,Link = require(process.cwd() + '/engine/link.js');;
 
 var pgClient = null;
 
@@ -98,6 +99,11 @@ module.exports = {
 
         var updateImg = request.payload;
         link.deleteImageAndGet(pgClient, request.user.id, updateImg.link, function(err, data){
+            request.reply(err || data);
+        });
+    },updatelink_post: function(request){
+        var updateLink = request.payload;
+        Link.updateAndGet(pgClient, request.user.id, updateLink, function(err, data){
             request.reply(err || data);
         });
     },

@@ -6,7 +6,7 @@ div(id="word_{{word.link}}").row.word-row
             div.col-md-3
                 span.focused-hide {{word.o1}}
                 span.focused-show
-                    input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)",arrowLink="{{word.link}}",arrowPrev="{{word.prevLink}}",arrowNext="{{word.nextLink}}",arrowLang="{{lang1}}")
+                    input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)",arrowLink="{{word.link}}",arrowPrev="{{word.prevLink}}",arrowNext="{{word.link}}",arrowLang="{{lang2}}")
                     span(ng-click="showSeznam(lang1,word.link)").btn.btn-xs.btn-default sl
                     span(ng-click="showGImage(lang1,word.link)").btn.btn-xs.btn-default gi
                     span(ng-click="showLeo(lang1,word.link)").btn.btn-xs.btn-default lo
@@ -14,13 +14,13 @@ div(id="word_{{word.link}}").row.word-row
             div.col-md-3
                 span.focused-hide {{word.o2}}
                 span.focused-show
-                    input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)",arrowLink="{{word.link}}",arrowPrev="{{word.prevLink}}",arrowNext="{{word.nextLink}}",arrowLang="{{lang2}}")
+                    input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)",arrowLink="{{word.link}}",arrowPrev="{{word.prevLink}}",arrowNext="{{word.nextLink}}",arrowLang="{{lang1}}")
                     span(ng-click="showSeznam(lang2,word.link)").btn.btn-xs.btn-default sl
                     span(ng-click="showGImage(lang2,word.link)").btn.btn-xs.btn-default gi
                     span(ng-click="showLeo(lang2,word.link)").btn-xs.btn-default.btn lo
                 span(id="in_{{lang2}}_{{word.link}}",ng-click="updateWord(lang2,word.link)",ng-hide="word.w2==word.o2").label.label-danger save!
 
-            div.col-md-4 {{word.description}}
+            div(ng-click="updateLink(word)").col-md-4 {{word.description}}
 
         div.focused-show
             div(ng-hide="word.duplicity").duplicities_loading
@@ -40,7 +40,7 @@ div(id="word_{{word.link}}").row.word-row
                     div.col-md-1 {{duplicity.s}} ({{duplicity.l}}#)
                     div.col-md-3 {{duplicity.w1}}
                     div.col-md-3 {{duplicity.w2}}
-                    div.col-md-4
+                    div(ng-click="updateLink(duplicity)").col-md-4
                         i {{duplicity.d}}
                 div(ng-click="deleteLinks([word.link])",ng-hide="isDeleted(word)").btn.btn-xs.btn-danger delete
     div.col-md-2

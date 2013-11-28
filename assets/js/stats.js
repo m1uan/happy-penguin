@@ -1,15 +1,17 @@
 
 
-function StatsCtrl($scope, $http, $location) {
+function StatsCtrl($scope, $http, $routeParams) {
     $scope.user = 'milan';
 
-    $scope.param = null;
-    $scope.userId = null;
-    $scope.extra = null;
+    //$scope.param = null;
+    $scope.userId = $routeParams.userId;
 
     $scope.lessons = [];
 
-    $scope.$on('$locationChangeSuccess', function () {
+
+    console.log('StatsCtrl', $scope.userId, $routeParams);
+    loadStats();
+    /*$scope.$on('$locationChangeSuccess', function () {
         parseLocation($location.path());
         console.log('$locationChangeSuccess changed!', $location.path());
 
@@ -35,7 +37,7 @@ function StatsCtrl($scope, $http, $location) {
         $scope.param = lp[0];
         $scope.userId = lp[1];
         $scope.extra = lp[2];
-    }
+    }*/
 
     function loadStats(){
         $scope.loading = true;
@@ -44,9 +46,9 @@ function StatsCtrl($scope, $http, $location) {
                 console.log(data)
                 $scope.lessons = {};
                 data.forEach(function(val, idx){
-                   val.detail = {show: false, data:[]};
+                    val.detail = {show: false, data:[]};
 
-                   $scope.lessons[val.lesson] = val;
+                    $scope.lessons[val.lesson] = val;
                 });
 
 
