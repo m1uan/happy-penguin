@@ -97,7 +97,6 @@ describe('link operations', function(){
         it('update word with previous version', function(cb){
 
             var linkData = {lid : 160000, image : 150000, description: 'ahoj jak sa mas'}
-
             var length = 0;
 
             linkGet = function(icb){
@@ -108,7 +107,7 @@ describe('link operations', function(){
                     if(links.length > 1){
 
                         linkData.description = links[1].description;
-                        linkData.image = links[1].iid;
+                        linkData.imageId = links[1].imageid;
 
                     }
                     length = links.length;
@@ -121,10 +120,15 @@ describe('link operations', function(){
                 link.updateAndGet(pgClient, 3, linkData, ['image'], function(err, links2){
                     console.log('links update 4', err || links2, length);
 
-                    assert(links2.length == length);
-                    assert(links2[0].iid == linkData.imageId);
-                    assert(links2[0].description == linkData.description);
-                    assert(links2[0].usr == 3);
+                    assert(links2.some(function(link){
+                        if(link.version === 0){
+                            linkData.imageId.should.eql(link.imageid);
+                            link.description.should.eql(linkData.description);
+                            link.usr.should.eql(3);
+                            return true;
+
+                        }
+                    }));
                     icb(null);
                 });
             }
@@ -217,11 +221,18 @@ describe('link operations', function(){
                 console.log('linkData', linkData);
                 link.deleteImageAndGet(pgClient, 3, linkData.lid, ['image'], function(err, links){
                     console.log('delete 2', err || links );
-
                     assert(links.length == length+1);
-                    assert(links[0].iid == null);
-                    assert(links[0].description == linkData.description);
-                    assert(links[0].usr == 3);
+                    assert(links.some(function(link){
+                        if(link.version === 0){
+                            assert(link.imageid == null);
+                            link.description.should.eql(linkData.description);
+                            link.usr.should.eql(3);
+                            return true;
+
+                        }
+                    }));
+
+
                     icb(null);
                 });
             }
