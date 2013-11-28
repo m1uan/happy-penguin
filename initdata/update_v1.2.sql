@@ -1,16 +1,20 @@
 
 alter table link drop column q_status;
-alter table link add column q_status SMALLINT DEFAULT 0;
+--alter table link add column q_status SMALLINT DEFAULT 0;
 
+drop table question_status_t;
 drop table question_t;
 drop sequence question_t_qid_seq;
 
-
+create table question_status_t (
+     link INTEGER NOT NULL,
+     status SMALLINT NOT NULL,
+)
 
 create table question_t (
     qid SERIAL,
     message TEXT,
-    link INTEGER,
+    link INTEGER NOT NULL,
     lang1 VARCHAR(2) NOT NULL,
     lang2 VARCHAR(2) NOT NULL,
     usr INTEGER NOT NULL,
