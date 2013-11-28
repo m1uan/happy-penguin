@@ -132,11 +132,17 @@ app.service('wordService', function($http) {
             url: url,
             data: {lid: word.link, description:description}}).
             success(function(data, status, headers, config) {
-                if(word.description){
-                    word.description = data[0].description;
-                } else if(word.d){
-                    word.d = data[0].description;
-                }
+                data.some(function(link){
+                   if(link.version === 0){
+                       if(word.description){
+                           word.description = link.description;
+                       } else if(word.d){
+                           word.d = link.description;
+                       }
+                       return true;
+                   }
+                });
+
 
             }).
             error(function(data, status, headers, config) {
