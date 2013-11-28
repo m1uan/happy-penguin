@@ -139,6 +139,58 @@ describe('link operations', function(){
             //link.update(pgClient, linkData,
         });
 
+        it('change description, image must be add from previous version', function(cb){
+
+            var linkData = {lid : 160001, description: 'ahoj jak sa mas s obrazkem'}
+            var linkDataOld = {} ;
+            var length = 0;
+
+            linkGet = function(icb){
+                link.get(pgClient, linkData.lid, ['image'], function(err, links){
+
+                    console.log('links update 3', err || links);
+                    //links[1].should.have.property('thumbfile');
+                    if(links.length > 0){
+
+                        linkDataOld.description = links[0].description;
+                        linkDataOld.imageId = links[0].imageid;
+
+                    }
+                    length = links.length;
+                    icb(null);
+                });
+            }
+
+            function linkUpdate(icb){
+                console.log('linkUpdate', linkData);
+                link.updateAndGet(pgClient, 3, linkData, ['image'], function(err, links2){
+                    console.log('links update 4', err || links2, length, linkDataOld);
+
+                    assert(links2.some(function(link){
+                          if(link.version === 0){
+                              linkDataOld.imageId.should.eql(link.imageid);
+                              link.description.should.eql(linkData.description);
+                              link.usr.should.eql(3);
+                              return true;
+
+                          }
+                    }));
+
+                    icb(null);
+                });
+            }
+
+
+
+            async.series([
+                linkGet,
+                linkUpdate
+            ],cb);
+
+            //link.update(pgClient, linkData,
+        });
+
+
         it('DELETE !!! update word with previous version', function(cb){
 
             var linkData = {lid : 160001, image : 150000, description: 'ahoj jak sa mas'}
@@ -202,7 +254,7 @@ describe('link operations', function(){
     });
 
     describe('delete link', function(){
-        it.only('should return several rows', function(cb){
+        it('should return several rows', function(cb){
             link.deleteLink(pgClient, [160002, 160003], 3, function(err, rows){
                 console.log(err, rows);
                 rows.should.be.Array;

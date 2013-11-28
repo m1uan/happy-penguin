@@ -45,8 +45,6 @@ module.exports = {
                 pgClient.query(sql, sqlData, function(err, data){
                     var row = data && data.rows && data.rows.length > 0 ? data.rows[0] : null;
 
-
-
                     if(err || !row){
                         icb('error or the link dont select : ' + linkId, false);
                         return;
@@ -57,8 +55,8 @@ module.exports = {
                         linkData.description  = row.description;
                     }
 
-                    if(!linkData.image){
-                        linkData.image  = row.image;
+                    if(!linkData.imageId){
+                        linkData.imageId  = row.image;
                     }
 
 
