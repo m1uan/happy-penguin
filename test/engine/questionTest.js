@@ -55,7 +55,7 @@ describe('package operations', function(){
     });
 
 
-    describe('test questions', function(){
+    describe.only('test questions', function(){
         it('without message', function(cb){
             var questionData = {
                  userId : 3,
@@ -68,8 +68,8 @@ describe('package operations', function(){
                 console.log(err ? err : data);
                 assert(data);
                 data.should.have.property('link');
-                data.should.have.property('q_status');
-                pgClient.query('SELECT q_status FROM link WHERE lid=$1 AND version=0',
+                data.should.have.property('status');
+                pgClient.query('SELECT status FROM question_status_t WHERE link=$1',
                     [questionData.linkId],
                     function(err, td){
                         console.log(err ? err : td);

@@ -49,7 +49,7 @@ var SQL = function(table, mfields){
         return this;
     }
 
-    this.select = function(pg, callback){
+    this.generateSelect = function(){
         var sql = 'SELECT ' + mfields.join(',') + ' FROM ' + table;
         if(sqljoin) {
             sql += ' ' + sqljoin;
@@ -63,12 +63,127 @@ var SQL = function(table, mfields){
         if(orderBy){
             sql += ' ORDER BY ' + orderBy;
         }
+    }
+
+    this.select = function(pg, callback){
+
+        var sql = this.generateSelect();
 
         pg.query(sql, sqlData, function(err, data){
             console.log(err ? '#sql-generator-ERROR:':'#sql-generator:', sql, sqlData, err ?  err : '',data);
             callback(err, data ? data.rows : null);
         });
 
+    }
+
+    function generateInsert(insertData, upsert){
+
+        var columnNames = '';
+        var valuesId = '';
+        var idx = 0;
+        for(var column in insertData) {
+            if (insertData.hasOwnProperty(column)) {
+                columnNames += ',' + column;
+
+                // in upsert was data add already in update... #look_update
+                if(!upsert){
+                    sqlData.push(insertData[column]);
+                }
+                idx++;
+                valuesId += ',$' + idx;
+            }
+
+        }
+
+        var sql = 'INSERT INTO ' + table + ' (' + columnNames.substring(1) + ')'
+        if(!upsert){
+           sql += 'VALUES(' + valuesId.substring(1) + ')';
+        } else {
+            sql += 'SELECT ' + valuesId.substring(1);
+        }
+
+
+        values.unshift(sql);
+
+        return values;
+    }
+
+    function generateUpdate(updateData){
+
+        var columnNames = '';
+
+        for(var column in updateData) {
+            if (updateData.hasOwnProperty(column)) {
+                columnNames += ',' + column+'=$' + sqlData.length;
+                // #look_update
+                sqlData.push(updateData[column]);
+
+            }
+
+        }
+
+        var sql = 'UPDATE ' + table + ' SET ' + columnNames.substring(1);
+
+        values.unshift(sql);
+
+        return values;
+    }
+
+    this.updateOrInsert = function(pg, uiData, returning, callback){
+
+        if(!callback){
+            callback = returning;
+            returning = [];
+        }
+
+        var updateData = generateUpdate(uiData);
+        var updateSql = updateData.shift();
+
+        var insertData = generateInsert(uiData, true);
+        var insertSql = insertData.shift();
+
+
+
+        var notExists = new SQL(table,['1']);
+        for(var column in uiData) {
+            if (uiData.hasOwnProperty(column)) {
+                // must add where fit value
+                // because $1, $2, ... will be reachable from (SQL)notExists
+                // but we have $1, $2, ... in our scope (SQL)this
+                notExists.whereAnd(column+"='"+uiData[column]+"'");
+            }
+        }
+
+
+        var notExistSql = notExists.generateSelect();
+
+        if(where) {
+            updateSql += ' ' + where;
+            // in noExistsSql is WHERE like -> WHERE col1='1' AND col2='3'
+            // we want add also our where -> so replace with WHERE col0=$1
+            // -> WHERE col0=$1 AND col1='1' AND col2='3
+            notExistSql.replace('WHERE', where);
+        }
+
+        insertSql += notExistSql;
+
+        if(returning.length > 0){
+            var returing = '';
+
+            returning.forEach(function(ret){
+                returing += ',' + ret;
+            });
+
+            returning = ' RETURNING ' + returing.substring(1);
+            insertSql += returning;
+            updateSql += returning;
+        }
+
+        var finalsql = updateSql + ';' + insertSql + ';';
+        pg.query(finalsql, sqlData, function(err, data){
+            console.log(err ? '#sql-generator-ERROR:':'#sql-generator:', finalsql, sqlData, err ?  err : '',data);
+            callback(err, data ? data.rows : null);
+        });
     }
 
     this.fields = function(f){

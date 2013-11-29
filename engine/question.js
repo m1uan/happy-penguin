@@ -16,26 +16,24 @@ module.exports.create = function(pg, questionData, cb){
         questionData.status = 1;
     }
 
-    var sqlu = 'UPDATE link SET q_status=$1 WHERE lid=$2  RETURNING lid as link,q_status';
+    var sqlu = 'UPDATE question_status_t SET status=$1 WHERE link=$2  RETURNING link,status';
     var sqluData = [questionData.status, questionData.linkId];
 
+
     pg.query(sqlu, sqluData, function(err, update){
-        if(err || update.rowCount > 0){
-            if(!err){
-                console.log('#1 ', update);
-                questionData.message = GENERIC_MESSAGE;
-                addQuestionMessage(pg, update.rows[0].link, questionData, function(err, data){
-                    update.rows[0].message = data.message;
-                    update.rows[0].qid = data.qid;
-                    cb(err, update ? update.rows[0] : null);
-                });
+        if(!err){
+            console.log('#1 ', update);
+            questionData.message = GENERIC_MESSAGE;
+            addQuestionMessage(pg, questionData.linkId, questionData, function(err, data){
+                data[0]
+                cb(err, data ? data[0] : null);
+            });
 
-                return;
-            }
-
-            cb(err, update ? update.rows[0] : null);
-            return ;
+            return;
         }
+
+        cb(err, update ? update.rows[0] : null);
+        return ;
     });
 
 
@@ -50,7 +48,7 @@ function addQuestionMessage(pg, linkId, questionData, cb){
 
     var genericText = '';
     if(questionData.message == GENERIC_MESSAGE){
-        genericText="'*note: set STATUS to: " + questionData.status + "'"
+        genericText="*note: set STATUS to: " + questionData.status
     } else {
         genericText=questionData.message;
     }

@@ -8,8 +8,8 @@ drop sequence question_t_qid_seq;
 
 create table question_status_t (
      link INTEGER NOT NULL,
-     status SMALLINT NOT NULL,
-)
+     status SMALLINT NOT NULL
+);
 
 create table question_t (
     qid SERIAL,
