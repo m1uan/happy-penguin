@@ -130,7 +130,9 @@ var SQL = function(table, mfields){
     }
 
     this.updateOrInsert = function(pg, uiData, returning, callback){
-
+        // WORKING SAMPLE
+        // update word set word='ahoj' where lang='cs' and link=1234 returning word;insert into word (link,lang,word) select 1234,'cs','ahoj2' where not exists(select 1 from word where link=1234 and lang='cs') returning word;
+        // from here http://stackoverflow.com/questions/1109061/insert-on-duplicate-update-postgresql
         if(!callback){
             callback = returning;
             returning = [];
