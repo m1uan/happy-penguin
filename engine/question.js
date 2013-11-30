@@ -6,7 +6,11 @@ var fs = require('fs'),
     Archiver = require('archiver'),
     SL = require('../lib/happy/sqllib.js');
 
-
+module.exports.get = function(pg, questionData, cb){
+    if(!cb){
+        cb = questionData;
+    }
+}
 
 module.exports.changeStatus = function(pg, questionData, cb){
     if(!questionData || !questionData.userId || !questionData.linkId || !questionData.lang1 || !questionData.lang2 ){

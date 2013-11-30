@@ -92,7 +92,7 @@ describe('package operations', function(){
         });
 
 
-        it.only('with message', function(cb){
+        it('with message', function(cb){
             var questionData = {
                 userId : 3,
                 linkId: 1431,
@@ -128,6 +128,12 @@ describe('package operations', function(){
                     });
 
             })
+            });
+        });
+
+        it.only('get messages', function(cb){
+            question.get(pgClient, null, function(errw, dataw){
+                cb();
             });
         });
     });

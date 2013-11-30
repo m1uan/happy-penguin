@@ -12,15 +12,23 @@ var SQL_SELECT_WORD = 'SELECT link, word, lang,' +
 function WORDS(pg, lesson){
     var langs = [];
     var actual = true;
-    var sql = new SQL('link');
+    var sql = new SQL.SqlLib('link');
+    var user = -1;
+    var _words = this;
+
+    this.setUser = function(usr){
+        user=usr;
+
+        return _words;
+    }
 
     this.addLang = function (lang){
         langs.push(lang);
-        return this;
+        return _words;
     };
 
     this.question = function(fields, cb){
-        sql.whereAnd('q_status>0');
+        sql.whereAnd('q.status>0');
         this.get(fields, cb);
     }
 
@@ -29,6 +37,14 @@ function WORDS(pg, lesson){
         if(!fields){
             cb('fields missing');
             return;
+        }
+
+        if(fields.indexOf('qs.status as qstatus') != -1){
+            sql.join('question_status_t qs','qs.link=link.lid');
+        }
+
+        if(fields.indexOf('qm.changed as qmchanged') != -1){
+            sql.join('question_t qm','qm.link=qs.link AND qm.usr='+user);
         }
 
         if(fields.indexOf('image.image as imagefile') != -1){

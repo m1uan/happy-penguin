@@ -37,17 +37,19 @@ describe('getWords', function(){
 
     describe('WORDS', function(){
 
-        it('get cs and en', function(cb){
+        it.only('get cs and en', function(cb){
             words.WORDS(pgClient, 2001)
+                .setUser(3)
                 .addLang('cs')
-                .addLang('en').get(['link','q_status','word as w','lang as n','image.image as imagefile'], function(err, data){
+                .addLang('en').get(['link','qs.status as qstatus','qm.changed as qmchanged','word as w','lang as n','image.image as imagefile'], function(err, data){
                    console.log(err,data);
                    assert(data);
                     data.should.be.a.Array;
                     data.length.should.above(0);
                     var data0 = data[0];
                     data0.should.have.property('link');
-                    data0.should.have.property('q_status');
+                    data0.should.have.property('qstatus');
+                    data0.should.have.property('qmchanged');
                     data0.should.have.property('w1');
                     data0.should.have.property('n1');
                     data0.n1.should.have.eql('cs');
