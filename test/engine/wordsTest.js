@@ -41,7 +41,7 @@ describe('getWords', function(){
             words.WORDS(pgClient, 2001)
                 .setUser(3)
                 .addLang('cs')
-                .addLang('en').get(['link','qs.status as qstatus','qm.changed as qmchanged','word as w','lang as n','image.image as imagefile'], function(err, data){
+                .addLang('en').get(['link','@userstatus','word as w','lang as n','image.image as imagefile'], function(err, data){
                    console.log(err,data);
                    assert(data);
                     data.should.be.a.Array;

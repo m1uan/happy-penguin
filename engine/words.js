@@ -39,13 +39,23 @@ function WORDS(pg, lesson){
             return;
         }
 
-        if(fields.indexOf('qs.status as qstatus') != -1){
+        var indexOfUserStatusInFields = fields.indexOf('@userstatus');
+
+        if(indexOfUserStatusInFields != -1){
+            fields.push('qs.status as qstatus');
+            fields.push('qm.changed as qmchanged');
+            fields[indexOfUserStatusInFields] = 'CASE WHEN qm.changed IS NOT NULL THEN (qs.status+100) ELSE COALESCE(qs.status, 0) END AS userstatus'
+        }
+
+        if(fields.indexOf('qs.status as qstatus') != -1 || indexOfUserStatusInFields > -1){
             sql.join('question_status_t qs','qs.link=link.lid');
         }
 
-        if(fields.indexOf('qm.changed as qmchanged') != -1){
+        if(fields.indexOf('qm.changed as qmchanged') != -1 || indexOfUserStatusInFields > -1){
             sql.join('question_t qm','qm.link=qs.link AND qm.usr='+user);
         }
+
+
 
         if(fields.indexOf('image.image as imagefile') != -1){
             sql.join('image','link.image=image.iid');
