@@ -3,11 +3,12 @@ var fs = require('fs'),
     Image = require('./image.js'),
     Async = require('async'),
     Config = require('../config/local.js'),
-    Archiver = require('archiver');
+    Archiver = require('archiver'),
+    SL = require('../lib/happy/sqllib.js');
 
 
 
-module.exports.create = function(pg, questionData, cb){
+module.exports.changeStatus = function(pg, questionData, cb){
     if(!questionData || !questionData.userId || !questionData.linkId || !questionData.lang1 || !questionData.lang2 ){
       return cb('questionData have to contain userId, linkId, lang1 and lang2');
     }
@@ -16,31 +17,42 @@ module.exports.create = function(pg, questionData, cb){
         questionData.status = 1;
     }
 
-    var sqlu = 'UPDATE question_status_t SET status=$1 WHERE link=$2  RETURNING link,status';
-    var sqluData = [questionData.status, questionData.linkId];
+    if(!questionData.message){
+        questionData.message = GENERIC_MESSAGE;
+    }
 
+    var statusData = {
+        status: questionData.status,
+        link:questionData.linkId,
+        'changed':'now()'};
+    var statusReturning =  ['status','link','changed'];
+    var sqlStatus = new SL.SqlLib('question_status_t');
+    sqlStatus.whereAnd('link=' + questionData.linkId);
+    sqlStatus.upsert(pg, statusData, statusReturning, function(errStatus, statusLink){
+        statusLink = statusLink[0];
+        addQuestionMessage(pg, questionData, function(errMessage, message){
+            var ret = null;
+            if(!errStatus && !errMessage) {
+                ret = {
+                    status : statusLink.status,
+                    link : statusLink.link,
+                    message : message.message,
+                    user : message.usr,
+                    changed : message.changed
+                }
+            }
 
-    pg.query(sqlu, sqluData, function(err, update){
-        if(!err){
-            console.log('#1 ', update);
-            questionData.message = GENERIC_MESSAGE;
-            addQuestionMessage(pg, questionData.linkId, questionData, function(err, data){
-                data[0]
-                cb(err, data ? data[0] : null);
-            });
-
-            return;
-        }
-
-        cb(err, update ? update.rows[0] : null);
-        return ;
+            cb(errStatus|| errMessage, ret);
+        });
     });
+
+
 
 
 }
 var GENERIC_MESSAGE = ':GENERIC_MESSAGE:'
 
-function addQuestionMessage(pg, linkId, questionData, cb){
+function addQuestionMessage(pg, questionData, cb){
     if(!questionData.message){
         return cb(null, null);
     }
@@ -52,21 +64,24 @@ function addQuestionMessage(pg, linkId, questionData, cb){
     } else {
         genericText=questionData.message;
     }
+    var messageData = {
+        message: genericText,
+        link:questionData.linkId,
+        usr : questionData.userId,
+        lang1 : questionData.lang1,
+        lang2: questionData.lang2,
+        'changed':'now()'};
+    var messageReturning =  ['message','usr','changed', 'link'];
+    var sqlStatus = new SL.SqlLib('question_t');
+    sqlStatus.whereAnd('link=' + questionData.linkId);
+    sqlStatus.whereAnd("message='" + genericText + "'");
+    sqlStatus.whereAnd('usr=' + questionData.userId);
+    sqlStatus.whereAnd("lang1='" + questionData.lang1+ "'");
+    sqlStatus.whereAnd("lang2='" + questionData.lang2+ "'");
 
-    var sqlu = 'UPDATE question_t SET changed=now() WHERE link=$1 AND usr=$2 AND message=$3 AND lang1=$4 AND lang2=$5 RETURNING qid,message';
-    var sqlData = [linkId, questionData.userId, genericText, questionData.lang1, questionData.lang2 ];
-
-    pg.query(sqlu, sqlData, function(err, update){
-        console.log('#3', update, err);
-        if(err || update.rowCount > 0){
-            cb(err, update ? update.rows[0] : null);
-            return ;
-        }
-
-        var sqli = 'INSERT INTO question_t (link,usr,message,lang1,lang2) VALUES ($1,$2,$3,$4,$5) RETURNING qid,message';
-        pg.query(sqli, sqlData, function(err, data){
-            console.log('#4', err, data);
-            cb(err, data ? data.rows[0] : null);
-        });
+    sqlStatus.upsert(pg, messageData, messageReturning, function(errStatus, message){
+          cb(errStatus, message ? message[0] : null) ;
     });
+
+
 }

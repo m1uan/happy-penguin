@@ -8,7 +8,8 @@ drop sequence question_t_qid_seq;
 
 create table question_status_t (
      link INTEGER NOT NULL,
-     status SMALLINT NOT NULL
+     status SMALLINT NOT NULL,
+     changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 create table question_t (

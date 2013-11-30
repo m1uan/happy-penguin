@@ -24,12 +24,8 @@ describe('package operations', function(){
         var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
         pgClient = new pg.Client(connection);
 
-
-
-
         pgClient.connect(function(err){
             if(err){
-
                 return console.info('could not connect to postgres', err);
             }
 
@@ -55,28 +51,38 @@ describe('package operations', function(){
     });
 
 
-    describe.only('test questions', function(){
-        it('without message', function(cb){
+    describe('questions', function(){
+        it.only('without message', function(cb){
             var questionData = {
                  userId : 3,
-                linkId: 1230,
+                linkId: 1431,
                 lang1 : 'cs'
                 ,lang2 : 'en'
                 //, message :  'i dont understand meaning on this word'
             } ;
-            question.create(pgClient, questionData, function(err, data){
+            question.changeStatus(pgClient, questionData, function(err, data){
                 console.log(err ? err : data);
                 assert(data);
+                /*{
+                 status : statusLink.status,
+                 link : statusLink.link,
+                 message : message.message,
+                 user : message.usr,
+                 changed : message.changed
+                 }*/
                 data.should.have.property('link');
                 data.should.have.property('status');
-                pgClient.query('SELECT status FROM question_status_t WHERE link=$1',
-                    [questionData.linkId],
+                data.should.have.property('message');
+                data.should.have.property('user');
+                data.should.have.property('changed');
+                pgClient.query('SELECT message FROM question_t WHERE link=$1 AND usr=$2 AND lang1=$3 AND lang2=$4',
+                    [questionData.linkId, questionData.userId, questionData.lang1, questionData.lang2],
                     function(err, td){
                         console.log(err ? err : td);
                         td.rows.should.be.a.Array;
                         td.rows.length.should.eql(1);
                         var r0 = td.rows[0];
-                        r0.q_status.should.be.eql(1);
+                        r0.message.should.be.eql('*note: set STATUS to: 1');
                         cb();
                     });
 
@@ -111,13 +117,7 @@ describe('package operations', function(){
                         r0.should.have.property('message');
                         cb();
                     });
-
             })
-
-
         });
-
     });
-
-
 })

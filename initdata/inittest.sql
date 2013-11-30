@@ -6,6 +6,8 @@ BEGIN
       delete from word;
       delete from link;
       delete from image;
+      delete from question_t;
+      delete from question_status_t;
       RETURN 0;
 END; $$
 LANGUAGE plpgsql;
@@ -1709,10 +1711,11 @@ BEGIN
       ,(2098,E'take part',NULL,4001)
       ,(2099,E'take place',NULL,4001);
 
+      INSERT INTO question_status_t ( status, link ) VALUES
+        (1,2083),(2,2023),(3,2033);
 
-      update link set q_status=1 where lid = 2083;
-      update link set q_status=2 where lid = 2023;
-      update link set q_status=3 where lid = 2033;
+      INSERT INTO question_t ( message, lang1, lang2, usr, link ) VALUES
+            ('a test messag 1', 'cs','de',3,2083),('a test messag 2', 'cs','de',3,2023),('a test messag 3', 'cs','de',3,2033);
       --SELECT pg_size_pretty(pg_database_size('voc4u'));
 
       RETURN 0; --(SELECT pg_size_pretty(pg_database_size('voc4u')));
