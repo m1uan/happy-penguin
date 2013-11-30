@@ -27,8 +27,22 @@ function WORDS(pg, lesson){
         return _words;
     };
 
-    this.question = function(fields, cb){
-        sql.whereAnd('q.status>0');
+    this.question = function(fields, onlyUser, cb){
+        if(!cb){
+            cb = onlyUser;
+            onlyUser = false;
+        }
+
+        if(fields.indexOf('@userstatus') == -1){
+            fields.push('@userstatus');
+        }
+
+        sql.whereAnd('qs.status IS NOT NULL');
+
+        if(onlyUser){
+            sql.whereAnd('qm.changed IS NOT NULL');
+        }
+
         this.get(fields, cb);
     }
 
