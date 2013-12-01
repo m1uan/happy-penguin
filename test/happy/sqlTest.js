@@ -15,7 +15,7 @@ var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
 
-describe('package operations', function(){
+describe('sql test', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -64,7 +64,7 @@ describe('package operations', function(){
             var sql = SQL.generateSelect();
 
             console.log(sql);
-            sql.should.equal('SELECT w1.word FROM link LEFT JOIN word w1 ON w1.link=link.lid WHERE link=$1 ORDER BY link.lid');
+            sql.should.equal('SELECT w1.word FROM link LEFT JOIN word w1 ON w1.link=link.lid WHERE link$1 ORDER BY link.lid');
 
         });
 
@@ -75,7 +75,7 @@ describe('package operations', function(){
             var sql = SQL.generateUpsert({status:1,link:1234},['status','link']);
 
             console.log(sql);
-            sql.should.equal("UPDATE question_status_t SET status=$0,link=$1 RETURNING status,link;INSERT INTO question_status_t (status,link)SELECT $1,$2 WHERE NOT EXISTS (SELECT 1 FROM question_status_t WHERE status='1' AND link='1234') RETURNING status,link;");
+            sql.should.equal("UPDATE question_status_t SET status='1',link='1234' RETURNING status,link;INSERT INTO question_status_t (status,link)SELECT '1','1234' WHERE NOT EXISTS (SELECT 1 FROM question_status_t WHERE status='1' AND link='1234') RETURNING status,link;");
         });
 
     });

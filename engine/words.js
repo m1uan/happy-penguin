@@ -185,6 +185,11 @@ function WORDS(pg, lesson){
 module.exports.WORDS = WORDS;
 
 module.exports.getWords = function(pgClient, lang, lesson, colums, cb) {
+    if(!cb){
+        cb = colums;
+        colums = null;
+    }
+
     if(!pgClient){
         cb(null);
         return;
@@ -200,10 +205,7 @@ module.exports.getWords = function(pgClient, lang, lesson, colums, cb) {
         return cb('lang is not defined or isn\' in good format :');
     }
 
-    if(!cb){
-        cb = colums;
-        colums = null;
-    }
+
 
     if(!colums) {
         colums = ['link','lang','word','word.version as version'];

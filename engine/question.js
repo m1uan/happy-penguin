@@ -10,6 +10,8 @@ module.exports.get = function(pg, questionData, cb){
     if(!cb){
         cb = questionData;
     }
+
+    cb();
 }
 
 module.exports.changeStatus = function(pg, questionData, cb){

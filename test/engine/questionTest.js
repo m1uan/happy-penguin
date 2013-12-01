@@ -95,7 +95,7 @@ describe('package operations', function(){
         it('with message', function(cb){
             var questionData = {
                 userId : 3,
-                linkId: 1431,
+                linkId: 1432,
                 lang1 : 'cs'
                 ,lang2 : 'en'
                 , message :  'i dont understand meaning on this word'
@@ -131,7 +131,7 @@ describe('package operations', function(){
             });
         });
 
-        it.only('get messages', function(cb){
+        it('get messages', function(cb){
             question.get(pgClient, null, function(errw, dataw){
                 cb();
             });
