@@ -7,13 +7,16 @@ function wordsLoader($scope, $http, url, duplicityService){
                 var tempWord = {};
                 var prevWord = null;
                 duplicityService.clear();
-
+                $scope.undeleteWords = 0;
+                $scope.imagesWords = 0;
                 data.forEach(function(tw){
 
 
                     if(tw.thumbfile){
+                        $scope.imagesWords++;
                         tw.imagefile = 'assets/img/thumb/' + tw.thumbfile;
                     } else if(tw.imagefile) {
+                        $scope.imagesWords++;
                         tw.imagefile = 'assets/img/orig/' + tw.imagefile;
                     }
 
@@ -25,6 +28,7 @@ function wordsLoader($scope, $http, url, duplicityService){
                         // duplicity loading
                         tw.duplicity = false; // HAVE TO BE false
                         duplicityService.checkDuplicity(tw);
+                        $scope.undeleteWords++;
                     }
 
                     addLinksForArrow(tw, prevWord);

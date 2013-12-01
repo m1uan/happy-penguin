@@ -119,15 +119,15 @@ app.directive('myWord', function () {
 
                 var readyForUpdate = false;
 
-                if(val == orig){
-                    indicator.addClass('hide');
+                if((word.n1 == lang && word.w1 != word.o1) || (word.n2 == lang && word.w2 != word.o2)){
+                    indicator.removeClass('hide');
                     //if(word.status != WORD_STATUS.SAVED) {
                     //     word.status = WORD_STATUS.CURRENT;
                     //}
-
-                } else {
-                    indicator.removeClass('hide');
                     readyForUpdate = true;
+                } else {
+                    indicator.addClass('hide');
+
                     //word.status = WORD_STATUS.EDITED;
                 }
 
@@ -354,9 +354,10 @@ app.directive('myWord', function () {
 app.directive('onEnter',function(){
     var move = function(currentLink, moveLink, lang){
         var wordEl = $('#word_' + currentLink);
-       	if(currentLink != moveLink){
-		focusElement(wordEl, false);
-	}
+
+        if(currentLink != moveLink){
+		    focusElement(wordEl, false);
+	    }
 
         if(moveLink){
             var wordEl2 = $('#word_' + (moveLink));

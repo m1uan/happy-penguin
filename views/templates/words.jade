@@ -30,7 +30,7 @@ div(ng-hide="loading")
                     a(href="javascript:$('#modal-add-word').modal('hide')").btn.btn-primary Close
 
 
-
+    div num-words: {{undeleteWords}} images: {{imagesWords}}
     div(ng-repeat="word in words")
         div(my-word word="word",ng-class="{linkdelete: word.del > 0}")
 
