@@ -38,9 +38,9 @@ html(ng-app="voc4u")
                 div.hide.content#menu
                     a(href="#/{{lessonFields[0]}}/{{lessonFields[1]}}/{{lessonFields[2]}}") Words
                     span |
-                    a(href="#/questions") Questions
+                    a(href="#/questions/{{lessonFields[1]}}/{{lessonFields[2]}}") Questions
                     span |
-                    a(href="#/questions/6") My Questions
+                    a(href="#/questions/{{lessonFields[1]}}/{{lessonFields[2]}}/6") My Questions
                     span |
                     a(href="#/stats/6") Stats
 

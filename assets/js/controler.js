@@ -1,40 +1,4 @@
-
-function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, duplicityService) {
-    this.params = $routeParams;
-
-    var IMAGE_DIR = 'assets/img/';
-    var WORD_STATUS = {
-        CURRENT : 1,
-        EDITED : 2,
-        SAVING : 3,
-        SAVED : 4
-
-    };
-
-
-
-
-
-    //$scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
-    $scope.words={
-        /*'1' : {
-            l1:'cs',
-            l2: 'en',
-            w1:'ahoj',
-            w2:'hello',
-            o1:'ahoj',
-            o2:'hello',
-            image: 'blabla',
-            status : WORD_STATUS.CURRENT
-        }  */
-    };
-
-    this.lesson = this.params.lesson;
-    this.lang1 = this.params.lang1;
-    this.lang2 = this.params.lang2;
-
-    var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del,description,q_status';
-
+function wordsLoader($scope, $http, url, duplicityService){
     $scope.loading = true;
     setTimeout(function() {
         $http({method: 'GET', url: url }).
@@ -83,6 +47,54 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
 
     }, 300);
 
+    function addLinksForArrow(word, prevWord){
+        if(prevWord) {
+            prevWord.nextLink = word.link;
+            word.prevLink = prevWord.link;
+        } else {
+            word.prevLink = null;
+        }
+        word.nextLink = null;
+    }
+}
+function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, duplicityService) {
+    this.params = $routeParams;
+
+    var IMAGE_DIR = 'assets/img/';
+    var WORD_STATUS = {
+        CURRENT : 1,
+        EDITED : 2,
+        SAVING : 3,
+        SAVED : 4
+
+    };
+
+
+
+
+
+    //$scope.lesson = ['lesson', 'lang 1' , 'lang 2'];
+    $scope.words={
+        /*'1' : {
+            l1:'cs',
+            l2: 'en',
+            w1:'ahoj',
+            w2:'hello',
+            o1:'ahoj',
+            o2:'hello',
+            image: 'blabla',
+            status : WORD_STATUS.CURRENT
+        }  */
+    };
+
+    this.lesson = this.params.lesson;
+    this.lang1 = this.params.lang1;
+    this.lang2 = this.params.lang2;
+
+    var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del,description,@userstatus';
+    wordsLoader($scope, $http, url, duplicityService);
+
+
     //var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile, image.thumb as imagethumb';
 
 
@@ -94,15 +106,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
     }
 
 
-    function addLinksForArrow(word, prevWord){
-        if(prevWord) {
-            prevWord.nextLink = word.link;
-            word.prevLink = prevWord.link;
-        } else {
-            word.prevLink = null;
-        }
-        word.nextLink = null;
-    }
+
 
 
 
@@ -242,6 +246,20 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
         modalDialog.find('#add_word_icon2').attr('src','assets/img/flags/flag_'+$routeParams.lang2+'.png');
     }
 }
+
+
+var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService){
+    var url =  '/question/words/' + $routeParams.lang1 + '/' + $routeParams.lang2 ;
+
+    if($routeParams.userId){
+        url += '/' +  $routeParams.userId;
+    }
+
+    url += '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del,description,@userstatus';
+
+    console.log('QuestionsCtrl', url);
+    wordsLoader($scope, $http, url, duplicityService);
+};
 
 
 

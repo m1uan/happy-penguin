@@ -1,5 +1,6 @@
 var Async = require('async')
-    ,questionEngine = require(process.cwd() + '/engine/question.js');
+    ,questionEngine = require(process.cwd() + '/engine/question.js'),
+    wordsEngine = require(process.cwd() + '/engine/words.js');
 var pg = null;
 
 module.exports = {
@@ -35,7 +36,7 @@ module.exports = {
                 questionData.status = params[3];
             }
 
-            questionEngine.create(pg, questionData, function(err, data){
+            questionEngine.changeStatus(pg, questionData, function(err, data){
                 request.reply(err ? err : data);
             });
 
@@ -44,5 +45,31 @@ module.exports = {
             request.reply('format : /link/lang1/lang2/*status');
         }
 
+    },
+
+    /**
+     * lang1/lang2/?user
+     * @param request
+     */
+    words_get : function (request){
+        var langs = request.params.params.split('/');
+        if(langs && langs.length > 1) {
+            var word = new wordsEngine.WORDS(pg);
+            var user = false;
+            if(langs.length > 2){
+                user = langs[2];
+                word.setUser(user);
+            }
+
+            word.addLang(langs[0]).addLang(langs[1]);
+
+            var fields = request.query.fields.split(',') ;
+
+            word.question(fields, user, function(err, words){
+                request.reply(words);
+            });
+        } else {
+            request.reply('format : /link/lang1/lang2/*userId_only');
+        }
     }
 }

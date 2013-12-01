@@ -5,10 +5,15 @@ var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
             controller: StatsCtrl,
             controllerAs: 'book'
         });
-        $routeProvider.when('/Book/:bookId/ch/:chapterId', {
-            templateUrl: '/assets/chapter.html',
-            controller: ChapterCntl,
-            controllerAs: 'chapter'
+        $routeProvider.when('/questions/:lang1/:lang2', {
+            templateUrl: 'templates/words',
+            controller: QuestionsCtrl,
+            controllerAs: 'questions'
+        });
+        $routeProvider.when('/questions/:lang1/:lang2/:userId', {
+            templateUrl: 'templates/words',
+            controller: QuestionsCtrl,
+            controllerAs: 'questions'
         });
 
         $routeProvider.when('/:lesson/:lang1/:lang2', {
