@@ -40,9 +40,9 @@ html(ng-app="voc4u")
                     span |
                     a(href="#/questions/{{lessonFields[1]}}/{{lessonFields[2]}}") Questions
                     span |
-                    a(href="#/questions/{{lessonFields[1]}}/{{lessonFields[2]}}/6") My Questions
+                    a(href="#/questions/{{lessonFields[1]}}/{{lessonFields[2]}}/#{userId}") My Questions
                     span |
-                    a(href="#/stats/6") Stats
+                    a(href="#/stats/#{userId}") Stats
 
 
 
@@ -70,7 +70,6 @@ html(ng-app="voc4u")
                             p#origin-message
                         div.modal-footer
                             a(href="javascript:$('#modal-error').modal('hide')").btn.btn-primary ok
-
 
             div(ng-view).content
 

@@ -245,6 +245,8 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
         modalDialog.find('#add_word_icon1').attr('src','assets/img/flags/flag_'+$routeParams.lang1+'.png');
         modalDialog.find('#add_word_icon2').attr('src','assets/img/flags/flag_'+$routeParams.lang2+'.png');
     }
+
+    $scope.showBtnAdd = true;
 }
 
 
@@ -259,6 +261,7 @@ var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService){
 
     console.log('QuestionsCtrl', url);
     wordsLoader($scope, $http, url, duplicityService);
+
 };
 
 

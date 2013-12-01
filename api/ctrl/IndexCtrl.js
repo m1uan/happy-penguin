@@ -33,7 +33,7 @@ module.exports = {
         request.reply.view('templates/' + template + '.jade');
     }
     ,index_get : function (request){
-        request.reply.view('index');
+        request.reply.view('index', {userId:request.user.id});
     },stats_get : function(request){
         request.reply.view('stats');
     }
