@@ -1,0 +1,2 @@
+echo ${OPENSHIFT_REPO_DIR}/pkgman.js --test
+node ${OPENSHIFT_REPO_DIR}/pkgman.js --test
