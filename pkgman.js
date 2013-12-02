@@ -6,17 +6,20 @@ var Package = require('./engine/package.js')
     ,Async = require('async');
 
 
+var dbname = config.DB_NAME;
 var dbuser = config.DB_USER;
 var dbpass = config.DB_PASS;
-var dbname = config.DB_NAME;
-var connection = 'postgres://'+dbuser+':'+dbpass+'@localhost/' + dbname;
+var dbport = config.DB_PORT;
+var dbhost = config.DB_HOST;
+
+var connection = 'postgres://'+dbuser+':'+dbpass+'@'+dbhost+':'+dbport+'/' + dbname;
 pgClient = new pg.Client(connection);
 
 
 pgClient.connect(function(err, client){
     if(err){
 
-        return console.info('could not connect to postgres', err);
+        return console.info('could not connect to postgres', err , connection);
     }
 
     console.log(process.argv);
@@ -27,14 +30,18 @@ pgClient.connect(function(err, client){
 
         });
 
-        if(process.argv[2] == '--update'){
+        var param = process.argv[2];
+
+        if(param == '--update'){
             updatePackages(client, function(err){
                 client.end();
             });
-        } else {
+        } else if(param > -1){
             Package.createPackage(client, process.argv[2], function(err){
                 client.end();
             })
+        } else {
+            console.log('wrong parameter (--update) or (101,102..)', param)
         }
 
 
