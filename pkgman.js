@@ -41,7 +41,8 @@ pgClient.connect(function(err, client){
                 client.end();
             })
         } else {
-            console.log('wrong parameter (--update) or (101,102..)', param)
+            console.log('wrong parameter (--update) or (101,102..)', param);
+            client.end();
         }
 
 
