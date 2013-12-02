@@ -23,7 +23,7 @@ var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
 
-describe.skip('package operations', function(){
+describe('package operations', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -44,7 +44,7 @@ describe.skip('package operations', function(){
             sqlMake(pgClient, [
                 "SELECT remove_test_data();" ,
                 "select create_test_data();"
-                //, "SELECT generate_langs();"
+                , "SELECT generate_langs();"
                 //, "SELECT remove_test_data();"
 
 
@@ -69,7 +69,7 @@ describe.skip('package operations', function(){
         function testGetPackageForUpdate(timeFrom, lesson, cb){
 
             package.getPackageForUpdate(pgClient, timeFrom, function(err, packages){
-                console.log(err || packages);
+                console.log('packages' , err || packages);
                 packages.should.be.Array;
                 packages.length.should.equal(lesson.length);
 
@@ -96,7 +96,7 @@ describe.skip('package operations', function(){
             });
         }
 
-        it('inital test with generate_langs() which put all to update', function(cb){
+        it('1inital test with generate_langs() which put all to update', function(cb){
             var timeNow = new Date();
             sqlMake(pgClient, [
                 "update word set word='ahoj';"
@@ -141,7 +141,7 @@ describe.skip('package operations', function(){
         it('whole link (all languages) should be changed', function(cb){
             var timeNow = new Date();
             sqlMake(pgClient, [
-                "update link set image=1 where lid=2002 and version=0"
+                "update link set image=2 where lid=2002 and version=0"
             ],function(){
                 testGetPackageForUpdate(timeNow, [
                     { lesson: 4001,
@@ -364,11 +364,12 @@ describe.skip('package operations', function(){
     describe('create package', function(){
 
         before(function(cb){
-
-            if(fs.existsSync(config.DIR_DATA + package.DIR_PKG)){
+            var dir = config.DIR_DATA + package.DIR_PKG;
+            console.log(dir);
+            if(fs.existsSync(dir)){
 
             } else {
-                fs.mkdirSync(config.DIR_PKG+ package.DIR_PKG )
+                fs.mkdirSync(dir)
             }
             cb();
         });
