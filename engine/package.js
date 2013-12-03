@@ -3,7 +3,8 @@ var fs = require('fs'),
     Image = require('./image.js'),
     Async = require('async'),
     Config = require('../config/local.js'),
-    Archiver = require('archiver');
+    Archiver = require('archiver'),
+    SL = require('../lib/happy/sqllib.js');;
 
 /*
     PKG_DIR = '/tmp/pkg/' in config
@@ -14,6 +15,38 @@ module.exports.DIR_IMG = 'img/';
 module.exports.DIR_PKG = 'pkg/';
 
 module.exports.LANG_EXT = '.data';
+
+
+module.exports.get = function(pg, langs, fields, cb){
+    var parallel = [];
+
+    langs.forEach(function(lang){
+        parallel.push(function(icb){
+            var sqlPackages = new SL.SqlLib('package_t');
+
+            sqlPackages.whereAnd('lang=',lang).fields(fields).select(pg, icb);
+        })
+    });
+
+    Async.parallel(parallel, function(err, params){
+        console.log(err || params);
+
+        if(err){
+            cb(err);
+        } else {
+            var result = {};
+
+            langs.forEach(function(lang,idx){
+
+                result[lang] = params[idx];
+            });
+
+            cb(err, result);
+        }
+    });
+
+}
+
 
 module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
     var sql = 'SELECT changed, lesson, lang_mask FROM update_package_t ' +
