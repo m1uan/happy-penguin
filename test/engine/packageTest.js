@@ -64,6 +64,29 @@ describe('package operations', function(){
 
 
 
+    describe.only('get package', function(){
+        before(function(cb){
+            package.createPackage(pgClient, 2001, function(){
+                package.createPackage(pgClient, 2004, cb);
+            });
+        });
+
+        after(function(cb){
+            sqlMake(pgClient, [
+                "delete from package_t;"
+            ],cb);
+        });
+
+       it('cs de',function(cb){
+            package.get(pgClient, ['cs','de'], ['*'], function(err, packages){
+                console.log(packages);
+                cb();
+            });
+       });
+
+
+    });
+
 
     describe('test getPackageForUpdate', function(){
         function testGetPackageForUpdate(timeFrom, lesson, cb){
