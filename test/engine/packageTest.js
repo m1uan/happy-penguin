@@ -78,8 +78,20 @@ describe('package operations', function(){
         });
 
        it('cs de',function(cb){
-            package.get(pgClient, ['cs','de'], ['*'], function(err, packages){
+           var langs = ['cs','de'];
+            package.get(pgClient, langs , ['lesson','changed','examples','file'], function(err, packages){
                 console.log(packages);
+
+                langs.forEach(function(lang){
+                    packages.should.have.property(lang);
+                    packages[lang].should.be.a.Array;
+                    packages[lang].length.should.eql(2);
+                    packages[lang][0].should.have.property('lesson');
+                    packages[lang][0].should.have.property('changed');
+                    packages[lang][0].should.have.property('examples');
+                    packages[lang][0].should.have.property('file');
+                });
+
                 cb();
             });
        });
