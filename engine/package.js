@@ -297,6 +297,65 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
 
         });
     }); // module.exports.createPkgDirectory(tempDir, function(err)
+
+
+    function zipPackage(fileName, tempDir, langs, images, cb){
+        //console.log('zipPackage', fileName, langs, images);
+
+        //var output = fs.createWriteStream(__dirname + '/example-output2.zip');
+        var output = fs.createWriteStream(fileName);
+        var archive = Archiver('zip');
+
+        output.on('close', function() {
+            console.log('archiver has been finalized and the output file descriptor has closed.');
+            movePackageToProductionSync(filename);
+            cb(null, fileName);
+        });
+
+        archive.on('error', function(err) {
+            throw err;
+        });
+
+        archive.pipe(output);
+
+        images.forEach(function(img){
+            var imgName = module.exports.DIR_IMG +  img;
+            archive.append(fs.createReadStream(tempDir + imgName), { name: imgName });
+        });
+
+        langs.forEach(function(lng){
+            var langName = module.exports.DIR_LANG + lng + module.exports.LANG_EXT;
+            archive.append(fs.createReadStream(tempDir +  langName), { name:  langName });
+        });
+
+
+        archive.finalize(function(err, bytes) {
+            if (err) {
+                throw err;
+            }
+
+            console.log(bytes + ' total bytes');
+        });
+    }
+
+    function movePackageToProductionSync(filename){
+        var productionFile = lesson + '.lng';
+        var productionFileRestore = '_' + productionFile;
+        if(!fs.existsSync(productionFile)){
+            return;
+        }
+
+        fs.renameSync(productionFile, productionFileRestore);
+        if(fs.renameSync(filename, productionFile)){
+            fs.unlink(productionFileRestore);
+            console.log('lesson ' + lesson + ' with file ' + productionFile + ' success');
+        } else {
+            fs.renameSync(productionFileRestore, productionFile);
+            console.log('sorry move package colapsed :-(');
+        }
+
+        fs.unlink(filename);
+    }
 }
 
 function storeInDbPackage(generateData, cb, pg){
@@ -341,43 +400,7 @@ function storeInDbPackage(generateData, cb, pg){
 }
 
 
-function zipPackage(fileName, tempDir, langs, images, cb){
-    //console.log('zipPackage', fileName, langs, images);
 
-    //var output = fs.createWriteStream(__dirname + '/example-output2.zip');
-    var output = fs.createWriteStream(fileName);
-    var archive = Archiver('zip');
-
-    output.on('close', function() {
-        console.log('archiver has been finalized and the output file descriptor has closed.');
-        cb(null, fileName);
-    });
-
-    archive.on('error', function(err) {
-        throw err;
-    });
-
-    archive.pipe(output);
-
-    images.forEach(function(img){
-        var imgName = module.exports.DIR_IMG +  img;
-        archive.append(fs.createReadStream(tempDir + imgName), { name: imgName });
-    });
-
-    langs.forEach(function(lng){
-        var langName = module.exports.DIR_LANG + lng + module.exports.LANG_EXT;
-        archive.append(fs.createReadStream(tempDir +  langName), { name:  langName });
-    });
-
-
-    archive.finalize(function(err, bytes) {
-        if (err) {
-            throw err;
-        }
-
-        console.log(bytes + ' total bytes');
-    });
-}
 
 
 module.exports.createPkgDirectory = function(dirWhere, cb){
