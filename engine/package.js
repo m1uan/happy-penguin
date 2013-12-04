@@ -307,8 +307,9 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
         var archive = Archiver('zip');
 
         output.on('close', function() {
-            console.log('archiver has been finalized and the output file descriptor has closed.');
-            movePackageToProductionSync(filename);
+            console.log('archiver has been finalized and the output file descriptor has closed. ' + fileName);
+            movePackageToProductionSync(fileName);
+            cleanAfterPackageSync(tempDir, langs, images);
             cb(null, fileName);
         });
 
@@ -339,23 +340,53 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
     }
 
     function movePackageToProductionSync(filename){
-        var productionFile = lesson + '.lng';
-        var productionFileRestore = '_' + productionFile;
-        if(!fs.existsSync(productionFile)){
-            return;
+        var productionFile = Config.DIR_DATA + module.exports.DIR_PKG + lesson + '.lng';
+        var productionFileRestore =  productionFile + '_';
+
+        var restore = false;
+        if(fs.existsSync(productionFile)){
+            fs.renameSync(productionFile, productionFileRestore);
+            restore = true;
         }
 
-        fs.renameSync(productionFile, productionFileRestore);
-        if(fs.renameSync(filename, productionFile)){
-            fs.unlink(productionFileRestore);
+        var rename = fs.renameSync(filename, productionFile);
+        if(!rename){
+            if(restore){
+                fs.unlinkSync(productionFileRestore);
+            }
             console.log('lesson ' + lesson + ' with file ' + productionFile + ' success');
         } else {
-            fs.renameSync(productionFileRestore, productionFile);
-            console.log('sorry move package colapsed :-(');
+            fs.unlinkSync(filename);
+            if(restore){
+                fs.renameSync(productionFileRestore, productionFile);
+            }
+            console.log('sorry move package colapsed :-(', rename);
         }
 
-        fs.unlink(filename);
+
     }
+
+    function cleanAfterPackageSync(tempDir, langs, images) {
+
+        var imageDir = tempDir + module.exports.DIR_IMG;
+        var langDir = tempDir + module.exports.DIR_LANG;
+
+        images.forEach(function(img){
+            fs.unlinkSync(imageDir + img);
+        });
+
+        langs.forEach(function(lng){
+            fs.unlinkSync(langDir +  lng + module.exports.LANG_EXT);
+        });
+
+        fs.rmdirSync(imageDir);
+        //console.log('unlink', imageDir);
+        fs.rmdirSync(langDir);
+        //console.log('unlink', langDir);
+        fs.rmdirSync(tempDir);
+        //console.log('unlink', tempDir);
+    }
+
 }
 
 function storeInDbPackage(generateData, cb, pg){
