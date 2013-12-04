@@ -434,7 +434,7 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, colums, cb
     });
 
     langs.forEach(function(val, idx){
-        console.log(val);
+
         asyncLangsLoad.push(function(callback){
            module.exports.getWords(pgClient, val, lesson, colums[1], function(words){
                callback(null, words);
