@@ -29,7 +29,9 @@ module.exports.get = function(pg, langs, fields, cb){
     });
 
     Async.parallel(parallel, function(err, params){
-        console.log(err || params);
+        if(Config.debug){
+            console.log(err || params);
+        }
 
         if(err){
             cb(err);
@@ -53,7 +55,9 @@ module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
         'WHERE lesson IS NOT NULL AND changed > $1';
 
     var sqlvar = [timeFrom];
-    console.log(sql, sqlvar);
+    if(Config.debug){
+        console.log(sql, sqlvar);
+    }
     loadLangs(pg, function(err, langs){
 
         if(err){
@@ -287,7 +291,7 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
             // series - posible problem with not end SQL stream
             Async.series (asyncFuncs, function(err, data){
                 if(err){
-                    console.log(err);
+                    //console.log(err);
                     cb(err);
                 } else {
                     //cb(null);
@@ -411,8 +415,9 @@ function storeInDbPackage(generateData, cb, pg){
     sql += sqlWhere;
 
     pg.query(sql, sqlval, function(err, update){
-        console.log('storeInDbPackage', sql, sqlval, err ? err : update.rowCount);
-
+        if(Config.debug){
+            console.log('storeInDbPackage', sql, sqlval, err ? err : update.rowCount);
+        }
         if(!err && update.rowCount < 1){
             sql = 'INSERT INTO package_t (examples, file, lesson, lang) VALUES($1, $2, $3, $4) ';
 
@@ -447,7 +452,10 @@ module.exports.createPkgDirectory = function(dirWhere, cb){
 // http://stackoverflow.com/questions/11293857/fastest-way-to-copy-file-in-node-js
 function copyFile(source, target, cb) {
     var cbCalled = false;
-    console.log('copy : ', source, ' -> ', target);
+    if(Config.debug){
+        console.log('copy : ', source, ' -> ', target);
+    }
+
 
     var rd = fs.createReadStream(source);
     rd.on("error", function(err) {
@@ -475,8 +483,9 @@ function getLanguagesFromMask(mask, langs){
 
     langs.forEach(function(val, idx){
         var l = (1 << (val.code));
-
-        console.log('getLanguagesFromMask', mask, l, val.lang);
+        if(Config.debug){
+            console.log('getLanguagesFromMask', mask, l, val.lang);
+        }
         if(mask & l){
             res.push(val.lang);
         }
@@ -489,7 +498,9 @@ function loadLangs(pg, cb){
     var sql = 'SELECT lang, code FROM lang_t';
 
     pg.query(sql, function(err, data){
-        console.log(sql , err ? err : data.rows);
+        if(Config.debug){
+            console.log(sql , err ? err : data.rows);
+        }
         cb(err, data ? data.rows : null);
     });
 }

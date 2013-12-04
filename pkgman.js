@@ -37,7 +37,7 @@ pgClient.connect(function(err, client){
                 client.end();
             });
         } else if(param > -1){
-            Package.createPackage(client, process.argv[2], function(err){
+            Package.createPackage(client, param, function(err){
                 client.end();
             })
         } else {
