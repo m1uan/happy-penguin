@@ -25,10 +25,7 @@ pgClient.connect(function(err, client){
     console.log(process.argv);
 
     if(process.argv.length == 3){
-        var lessons1 = [ 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
-        lessons1.forEach(function(less){
 
-        });
 
         var param = process.argv[2];
 
@@ -36,7 +33,23 @@ pgClient.connect(function(err, client){
             updatePackages(client, function(err){
                 client.end();
             });
-        } else if(param > -1){
+        } else if(param == '--init'){
+            var lessons1 = [ 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010 ];
+            var parallel = [];
+
+            lessons1.forEach(function(less){
+                parallel.push(function(icb){
+                    Package.createPackage(client, less, function(err){
+                        icb(err);
+                    });
+                });
+            });
+
+            Async.parallel(parallel, function(){
+                client.end();
+            });
+
+        }else if(param > -1){
             Package.createPackage(client, param, function(err){
                 client.end();
             })
