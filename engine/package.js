@@ -104,6 +104,7 @@ module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
  * lid3;word3;*img3
  */
 
+// http://stackoverflow.com/questions/6953286/node-js-encrypting-data-that-needs-to-be-decrypted
 module.exports.generateLangFile = function(generateData, cb){
     var file = generateData.outDir + module.exports.DIR_LANG + generateData.lang + module.exports.LANG_EXT;
     //words.getWords(pg, lang, lesson, function(words){
@@ -131,8 +132,17 @@ module.exports.generateLangFile = function(generateData, cb){
            data += "\n";
         });
 
+            var crypto = require('crypto');
+            console.log(crypto.getCiphers(), crypto.getHashes());
+
+            var algorithm = 'aes128'; // or any other algorithm supported by OpenSSL
+            var key = 'password';
+
+            var cipher = crypto.createCipher(algorithm, key);
+            var encrypted = cipher.update(data, 'utf8', 'binary') + cipher.final('binary');
+
         //console.log('to tech dat moc neni ne?', data, file);
-        fs.writeFile(file, data, function (err) {
+        fs.writeFile(file, encrypted, function (err) {
            cb(err);
         });
 
@@ -244,7 +254,14 @@ function createOrUpdatePkg(pg, lesson, langs, updateLangs, cb){
     module.exports.createPkgDirectory(tempDir, function(err){
 
         words.getWordsWithImages(pg, langs, lesson, function(err, words){
+
+
             var images = words[0];
+
+            if(Config.warn && !images){
+                console.log('images empty for ' + lesson);
+            }
+
             //console.log(words);
             var asyncFuncs = [];
 
