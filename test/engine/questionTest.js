@@ -131,10 +131,50 @@ describe('package operations', function(){
             });
         });
 
-        it('get messages', function(cb){
-            question.get(pgClient, null, function(errw, dataw){
-                cb();
-            });
+        it.only('get messages', function(cb){
+            var questionData = {
+                userId : 3,
+                linkId: 1432,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message1'
+            } ;
+            var questionData2 = {
+                userId : 3,
+                linkId: 1433,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message2'
+            } ;
+
+            var questionData3 = {
+                userId : 4,
+                linkId: 1433,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message3'
+            } ;
+            question.changeStatus(pgClient, questionData, function(errw, dataw){
+            question.changeStatus(pgClient, questionData2, function(err, data){
+            question.changeStatus(pgClient, questionData3, function(err, data){
+                question.get(pgClient, [1432,1433], function(errw, dataw){
+                    console.log(err, dataw)   ;
+
+                    dataw.should.be.Array;
+                    dataw[0].linkId.should.eql(1432);
+                    dataw[0].messages.should.be.Array;
+                    dataw[0].messages.length.should.eql(1);
+                    dataw[0].messages[0].message.should.eql('message1');
+
+                    dataw[1].linkId.should.eql(1433);
+                    dataw[1].messages.should.be.Array;
+                    dataw[1].messages.length.should.eql(2);
+                    dataw[1].messages[0].message.should.eql('message2');
+                    dataw[1].messages[1].message.should.eql('message3');
+
+                    cb();
+                });
+            })})});
         });
     });
 })

@@ -27,6 +27,7 @@ module.exports = {
         if(params.length > 2 && params[0].length > 0 && params[1].length > 0 && params[2].length > 0){
             var questionData = {
                 userId : request.user.id
+                //,fullName : request.user.full_name
                 ,linkId: params[0]
                 ,lang1 : params[1]
                 ,lang2 : params[2]

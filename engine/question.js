@@ -91,3 +91,24 @@ function addQuestionMessage(pg, questionData, cb){
 
 
 }
+
+module.exports.get = function(pg, linkIds, cb){
+    var functions = [];
+
+    linkIds.forEach(function(linkId,idx){
+        functions.push(function(icb){
+            //return function(id){
+                var sqlGet = new SL.SqlLib('question_t', ['message', 'lang1', 'lang2', 'usr']);
+                sqlGet.whereAnd('link=', linkId);
+                sqlGet.select(pg, function(err, data){
+                    //console.log(data);
+                    icb(err, {linkId:linkId, messages:data});
+                });
+            //}
+        })
+    });
+
+
+    Async.parallel(functions, cb);
+
+}
