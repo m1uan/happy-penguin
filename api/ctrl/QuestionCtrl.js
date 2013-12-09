@@ -72,5 +72,23 @@ module.exports = {
         } else {
             request.reply('format : /link/lang1/lang2/*userId_only');
         }
+    },
+
+    messages_post : function(request){
+
+        if(request.payload.links){
+            var fields = ['message'];
+            if(request.query.fields){
+                fields = request.query.fields.split(',') ;
+            }
+
+            questionEngine.get(pg, request.payload.links, fields, function(err, data){
+                request.reply(err ? err : data);
+            });
+        } else {
+            request.reply('links missing in payloads')
+        }
+
+
     }
 }

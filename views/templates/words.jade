@@ -33,6 +33,10 @@ div(ng-hide="loading")
     div num-words: {{undeleteWords}} images: {{imagesWords}}
     div(ng-repeat="word in words")
         div(my-word word="word",ng-class="{linkdelete: word.del > 0}")
+        div(ng-show="word.questions")
+            div(ng-repeat="question in word.questions")
+                i {{question.changed}}
+                span {{question.message}}
 
 
     div(ng-show="showBtnAdd",ng-click="showAddWord()").btn.btn-success add word

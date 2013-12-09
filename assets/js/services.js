@@ -165,6 +165,9 @@ app.service('wordService', function($http) {
                 // or server returns response with an error status.
             });
     }
+
+
+
 });
 
 /***

@@ -1,4 +1,4 @@
-function wordsLoader($scope, $http, url, duplicityService){
+function wordsLoader($scope, $http, url, duplicityService, callback){
     $scope.loading = true;
     setTimeout(function() {
         $http({method: 'GET', url: url }).
@@ -41,11 +41,18 @@ function wordsLoader($scope, $http, url, duplicityService){
                 $scope.loading = false;
 
                 duplicityService.loadDuplicityTimer();
+
+                if(callback){
+                    callback();
+                }
             }).
             error(function(data, status, headers, config) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
                 $scope.loading = false;
+                if(callback){
+                    callback();
+                }
             });
 
 
@@ -264,7 +271,34 @@ var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService){
     url += '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del,description,@userstatus';
 
     console.log('QuestionsCtrl', url);
-    wordsLoader($scope, $http, url, duplicityService);
+    wordsLoader($scope, $http, url, duplicityService, function(){
+        var url = '/question/messages/?fields=message,lang1,lang2,changed,user';
+        var links = [] ;
+        for (link in $scope.words) {
+           links.push(link);
+        }
+        if(links.length)  {
+            $http({
+                method: 'POST',
+                url: url,
+                data: {links: links}}).
+                success(function(data, status, headers, config) {
+                   data.forEach(function(question){
+                       var word = $scope.words[question.linkId];
+                       word.questions = question.messages;
+                   });
+
+                   console.log('guestion',data) ;
+                }).
+                error(function(data, status, headers, config) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                });
+        }
+
+    });
+
+
 
 };
 

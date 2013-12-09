@@ -157,7 +157,7 @@ describe('package operations', function(){
             question.changeStatus(pgClient, questionData, function(errw, dataw){
             question.changeStatus(pgClient, questionData2, function(err, data){
             question.changeStatus(pgClient, questionData3, function(err, data){
-                question.get(pgClient, [1432,1433], function(errw, dataw){
+                question.get(pgClient, [1432,1433], ['message'], function(errw, dataw){
                     console.log(err, dataw)   ;
 
                     dataw.should.be.Array;
