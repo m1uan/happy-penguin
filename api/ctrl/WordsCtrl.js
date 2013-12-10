@@ -26,15 +26,14 @@ module.exports = {
     },
     test_get : function(request){
       request.reply('heelo');
-    },
-    get_get : function (request){
+    },get_get : function (request){
         var langs = request.params.params.split('/');
         var lesson = langs.shift();
-
+        console.log('---------------------------------------------');
         var word = new wordsEngine.WORDS(pgClient, lesson);
 
         langs.forEach(function(val){
-           word.addLang(val);
+            word.addLang(val);
         });
 
         var fields = request.query.fields.split(',') ;
@@ -45,14 +44,8 @@ module.exports = {
         });
 
     },
-    index_get : function (request){
 
 
-        //console.log(request.getParam('l2'));
-        wordsEngine.getWordsWithImages(pgClient, ['cs', 'en'], 1, function(err, words){
-            request.reply(err ? err : words);
-        });
-    },
     lesson_get : function (request){
 
         //console.log(request.getParam('l2'));

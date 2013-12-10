@@ -81,7 +81,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
     };
 
 
-
+    $scope.new_question = "i don't understand meaning of this word...";
 
 
     //$scope.lesson = ['lesson', 'lang 1' , 'lang 2'];

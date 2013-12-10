@@ -37,16 +37,23 @@ function WORDS(pg, lesson){
             fields.push('@userstatus');
         }
 
+        sql.addOrderBy('qmchanged desc');
         sql.whereAnd('qs.status IS NOT NULL');
 
         if(onlyUser){
             sql.whereAnd('qm.changed IS NOT NULL');
         }
 
-        this.get(fields, cb);
+        this.getInner(fields, cb);
     }
 
     this.get = function(fields, cb){
+        // question are ordered by date time changed
+        sql.addOrderBy('link.lid');
+        this.getInner(fields, cb);
+    }
+
+    this.getInner = function(fields, cb){
 
         if(!fields){
             cb('fields missing');
@@ -83,7 +90,7 @@ function WORDS(pg, lesson){
             sql.whereAnd('link.version=',0);
         }
 
-        sql.addOrderBy('link.lid');
+
 
         if(langs.length == 1){
             sql.join('word', 'word.link=link.lid');

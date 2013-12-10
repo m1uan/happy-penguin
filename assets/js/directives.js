@@ -295,7 +295,16 @@ app.directive('myWord', function () {
             }
 
             $scope.request = function(status){
-                wordService.setQuestionState($scope.word, status);
+                if(status==1){
+                    var modalDialog = dialogService.showDialogById('#modal-question', function(){
+                        var message = modalDialog.find('#question_input1').val();
+                        wordService.setQuestionState($scope.word, 1, message);
+                    });
+                } else {
+                    wordService.setQuestionState($scope.word, status);
+                }
+
+
             }
 
             $scope.updateLink = function(word){

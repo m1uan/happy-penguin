@@ -28,7 +28,21 @@ div(ng-hide="loading")
                 div.modal-footer
                     a#yesbutton.btn.btn-danger Save
                     a(href="javascript:$('#modal-add-word').modal('hide')").btn.btn-primary Close
-
+    div#modal-question.modal.fade
+        div.modal-dialog
+            div.modal-content
+                div.modal-header
+                    a.close &times;
+                    h3#warning_dialog_title Question
+                div.modal-body
+                    div.row
+                        div.col-md-4 question:
+                            div.row
+                        div.col-md-4
+                            input#question_input1(value="I dont understand word meaning...",ng-model="new_question")
+                    div.modal-footer
+                        a(ng-show="new_question")#yesbutton.btn.btn-primary Sent To Milan
+                        a(href="javascript:$('#modal-question').modal('hide')").btn.btn-default Close
 
     div num-words: {{undeleteWords}} images: {{imagesWords}}
     div(ng-repeat="word in words")

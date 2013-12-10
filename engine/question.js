@@ -6,13 +6,7 @@ var fs = require('fs'),
     Archiver = require('archiver'),
     SL = require('../lib/happy/sqllib.js');
 
-module.exports.get = function(pg, questionData, cb){
-    if(!cb){
-        cb = questionData;
-    }
 
-    cb();
-}
 
 module.exports.changeStatus = function(pg, questionData, cb){
     if(!questionData || !questionData.userId || !questionData.linkId || !questionData.lang1 || !questionData.lang2 ){
@@ -100,7 +94,7 @@ module.exports.get = function(pg, linkIds, fields, cb){
             //return function(id){
                 var sqlGet = new SL.SqlLib('question_t', fields);
                 sqlGet.whereAnd('link=', linkId);
-                sqlGet.addOrderBy('changed')
+                sqlGet.addOrderBy('changed asc')
                 sqlGet.select(pg, function(err, data){
                     //console.log(data);
                     icb(err, {linkId:linkId, messages:data});

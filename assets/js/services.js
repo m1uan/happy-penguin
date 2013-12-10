@@ -151,12 +151,12 @@ app.service('wordService', function($http) {
             });
     }
 
-    this.setQuestionState = function(word, state){
+    this.setQuestionState = function(word, state, message){
         var url = '/question/setstate/' + word.link + '/' + word.n1 + '/' + word.n2 + '/' + state;
         $http({
             method: 'POST',
             url: url,
-            data: {message:''}}).
+            data: {message:message}}).
             success(function(data, status, headers, config) {
                 word.q_state = data.word.q_state;
             }).

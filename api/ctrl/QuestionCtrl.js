@@ -31,6 +31,7 @@ module.exports = {
                 ,linkId: params[0]
                 ,lang1 : params[1]
                 ,lang2 : params[2]
+                ,message : request.payload.message
             }
 
             if(params.length > 3){
