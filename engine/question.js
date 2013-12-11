@@ -94,7 +94,7 @@ module.exports.get = function(pg, linkIds, fields, cb){
             //return function(id){
                 var sqlGet = new SL.SqlLib('question_t', fields);
                 sqlGet.whereAnd('link=', linkId);
-                sqlGet.addOrderBy('changed asc')
+                sqlGet.addOrderBy('changed desc')
                 sqlGet.select(pg, function(err, data){
                     //console.log(data);
                     icb(err, {linkId:linkId, messages:data});

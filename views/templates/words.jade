@@ -48,9 +48,9 @@ div(ng-hide="loading")
     div(ng-repeat="word in words")
         div(my-word word="word",ng-class="{linkdelete: word.del > 0}")
         div(ng-show="word.questions")
-            div(ng-repeat="question in word.questions")
-                i {{question.changed}}
-                span {{question.message}}
+            div(ng-repeat="question in word.questions").question
+                span.guestion_message {{question.message}}
+                span.guestion_changed {{question.changed}}
 
 
     div(ng-show="showBtnAdd",ng-click="showAddWord()").btn.btn-success add word
