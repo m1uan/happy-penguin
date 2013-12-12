@@ -62,15 +62,15 @@ describe('getWords', function(){
                 });
         })
 
-        it('get only with question', function(cb){
+        it('get only with question NO user', function(cb){
             words.WORDS(pgClient)
                 .setUser(3)
                 .addLang('de')
-                .addLang('en').question(['link','word as w','lang as n','image.image as imagefile'], function(err, data){
+                .addLang('en').question(['@userstatus','link','word as w','lang as n','image.image as imagefile'], true, function(err, data){
                     console.log(err,data);
                     assert(data, err);
                     data.should.be.a.Array;
-                    data.length.should.eql(3);
+                    data.length.should.eql(2);
                     var data0 = data[0];
                     data0.should.have.property('link');
                     data0.should.have.property('userstatus');
@@ -90,11 +90,11 @@ describe('getWords', function(){
             words.WORDS(pgClient)
                 .setUser(3)
                 .addLang('de')
-                .addLang('en').question(['link','word as w','lang as n','image.image as imagefile'], function(err, data){
+                .addLang('en').question(['@userstatus','link','word as w','lang as n','image.image as imagefile'], function(err, data){
                     console.log(err,data);
                     assert(data);
                     data.should.be.a.Array;
-                    data.length.should.above(0);
+                    data.length.should.eql(3);
                     var data0 = data[0];
                     data0.should.have.property('link');
                     data0.should.have.property('userstatus');

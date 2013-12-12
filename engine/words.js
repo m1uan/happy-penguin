@@ -36,22 +36,33 @@ function WORDS(pg, lesson){
         sql = new SQL.SqlLib('question_status_t qs');
         sql.join('link','qs.link=link.lid');
 
-        sql.joinRight('question_t qm','qm.link=qs.link AND qm.usr='+user);
+        fields.push('qs.status as qstatus');
+        var indexOfUserStatusInFields = fields.indexOf('@userstatus');
 
-        //if(fields.indexOf('@userstatus') == -1){
-        //    fields.push('@userstatus');
-        //}
+        if(indexOfUserStatusInFields != -1){
+            //fields.push('CASE WHEN (SELECT 1 FROM question_t WHERE link )');
 
-        sql.addOrderBy('qmchanged desc');
+            //fields.push('qm.changed as qmchanged');
+            fields.push('(SELECT MAX(question_t.changed) FROM question_t WHERE question_t.link=link.lid AND question_t.usr='+user+') AS userpresed')
+            fields[indexOfUserStatusInFields] = 'CASE WHEN (SELECT MAX(question_t.changed) FROM question_t WHERE question_t.link=link.lid AND question_t.usr='+user+') IS NOT NULL THEN (qs.status+100) ELSE COALESCE(qs.status, 0) END AS userstatus';
+            //sql.joinRight('question_t qm','qm.link=qs.link AND qm.usr='+user);
+
+        }
+
+        if(indexOfUserStatusInFields){
+
+        }
+
+        sql.addOrderBy('qstatus desc');
         //sql.whereAnd('qs.status IS NOT NULL');
 
         if(onlyUser){
-            //sql.whereAnd('qm.changed IS NOT NULL');
+            sql.whereAnd('(SELECT MAX(question_t.changed) FROM question_t WHERE question_t.link=link.lid AND question_t.usr='+user+') IS NOT NULL');
         }
 
-        fields.push('qs.status as qstatus');
-        fields.push('qm.changed as qmchanged');
-        fields.push('CASE WHEN qm.changed IS NOT NULL THEN (qs.status+100) ELSE COALESCE(qs.status, 0) END AS userstatus');
+        //fields.push('qs.status as qstatus');
+        //fields.push('qm.changed as qmchanged');
+        //fields.push('CASE WHEN qm.changed IS NOT NULL THEN (qs.status+100) ELSE COALESCE(qs.status, 0) END AS userstatus');
 
         this.getInner(fields, cb);
     }
@@ -152,7 +163,8 @@ function WORDS(pg, lesson){
                    });
 
                } else {
-                   if(f.indexOf('link') > -1){
+                   //var linkIdx = f.indexOf('link');
+                   if(f == 'link'){
                        f = 'lid as link';
                    }
 
