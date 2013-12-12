@@ -5,6 +5,7 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
             success(function(data, status, headers, config) {
                 console.log(data);
                 var tempWord = {};
+                var tempWordList = [];
                 var prevWord = null;
                 duplicityService.clear();
                 $scope.undeleteWords = 0;
@@ -34,10 +35,12 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
                     addLinksForArrow(tw, prevWord);
 
                     tempWord[tw.link] = tw;
+                    tempWordList.push(tw);
                     prevWord = tw;
                 });
 
                 $scope.words = tempWord;
+                $scope.wordList = tempWordList;
                 $scope.loading = false;
 
                 duplicityService.loadDuplicityTimer();
@@ -97,6 +100,9 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
             status : WORD_STATUS.CURRENT
         }  */
     };
+
+
+    $scope.wordList = [];
 
     this.lesson = this.params.lesson;
     this.lang1 = this.params.lang1;

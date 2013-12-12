@@ -45,7 +45,7 @@ div(ng-hide="loading")
                         a(href="javascript:$('#modal-question').modal('hide')").btn.btn-default Close
 
     div num-words: {{undeleteWords}} images: {{imagesWords}}
-    div(ng-repeat="word in words")
+    div(ng-repeat="word in wordList")
         div(my-word word="word",ng-class="{linkdelete: word.del > 0}")
         div(ng-show="word.questions")
             div(ng-repeat="question in word.questions").question

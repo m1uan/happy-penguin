@@ -64,7 +64,7 @@ describe('package operations', function(){
 
 
 
-    describe.only('get package', function(){
+    describe('get package', function(){
         before(function(cb){
             package.createPackage(pgClient, 2001, function(){
                 package.createPackage(pgClient, 2004, cb);

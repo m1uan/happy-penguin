@@ -33,16 +33,25 @@ function WORDS(pg, lesson){
             onlyUser = false;
         }
 
-        if(fields.indexOf('@userstatus') == -1){
-            fields.push('@userstatus');
-        }
+        sql = new SQL.SqlLib('question_status_t qs');
+        sql.join('link','qs.link=link.lid');
+
+        sql.joinRight('question_t qm','qm.link=qs.link AND qm.usr='+user);
+
+        //if(fields.indexOf('@userstatus') == -1){
+        //    fields.push('@userstatus');
+        //}
 
         sql.addOrderBy('qmchanged desc');
-        sql.whereAnd('qs.status IS NOT NULL');
+        //sql.whereAnd('qs.status IS NOT NULL');
 
         if(onlyUser){
-            sql.whereAnd('qm.changed IS NOT NULL');
+            //sql.whereAnd('qm.changed IS NOT NULL');
         }
+
+        fields.push('qs.status as qstatus');
+        fields.push('qm.changed as qmchanged');
+        fields.push('CASE WHEN qm.changed IS NOT NULL THEN (qs.status+100) ELSE COALESCE(qs.status, 0) END AS userstatus');
 
         this.getInner(fields, cb);
     }
@@ -50,15 +59,6 @@ function WORDS(pg, lesson){
     this.get = function(fields, cb){
         // question are ordered by date time changed
         sql.addOrderBy('link.lid');
-        this.getInner(fields, cb);
-    }
-
-    this.getInner = function(fields, cb){
-
-        if(!fields){
-            cb('fields missing');
-            return;
-        }
 
         var indexOfUserStatusInFields = fields.indexOf('@userstatus');
 
@@ -75,6 +75,18 @@ function WORDS(pg, lesson){
         if(fields.indexOf('qm.changed as qmchanged') != -1 || indexOfUserStatusInFields > -1){
             sql.join('question_t qm','qm.link=qs.link AND qm.usr='+user);
         }
+
+        this.getInner(fields, cb);
+    }
+
+    this.getInner = function(fields, cb){
+
+        if(!fields){
+            cb('fields missing');
+            return;
+        }
+
+
 
 
 

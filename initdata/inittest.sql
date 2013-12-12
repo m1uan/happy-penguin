@@ -1715,7 +1715,7 @@ BEGIN
         (1,1063),(2,1062),(3,2033);
 
       INSERT INTO question_t ( message, lang1, lang2, usr, link ) VALUES
-            ('a test messag 1', 'cs','de',3,1063),('a test messag 2', 'cs','de',4,1062),('a test messag 3', 'cs','de',3,2033);
+            ('a test messag 1', 'cs','de',3,1063),('a test messag 2 for 1063', 'cs','de',3,1063),('a test messag 2', 'cs','de',4,1062),('a test messag 3', 'cs','de',3,2033);
       --SELECT pg_size_pretty(pg_database_size('voc4u'));
 
       RETURN 0; --(SELECT pg_size_pretty(pg_database_size('voc4u')));

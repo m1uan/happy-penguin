@@ -101,6 +101,7 @@ describe('package operations', function(){
                 , message :  'i dont understand meaning on this word'
             } ;
             question.changeStatus(pgClient, questionData, function(errw, dataw){
+            question.changeStatus(pgClient, questionData, function(errw, dataw){
             question.changeStatus(pgClient, questionData, function(err, data){
                 console.log(err ? err : data);
                 assert(data);
@@ -124,14 +125,21 @@ describe('package operations', function(){
                         td.rows.length.should.eql(1);
                         var r0 = td.rows[0];
                         r0.message.should.be.eql('i dont understand meaning on this word');
-                        cb();
+                        pgClient.query('SELECT status FROM question_status_t WHERE link=$1',
+                            [questionData.linkId],
+                            function(errqs, qs){
+                                console.log(errqs ? errqs : qs);
+                                qs.rows.length.should.eql(1) ;
+                                cb();
+                            });
                     });
 
             })
             });
+            });
         });
 
-        it.only('get messages', function(cb){
+        it('get messages', function(cb){
             var questionData = {
                 userId : 3,
                 linkId: 1432,
@@ -169,8 +177,8 @@ describe('package operations', function(){
                     dataw[1].linkId.should.eql(1433);
                     dataw[1].messages.should.be.Array;
                     dataw[1].messages.length.should.eql(2);
-                    dataw[1].messages[0].message.should.eql('message2');
-                    dataw[1].messages[1].message.should.eql('message3');
+                    dataw[1].messages[1].message.should.eql('message2');
+                    dataw[1].messages[0].message.should.eql('message3');
 
                     cb();
                 });
