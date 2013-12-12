@@ -43,7 +43,7 @@ function WORDS(pg, lesson){
             //fields.push('CASE WHEN (SELECT 1 FROM question_t WHERE link )');
 
             //fields.push('qm.changed as qmchanged');
-            fields.push('(SELECT MAX(question_t.changed) FROM question_t WHERE question_t.link=link.lid AND question_t.usr='+user+') AS userpresed')
+            //fields.push('(SELECT MAX(question_t.changed) FROM question_t WHERE question_t.link=link.lid AND question_t.usr='+user+') AS userpresed')
             fields[indexOfUserStatusInFields] = 'CASE WHEN (SELECT MAX(question_t.changed) FROM question_t WHERE question_t.link=link.lid AND question_t.usr='+user+') IS NOT NULL THEN (qs.status+100) ELSE COALESCE(qs.status, 0) END AS userstatus';
             //sql.joinRight('question_t qm','qm.link=qs.link AND qm.usr='+user);
 
@@ -53,7 +53,7 @@ function WORDS(pg, lesson){
 
         }
 
-        sql.addOrderBy('qstatus desc');
+        sql.addOrderBy('qs.changed desc');
         //sql.whereAnd('qs.status IS NOT NULL');
 
         if(onlyUser){
