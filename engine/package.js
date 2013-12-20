@@ -139,8 +139,8 @@ module.exports.generateLangFile = function(generateData, cb){
             var algorithm = 'aes-128-cbc'; // or any other algorithm supported by OpenSSL
             var key = 'password';
 
-            var buffKey = new Buffer([1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8]);
-            var iv = new Buffer([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+            var buffKey = new Buffer(Config.PKG_KEY);
+            var iv = new Buffer(Config.PKG_INIT_KEY);
 
             var cipher = crypto.createCipheriv(algorithm, buffKey, iv);
             var encrypted = cipher.update(data, 'utf8', 'hex') + cipher.final('hex');
