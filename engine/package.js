@@ -4,7 +4,7 @@ var fs = require('fs'),
     Async = require('async'),
     Config = require('../config/local.js'),
     Archiver = require('archiver'),
-    SL = require('../lib/happy/sqllib.js');;
+    SL = require('../lib/happy/sqllib.js');
 
 /*
     PKG_DIR = '/tmp/pkg/' in config
@@ -135,10 +135,14 @@ module.exports.generateLangFile = function(generateData, cb){
             var crypto = require('crypto');
             console.log(crypto.getCiphers(), crypto.getHashes());
 
-            var algorithm = 'aes128'; // or any other algorithm supported by OpenSSL
+
+            var algorithm = 'aes-128-cbc'; // or any other algorithm supported by OpenSSL
             var key = 'password';
 
-            var cipher = crypto.createCipher(algorithm, key);
+            var buffKey = new Buffer([1,2,3,4,5,0,0,0,0,0,0,0,0,0,0,0]);
+            var iv = new Buffer([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+
+            var cipher = crypto.createCipheriv(algorithm, buffKey, iv);
             var encrypted = cipher.update(data, 'utf8', 'binary') + cipher.final('binary');
 
         //console.log('to tech dat moc neni ne?', data, file);
