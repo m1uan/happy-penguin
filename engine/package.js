@@ -139,11 +139,11 @@ module.exports.generateLangFile = function(generateData, cb){
             var algorithm = 'aes-128-cbc'; // or any other algorithm supported by OpenSSL
             var key = 'password';
 
-            var buffKey = new Buffer([1,2,3,4,5,0,0,0,0,0,0,0,0,0,0,0]);
+            var buffKey = new Buffer([1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8]);
             var iv = new Buffer([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
 
             var cipher = crypto.createCipheriv(algorithm, buffKey, iv);
-            var encrypted = cipher.update(data, 'utf8', 'binary') + cipher.final('binary');
+            var encrypted = cipher.update(data, 'utf8', 'hex') + cipher.final('hex');
 
         //console.log('to tech dat moc neni ne?', data, file);
         fs.writeFile(file, encrypted, function (err) {
@@ -201,7 +201,7 @@ module.exports.createPackage = function(pg, lesson, cb){
     var sqlLang = 'SELECT lang FROM lang_t';
     pg.query(sqlLang, function(err, langData){
         var langs = [];
-
+        console.log(err);
         langData.rows.forEach(function(lang){
             langs.push(lang.lang);
         });
