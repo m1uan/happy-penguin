@@ -24,7 +24,7 @@ module.exports.get = function(pg, langs, fields, cb){
         parallel.push(function(icb){
             var sqlPackages = new SL.SqlLib('package_t');
 
-            sqlPackages.whereAnd('lang=',lang).fields(fields).select(pg, icb);
+            sqlPackages.whereAnd('lang=',lang).fields(fields).addOrderBy('lesson').select(pg, icb);
         })
     });
 
@@ -133,7 +133,7 @@ module.exports.generateLangFile = function(generateData, cb){
         });
 
             var crypto = require('crypto');
-            console.log(crypto.getCiphers(), crypto.getHashes());
+            //console.log(crypto.getCiphers(), crypto.getHashes());
 
 
             var algorithm = 'aes-128-cbc'; // or any other algorithm supported by OpenSSL
