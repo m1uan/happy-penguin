@@ -1,0 +1,7 @@
+echo cd ${OPENSHIFT_DATA_DIR}
+cd ${OPENSHIFT_DATA_DIR}
+
+echo "rm dump_img.tar.gz && pg_dump -a voc4u > dump-voc4u.sql && tar -cvzf dump_img.tar.gz assets/ dump-voc4u.sql > /dev/null && rm dump-voc4u.sql"
+rm dump_img.tar.gz && pg_dump -a voc4u > dump-voc4u.sql && tar -cvzf dump_img.tar.gz assets/ dump-voc4u.sql > /dev/null && rm dump-voc4u.sql
+
+echo "done"
