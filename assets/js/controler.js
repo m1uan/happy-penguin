@@ -13,9 +13,9 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
                 data.forEach(function(tw){
 
 
-                    if(tw.thumbfile){
+                    if(tw.imagethumb){
                         $scope.imagesWords++;
-                        tw.imagefile = 'assets/img/thumb/' + tw.thumbfile;
+                        tw.imagefile = 'assets/img/thumb/' + tw.imagethumb;
                     } else if(tw.imagefile) {
                         $scope.imagesWords++;
                         tw.imagefile = 'assets/img/orig/' + tw.imagefile;
