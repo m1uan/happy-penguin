@@ -16,11 +16,28 @@ var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
             controllerAs: 'questions'
         });
 
+        $routeProvider.when('/approveimages/:lang1/:lang2/:userId', {
+            templateUrl: 'templates/words',
+            controller: ApproveImageCtrl,
+            controllerAs: 'questions'
+        });
+
+        $routeProvider.when('/approveimages/:lang1/:lang2', {
+            templateUrl: 'templates/words',
+            controller: ApproveImageCtrl,
+            controllerAs: 'questions'
+        });
+
+
         $routeProvider.when('/:lesson/:lang1/:lang2', {
             templateUrl: 'templates/words',
             controller: WordWebCtrl,
             controllerAs: 'wordwc'
         });
+
+
+
+
 
         // configure html5 to get links working on jsfiddle
         //$locationProvider.html5Mode(true);

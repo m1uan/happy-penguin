@@ -86,7 +86,7 @@ describe('getWords', function(){
                 });
         })
 
-        it.only('get only with question', function(cb){
+        it('get only with question', function(cb){
             words.WORDS(pgClient)
                 .setUser(3)
                 .addLang('de')
@@ -95,6 +95,53 @@ describe('getWords', function(){
                     assert(data);
                     data.should.be.a.Array;
                     data.length.should.eql(3);
+                    var data0 = data[0];
+                    data0.should.have.property('link');
+                    data0.should.have.property('userstatus');
+                    data0.should.have.property('w1');
+                    data0.should.have.property('n1');
+                    data0.n1.should.have.eql('de');
+                    data0.should.have.property('w2');
+                    data0.should.have.property('n2');
+                    data0.should.have.property('imagefile');
+                    data0.n2.should.have.eql('en');
+
+                    cb();
+                });
+        })
+
+        it('get approve images withOUT user', function(cb){
+            words.WORDS(pgClient)
+                .addLang('de')
+                .addLang('en').approveImages(['@userstatus','link','word as w','lang as n','image.image as imagefile','link.flag'], -1, function(err, data){
+                    console.log(err,data);
+                    assert(data);
+                    data.should.be.a.Array;
+                    //data.length.should.eql(3);
+                    var data0 = data[0];
+                    data0.should.have.property('link');
+                    data0.should.have.property('userstatus');
+                    data0.should.have.property('w1');
+                    data0.should.have.property('n1');
+                    data0.n1.should.have.eql('de');
+                    data0.should.have.property('w2');
+                    data0.should.have.property('n2');
+                    data0.should.have.property('imagefile');
+                    data0.n2.should.have.eql('en');
+
+                    cb();
+                });
+        })
+
+        it.only('get approve images WITH user', function(cb){
+            words.WORDS(pgClient)
+                .setUser(3)
+                .addLang('de')
+                .addLang('en').approveImages(['@userstatus','link','word as w','lang as n','image.image as imagefile','link.flag'], -1, function(err, data){
+                    console.log(err,data);
+                    assert(data);
+                    data.should.be.a.Array;
+                    //data.length.should.eql(3);
                     var data0 = data[0];
                     data0.should.have.property('link');
                     data0.should.have.property('userstatus');

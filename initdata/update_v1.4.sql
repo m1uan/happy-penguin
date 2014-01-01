@@ -1,0 +1,3 @@
+ALTER TABLE link ADD COLUMN flag SMALLINT DEFAULT 0;
+
+UPDATE link SET flag=4 WHERE link.usr=1;

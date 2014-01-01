@@ -1716,6 +1716,12 @@ BEGIN
 
       INSERT INTO question_t ( message, lang1, lang2, usr, link ) VALUES
             ('a test messag 1', 'cs','de',3,1063),('a test messag 2 for 1063', 'cs','de',3,1063),('a test messag 2', 'cs','de',4,1062),('a test messag 3', 'cs','de',3,2033);
+
+
+      UPDATE link SET usr=3 WHERE link.lid IN (2088,2089,2090,2091);
+      UPDATE link SET usr=3,flag=1 WHERE link.lid IN (2083,2085);
+      UPDATE link SET usr=3,flag=2 WHERE link.lid IN (2066,2077);
+      UPDATE link SET flag=4 WHERE link.usr=1;
       --SELECT pg_size_pretty(pg_database_size('voc4u'));
 
       RETURN 0; --(SELECT pg_size_pretty(pg_database_size('voc4u')));

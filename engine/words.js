@@ -94,6 +94,47 @@ function WORDS(pg, lesson){
         this.getInner(fields, cb);
     }
 
+
+    /*
+        type =  -1 - all
+                0 - waiting
+                1 - approved
+                2 - disaproved
+                4 - system
+     */
+    this.approveImages = function(fields, type, cb){
+        // question are ordered by date time changed
+        //sql.addOrderBy('link.lid');
+
+        var indexOfUserStatusInFields = fields.indexOf('@userstatus');
+
+        if(indexOfUserStatusInFields != -1){
+            fields.push('qs.status as qstatus');
+            fields.push('qm.changed as qmchanged');
+            fields[indexOfUserStatusInFields] = 'CASE WHEN qm.changed IS NOT NULL THEN (qs.status+100) ELSE COALESCE(qs.status, 0) END AS userstatus'
+        }
+
+        if(fields.indexOf('qs.status as qstatus') != -1 || indexOfUserStatusInFields > -1){
+            sql.join('question_status_t qs','qs.link=link.lid');
+        }
+
+        if(fields.indexOf('qm.changed as qmchanged') != -1 || indexOfUserStatusInFields > -1){
+            sql.join('question_t qm','qm.link=qs.link AND qm.usr='+user);
+        }
+
+        if(user > -1){
+            sql.whereAnd('link.usr=', user);
+        }
+
+        if(type > -1) {
+            sql.whereAnd('link.flag=',type);
+        }
+
+        sql.addOrderBy('link.flag');
+
+        this.getInner(fields, cb);
+    }
+
     this.getInner = function(fields, cb){
 
         if(!fields){
@@ -112,6 +153,8 @@ function WORDS(pg, lesson){
         if(lesson){
             sql.whereAnd('link.lesson=',lesson);
         }
+
+
 
         if(actual){
             sql.whereAnd('link.version=',0);

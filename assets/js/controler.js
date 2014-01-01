@@ -7,7 +7,10 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
                 var tempWord = {};
                 var tempWordList = [];
                 var prevWord = null;
-                duplicityService.clear();
+                if(duplicityService){
+                    duplicityService.clear();
+                }
+
                 $scope.undeleteWords = 0;
                 $scope.imagesWords = 0;
                 data.forEach(function(tw){
@@ -28,7 +31,9 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
                     } else {
                         // duplicity loading
                         tw.duplicity = false; // HAVE TO BE false
-                        duplicityService.checkDuplicity(tw);
+                        if(duplicityService){
+                            duplicityService.checkDuplicity(tw);
+                        }
                         $scope.undeleteWords++;
                     }
 
@@ -43,7 +48,9 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
                 $scope.wordList = tempWordList;
                 $scope.loading = false;
 
-                duplicityService.loadDuplicityTimer();
+                if(duplicityService){
+                    duplicityService.loadDuplicityTimer();
+                }
 
                 if(callback){
                     callback();
@@ -301,6 +308,26 @@ var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService){
                     // or server returns response with an error status.
                 });
         }
+
+    });
+
+
+
+};
+
+
+var ApproveImageCtrl = function($scope, $http, $routeParams, duplicityService){
+    var url =  '/approveimages/words/' + $routeParams.lang1 + '/' + $routeParams.lang2 ;
+
+    if($routeParams.userId){
+        url += '/' +  $routeParams.userId;
+    }
+
+    url += '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del,description,@userstatus,flag';
+
+    console.log('ApproveImageCtrl', url);
+    wordsLoader($scope, $http, url, null, function(){
+
 
     });
 
