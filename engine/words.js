@@ -67,7 +67,7 @@ function WORDS(pg, lesson){
         this.getInner(fields, cb);
     }
 
-    this.get = function(fields, cb){
+    this.get = function(fields, cb, deleted){
         // question are ordered by date time changed
         sql.addOrderBy('link.lid');
 
@@ -85,6 +85,10 @@ function WORDS(pg, lesson){
 
         if(fields.indexOf('qm.changed as qmchanged') != -1 || indexOfUserStatusInFields > -1){
             sql.join('question_t qm','qm.link=qs.link AND qm.usr='+user);
+        }
+
+        if(deleted === false){
+            sql.whereAnd('del=0') ;
         }
 
         this.getInner(fields, cb);
@@ -247,7 +251,7 @@ module.exports.getWords = function(pgClient, lang, lesson, colums, cb) {
     });
 }
 
-module.exports.getImages = function(pgClient, lesson, colums, cb) {
+module.exports.getImages = function(pgClient, lesson, colums, cb, deleted) {
     if(!pgClient){
         return cb('pgClient not setup', null);
     }
@@ -260,7 +264,8 @@ module.exports.getImages = function(pgClient, lesson, colums, cb) {
     if(!colums){
         colums = ['lid','description','image.image as imagefile','iid as imageid','image.thumb as thumbfile','version','del'];
     }
-    new module.exports.WORDS(pgClient, lesson).get(colums, cb);
+
+    new module.exports.WORDS(pgClient, lesson).get(colums, cb, deleted);
 
 }
 
@@ -461,7 +466,7 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, colums, cb
     asyncLangsLoad.push(function(callback){
         module.exports.getImages(pgClient, lesson, colums[0], function(err, images){
             callback(err, images);
-        });
+        }, false);
     });
 
     langs.forEach(function(val, idx){
