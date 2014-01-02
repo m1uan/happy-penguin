@@ -118,3 +118,54 @@ module.exports.lastVisit = function(pg, lastVisitData, cb){
 
     sql.upsert(pg, lastVisitData, cb);
 }
+
+module.exports.LAST_VISIT_QUESTION = 1;
+module.exports.LAST_VISIT_MY_QUESTION = 2;
+
+module.exports.countChangesFromLastVisit = function(pg, lastVisitData, cb){
+    var sqllastvisit = new SL.SqlLib('last_visit_t');
+    sqllastvisit.whereAnd('usr='+lastVisitData.usr);
+    sqllastvisit.whereAnd('type='+lastVisitData.type);
+
+    //lastVisitData.datetime = 'now()';
+    var date = new Date(0);
+    sqllastvisit.select(pg, function(err, lastvisit){
+        if(lastvisit && lastvisit.length > 0){
+            date = lastvisit[0].datetime;
+        }
+
+        console.log('ahoj', lastvisit, date);
+        if(lastVisitData.type == module.exports.LAST_VISIT_QUESTION){
+            countMessages(date);
+        } else {
+
+        }
+
+
+    });
+
+    function countMyQuestions(date){
+        var sqlmyquestions = new SL.SqlLib('question_t',['link']);
+        sqlmyquestions.whereAnd('usr='+date);
+        sqlmyquestions.groupBy('link');
+        sqlmyquestions.select(pg, function(err, countofvisit){
+            countMessages(date, linkIds);
+        });
+    }
+
+    function countMessages(date, linkIds){
+        var sqlcount = new SL.SqlLib('question_t',['count(*) as cnt']);
+        sqlcount.whereAnd('changed>',date);
+        sqlcount.select(pg, function(err, countofvisit){
+            var outdata = {
+                lastVisit : date
+            };
+
+            if(countofvisit && countofvisit.length > 0){
+                outdata.cnt = countofvisit[0].cnt
+            }
+
+            cb(err, outdata);
+        });
+    }
+}

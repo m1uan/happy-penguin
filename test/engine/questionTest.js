@@ -188,9 +188,18 @@ describe('package operations', function(){
 
     });
     describe('last visit', function(){
-        it.only('get messages', function(cb){
+
+        beforeEach(function(cb){
+
+            sqlMake(pgClient, [
+                "delete from last_visit_t;",
+                "delete from question_t;"
+            ],cb);
+        });
+
+        it('get messages', function(cb){
             var lastVisitData = {
-                type: 0,
+                type: question.LAST_VISIT_QUESTION,
                 usr: 3
             };
             var before = new Date();
@@ -207,6 +216,33 @@ describe('package operations', function(){
                     });
 
             });
+        });
+
+        it.only('first time', function(cb){
+            var lastVisitData = {
+                type: question.LAST_VISIT_QUESTION,
+                usr: 3
+            };
+            var before = new Date(0);
+            //console.log('working?');
+            var questionData = {
+                userId : 3,
+                linkId: 1433,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message3'
+            } ;
+            question.changeStatus(pgClient, questionData, function(errw, dataw){
+            //question.lastVisit(pgClient, lastVisitData, function(err, data){
+            question.countChangesFromLastVisit(pgClient, lastVisitData, function(err, data){
+                console.log(err ? err : data);
+                data.should.have.a.property('lastVisit');
+                data.lastVisit.should.be.eql(before);
+                data.should.have.a.property('cnt');
+                data.cnt.should.have.be.eql(1);
+                cb();
+
+            });});
         });
     })
 
