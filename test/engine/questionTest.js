@@ -218,7 +218,7 @@ describe('package operations', function(){
             });
         });
 
-        it.only('first time', function(cb){
+        it('first time', function(cb){
             var lastVisitData = {
                 type: question.LAST_VISIT_QUESTION,
                 usr: 3
@@ -239,10 +239,114 @@ describe('package operations', function(){
                 data.should.have.a.property('lastVisit');
                 data.lastVisit.should.be.eql(before);
                 data.should.have.a.property('cnt');
-                data.cnt.should.have.be.eql(1);
+                data.cnt.should.have.be.eql(0);
                 cb();
 
             });});
+        });
+
+        it('already visit', function(cb){
+            var lastVisitData = {
+                type: question.LAST_VISIT_QUESTION,
+                usr: 3
+            };
+            var before = new Date(0);
+            //console.log('working?');
+            var questionData = {
+                userId : 3,
+                linkId: 1433,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message3'
+            } ;
+
+            var questionData1 = {
+                userId : 4,
+                linkId: 1432,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message 1'
+            } ;
+
+
+
+            question.lastVisit(pgClient, lastVisitData, function(err, data){
+            question.changeStatus(pgClient, questionData1, function(errw, dataw){
+            question.changeStatus(pgClient, questionData, function(errw, dataw){
+                //
+                question.countChangesFromLastVisit(pgClient, lastVisitData, function(err, data){
+                    console.log(err ? err : data);
+                    data.should.have.a.property('lastVisit');
+                    data.lastVisit.should.be.above(before);
+                    data.should.have.a.property('cnt');
+                    data.cnt.should.have.be.eql(1);
+                    cb();
+
+                });});});});
+        });
+
+        it('my question', function(cb){
+            var lastVisitData = {
+                type: question.LAST_VISIT_MY_QUESTION,
+                usr: 3
+            };
+            var before = new Date(0);
+            //console.log('working?');
+            var questionData = {
+                userId : 3,
+                linkId: 1433,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message3'
+            } ;
+
+            var questionData1 = {
+                userId : 4,
+                linkId: 1433,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message 1'
+            } ;
+            var questionData2 = {
+                userId : 4,
+                linkId: 1435,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message 2'
+            } ;
+
+            var questionData3 = {
+                userId : 3,
+                linkId: 1432,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message 3'
+            } ;
+
+            var questionData4 = {
+                userId : 4,
+                linkId: 1432,
+                lang1 : 'cs'
+                ,lang2 : 'en'
+                , message :  'message 4'
+            } ;
+
+            question.lastVisit(pgClient, lastVisitData, function(err, data){
+            question.changeStatus(pgClient, questionData1, function(errw, dataw){
+            question.changeStatus(pgClient, questionData2, function(errw, dataw){
+            question.changeStatus(pgClient, questionData3, function(errw, dataw){
+            question.changeStatus(pgClient, questionData4, function(errw, dataw){
+            question.changeStatus(pgClient, questionData, function(errw, dataw){
+                        //
+                        question.countChangesFromLastVisit(pgClient, lastVisitData, function(err, data){
+                            console.log(err ? err : data);
+                            data.should.have.a.property('lastVisit');
+                            data.lastVisit.should.be.above(before);
+                            data.should.have.a.property('cnt');
+                            data.cnt.should.have.be.eql(2);
+                            cb();
+
+                        });});});});});})});
         });
     })
 

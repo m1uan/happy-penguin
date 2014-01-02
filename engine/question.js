@@ -137,25 +137,39 @@ module.exports.countChangesFromLastVisit = function(pg, lastVisitData, cb){
         console.log('ahoj', lastvisit, date);
         if(lastVisitData.type == module.exports.LAST_VISIT_QUESTION){
             countMessages(date);
-        } else {
-
+        } else if(lastVisitData.type == module.exports.LAST_VISIT_MY_QUESTION) {
+            countMessageWhereIAm(date);
+        }  else {
+            cb('unknow type ('+lastVisitData.type+')');
         }
 
 
     });
 
-    function countMyQuestions(date){
+    function countMessageWhereIAm(date){
         var sqlmyquestions = new SL.SqlLib('question_t',['link']);
-        sqlmyquestions.whereAnd('usr='+date);
-        sqlmyquestions.groupBy('link');
+        sqlmyquestions.whereAnd('usr='+lastVisitData.usr);
+        sqlmyquestions.addGroupBy('link');
         sqlmyquestions.select(pg, function(err, countofvisit){
-            countMessages(date, linkIds);
+            var linkIds = [];
+            if(countofvisit && countofvisit.length > 0){
+                countofvisit.forEach(function(row){
+                   linkIds.push(row.link);
+                });
+            }
+            countMessages(date, true, linkIds);
         });
     }
 
-    function countMessages(date, linkIds){
+    function countMessages(date, olnyWhereIAm, linkIds){
         var sqlcount = new SL.SqlLib('question_t',['count(*) as cnt']);
+        sqlcount.whereAnd('usr<>'+lastVisitData.usr);
         sqlcount.whereAnd('changed>',date);
+
+        if(olnyWhereIAm){
+            sqlcount.whereIn('link',linkIds);
+        }
+
         sqlcount.select(pg, function(err, countofvisit){
             var outdata = {
                 lastVisit : date
