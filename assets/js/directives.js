@@ -359,17 +359,23 @@ app.directive('myWord', function () {
                 if($scope.word.flag === 0){
                     return "assets/img/underreview.png"
                 } else if($scope.word.flag === 1){
-                    return "assets/img/approwed.png"
+                    return "assets/img/approved.png"
                 } else if($scope.word.flag === 2){
                     return "assets/img/rejected.png"
-                } else {
+                } /*else {
                     return "assets/img/approved.png"
-                }
+                }*/
 
             }
 
-            $scope.userCanApprove = function(){
-                return true;
+            $scope.approving = false;
+
+            $scope.approve = function(flag){
+                $scope.approving = true;
+                wordService.approve($scope.word.link, flag, function(data){
+                    $scope.word.flag = data.flag;
+                    $scope.approving = false;
+                });
             }
         },
         templateUrl : 'templates/word-row'

@@ -166,7 +166,28 @@ app.service('wordService', function($http) {
             });
     }
 
+    this.approve = function(linkId,flag,cb){
+        var dataContainer = {
+            flag : flag,
+            linkId : linkId
+        };
 
+
+        $http({
+            method: 'POST',
+            url: '/approveimages/approve',
+            data: dataContainer}).
+            success(function(data, status, headers, config) {
+                console.log(data);
+                cb(data);
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+
+
+    }
 
 });
 

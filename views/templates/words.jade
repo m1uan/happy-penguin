@@ -44,7 +44,7 @@ div(ng-hide="loading")
                         a(ng-show="new_question")#yesbutton.btn.btn-primary Sent To Milan
                         a(href="javascript:$('#modal-question').modal('hide')").btn.btn-default Close
 
-    div num-words: {{undeleteWords}} images: {{imagesWords}}
+    div num-words: {{undeleteWords}} images: {{imagesWords}} approved:{{imagesApproved}} under-review:{{imagesUnderReview}} rejected:{{imagesRejected}}
     div(ng-repeat="word in wordList")
         div(my-word word="word",ng-class="{linkdelete: word.del > 0}")
         div(ng-show="word.questions")

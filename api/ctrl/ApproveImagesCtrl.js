@@ -52,9 +52,12 @@ module.exports = {
     }, approve_post : function(request){
         console.log(request.payload);
 
-        //var updateUser = request.payload;
+        var linkData = {
+            linkId : request.payload.linkId,
+            flag : request.payload.flag
+        };
 
-        wordsEngine.updateWord(pgClient, updateUser, request.user.id, function(err, data){
+        Link.approveLink(pgClient, linkData, function(err, data){
             request.reply(err || data);
         } );
     }

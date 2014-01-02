@@ -13,16 +13,14 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
 
                 $scope.undeleteWords = 0;
                 $scope.imagesWords = 0;
+                $scope.imagesApproved = 0;
+                $scope.imagesUnderReview = 0;
+                $scope.imagesRejected = 0;
                 data.forEach(function(tw){
 
 
-                    if(tw.imagethumb){
-                        $scope.imagesWords++;
-                        tw.imagefile = 'assets/img/thumb/' + tw.imagethumb;
-                    } else if(tw.imagefile) {
-                        $scope.imagesWords++;
-                        tw.imagefile = 'assets/img/orig/' + tw.imagefile;
-                    }
+
+
 
 
                     // for removed not loading any duplicities
@@ -35,6 +33,22 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
                             duplicityService.checkDuplicity(tw);
                         }
                         $scope.undeleteWords++;
+
+                        if(tw.flag === 0){
+                            $scope.imagesUnderReview++;
+                        } else if(tw.flag === 2){
+                            $scope.imagesRejected++;
+                        } else if(tw.flag === 1){
+                            $scope.imagesApproved++;
+                        }
+
+                        if(tw.imagethumb){
+                            $scope.imagesWords++;
+                            tw.imagefile = 'assets/img/thumb/' + tw.imagethumb;
+                        } else if(tw.imagefile) {
+                            $scope.imagesWords++;
+                            tw.imagefile = 'assets/img/orig/' + tw.imagefile;
+                        }
                     }
 
                     addLinksForArrow(tw, prevWord);
