@@ -4,7 +4,8 @@ var assert = require("assert"),
     pg = require('pg'),
     should = require('should')
     , async = require('async')
-    ,config = require('../../config/local.js');
+    ,config = require('../../config/local.js'),
+    SQL = require('../../lib/happy/sqllib.js');
 
 var pgClient = null;
 
@@ -285,6 +286,39 @@ describe('link operations', function(){
                 row1.del.should.be.eql(1);
                 cb();
             })
+
+        })
+    });
+
+
+    describe('approve', function(){
+        it.only('set flag to 1', function(cb){
+            link.get(pgClient, 2044, function(err, oldLink){
+                link.approveLink(pgClient, {linkId : 2044, flag:1},function(err, data){
+                    var sql = new SQL.SqlLib('link');
+
+                    sql.select(pgClient, function(err, loadedLinks){
+                        sql.whereAnd('flag=1');
+                        sql.select(pgClient, function(err, loadedLinksWithFlag){
+                            loadedLinks.length.should.be.above(loadedLinksWithFlag.length);
+
+                            loadedLinksWithFlag.some(function(item){
+                                if(item.lid==2044){
+                                    item.flag.should.be.eql(1);
+                                    return true;
+                                }
+                            }).should.be.True;
+
+                            console.log(err, data, oldLink, loadedLinksWithFlag);
+                            cb();
+                        });
+                    })
+
+
+                }) ;
+
+            });
+
 
         })
     });

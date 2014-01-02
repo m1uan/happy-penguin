@@ -1,4 +1,5 @@
-var  async = require('async');
+var  async = require('async'),
+    SQL = require('../lib/happy/sqllib.js');
 
 
 module.exports = {
@@ -175,7 +176,7 @@ module.exports = {
         }
 
         var sqlData = [linkId];
-        var sql = 'SELECT lid,description, link.usr, version, image.image as imageFile, image.iid as imageId, image.thumb as thumbFile FROM link LEFT JOIN image ON image.iid = link.image WHERE lid = $1;';
+        var sql = 'SELECT lid,description, link.usr, version, image.image as imageFile, image.iid as imageId, image.thumb as thumbFile, flag FROM link LEFT JOIN image ON image.iid = link.image WHERE lid = $1;';
 
         console.log('link.get', sql, sqlData)  ;
         pgClient.query(sql, sqlData , function(err, data){
@@ -248,5 +249,10 @@ module.exports = {
 
 
 
+    } ,approveLink : function(pgClient, linkData, cb){
+        var sql = new SQL.SqlLib('link');
+        sql.whereAnd('lid='+linkData.linkId);
+        sql.whereAnd('version=0');
+        sql.update(pgClient, {flag:linkData.flag}, cb);
     }
 }

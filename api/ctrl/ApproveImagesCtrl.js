@@ -49,46 +49,14 @@ module.exports = {
         } else {
             request.reply('format : /lang1/lang2/*userId_only');
         }
-    },user_get : function (request){
-        var langs = request.params.params.split('/');
-        var user = langs.shift();
-        console.log('---------------------------------------------');
-        var word = new wordsEngine.WORDS(pgClient, false);
+    }, approve_post : function(request){
+        console.log(request.payload);
 
+        //var updateUser = request.payload;
 
-        word.setUser(user);
-
-        langs.forEach(function(val){
-            word.addLang(val);
-        });
-
-        var fields = request.query.fields.split(',') ;
-        console.log(request);
-        console.log(request.query);
-        word.approveImages(fields, -1, function(err, words){
-            request.reply(words);
-        });
-
-    },waiting_get : function (request){
-        var langs = request.params.params.split('/');
-        //var user = langs.shift();
-        console.log('---------------------------------------------');
-        var word = new wordsEngine.WORDS(pgClient, false);
-
-
-        //word.setUser(user);
-
-        langs.forEach(function(val){
-            word.addLang(val);
-        });
-
-        var fields = request.query.fields.split(',') ;
-        console.log(request);
-        console.log(request.query);
-        word.approveImages(fields, 0, function(err, words){
-            request.reply(words);
-        });
-
+        wordsEngine.updateWord(pgClient, updateUser, request.user.id, function(err, data){
+            request.reply(err || data);
+        } );
     }
 
 }

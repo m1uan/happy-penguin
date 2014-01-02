@@ -133,7 +133,7 @@ describe('getWords', function(){
                 });
         })
 
-        it.only('get approve images WITH user', function(cb){
+        it('get approve images WITH user', function(cb){
             words.WORDS(pgClient)
                 .setUser(3)
                 .addLang('de')

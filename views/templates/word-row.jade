@@ -51,8 +51,9 @@ div(id="word_{{word.link}}").row.word-row
     div.col-md-2
         div(id="{{word.link}}_image_select").imagepart.focused-show
             if admin
-                span(ng-click="approved()").btn-sm.btn-primary approved
-                span(ng-click="rejected()").btn-sm.btn-danger rejected
+                div(ng-show="word.imagefile")
+                    span(ng-click="approved()",ng-hide="word.flag==1").btn-sm.btn-primary approved
+                    span(ng-click="rejected()",ng-hide="word.flag==2").btn-sm.btn-danger rejected
             img(id="image_{{word.link}}",src="{{word.imagefile}}").focused-image.image-out-focus.imgpreview
             div(ng-show="word.imagefile",ng-click="deleteImg(word.link)").btn.btn-xs.btn-danger.delete-button x
             input(type="file",id="image_{{word.link}}_file").fileupload
@@ -60,6 +61,7 @@ div(id="word_{{word.link}}").row.word-row
             img(src="{{word.imagefile}}").image-out-focus
             img(ng-show="word.imagefile",src="{{getApprovedImage()}}").approved-img
         if admin
-            div.focused-hide
-                span(ng-click="approved()").btn-sm.btn-primary approved
-                span(ng-click="rejected()").btn-sm.btn-danger rejected
+            div(ng-show="word.imagefile").focused-hide
+                span(ng-click="approved()",ng-hide="word.flag==1").btn-sm.btn-primary approved
+                br
+                span(ng-click="rejected()",ng-hide="word.flag==2").btn-sm.btn-danger rejected
