@@ -292,7 +292,7 @@ describe('link operations', function(){
 
 
     describe('approve', function(){
-        it.only('set flag to 1', function(cb){
+        it('set flag to 1', function(cb){
             link.get(pgClient, 2044, function(err, oldLink){
                 link.approveLink(pgClient, {linkId : 2044, flag:1},function(err, data){
                     var sql = new SQL.SqlLib('link');

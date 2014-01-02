@@ -107,3 +107,14 @@ module.exports.get = function(pg, linkIds, fields, cb){
     Async.parallel(functions, cb);
 
 }
+
+
+module.exports.lastVisit = function(pg, lastVisitData, cb){
+    var sql = new SL.SqlLib('last_visit_t');
+    sql.whereAnd('usr='+lastVisitData.usr);
+    sql.whereAnd('type='+lastVisitData.type);
+
+    lastVisitData.datetime = 'now()';
+
+    sql.upsert(pg, lastVisitData, cb);
+}

@@ -184,5 +184,30 @@ describe('package operations', function(){
                 });
             })})});
         });
+
+
     });
+    describe('last visit', function(){
+        it.only('get messages', function(cb){
+            var lastVisitData = {
+                type: 0,
+                usr: 3
+            };
+            var before = new Date();
+            //console.log('working?');
+            question.lastVisit(pgClient, lastVisitData, function(err, data){
+                console.log(err ? err : data);
+                pgClient.query('SELECT * FROM last_visit_t WHERE type=$1 AND usr=$2',
+                    [lastVisitData.type, lastVisitData.usr],
+                    function(errqs, qs){
+                        console.log(errqs ? errqs : qs);
+                        qs.rows.length.should.eql(1) ;
+                        qs.rows[0].datetime.should.be.above(before);
+                        cb();
+                    });
+
+            });
+        });
+    })
+
 })
