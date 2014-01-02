@@ -54,8 +54,8 @@ module.exports = {
 
 
         Passport.serializeUser(function (user, done) {
-            console.log('serializeUser');
-            console.log(user);
+            //console.log('serializeUser');
+            //console.log(user);
             done(null, user.id);
         });
 
@@ -63,7 +63,7 @@ module.exports = {
 
         Passport.deserializeUser(function (id, done) {
             userEngine.getUserById(server.pgClient, id, function(err, user){
-                console.log('deserializeUser');
+               // console.log('deserializeUser');
                 console.log(user);
                 console.log(id);
                 if(err){

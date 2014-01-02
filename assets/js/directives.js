@@ -354,6 +354,23 @@ app.directive('myWord', function () {
 
 
             }
+
+            $scope.getApprovedImage = function(){
+                if($scope.word.flag === 0){
+                    return "assets/img/underreview.png"
+                } else if($scope.word.flag === 1){
+                    return "assets/img/approwed.png"
+                } else if($scope.word.flag === 2){
+                    return "assets/img/rejected.png"
+                } else {
+                    return "assets/img/approved.png"
+                }
+
+            }
+
+            $scope.userCanApprove = function(){
+                return true;
+            }
         },
         templateUrl : 'templates/word-row'
     };

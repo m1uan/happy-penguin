@@ -30,10 +30,10 @@ module.exports = {
         console.log(request.params) ;
         var template = request.params.params;
 
-        request.reply.view('templates/' + template + '.jade');
+        request.reply.view('templates/' + template + '.jade', {userId:request.user.id, admin:request.user.admin == 1});
     }
     ,index_get : function (request){
-        request.reply.view('index', {userId:request.user.id});
+        request.reply.view('index', {userId:request.user.id, admin:request.user.admin == 1});
     },stats_get : function(request){
         request.reply.view('stats');
     }

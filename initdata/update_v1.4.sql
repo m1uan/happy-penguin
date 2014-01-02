@@ -1,3 +1,7 @@
 ALTER TABLE link ADD COLUMN flag SMALLINT DEFAULT 0;
 
 UPDATE link SET flag=4 WHERE link.usr=1;
+
+
+ALTER TABLE usr ADD COLUMN admin SMALLINT DEFAULT 0;
+UPDATE usr SET admin=1 WHERE usr.id=3;

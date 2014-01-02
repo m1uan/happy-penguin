@@ -130,6 +130,8 @@ function WORDS(pg, lesson){
             sql.whereAnd('link.flag=',type);
         }
 
+        sql.whereAnd('link.image IS NOT NULL');
+
         sql.addOrderBy('link.flag');
 
         this.getInner(fields, cb);

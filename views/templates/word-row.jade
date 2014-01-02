@@ -1,6 +1,7 @@
 div.hr
+
 div(id="word_{{word.link}}").row.word-row
-    div.col-md-10
+    div.col-md-9
         div.row
             div.col-md-1
                 i {{word.link}}#
@@ -49,7 +50,16 @@ div(id="word_{{word.link}}").row.word-row
                 div(ng-click="deleteLinks([word.link])",ng-hide="isDeleted(word)").btn.btn-xs.btn-danger delete
     div.col-md-2
         div(id="{{word.link}}_image_select").imagepart.focused-show
+            if admin
+                span(ng-click="approved()").btn-sm.btn-primary approved
+                span(ng-click="rejected()").btn-sm.btn-danger rejected
             img(id="image_{{word.link}}",src="{{word.imagefile}}").focused-image.image-out-focus.imgpreview
             div(ng-show="word.imagefile",ng-click="deleteImg(word.link)").btn.btn-xs.btn-danger.delete-button x
             input(type="file",id="image_{{word.link}}_file").fileupload
-        img(src="{{word.imagefile}}").image-out-focus.imgpreview.focused-hide
+        div.imagepart-thumb.focused-hide
+            img(src="{{word.imagefile}}").image-out-focus
+            img(ng-show="word.imagefile",src="{{getApprovedImage()}}").approved-img
+        if admin
+            div.focused-hide
+                span(ng-click="approved()").btn-sm.btn-primary approved
+                span(ng-click="rejected()").btn-sm.btn-danger rejected

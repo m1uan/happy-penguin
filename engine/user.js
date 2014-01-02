@@ -5,7 +5,7 @@ module.exports = {
 
     }
     ,getUserByName : function(pgClient, userName, cb){
-        var sql = 'SELECT id, name, full_name, pass FROM usr WHERE name = $1';
+        var sql = 'SELECT id, name, full_name, pass,admin FROM usr WHERE name = $1';
 
         console.log(sql)  ;
         pgClient.query(sql, [userName], function(err, user){
@@ -16,7 +16,7 @@ module.exports = {
             }
         });
     },getUserById : function(pgClient, id, cb){
-        var sql = 'SELECT id, name, full_name FROM usr WHERE id = $1';
+        var sql = 'SELECT id, name, full_name,admin FROM usr WHERE id = $1';
 
         console.log(sql)  ;
         pgClient.query(sql, [id], function(err, user){
