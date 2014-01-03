@@ -39,8 +39,10 @@ html(ng-app="voc4u")
                     a(href="#/{{lessonFields[0]}}/{{lessonFields[1]}}/{{lessonFields[2]}}") Words
                     span |
                     a(href="#/questions/{{lessonFields[1]}}/{{lessonFields[2]}}") Questions
+                    span(ng-show="questionsCount>0").badge.badge-important {{questionsCount}}
                     span |
                     a(href="#/questions/{{lessonFields[1]}}/{{lessonFields[2]}}/#{userId}") My Questions
+                    span(ng-show="questionsWhereIAMCount>0").badge.badge-important {{questionsWhereIAMCount}}
                     span |
                     a(href="#/stats/#{userId}") Stats
                     span |

@@ -43,7 +43,7 @@ var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
         //$locationProvider.html5Mode(true);
     });
 
-function MainCtrl($scope, $route, $routeParams, $location, $cookieStore) {
+function MainCtrl($scope, $route, $routeParams, $location, $cookieStore, lastVisitService) {
     $scope.lang1 = '';
     $scope.lang2 = '';
 
@@ -108,7 +108,17 @@ function MainCtrl($scope, $route, $routeParams, $location, $cookieStore) {
     }
 
 
+    $scope.questionsCount = 1;
+    $scope.questionsWhereIAMCount = 3;
 
+
+    function refreshLastVisit(qc, qwiac){
+        $scope.questionsCount = qc;
+        $scope.questionsWhereIAMCount = qwiac;
+    }
+
+    lastVisitService.getLastVisit(lastVisitService.QUESTION_ALL, refreshLastVisit);
+    lastVisitService.getLastVisit(lastVisitService.QUESTION_WHERE_I_AM, refreshLastVisit);
 }
 
 function BookCntl($routeParams) {

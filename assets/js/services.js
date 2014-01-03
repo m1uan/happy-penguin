@@ -364,3 +364,75 @@ app.service('duplicityService', function($http) {
     }
 });
 
+app.service('lastVisitService', function($http) {
+
+    var lastVisitService = this;
+
+    lastVisitService.onChangeLastVisit = null;
+    lastVisitService.questionsCount = 1;
+    lastVisitService.questionsWhereIAMCount = 3;
+
+    lastVisitService.QUESTION_ALL = 1;
+    lastVisitService.QUESTION_WHERE_I_AM = 2;
+
+    lastVisitService.refreshCounts = function(type, cnt){
+        if(type == lastVisitService.QUESTION_ALL){
+            this.questionsCount = cnt;
+        } else if(type == lastVisitService.QUESTION_WHERE_I_AM){
+            this.questionsWhereIAMCount = cnt;
+        }
+
+        this.onChangeLastVisit(this.questionsCount, this.questionsWhereIAMCount);
+    }
+
+    lastVisitService.getLastVisit = function(type,cb){
+
+        lastVisitService.onChangeLastVisit = cb;
+
+        var dataContainer = {
+            type : type
+        };
+
+
+
+
+        $http({
+            method: 'POST',
+            url: '/question/getlastvisit',
+            data: dataContainer}).
+            success(function(data, status, headers, config) {
+                console.log(data);
+                lastVisitService.refreshCounts(type, data.cnt);
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+
+
+    }
+
+    lastVisitService.setLastVisit = function(type,cb){
+
+        //this.onChangeLastVisit = cb;
+
+        var dataContainer = {
+            type : type
+        };
+
+        $http({
+            method: 'POST',
+            url: '/question/setlastvisit',
+            data: dataContainer}).
+            success(function(data, status, headers, config) {
+                console.log(data);
+                lastVisitService.refreshCounts(type, 0);
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+
+
+    }
+});
