@@ -288,7 +288,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
 }
 
 
-var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService){
+var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService, lastVisitService){
     var url =  '/question/words/' + $routeParams.lang1 + '/' + $routeParams.lang2 ;
 
     if($routeParams.userId){
@@ -310,10 +310,13 @@ var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService){
                 url: url,
                 data: {links: links}}).
                 success(function(data, status, headers, config) {
+
                    data.forEach(function(question){
                        var word = $scope.words[question.linkId];
                        word.questions = question.messages;
                    });
+
+                   lastVisitService.setLastVisit($routeParams.userId ? lastVisitService.QUESTION_WHERE_I_AM : lastVisitService.QUESTION_ALL);
 
                    console.log('guestion',data) ;
                 }).
@@ -324,6 +327,7 @@ var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService){
         }
 
     });
+
 
 
 

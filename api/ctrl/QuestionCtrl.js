@@ -91,5 +91,33 @@ module.exports = {
         }
 
 
+    },
+    setlastvisit_post : function(request){
+        if(request.payload.type){
+            var lastVisitData = {
+                type: request.payload.type,
+                usr: request.user.id
+            };
+
+            questionEngine.lastVisit(pg, lastVisitData, function(err, data){
+                request.reply(err ? err : data);
+            });
+        } else {
+            request.reply('type missing in payloads')
+        }
+    },
+    getlastvisit_post : function(request){
+        if(request.payload.type){
+            var lastVisitData = {
+                type: request.payload.type,
+                usr: request.user.id
+            };
+
+            //question.lastVisit(pgClient, lastVisitData, function(err, data){
+                request.reply({lastVisit:new Date(), cnt:5});
+            //});
+        } else {
+            request.reply('type missing in payloads')
+        }
     }
 }
