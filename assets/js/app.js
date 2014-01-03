@@ -108,8 +108,8 @@ function MainCtrl($scope, $route, $routeParams, $location, $cookieStore, lastVis
     }
 
 
-    $scope.questionsCount = 1;
-    $scope.questionsWhereIAMCount = 3;
+    $scope.questionsCount = 0;
+    $scope.questionsWhereIAMCount = 0;
 
 
     function refreshLastVisit(qc, qwiac){

@@ -113,9 +113,9 @@ module.exports = {
                 usr: request.user.id
             };
 
-            //question.lastVisit(pgClient, lastVisitData, function(err, data){
-                request.reply({lastVisit:new Date(), cnt:5});
-            //});
+            questionEngine.countChangesFromLastVisit(pg, lastVisitData, function(err, data){
+                request.reply(err ? err : data);
+            });
         } else {
             request.reply('type missing in payloads')
         }

@@ -33,3 +33,12 @@
 .view-animate.ng-leave.ng-leave-active {
     left:-100%;
 }
+
+.separate {
+    margin-left:4px;
+    margin-right:4px;
+}
+.badge {
+    margin-left:3px;
+}
+.badge-important{background-color:#b94a48;}
