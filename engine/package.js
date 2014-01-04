@@ -104,6 +104,10 @@ module.exports.getPackageForUpdate = function(pg, timeFrom, cb){
  * lid3;word3;*img3
  */
 
+function realImageFile(image){
+    return image.imagefile && (image.flag == 1 || image.flag == 4);
+}
+
 // http://stackoverflow.com/questions/6953286/node-js-encrypting-data-that-needs-to-be-decrypted
 module.exports.generateLangFile = function(generateData, cb){
     var file = generateData.outDir + module.exports.DIR_LANG + generateData.lang + module.exports.LANG_EXT;
@@ -117,10 +121,12 @@ module.exports.generateLangFile = function(generateData, cb){
            data += w.link + ";";
            data += w.word + ";";
 
+
+
            generateData.images.some(function(image,ii){
                if(w.link == image.lid){
 
-                   if(image.imagefile){
+                   if(realImageFile(image)){
                        data += image.imagefile;
                    }
 
@@ -130,7 +136,13 @@ module.exports.generateLangFile = function(generateData, cb){
            });
 
            data += "\n";
+
+
         });
+
+    if(Config.debug){
+        console.log('word', data);
+    }
 
             var crypto = require('crypto');
             //console.log(crypto.getCiphers(), crypto.getHashes());
@@ -169,7 +181,7 @@ module.exports.copyImageFiles = function(copyImgData, cb){
     var files = [];
     copyImgData.images.forEach(function(image, idx)
     {
-        if(image.imagefile){
+        if(realImageFile(image)){
             var img = image.imagefile;
             var cp = function(icb){
 

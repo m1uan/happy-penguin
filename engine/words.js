@@ -67,7 +67,7 @@ function WORDS(pg, lesson){
         this.getInner(fields, cb);
     }
 
-    this.get = function(fields, cb, deleted){
+    this.get = function(fields, cb, notDeletedAndNotUnaproved){
         // question are ordered by date time changed
         sql.addOrderBy('link.lid');
 
@@ -87,8 +87,9 @@ function WORDS(pg, lesson){
             sql.join('question_t qm','qm.link=qs.link AND qm.usr='+user);
         }
 
-        if(deleted === false){
+        if(notDeletedAndNotUnaproved === true){
             sql.whereAnd('del=0') ;
+            //sql.whereAnd('(flag=1 OR flag=4)') ;
         }
 
         this.getInner(fields, cb);
@@ -264,7 +265,7 @@ function WORDS(pg, lesson){
 
 module.exports.WORDS = WORDS;
 
-module.exports.getWords = function(pgClient, lang, lesson, colums, cb) {
+module.exports.getWords = function(pgClient, lang, lesson, colums, cb, notDeletedAndNotApproved) {
     if(!cb){
         cb = colums;
         colums = null;
@@ -293,10 +294,10 @@ module.exports.getWords = function(pgClient, lang, lesson, colums, cb) {
 
     new module.exports.WORDS(pgClient, lesson).addLang(lang).get(colums, function(err,data){
         cb(data);
-    });
+    }, notDeletedAndNotApproved);
 }
 
-module.exports.getImages = function(pgClient, lesson, colums, cb, deleted) {
+module.exports.getImages = function(pgClient, lesson, colums, cb, notDeletedAndNotApproved) {
     if(!pgClient){
         return cb('pgClient not setup', null);
     }
@@ -307,10 +308,10 @@ module.exports.getImages = function(pgClient, lesson, colums, cb, deleted) {
     }
 
     if(!colums){
-        colums = ['lid','description','image.image as imagefile','iid as imageid','image.thumb as thumbfile','version','del'];
+        colums = ['lid','description','image.image as imagefile','iid as imageid','image.thumb as thumbfile','version','del','flag'];
     }
 
-    new module.exports.WORDS(pgClient, lesson).get(colums, cb, deleted);
+    new module.exports.WORDS(pgClient, lesson).get(colums, cb, notDeletedAndNotApproved);
 
 }
 
@@ -511,7 +512,7 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, colums, cb
     asyncLangsLoad.push(function(callback){
         module.exports.getImages(pgClient, lesson, colums[0], function(err, images){
             callback(err, images);
-        }, false);
+        }, true);
     });
 
     langs.forEach(function(val, idx){
@@ -519,7 +520,7 @@ module.exports.getWordsWithImages = function(pgClient, langs, lesson, colums, cb
         asyncLangsLoad.push(function(callback){
            module.exports.getWords(pgClient, val, lesson, colums[1], function(words){
                callback(null, words);
-           });
+           }, true);
        });
     });
 
