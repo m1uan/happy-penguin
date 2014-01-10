@@ -44,7 +44,46 @@ module.exports = {
         });
 
     },
+    ivana_get : function (request){
+        var langs = request.params.params.split('/');
+        var lesson = langs.shift();
+        var word = new wordsEngine.WORDS(pgClient, lesson);
 
+        langs.forEach(function(val){
+            word.addLang(val);
+        });
+
+        var fields = request.query.fields.split(',') ;
+        console.log(request);
+        console.log(request.query);
+        word.get(fields, function(err, words){
+            var xls = '';
+
+            words.forEach(function(w){
+                xls += w.link;
+                if(w.w){
+                    xls += ';' + w.w;
+                }
+
+                if(w.w1){
+                    xls += ';' + w.w1;
+                }
+
+                if(w.w2){
+                    xls += ';' + w.w2;
+                }
+
+                if(w.w3){
+                    xls += ';' + w.w3;
+                }
+
+
+                xls += '\n';
+            })
+
+            request.reply(xls).type('text/plain');
+        });
+    },
 
     lesson_get : function (request){
 
