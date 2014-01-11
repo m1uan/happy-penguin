@@ -28,10 +28,12 @@ module.exports = {
             }
         });
     },setLastLogin : function(pgClient, userId, cb){
+        console.log('ahoj now()');
         var sql = new SL.SqlLib('usr');
-        sql.whereAnd('id=',userId);
+        sql.whereAnd('id='+userId);
         sql.update(pgClient, {last_login:'now()'}, function(err, data){
-           cb(err, data);
+            console.log(err ? err : data);
+          cb(err, data);
         })
     }
 }

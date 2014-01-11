@@ -1,4 +1,5 @@
-var Async = require('async');
+var Async = require('async'),
+    SL = require(process.cwd() + '/lib/happy/sqllib.js');
 var pg = null;
 
 module.exports = {
@@ -14,6 +15,19 @@ module.exports = {
             params : '{params*}'
 
         }
+    },users_get : function(request){
+        var sql = new SL.SqlLib('usr', ['id, name, full_name, last_login'
+            ,'(SELECT count(*) FROM word WHERE usr=id) as num_words'
+            ,'(SELECT count(*) FROM link WHERE usr=id AND image IS NOT NULL) as num_images'
+            ,'(SELECT max(uts) FROM word WHERE usr=id) as last_edit'
+        ]);
+        sql.whereAnd('id>2');
+        sql.select(pg, function(err, data){
+            request.reply(err ? err : data);
+        });
+
+        //request.reply('ahoj');
+
     },index_get : function(request){
         if(!request.params){
             request.reply.view('stats');
@@ -132,12 +146,6 @@ module.exports = {
 
             });
         }
-
-    },userinfo_get : function(request){
-        var sql = ''
-        pg.query(sql, sqlData,icb);
-
-
 
     }
 }

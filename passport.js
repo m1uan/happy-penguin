@@ -40,10 +40,12 @@ module.exports = {
                 // Find or create user here...
                 // In production, use password hashing like bcrypt
 
-                console.log(user);
                 if (!err && user && user.pass == password) {
                     user.pass = undefined;
-                    userEngine.setLastLogin(server.pgClient,user.id, function(){});
+                    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', user);
+                    userEngine.setLastLogin(server.pgClient, user.id, function(){
+
+                    });
                     return done(null, user);
                 }
 
