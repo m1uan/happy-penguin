@@ -18,8 +18,11 @@ module.exports = {
     },users_get : function(request){
         var sql = new SL.SqlLib('usr', ['id, name, full_name, last_login'
             ,'(SELECT count(*) FROM word WHERE usr=id) as num_words'
-            ,'(SELECT count(*) FROM link WHERE usr=id AND image IS NOT NULL) as num_images'
             ,'(SELECT max(uts) FROM word WHERE usr=id) as last_edit'
+            ,'(SELECT count(*) FROM link WHERE usr=id AND image IS NOT NULL) as num_images'
+            ,'(SELECT max(changed) FROM link WHERE usr=id AND image IS NOT NULL) as last_image'
+            ,'(SELECT count(*) FROM question_t WHERE usr=id) as num_question'
+            ,'(SELECT max(changed) FROM question_t WHERE usr=id) as last_question'
         ]);
         sql.whereAnd('id>2');
         sql.select(pg, function(err, data){
