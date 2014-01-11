@@ -13,7 +13,7 @@ describe('device delete', function(){
         //.expect('Content-Length', '20')
         .set('Content-Encoding', /json/)
         .expect(200)
-        .send({deleted:[{l:100,w1:'ahoj',w2:'ahoj2',n1:'cs',n2:'en',i:'karel.jpg'}]})
+        .send({deleted:[{l:100,w1:'ahoj',w2:'ahoj2',n1:'cs',n2:'en'}]})
         .end(function(err, res){
                 console.log(res);
             if (err) {

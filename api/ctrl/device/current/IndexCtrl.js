@@ -44,13 +44,17 @@ module.exports = {
     ,deleted_post : function(request){
         var deleted = request.payload.deleted;
         if(!deleted || !deleted.length){
-            request.reply('format : deleted[] = {n1:lang1,n2:lang2,l:#,w1:word1,w2:word2,i:image');
+            request.reply('format : deleted[] = {n1:lang1,n2:lang2,l:#,w1:word1,w2:word2,*i:image');
         } else {
             var deleteFunc = [];
             deleted.some(function(d,idx){
-                if(!d.n1 || !d.n2 || !d.l || !d.w1 || !d.w2 || !d.i){
+                if(!d.n1 || !d.n2 || !d.l || !d.w1 || !d.w2){
                     deleteFunc = false;
                     return true;
+                }
+
+                if(!d.i){
+                    d.i = 'null.jpg';
                 }
 
                 var deleteData = {
@@ -59,20 +63,22 @@ module.exports = {
                     lang2: d.n2,
                     word1: d.w1,
                     word2: d.w2,
-                    image: d.i,
                     '!cnt': 'cnt + 1',
+                    image : d.i,
                     'changed':'now()'};
 
                 var deleteUpdateResult = ['cnt']
 
                  deleteFunc.push(function(icb){
-                         var sqlStatus = new SL.SqlLib('deleted_t');
+                    var sqlStatus = new SL.SqlLib('deleted_t');
                          sqlStatus.whereAnd('link=' + d.l);
                          sqlStatus.whereAnd("lang1='"+d.n1+"'");
                          sqlStatus.whereAnd("lang2='"+d.n2+"'");
                          sqlStatus.whereAnd("word1='"+d.w1+"'");
                          sqlStatus.whereAnd("word2='"+d.w2+"'");
+                     if(d.i){
                          sqlStatus.whereAnd("image='"+d.i+"'");
+                     }
                          sqlStatus.upsert(pg, deleteData, deleteUpdateResult, function(errStatus, statusLink){
                             icb(errStatus, statusLink);
                          });
@@ -88,7 +94,7 @@ module.exports = {
 
                 });
             } else {
-                request.reply('format : deleted[] = {n1:lang1,n2:lang2,l:linkId,w1:word1,w2:word2,i:image');
+                request.reply('format : deleted[] = {n1:lang1,n2:lang2,l:linkId,w1:word1,w2:word2,*i:image');
             }
 
         }

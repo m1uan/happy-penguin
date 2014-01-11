@@ -8,5 +8,6 @@ CREATE TABLE deleted_t (
     word2 TEXT NOT NULL,
     image VARCHAR(100) DEFAULT NULL,
     changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(link,lang1,lang2,word1,word2,image)
+    debug INTEGER DEFAULT 0,
+    PRIMARY KEY(link,lang1,lang2,word1,word2,image,debug)
 );
