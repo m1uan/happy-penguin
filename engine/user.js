@@ -1,4 +1,5 @@
-var LocalStrategy = require('passport-local').Strategy;
+var LocalStrategy = require('passport-local').Strategy,
+    SL = require(process.cwd() + '/lib/happy/sqllib.js');
 
 module.exports = {
     initialize : function(server, Passport) {
@@ -26,5 +27,11 @@ module.exports = {
                 cb(null, user.rows[0]);
             }
         });
+    },setLastLogin : function(pgClient, userId, cb){
+        var sql = new SL.SqlLib('usr');
+        sql.whereAnd('id=',userId);
+        sql.update(pgClient, {last_login:'now()'}, function(err, data){
+           cb(err, data);
+        })
     }
 }

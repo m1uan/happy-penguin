@@ -133,9 +133,9 @@ module.exports = {
             });
         }
 
-    },get_get : function(request){
-
-
+    },userinfo_get : function(request){
+        var sql = ''
+        pg.query(sql, sqlData,icb);
 
 
 

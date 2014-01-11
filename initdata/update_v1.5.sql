@@ -11,3 +11,5 @@ CREATE TABLE deleted_t (
     debug INTEGER DEFAULT 0,
     PRIMARY KEY(link,lang1,lang2,word1,word2,image,debug)
 );
+
+ALTER TABLE usr ADD COLUMN last_login TIMESTAMP DEFAULT NULL;

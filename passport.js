@@ -43,6 +43,7 @@ module.exports = {
                 console.log(user);
                 if (!err && user && user.pass == password) {
                     user.pass = undefined;
+                    userEngine.setLastLogin(server.pgClient,user.id, function(){});
                     return done(null, user);
                 }
 
