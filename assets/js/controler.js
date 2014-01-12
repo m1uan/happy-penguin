@@ -362,20 +362,28 @@ var UsersCtrl = function($scope, $http, $routeParams, duplicityService){
     var url =  '/stats/users/';
     $scope.loading = true;
     $scope.users = [];
+    $scope.noActiveUser = [];
     $http({
         method: 'GET',
         url: url}).
         success(function(data, status, headers, config) {
-
+            $scope.users = [];
+            $scope.noActiveUser = [];
             data.forEach(function(user){
-                user.last_login = moment(user.last_login, "YYYY-MM-DD HH:mm Z","de").calendar();
-                user.last_edit = moment(user.last_edit, "YYYY-MM-DD HH:mm Z","de").calendar();
-                user.last_image = moment(user.last_image, "YYYY-MM-DD HH:mm Z","de").calendar();
-                user.last_question = moment(user.last_question, "YYYY-MM-DD HH:mm Z","de").calendar();
+                if(user.last_login || user.last_edit || user.last_image){
+                    user.last_login = moment(user.last_login, "YYYY-MM-DD HH:mm Z","de").calendar();
+                    user.last_edit = moment(user.last_edit, "YYYY-MM-DD HH:mm Z","de").calendar();
+                    user.last_image = moment(user.last_image, "YYYY-MM-DD HH:mm Z","de").calendar();
+                    user.last_question = moment(user.last_question, "YYYY-MM-DD HH:mm Z","de").calendar();
+                    $scope.users.push(user);
+                } else {
+                    $scope.noActiveUser.push(user);
+                }
+
 
             });
 
-            $scope.users = data;
+
 
             $scope.loading = false;
         }).

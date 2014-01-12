@@ -24,6 +24,9 @@ module.exports = {
             ,'(SELECT count(*) FROM question_t WHERE usr=id) as num_question'
             ,'(SELECT max(changed) FROM question_t WHERE usr=id) as last_question'
         ]);
+        sql.addOrderBy('last_edit DESC,last_question DESC,last_image DESC') ;
+
+
         sql.whereAnd('id>2');
         sql.select(pg, function(err, data){
             request.reply(err ? err : data);

@@ -19,3 +19,8 @@ div(ng-hide="loading")
         span
             a(href="#/questions/cs/es/{{user.id}}") {{user.last_question}}
             span.label-warning.badge {{user.num_question}}
+
+    div(ng-repeat="user in noActiveUser")
+        hr
+        span.label-info.badge {{user.id}}
+        span {{user.full_name}} ( {{user.name}} )
