@@ -51,6 +51,6 @@ div(ng-hide="loading")
             div(ng-repeat="question in word.questions").question
                 span.guestion_message {{question.message}}
                 span.guestion_changed {{question.changed}}
-
+                span.guestion_user {{question.user}}
 
     div(ng-show="showBtnAdd",ng-click="showAddWord()").btn.btn-success add word

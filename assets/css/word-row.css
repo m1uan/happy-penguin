@@ -200,3 +200,10 @@
     font-size:8pt;
     font-style:italic;
 }
+
+.guestion_user {
+    color:darkred;
+    margin-left:10px;
+    font-size:8pt;
+    font-style:italic;
+}

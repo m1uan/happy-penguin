@@ -88,13 +88,22 @@ function addQuestionMessage(pg, questionData, cb){
 
 module.exports.get = function(pg, linkIds, fields, cb){
     var functions = [];
+    var userIndex = fields.indexOf('@user');
+    if(userIndex > -1){
+        fields[userIndex] = 'usr.full_name as ufn,usr.name as user' ;
+    }
 
     linkIds.forEach(function(linkId,idx){
         functions.push(function(icb){
             //return function(id){
+
+
                 var sqlGet = new SL.SqlLib('question_t', fields);
                 sqlGet.whereAnd('link=', linkId);
                 sqlGet.addOrderBy('changed desc')
+                if(userIndex > -1){
+                    sqlGet.join('usr', 'usr.id=question_t.usr');
+                }
                 sqlGet.select(pg, function(err, data){
                     //console.log(data);
                     icb(err, {linkId:linkId, messages:data});

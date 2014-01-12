@@ -299,7 +299,7 @@ var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService, last
 
     console.log('QuestionsCtrl', url);
     wordsLoader($scope, $http, url, duplicityService, function(){
-        var url = '/question/messages/?fields=message,lang1,lang2,changed,user';
+        var url = '/question/messages/?fields=message,lang1,lang2,changed,@user';
         var links = [] ;
         for (link in $scope.words) {
            links.push(link);
@@ -314,6 +314,10 @@ var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService, last
                    data.forEach(function(question){
                        var word = $scope.words[question.linkId];
                        word.questions = question.messages;
+                       question.messages.forEach(function(mess){
+                           mess.changed = moment(mess.changed, "YYYY-MM-DD HH:mm Z","cz").calendar();
+                       })
+
                    });
 
                    lastVisitService.setLastVisit($routeParams.userId ? lastVisitService.QUESTION_WHERE_I_AM : lastVisitService.QUESTION_ALL);
