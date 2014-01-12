@@ -363,6 +363,8 @@ var UsersCtrl = function($scope, $http, $routeParams, duplicityService){
     $scope.loading = true;
     $scope.users = [];
     $scope.noActiveUser = [];
+    $scope.lang1 = $routeParams.lang1;
+    $scope.lang2 = $routeParams.lang2;
     $http({
         method: 'GET',
         url: url}).

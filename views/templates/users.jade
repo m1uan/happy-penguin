@@ -13,11 +13,11 @@ div(ng-hide="loading")
             span.label-warning.badge {{user.num_words}}
         span.separate | images:
         span
-            a(href="#/approved/cs/es/{{user.id}}") {{user.last_image}}
+            a(href="#/approveimages/{{lang1}}/{{lang2}}/{{user.id}}") {{user.last_image}}
             span.label-warning.badge {{user.num_images}}
         span.separate | question:
         span
-            a(href="#/questions/cs/es/{{user.id}}") {{user.last_question}}
+            a(href="#/questions/{{lang1}}/{{lang2}}/{{user.id}}") {{user.last_question}}
             span.label-warning.badge {{user.num_question}}
 
     div(ng-repeat="user in noActiveUser")
