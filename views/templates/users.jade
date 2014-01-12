@@ -1,0 +1,21 @@
+div(ng-show="loading")#loading
+    span loading please wait...
+
+div(ng-hide="loading")
+    div(ng-repeat="user in users")
+        hr
+        span.label-info.badge {{user.id}}
+
+        span {{user.full_name}} ( {{user.name}} ) last login: {{user.last_login}}
+        span.separate | edit:
+        span
+            a(href="#/stats/{{user.id}}") {{user.last_edit}}
+            span.label-warning.badge {{user.num_words}}
+        span.separate | images:
+        span
+            a(href="#/approved/cs/es/{{user.id}}") {{user.last_image}}
+            span.label-warning.badge {{user.num_images}}
+        span.separate | question:
+        span
+            a(href="#/questions/cs/es/{{user.id}}") {{user.last_question}}
+            span.label-warning.badge {{user.num_question}}

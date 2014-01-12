@@ -1,5 +1,10 @@
 var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
     function($routeProvider, $locationProvider) {
+        $routeProvider.when('/users', {
+            templateUrl: 'templates/users',
+            controller: UsersCtrl,
+            controllerAs: 'users'
+        });
         $routeProvider.when('/stats/:userId', {
             templateUrl: 'templates/stats',
             controller: StatsCtrl,
