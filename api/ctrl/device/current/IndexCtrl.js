@@ -101,4 +101,140 @@ module.exports = {
 
 
     }
+
+
+    ,scores_get : function(request){
+
+        var langs = request.params.params.split('/');
+        if(langs && langs.length > 2) {
+            var sqlStatus = new SL.SqlLib('scores_t', ['scores_json']);
+            sqlStatus.whereAnd('lesson=' + langs[0]);
+            sqlStatus.whereAnd("lang='"+langs[1]+"'");
+            sqlStatus.whereAnd("game="+langs[2]);
+
+            sqlStatus.select(pg,  function(err, data){
+                console.log(err ? err : data);
+                var result = data[0];
+                result.position = -1;
+
+                if(request.query.score){
+
+
+                    result.position = getPossiblePosition(result.scores_json, request.query.score)
+
+
+                }
+
+                request.reply(result);
+            });
+
+//            var fields = ['lesson'];
+//            if(request.query.fields){
+//                fields = request.query.fields.split(',') ;
+//            }
+//
+//            packageEngine.get(pg, langs , fields, function(err, packages){
+//                request.reply(packages);
+//            });
+        } else {
+            request.reply({error:'format : /lesson/lang/gameId/?score=N'});
+        }
+
+
+    },scores_post : function(request){
+        var score = request.payload.score;
+        var langs = request.params.params.split('/');
+
+        if(score || score.score || score.name ){
+            var sqlStatus = new SL.SqlLib('scores_t', ['scores_json']);
+            sqlStatus.whereAnd('lesson=' + langs[0]);
+            sqlStatus.whereAnd("lang='"+langs[1]+"'");
+            sqlStatus.whereAnd("game="+langs[2]);
+
+            sqlStatus.select(pg,  function(err, data){
+                console.log(err ? err : data);
+                var scoresNew = addHeightScoreIntoScores(data.scores_json, score.score, score.name)
+                sqlStatus.update(pg, {scores_json: scoresNew}, function(err, updated){
+                    if(err) {
+                        request.reply({err: err});
+                    } else {
+                        request.reply({scores: scoresNew});
+                    }
+
+                });
+
+
+
+            });
+        } else {
+            request.reply({error:'format : /lesson/lang/gameId/'});
+
+        }
+    }
+}
+
+function getPossiblePosition(scores_json, heightScore){
+    var position = -1;
+    var notActiveTime = new Date().getTime() - 14*24*3600;// 14days back
+    var notActive = new Date().setTime(notActiveTime);
+
+    var scores = JSON.parse(scores_json);
+
+    scores.some(function(score, idx){
+        if(heightScore > score.score){
+            position = idx;
+            return true;
+        } else if(score.time < notActiveTime) {
+            position = scores.length;
+
+        }
+
+        return false;
+
+    });
+
+    return position;
+}
+
+
+function addHeightScoreIntoScores(scores_json, heightScore, userName){
+    var scores = [];
+
+    var pos = getPossiblePosition(scores_json, heightScore);
+    if(pos == scores.length){
+        pos--;
+        // check oldest
+        scores_json.forEach(function(score,idx){
+            if(scores_json[pos].time < score.time){
+                pos = idx;
+            }
+        });
+        // skip oldest
+        scores_json.forEach(function(score,idx){
+            if(idx != pos){
+                scores.push(score);
+            }
+        });
+    } else if(pos != -1){
+        // create new scores put hightScore to position
+        scores_json.forEach(function(score,idx){
+            if(idx == pos){
+                scores.push({
+                    score : hightScore,
+                    name : userName,
+                    time : new Date().getTime()
+                });
+            }
+
+            // no add last
+            if(idx < scores_json.length -1 ){
+                scores.push(score);
+            }
+        })
+    } else {
+        // no changes
+        scores = scores_json;
+    }
+
+    return scores;
 }
