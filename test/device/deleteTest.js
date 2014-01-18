@@ -27,15 +27,37 @@ describe('device', function(){
     });
 
     describe('score', function(){
-        it.only('get', function(cb){
+        it('get', function(cb){
             //var ser = new server();
 
 
             var req =  request('http://localhost:8080');
 
             req.get('/device/current/index/scores/1001/en/0/?timespan='+new Date().getTime() + '&score=200')
-                //.expect('Content-Type', /json/)
+                .expect('Content-Type', /json/)
+
+                .expect(200)
+                .end(function(err, res){
+                    console.log(res);
+                    if (err) {
+
+                        throw err;
+
+                    }
+                    cb();
+                });
+        });
+
+        it.only('post', function(cb){
+            //var ser = new server();
+
+
+            var req =  request('http://localhost:8080');
+
+            req.post('/device/current/index/scoreadd/1001/en/0/')
+                .expect('Content-Type', /json/)
                 //.expect('Content-Length', '20')
+                .send({score:{name:'karel',score:140}})
                 .expect(200)
                 .end(function(err, res){
                     console.log(res);

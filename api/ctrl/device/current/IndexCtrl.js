@@ -141,11 +141,11 @@ module.exports = {
         }
 
 
-    },scores_post : function(request){
+    },scoreadd_post : function(request){
         var score = request.payload.score;
         var langs = request.params.params.split('/');
 
-        if(score || score.score || score.name ){
+        if(score && score.score && score.name ){
             var sqlStatus = new SL.SqlLib('scores_t', ['scores_json']);
             sqlStatus.whereAnd('lesson=' + langs[0]);
             sqlStatus.whereAnd("lang='"+langs[1]+"'");
@@ -153,7 +153,8 @@ module.exports = {
 
             sqlStatus.select(pg,  function(err, data){
                 console.log(err ? err : data);
-                var scoresNew = addHeightScoreIntoScores(data.scores_json, score.score, score.name)
+                console.log('scoreadd_post:', data[0].scores_json);
+                var scoresNew = addHeightScoreIntoScores(data[0].scores_json, score.score, score.name)
                 sqlStatus.update(pg, {scores_json: scoresNew}, function(err, updated){
                     if(err) {
                         request.reply({err: err});
@@ -177,7 +178,7 @@ function getPossiblePosition(scores_json, heightScore){
     var position = -1;
     var notActiveTime = new Date().getTime() - 14*24*3600;// 14days back
     var notActive = new Date().setTime(notActiveTime);
-
+    console.log('getPossiblePosition:', scores_json);
     var scores = JSON.parse(scores_json);
 
     scores.some(function(score, idx){
@@ -199,8 +200,9 @@ function getPossiblePosition(scores_json, heightScore){
 
 function addHeightScoreIntoScores(scores_json, heightScore, userName){
     var scores = [];
-
+    console.log('addHeightScoreIntoScores:', scores_json);
     var pos = getPossiblePosition(scores_json, heightScore);
+    scores_json = JSON.parse(scores_json);
     if(pos == scores.length){
         pos--;
         // check oldest
@@ -220,7 +222,7 @@ function addHeightScoreIntoScores(scores_json, heightScore, userName){
         scores_json.forEach(function(score,idx){
             if(idx == pos){
                 scores.push({
-                    score : hightScore,
+                    score : heightScore,
                     name : userName,
                     time : new Date().getTime()
                 });
