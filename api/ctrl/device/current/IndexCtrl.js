@@ -155,7 +155,7 @@ module.exports = {
                 console.log(err ? err : data);
                 console.log('scoreadd_post:', data[0].scores_json);
                 var scoresNew = addHeightScoreIntoScores(data[0].scores_json, score.score, score.name)
-                sqlStatus.update(pg, {scores_json: scoresNew}, function(err, updated){
+                sqlStatus.update(pg, {scores_json: JSON.stringify(scoresNew)}, function(err, updated){
                     if(err) {
                         request.reply({err: err});
                     } else {
@@ -174,52 +174,101 @@ module.exports = {
     }
 }
 
+function getExpirationTime(){
+    var notActiveTime = new Date().getTime() - 14*24*3600;// 14days back
+    //var notActive = new Date().setTime(notActiveTime);
+    return notActiveTime;
+}
+
+function getOutOfDate(scores_json) {
+    var old = 0;
+
+    // find oldest
+    scores_json.forEach(function(score, idx){
+          if(scores_json[old].time > score.time){
+              old = idx;
+          }
+    });
+
+    // test is out of date
+    if(scores_json[old].time < getExpirationTime()) {
+        return old;
+    } else {
+        return -1;
+    }
+
+}
+
+module.exports.getPossiblePosition = getPossiblePosition;
 function getPossiblePosition(scores_json, heightScore){
     var position = -1;
-    var notActiveTime = new Date().getTime() - 14*24*3600;// 14days back
-    var notActive = new Date().setTime(notActiveTime);
+    var notActiveTime = getExpirationTime();// 14days back
+    ///var notActive = new Date().setTime(notActiveTime);
     console.log('getPossiblePosition:', scores_json);
     var scores = JSON.parse(scores_json);
-
+    var outOfDate = getExpirationTime(scores);
     scores.some(function(score, idx){
         if(heightScore > score.score){
             position = idx;
+            // we found on top some one who is out of date
+            // so it will be replaced
+            if(outOfDate > position){
+                position--;
+            }
             return true;
-        } else if(score.time < notActiveTime) {
-            position = scores.length;
-
         }
 
         return false;
 
     });
 
+    if(position == -1 && outOfDate > -1){
+        position = scores.length;
+    }
+
     return position;
 }
 
+module.exports.addHeightScoreIntoScores = addHeightScoreIntoScores;
 
 function addHeightScoreIntoScores(scores_json, heightScore, userName){
     var scores = [];
+    var notActiveTime = getExpirationTime();
     console.log('addHeightScoreIntoScores:', scores_json);
     var pos = getPossiblePosition(scores_json, heightScore);
+
     scores_json = JSON.parse(scores_json);
-    if(pos == scores.length){
+
+    var outOfDatePos = getOutOfDate(scores_json);
+
+
+    if(pos == scores_json.length){
+        console.log('addHeightScoreIntoScores:', 1)
         pos--;
-        // check oldest
-        scores_json.forEach(function(score,idx){
-            if(scores_json[pos].time < score.time){
-                pos = idx;
-            }
-        });
+
         // skip oldest
         scores_json.forEach(function(score,idx){
-            if(idx != pos){
+            if(idx != outOfDatePos){
                 scores.push(score);
             }
         });
+        scores.push({
+            score : heightScore,
+            name : userName,
+            time : new Date().getTime()
+        });
     } else if(pos != -1){
+        console.log('addHeightScoreIntoScores:', 2, pos)
+
         // create new scores put hightScore to position
         scores_json.forEach(function(score,idx){
+
+
+            if(scores.length <= scores_json.length && idx != outOfDatePos ){
+                // no add last
+                scores.push(score);
+            }
+
             if(idx == pos){
                 scores.push({
                     score : heightScore,
@@ -227,13 +276,9 @@ function addHeightScoreIntoScores(scores_json, heightScore, userName){
                     time : new Date().getTime()
                 });
             }
-
-            // no add last
-            if(idx < scores_json.length -1 ){
-                scores.push(score);
-            }
         })
     } else {
+        console.log('addHeightScoreIntoScores:', 3)
         // no changes
         scores = scores_json;
     }

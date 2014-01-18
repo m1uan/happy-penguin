@@ -1,4 +1,5 @@
-var request = require('supertest');
+var request = require('supertest'),
+    should = require('should');
 //var server = require('../../server.js');
 describe('device', function(){
     describe('delete', function(){
@@ -48,7 +49,7 @@ describe('device', function(){
                 });
         });
 
-        it.only('post', function(cb){
+        it('post', function(cb){
             //var ser = new server();
 
 
@@ -57,7 +58,7 @@ describe('device', function(){
             req.post('/device/current/index/scoreadd/1001/en/0/')
                 .expect('Content-Type', /json/)
                 //.expect('Content-Length', '20')
-                .send({score:{name:'karel',score:140}})
+                .send({score:{name:'karel',score:40}})
                 .expect(200)
                 .end(function(err, res){
                     console.log(res);
@@ -68,6 +69,23 @@ describe('device', function(){
                     }
                     cb();
                 });
+        });
+
+        it.only('add test', function(){
+            var device = require('../../api/ctrl/device/current/IndexCtrl.js');
+            var default1 = '[ { "name":"Milan Medlik", "score": 3000, "time":"0" }, { "name":"Milan Medlik", "score": 2500, "time":"0" }, { "name":"Milan Medlik", "score": 2000, "time":"0" }, { "name":"Milan Medlik", "score": 1500, "time":"0" }, { "name":"Milan Medlik", "score": 1250, "time":"0" }, { "name":"Milan Medlik", "score": 1000, "time":"0" }, { "name":"Milan Medlik", "score": 750, "time":"0" }, { "name":"Milan Medlik", "score": 600, "time":"0" }, { "name":"Milan Medlik", "score": 500, "time":"0" }, { "name":"Milan Medlik", "score": 400, "time":"0" }, { "name":"Milan Medlik", "score": 300, "time":"0" }, { "name":"Milan Medlik", "score": 200, "time":"0" }, { "name":"Milan Medlik", "score": 100, "time":"10" } ]';
+            var position = device.getPossiblePosition(default1, 90, 'miuan');
+            position.should.be.eql(13);
+
+            position = device.getPossiblePosition(default1, 190, 'miuan');
+            position.should.be.eql(11);
+            var scores = device.addHeightScoreIntoScores(default1, 90, 'miuan');
+            console.log(scores);
+
+            var scores = device.addHeightScoreIntoScores(default1, 190, 'miuan');
+            console.log(scores);
+
+            scores.length.should.be.eql(13);
         });
     });
 });
