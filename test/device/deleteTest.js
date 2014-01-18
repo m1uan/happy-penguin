@@ -49,7 +49,7 @@ describe('device', function(){
                 });
         });
 
-        it('post', function(cb){
+        it.only('post', function(cb){
             //var ser = new server();
 
 
@@ -71,7 +71,7 @@ describe('device', function(){
                 });
         });
 
-        it.only('add test', function(){
+        it('add test', function(){
             var device = require('../../api/ctrl/device/current/IndexCtrl.js');
             var default1 = '[ { "name":"Milan Medlik", "score": 3000, "time":"0" }, { "name":"Milan Medlik", "score": 2500, "time":"0" }, { "name":"Milan Medlik", "score": 2000, "time":"0" }, { "name":"Milan Medlik", "score": 1500, "time":"0" }, { "name":"Milan Medlik", "score": 1250, "time":"0" }, { "name":"Milan Medlik", "score": 1000, "time":"0" }, { "name":"Milan Medlik", "score": 750, "time":"0" }, { "name":"Milan Medlik", "score": 600, "time":"0" }, { "name":"Milan Medlik", "score": 500, "time":"0" }, { "name":"Milan Medlik", "score": 400, "time":"0" }, { "name":"Milan Medlik", "score": 300, "time":"0" }, { "name":"Milan Medlik", "score": 200, "time":"0" }, { "name":"Milan Medlik", "score": 100, "time":"10" } ]';
             var position = device.getPossiblePosition(default1, 90, 'miuan');
