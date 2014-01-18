@@ -152,17 +152,19 @@ module.exports = {
             sqlStatus.whereAnd("game="+langs[2]);
 
             sqlStatus.select(pg,  function(err, data){
-                console.log(err ? err : data);
-                console.log('scoreadd_post:', data[0].scores_json);
-                var scoresNew = addHeightScoreIntoScores(data[0].scores_json, score.score, score.name)
-                sqlStatus.update(pg, {scores_json: JSON.stringify(scoresNew)}, function(err, updated){
-                    if(err) {
-                        request.reply({err: err});
-                    } else {
-                        request.reply({scores: scoresNew});
-                    }
+                if(data.length == 0){
+                    var sqlDefault = new SL.SqlLib('scores_t', ['scores_json']);
+                    sqlDefault.whereAnd('lesson=-1');
+                    sqlDefault.whereAnd("lang='00'");
+                    sqlDefault.whereAnd("game=-1");
 
-                });
+                    sqlDefault.select(pg,  function(errDefault, dataDefault){
+                        parseScores(request, errDefault, dataDefault);
+                    });
+                } else {
+                    parseScores(request, err, data);
+                }
+
 
 
 
@@ -171,6 +173,22 @@ module.exports = {
             request.reply({error:'format : /lesson/lang/gameId/'});
 
         }
+
+        function parseScores(request, err, data){
+            console.log(err ? err : data);
+
+            console.log('scoreadd_post:', data[0].scores_json);
+            var scoresNew = addHeightScoreIntoScores(data[0].scores_json, score.score, score.name)
+            sqlStatus.upsert(pg, {scores_json: JSON.stringify(scoresNew), lesson:langs[0], lang:langs[1],game:langs[2]}, ['scores_json'], function(err, updated){
+                if(err) {
+                    request.reply({err: err});
+                } else {
+                    request.reply({scores: scoresNew});
+                }
+
+            });
+        }
+
     }
 }
 
