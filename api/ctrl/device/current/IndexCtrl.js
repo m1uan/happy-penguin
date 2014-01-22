@@ -113,6 +113,35 @@ module.exports = {
             sqlStatus.whereAnd("game="+langs[2]);
 
             sqlStatus.select(pg,  function(err, data){
+                if(data.length == 0){
+                    var sqlDefault = new SL.SqlLib('scores_t', ['scores_json']);
+                    sqlDefault.whereAnd('lesson=-1');
+                    sqlDefault.whereAnd("lang='00'");
+                    sqlDefault.whereAnd("game=-1");
+
+                    sqlDefault.select(pg,  function(errDefault, dataDefault){
+                        if(request.query.score){
+                            result.position = getPossiblePosition(result.scores_json, request.query.score)
+                        }
+                        request.reply(result);
+
+                    });
+                } else {
+                    if(request.query.score){
+                        result.position = getPossiblePosition(result.scores_json, request.query.score)
+                    }
+                    request.reply(result);
+                }
+            });
+        }
+
+
+            var sqlStatus = new SL.SqlLib('scores_t', ['scores_json']);
+            sqlStatus.whereAnd('lesson=' + langs[0]);
+            sqlStatus.whereAnd("lang='"+langs[1]+"'");
+            sqlStatus.whereAnd("game="+langs[2]);
+
+            sqlStatus.select(pg,  function(err, data){
                 console.log(err ? err : data);
                 var result = data[0];
                 result.position = -1;
