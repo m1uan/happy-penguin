@@ -1,7 +1,7 @@
 echo cd ${OPENSHIFT_DATA_DIR}
 cd ${OPENSHIFT_DATA_DIR}
 
-echo "rm dump_img.tar.gz && pg_dump -a voc4u > dump-voc4u.sql && tar -cvzf dump_img.tar.gz assets/ dump-voc4u.sql > /dev/null && rm dump-voc4u.sql"
-rm dump_img.tar.gz && pg_dump -a voc4u > dump-voc4u.sql && tar -cvzf dump_img.tar.gz assets/ dump-voc4u.sql > /dev/null && rm dump-voc4u.sql
+echo "rm dump_img.tar.gz && /opt/rh/postgresql92/root/usr/bin/pg_dump -a --data-only -U $OPENSHIFT_POSTGRESQL_DB_USERNAME -h $OPENSHIFT_POSTGRESQL_DB_HOST -p $OPENSHIFT_POSTGRESQL_DB_PORT $OPENSHIFT_APP_NAME > dump-voc4u.sql && tar -cvzf dump_img.tar.gz assets/ dump-voc4u.sql > /dev/null && rm dump-voc4u.sql"
+rm dump_img.tar.gz && /opt/rh/postgresql92/root/usr/bin/pg_dump -a --data-only -U $OPENSHIFT_POSTGRESQL_DB_USERNAME -h $OPENSHIFT_POSTGRESQL_DB_HOST -p $OPENSHIFT_POSTGRESQL_DB_PORT $OPENSHIFT_APP_NAME > dump-voc4u.sql && tar -cvzf dump_img.tar.gz assets/ dump-voc4u.sql > /dev/null && rm dump-voc4u.sql
 
 echo "done"
