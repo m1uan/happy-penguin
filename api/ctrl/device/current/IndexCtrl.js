@@ -138,7 +138,7 @@ module.exports = {
                 request.reply(err);
             } else {
                 var result = {};
-                result.scores_json = JSON.parse(data[0].scores_json);
+                result.scores = JSON.parse(data[0].scores_json);
                 if(request.query.score){
                     result.position = getPossiblePosition(data[0].scores_json, request.query.score)
                 }
