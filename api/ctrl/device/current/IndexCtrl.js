@@ -107,6 +107,8 @@ module.exports = {
 
         var langs = request.params.params.split('/');
         if(langs && langs.length > 2) {
+            var result = {};
+
             var sqlStatus = new SL.SqlLib('scores_t', ['scores_json']);
             sqlStatus.whereAnd('lesson=' + langs[0]);
             sqlStatus.whereAnd("lang='"+langs[1]+"'");
@@ -120,6 +122,7 @@ module.exports = {
                     sqlDefault.whereAnd("game=-1");
 
                     sqlDefault.select(pg,  function(errDefault, dataDefault){
+                        result.scores_json = dataDefault[0].scores_json;
                         if(request.query.score){
                             result.position = getPossiblePosition(result.scores_json, request.query.score)
                         }
@@ -127,44 +130,13 @@ module.exports = {
 
                     });
                 } else {
+                    result.scores_json = data[0].scores_json;
                     if(request.query.score){
                         result.position = getPossiblePosition(result.scores_json, request.query.score)
                     }
                     request.reply(result);
                 }
             });
-        }
-
-
-            var sqlStatus = new SL.SqlLib('scores_t', ['scores_json']);
-            sqlStatus.whereAnd('lesson=' + langs[0]);
-            sqlStatus.whereAnd("lang='"+langs[1]+"'");
-            sqlStatus.whereAnd("game="+langs[2]);
-
-            sqlStatus.select(pg,  function(err, data){
-                console.log(err ? err : data);
-                var result = data[0];
-                result.position = -1;
-
-                if(request.query.score){
-
-
-                    result.position = getPossiblePosition(result.scores_json, request.query.score)
-
-
-                }
-
-                request.reply(result);
-            });
-
-//            var fields = ['lesson'];
-//            if(request.query.fields){
-//                fields = request.query.fields.split(',') ;
-//            }
-//
-//            packageEngine.get(pg, langs , fields, function(err, packages){
-//                request.reply(packages);
-//            });
         } else {
             request.reply({error:'format : /lesson/lang/gameId/?score=N'});
         }
