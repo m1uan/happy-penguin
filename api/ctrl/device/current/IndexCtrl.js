@@ -107,7 +107,7 @@ module.exports = {
 
         var langs = request.params.params.split('/');
         if(langs && langs.length > 2) {
-            var result = {};
+
 
             var sqlStatus = new SL.SqlLib('scores_t', ['scores_json']);
             sqlStatus.whereAnd('lesson=' + langs[0]);
@@ -122,23 +122,28 @@ module.exports = {
                     sqlDefault.whereAnd("game=-1");
 
                     sqlDefault.select(pg,  function(errDefault, dataDefault){
-                        result.scores_json = dataDefault[0].scores_json;
-                        if(request.query.score){
-                            result.position = getPossiblePosition(result.scores_json, request.query.score)
-                        }
-                        request.reply(result);
-
+                        returnScore(errDefault, dataDefault);
                     });
                 } else {
-                    result.scores_json = data[0].scores_json;
-                    if(request.query.score){
-                        result.position = getPossiblePosition(result.scores_json, request.query.score)
-                    }
-                    request.reply(result);
+                    returnScore(err, data);
+
                 }
             });
         } else {
             request.reply({error:'format : /lesson/lang/gameId/?score=N'});
+        }
+
+        function returnScore(err, data){
+            if(err){
+                request.reply(err);
+            } else {
+                var result = {};
+                result.scores_json = JSON.parse(data[0].scores_json);
+                if(request.query.score){
+                    result.position = getPossiblePosition(data[0].scores_json, request.query.score)
+                }
+                request.reply(result);
+            }
         }
 
 
