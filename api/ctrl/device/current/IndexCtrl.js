@@ -236,7 +236,11 @@ function getPossiblePosition(scores_json, heightScore){
             position = idx;
             // we found on top some one who is out of date
             // so it will be replaced
+<<<<<<< HEAD
             if(outOfDate < position){
+=======
+            if(outOfDate > position){
+>>>>>>> f4af1c9d656e5dc3ada2f49424a4fbfa034178d0
                 position--;
             }
             return true;

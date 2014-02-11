@@ -54,6 +54,10 @@ function MainCtrl($scope, $route, $routeParams, $location, $cookieStore, lastVis
 
     $scope.loading = false;
 
+<<<<<<< HEAD
+=======
+    $scope.languages =['cs', 'de','en', 'es','fr','it','id','nl','no','pl','pt','ru','sr','vi','zh']
+>>>>>>> f4af1c9d656e5dc3ada2f49424a4fbfa034178d0
 
     $scope.languages =['cs', 'de','en', 'es','fr','it','id','nl','no','pl','pt','ru','sr','vi','zh']
 
