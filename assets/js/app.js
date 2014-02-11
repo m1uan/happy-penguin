@@ -54,12 +54,9 @@ function MainCtrl($scope, $route, $routeParams, $location, $cookieStore, lastVis
 
     $scope.loading = false;
 
-<<<<<<< HEAD
-=======
-    $scope.languages =['cs', 'de','en', 'es','fr','it','id','nl','no','pl','pt','ru','sr','vi','zh']
->>>>>>> f4af1c9d656e5dc3ada2f49424a4fbfa034178d0
 
-    $scope.languages =['cs', 'de','en', 'es','fr','it','id','nl','no','pl','pt','ru','sr','vi','zh']
+
+    $scope.languages =['cs', 'de','en', 'es','fr','it','id','nl','no','pl','pt','ru','sr','vi','zh', 'tr','sk','ko']
 
 
     $scope.lessons =[ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010];
