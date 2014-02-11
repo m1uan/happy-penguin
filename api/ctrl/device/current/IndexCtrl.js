@@ -238,6 +238,7 @@ function getPossiblePosition(scores_json, heightScore){
             // so it will be replaced
             if(outOfDate > position){
                 position--;
+
             }
             return true;
         }
