@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo cd ${OPENSHIFT_DATA_DIR}
 cd ${OPENSHIFT_DATA_DIR}
 
