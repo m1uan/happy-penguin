@@ -34,7 +34,8 @@ module.exports = {
     }
     ,index_get : function (request){
         request.reply.view('index', {});
-    },stats_get : function(request){
+    }
+    ,stats_get : function(request){
         request.reply.view('stats');
     }
     ,login_get : function(request){
