@@ -6,7 +6,7 @@ module.exports = {
 
         var config = {
             urls: {
-                failureRedirect: '/login/'
+                failureRedirect: '/admin/login/'
             },
             excludePaths: ['/public/']
         };

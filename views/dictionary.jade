@@ -1,0 +1,107 @@
+!!!
+//https://www.google.co.nz/search?q=mamka&source=lnms&tbm=isch
+
+html(ng-app="voc4u")
+    head
+        link(rel='stylesheet', href='/assets/css/app.css')
+        link(rel='stylesheet', href='/assets/css/index.css')
+        link(rel='stylesheet', href='/assets/css/word-row.css')
+        link(rel='stylesheet', href='/assets/css/bootstrap.min.css', rel="stylesheet",media="screen")
+        meta(name="viewport",content="width=device-width, initial-scale=1.0")
+    body(ng-controller="MainCtrl as main")
+        div#body
+            header
+
+                div.btn-group
+                    button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[1]}}
+                        span.caret
+                    ul(role="menu").dropdown-menu
+                        li(ng-repeat="lang in languages")
+                            a(ng-click="langChange(1,lang)") {{lang}}
+
+                div.btn-group
+                    button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[2]}}
+                        span.caret
+                    ul(role="menu").dropdown-menu
+                        li(ng-repeat="lang in languages")
+                            a(ng-click="langChange(2,lang)") {{lang}}
+
+                div.btn-group
+                    button(type="button",data-toggle="dropdown").btn.btn-default.dropdown-toggle {{lessonFields[0]}}
+                        span.caret
+                    ul(role="menu").dropdown-menu
+                        li(ng-repeat="lesson in lessons")
+                            a(ng-click="langChange(0,lesson)") {{lesson}}
+
+
+
+                div.hide.content#menu
+                    a(href="#/{{lessonFields[0]}}/{{lessonFields[1]}}/{{lessonFields[2]}}") Words
+                    span.separate |
+                    a(href="#/questions/{{lessonFields[1]}}/{{lessonFields[2]}}") Questions
+                    span(ng-show="questionsCount>0").badge.badge-important {{questionsCount}}
+                    span.separate |
+                    a(href="#/questions/{{lessonFields[1]}}/{{lessonFields[2]}}/#{userId}") My Questions
+                    span(ng-show="questionsWhereIAMCount>0").badge.badge-important {{questionsWhereIAMCount}}
+                    span.separate |
+                    a(href="#/stats/#{userId}") Stats
+                    span.separate |
+                    a(href="#/approveimages/{{lessonFields[1]}}/{{lessonFields[2]}}/#{userId}") My Images
+                    if admin
+                        span.separate |
+                        a(href="#/approveimages/{{lessonFields[1]}}/{{lessonFields[2]}}") Approving
+                        span.separate |
+                        a(href="#/users/{{lessonFields[1]}}/{{lessonFields[2]}}") Users
+
+
+
+            div#modal-from-dom.modal.fade
+                div.modal-dialog
+                    div.modal-content
+                        div.modal-header
+                            a.close &times;
+                            h3#warning_dialog_title delete image1
+                        div.modal-body
+                            p#warning_dialog_message do you realy want delete the picture1
+                        div.modal-footer
+                            a#yesbutton.btn.btn-danger Yes
+                            a(href="javascript:$('#modal-from-dom').modal('hide')").btn.btn-primary No
+
+            div#modal-error.modal.fade
+                div.modal-dialog
+                    div.modal-content
+                        div.modal-header
+                            a.close &times;
+                            h3 error :-(
+                        div.modal-body
+                            p The picture are very probably so big, should be less then 600kB.
+                            h4 server message
+                            p#origin-message
+                        div.modal-footer
+                            a(href="javascript:$('#modal-error').modal('hide')").btn.btn-primary ok
+
+            div(ng-view).content
+
+
+            div
+                img#canvasHelper
+                canvas(width="128",height="128")#myCanvas
+
+
+    script(src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
+    script(src="/assets/js/bootstrap.min.js")
+    script(src="http://code.angularjs.org/1.2.1/angular.min.js")
+    script(src="http://code.angularjs.org/1.2.1/angular-animate.min.js")
+    script(src="http://code.angularjs.org/1.2.1/angular-route.min.js")
+    script(src="http://code.angularjs.org/1.2.1/angular-cookies.min.js")
+    script(src="/assets/js/moment.min.js")
+    script(src="/assets/js/imageddc.js")
+    script(src="/assets/js/lscache.js")
+    script(src="/assets/js/app.js")
+    script(src="/assets/js/services.js")
+    script(src="/assets/js/controler.js")
+    script(src="/assets/js/stats.js")
+    script(src="/assets/js/directives.js")
+
+
+    //script(src="assets/js/angular-file-upload.min.js")
