@@ -1,6 +1,7 @@
-var userEngine = require(process.cwd() + '/engine/user.js');
+var langEngine = require(process.cwd() + '/engine/translates/langs.js');
 var Passport = null;
 var Travelelogue = null;
+var pgClient = null;
 
 module.exports = {
     /**
@@ -10,7 +11,7 @@ module.exports = {
      */
     $init : function(server, Hapi){
         Travelelogue = server.plugins.travelogue;
-
+        pgClient = server.pgClient;
     }
     // get Hapi Config
     ,$getConfig : function(){
@@ -34,7 +35,9 @@ module.exports = {
 
         request.reply({'langs':['en','cz','de']});
     }, addlang_post : function(request){
-        request.reply('ok');
+        langEngine.addlang(pgClient, request, function(){
+
+        });
     }
 
 }

@@ -47,8 +47,8 @@ function AddLangCtrl($scope, $http) {
 
         var dataContainer = {
             lang :  $scope.lang_code,
-            translate : $scope.lang_eng_name,
-            for_lang: 'en'
+            name : $scope.lang_eng_name,
+            lang_of_name: 'en'
         };
 
         requestPOST($http, 'addlang', dataContainer, function(data){

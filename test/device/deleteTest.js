@@ -28,7 +28,7 @@ describe('device', function(){
     });
 
     describe('score', function(){
-        it.only('get', function(cb){
+        it('get', function(cb){
             //var ser = new server();
 
 

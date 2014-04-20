@@ -9,6 +9,7 @@ CREATE SCHEMA translates
 
 CREATE TABLE lang_t (
       lang CHAR(2) NOT NULL,
+      name VARCHAR(25) NOT NULL,
       PRIMARY KEY(lang)
 )
 
@@ -37,5 +38,4 @@ CREATE TABLE translate_t (
 
 ;
 
-INSERT INTO translates.lang_t (lang) VALUES ('en'), ('cz'), ('de');
 
