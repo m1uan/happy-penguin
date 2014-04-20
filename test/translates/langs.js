@@ -100,10 +100,25 @@ describe('translates', function(){
                     cb();
                 });
             });
-
-
-
         });
+
+        it('getlangs', function(cb){
+
+            var dataContainer = {
+                lang_of_names :  'en'
+            };
+
+            translates.getlangs(pgClient, ['lang','name','translate'], dataContainer, function(translate,data){
+                data.should.be.a.array;
+                data.length.should.above(1);
+                var first = data[0];
+                first.should.have.property('lang');
+                first.should.have.property('name');
+                first.should.have.property('translate');
+                cb();
+            });
+        });
+
 
         it('addtranslate', function(cb){
 

@@ -73,6 +73,33 @@ module.exports = {
             }
             cb(err, out);
         });
+    },getlangs : function(pgClient, fields, data, cb){
+        var sql = 'SELECT lang,name FROM translates.lang_t (key,description) VALUES ($1,$2) RETURNING link';
+
+        var indexOfTranslate = fields.indexOf("translate");
+
+        if(indexOfTranslate > -1){
+            if(!data.lang_of_names){
+                cb('field \'translate\' is preset but not specified lang (data.lang_of_names)');
+                return;
+            }
+            fields[indexOfTranslate] = 'translates.translate_t.data as translate';
+        }
+
+        var indexOfLang = fields.indexOf("lang");
+        if(indexOfLang > -1){
+            fields[indexOfLang] = 'translates.lang_t.lang as lang';
+        }
+
+        var SQL = SL.SqlLib('translates.lang_t', fields);
+
+        if(indexOfTranslate > -1){
+            var join =  'translates.lang_t.link=translates.translate_t.link AND translates.translate_t.lang=\'' + data.lang_of_names + '\'';
+            SQL.join('translates.translate_t',join);
+        }
+
+
+        SQL.select(pgClient, cb);
     }
     ,getUserByName : function(pgClient, userName, cb){
         var sql = 'SELECT id, name, full_name, pass,admin FROM usr WHERE name = $1';
