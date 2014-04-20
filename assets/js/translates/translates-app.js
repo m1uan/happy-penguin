@@ -7,19 +7,29 @@ var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
         // configure html5 to get links working on jsfiddle
         //$locationProvider.html5Mode(true);
     });
-
 function requestPOST($http, func, data, success, failed){
+    request('POST',$http, func, data, success, failed);
+}
+
+function requestGET($http, func, success, failed){
+    request('GET',$http, func, null, success, failed);
+}
+
+function request(method, $http, func, data, success, failed){
     var ROUTE = '/admin/translates/';
 
 
 
     $http({
-        method: 'POST',
+        method: method,
         url: ROUTE + func,
         data: data}).
         success(function(data, status, headers, config) {
             console.log(data, status);
-            success(data, status);
+            if(success){
+                success(data.response, status);
+            }
+
         }).
         error(function(data, status, headers, config) {
             console.log(data, status);
@@ -31,7 +41,10 @@ function requestPOST($http, func, data, success, failed){
             }
 
             alert('Error:' + errorMessage);
-            failed(data, status);
+            if(failed){
+                failed(data, status);
+            }
+
         });
 
 }
@@ -47,6 +60,9 @@ function AddLangCtrl($scope, $http) {
     $scope.lang_code = 'en';
     $scope.lang_eng_name = 'English';
 
+    $scope.langs = [];
+
+    loadLangs();
 
     $scope.addlang = function(valid){
         if(!valid){
@@ -62,11 +78,21 @@ function AddLangCtrl($scope, $http) {
         requestPOST($http, 'addlang/', dataContainer, function(data){
             $scope.lang_code = '';
             $scope.lang_eng_name = '';
+            loadLangs();
         }, function(failed){
 
         });
 
 
 
+    }
+
+
+    function loadLangs(){
+        var date = new Date();
+
+        requestGET($http, 'langs/?fields=name,translate,lang&timestamp='+date.getMilliseconds(), function(response, status){
+            $scope.langs=response.langs;
+        });
     }
 }

@@ -15,7 +15,19 @@ html(ng-app="voc4u")
                     input(ng-model="lang_code", placeholder="code", type="text" ng-minlength="2" maxlength="2")
                     input(ng-model="lang_eng_name", placeholder="translate name in eng", type="text", ng-minlength="3")
                     div(ng-click="addlang(addlangform.$valid)").btn.btn-primary.margin-left-10 add
-            a(href="/dictionary/") dictionary
+                h2 langs
+                table.table
+                    thead
+                        td #
+                        td code
+                        td translate
+                        td name
+                    tr(ng-repeat="lang in langs")
+                        td {{$index+1}}
+                        td {{lang.lang}}
+                        td {{lang.translate}}
+                        td {{lang.name}}
+
 
 
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
