@@ -34,9 +34,11 @@ module.exports = {
     }
     ,index_get : function (request){
         request.reply.view('admin', {userId:request.user.id, admin:request.user.admin == 1});
-    },translates_get : function (request){
+    }
+    ,translates_get : function (request){
         request.reply.view('translates', {});
-    },stats_get : function(request){
+    }
+    ,stats_get : function(request){
         request.reply.view('stats');
     }
     ,login_get : function(request){

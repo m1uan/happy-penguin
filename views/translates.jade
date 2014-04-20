@@ -3,14 +3,18 @@
 
 html(ng-app="voc4u")
     head
-        link(rel='stylesheet', href='/assets/css/app.css')
-        link(rel='stylesheet', href='/assets/css/index.css')
-        link(rel='stylesheet', href='/assets/css/word-row.css')
+        link(rel='stylesheet', href='/assets/css/translates.css')
         link(rel='stylesheet', href='/assets/css/bootstrap.min.css', rel="stylesheet",media="screen")
         meta(name="viewport",content="width=device-width, initial-scale=1.0")
     body(ng-controller="MainCtrl as main")
         div#body
             h1 welcome in transalte mode
+            div(ng-controller="AddLangCtrl")
+                h2 add lang
+                form(name="addlangform")
+                    input(ng-model="lang_code", placeholder="code", type="text" ng-minlength="2" maxlength="2")
+                    input(ng-model="lang_eng_name", placeholder="translate name in eng", type="text", ng-minlength="3")
+                    div(ng-click="addlang(addlangform.$valid)").btn.btn-primary.margin-left-10 add
             a(href="/dictionary/") dictionary
 
 

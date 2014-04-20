@@ -1,45 +1,5 @@
 var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
     function($routeProvider, $locationProvider) {
-        $routeProvider.when('/users/:lang1/:lang2', {
-            templateUrl: 'templates/users',
-            controller: UsersCtrl,
-            controllerAs: 'users'
-        });
-        $routeProvider.when('/stats/:userId', {
-            templateUrl: 'templates/stats',
-            controller: StatsCtrl,
-            controllerAs: 'book'
-        });
-        $routeProvider.when('/questions/:lang1/:lang2', {
-            templateUrl: 'templates/words',
-            controller: QuestionsCtrl,
-            controllerAs: 'questions'
-        });
-        $routeProvider.when('/questions/:lang1/:lang2/:userId', {
-            templateUrl: 'templates/words',
-            controller: QuestionsCtrl,
-            controllerAs: 'questions'
-        });
-
-        $routeProvider.when('/approveimages/:lang1/:lang2/:userId', {
-            templateUrl: 'templates/words',
-            controller: ApproveImageCtrl,
-            controllerAs: 'questions'
-        });
-
-        $routeProvider.when('/approveimages/:lang1/:lang2', {
-            templateUrl: 'templates/words',
-            controller: ApproveImageCtrl,
-            controllerAs: 'questions'
-        });
-
-
-        $routeProvider.when('/:lesson/:lang1/:lang2', {
-            templateUrl: 'templates/words',
-            controller: WordWebCtrl,
-            controllerAs: 'wordwc'
-        });
-
 
 
 
@@ -48,6 +8,57 @@ var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
         //$locationProvider.html5Mode(true);
     });
 
-function MainCtrl($scope, $route, $routeParams, $location, $cookieStore, lastVisitService) {
+function requestPOST($http, func, data, success, failed){
+    var ROUTE = '/admin/translates/';
 
+    $http({
+        method: 'POST',
+        url: ROUTE + func + '/',
+        data: data}).
+        success(function(data, status, headers, config) {
+            console.log(data, status);
+            success(data, status);
+        }).
+        error(function(data, status, headers, config) {
+            console.log(data, status);
+            alert('failed');
+            failed(data, status);
+        });
+
+}
+
+
+
+function MainCtrl($scope) {
+
+}
+
+
+function AddLangCtrl($scope, $http) {
+    $scope.lang_code = 'en';
+    $scope.lang_eng_name = 'English';
+
+
+    $scope.addlang = function(valid){
+        if(!valid){
+            alert('not valid:\"' + $scope.lang_code + '\",\"'+ $scope.lang_eng_name + '\"');
+            return ;
+        }
+
+        var dataContainer = {
+            lang :  $scope.lang_code,
+            translate : $scope.lang_eng_name,
+            for_lang: 'en'
+        };
+
+        requestPOST($http, 'addlang', dataContainer, function(data){
+            $scope.lang_code = '';
+            $scope.lang_eng_name = '';
+        }, function(failed){
+
+        });
+
+
+
+    }
 }
