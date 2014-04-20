@@ -1,5 +1,5 @@
 
-
+ALTER TABLE translates.lang_t DROP COLUMN IF EXISTS link;
 DROP TABLE IF EXISTS translates.translate_t;
 DROP TABLE IF EXISTS translates.link_t;
 DROP TABLE IF EXISTS translates.lang_t;
@@ -34,8 +34,8 @@ CREATE TABLE translate_t (
     PRIMARY KEY(lang, link)
 )
 
-
-
 ;
 
 
+ALTER TABLE translates.lang_t ADD COLUMN link INTEGER;
+ALTER TABLE translates.lang_t ADD FOREIGN KEY (link) REFERENCES translates.link_t (link);

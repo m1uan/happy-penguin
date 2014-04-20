@@ -54,6 +54,7 @@ describe('translates', function(){
 //            "SELECT remove_test_data();"
 //
 //        ],cb);
+        pgClient.close();
         cb();
     });
 
@@ -64,6 +65,29 @@ describe('translates', function(){
             var dataContainer = {
                 lang :  'en',
                 name : 'English'
+            };
+
+            translates.addlang(pgClient, dataContainer, function(err){
+                pgClient.query('SELECT * FROM translates.lang_t WHERE lang=$1', [dataContainer.lang], function(err, data){
+                    data.should.be.ok;
+                    data.should.have.property('rows');
+                    data.rows.should.be.a.array;
+                    data.rows.length.should.equal(1);
+
+                    cb();
+                });
+            });
+
+
+
+        });
+
+        it('addlang - with translate', function(cb){
+
+            var dataContainer = {
+                lang :  'cz',
+                name : 'Czech',
+                lang_of_name: 'en'
             };
 
             translates.addlang(pgClient, dataContainer, function(err){

@@ -12,7 +12,33 @@ module.exports = {
             if(err){
                 cb(err || 'no user with this userName', false);
             } else {
-                cb(null, user.rows[0]);
+                if(data.lang_of_name){
+                    var translateData = {
+                        key : '_' + data.name.toLowerCase(),
+                        desc : data.name,
+                        lang : data.lang_of_name
+
+                    }
+                    module.exports.addtranslate(pgClient, translateData, function(err2, outdata){
+
+                        if(outdata){
+                            var sqlUpdate = 'UPDATE translates.lang_t SET link=$1 WHERE lang=$2';
+
+                            pgClient.query(sqlUpdate, [outdata.link, data.lang], function(err3, data2){
+                                cb(err3, user.rows[0]);
+                            });
+                        } else {
+                            cb(err2, null);
+                        }
+
+
+
+                    });
+                } else {
+                    cb(null, user.rows[0]);
+                }
+
+
             }
         });
 
@@ -27,13 +53,26 @@ module.exports = {
                 cb(err || 'no user with this userName', false);
             } else {
                 var row = user.rows[0];
-                var SQL = SL.SqlLib('translates.translate_t');
-
-
-                SQL.upsert(pgClient,{link:row.link,data:data.desc,lang:data.lang},['link'], cb);
+                data.link = row.link;
+                module.exports.translate(pgClient, data, cb);
             }
         });
 
+    },translate : function(pgClient, data, cb){
+        var SQL = SL.SqlLib('translates.translate_t');
+        SQL.whereAnd('link=' + data.link + ' AND lang=\'' +data.lang +'\'');
+        //var sql = SQL.generateUpsert({'link':data.link,data:data.desc,'lang':data.lang},['link']);
+
+        SQL.upsert(pgClient,{'link':data.link,data:data.desc,'lang':data.lang},['link','data'], function(err, res){
+            var out = null;
+            if(!err){
+                out = {
+                    link : res[0].link,
+                    data : res[0].data
+                };
+            }
+            cb(err, out);
+        });
     }
     ,getUserByName : function(pgClient, userName, cb){
         var sql = 'SELECT id, name, full_name, pass,admin FROM usr WHERE name = $1';
