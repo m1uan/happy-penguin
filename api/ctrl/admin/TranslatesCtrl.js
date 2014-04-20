@@ -32,12 +32,35 @@ module.exports = {
 
         request.reply.view('templates/' + template + '.jade', {userId:request.user.id, admin:request.user.admin == 1});
     }, langs_get : function(request){
+        var dataContainer = {
+            lang_of_names :  'en'
+        };
 
-        request.reply({'langs':['en','cz','de']});
+        langEngine.getlangs(pgClient, ['lang','name','translate'], dataContainer, function(err,data){
+            response(request, err, {'langs':data});
+        });
+
     }, addlang_post : function(request){
-        langEngine.addlang(pgClient, request, function(){
+//        var dataContainer = {
+//            lang :  'cz',
+//            name : 'Czech',
+//            lang_of_name: 'en'
+//        };
+        var dataContainer = request.payload;
+        dataContainer.lang_of_name = 'en';
 
+        langEngine.addlang(pgClient, dataContainer, function(err){
+            response(request, err, 'ok');
         });
     }
 
+}
+
+
+function response(request, err, data){
+    if(err){
+        request.reply({error:err, success:-1}).code(400);
+    } else {
+        request.reply({success:1,error:'',response:data});
+    }
 }

@@ -11,9 +11,11 @@ var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
 function requestPOST($http, func, data, success, failed){
     var ROUTE = '/admin/translates/';
 
+
+
     $http({
         method: 'POST',
-        url: ROUTE + func + '/',
+        url: ROUTE + func,
         data: data}).
         success(function(data, status, headers, config) {
             console.log(data, status);
@@ -21,7 +23,14 @@ function requestPOST($http, func, data, success, failed){
         }).
         error(function(data, status, headers, config) {
             console.log(data, status);
-            alert('failed');
+            var errorMessage = data;
+            if(data.error && data.error.detail){
+                errorMessage = data.error.detail;
+            } else if(data.error){
+                errorMessage = data.error;
+            }
+
+            alert('Error:' + errorMessage);
             failed(data, status);
         });
 
@@ -47,11 +56,10 @@ function AddLangCtrl($scope, $http) {
 
         var dataContainer = {
             lang :  $scope.lang_code,
-            name : $scope.lang_eng_name,
-            lang_of_name: 'en'
+            name : $scope.lang_eng_name
         };
 
-        requestPOST($http, 'addlang', dataContainer, function(data){
+        requestPOST($http, 'addlang/', dataContainer, function(data){
             $scope.lang_code = '';
             $scope.lang_eng_name = '';
         }, function(failed){
