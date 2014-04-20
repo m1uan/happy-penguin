@@ -34,7 +34,10 @@ describe('translates', function(){
             }
 
             sqlMake(pgClient, [
+                "DELETE FROM translates.translate_t;",
+                "DELETE FROM translates.link_t;",
                 "DELETE FROM translates.lang_t;"
+
                 //, "SELECT generate_langs();"
                 //, "SELECT remove_test_data();"
 
@@ -55,7 +58,7 @@ describe('translates', function(){
     });
 
 
-    describe('langs', function(){
+    describe.only('langs', function(){
         it('addlang - simple', function(cb){
 
             var dataContainer = {
@@ -78,15 +81,15 @@ describe('translates', function(){
 
         });
 
-        it.only('addlang - with translate', function(cb){
+        it('addtranslate', function(cb){
 
             var dataContainer = {
-                lang :  'cz',
-                name : 'Czech',
-                lang_of_name: 'en'
+                lang :  'en',
+                key : '_hello',
+                desc: 'Hello'
             };
 
-            translates.addlang(pgClient, dataContainer, function(err){
+            translates.addtranslate(pgClient, dataContainer, function(translate,data){
                 pgClient.query('SELECT * FROM translates.lang_t WHERE lang=$1', [dataContainer.lang], function(err, data){
                     data.should.be.ok;
                     data.should.have.property('rows');
@@ -96,9 +99,6 @@ describe('translates', function(){
                     cb();
                 });
             });
-
-
-
         });
 
 

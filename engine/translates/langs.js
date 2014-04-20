@@ -18,6 +18,22 @@ module.exports = {
 
 
 
+    },addtranslate : function(pgClient, data, cb){
+        var sql = 'INSERT INTO translates.link_t (key,description) VALUES ($1,$2) RETURNING link';
+
+
+        pgClient.query(sql, [data.key,data.desc], function(err, user){
+            if(err){
+                cb(err || 'no user with this userName', false);
+            } else {
+                var row = user.rows[0];
+                var SQL = SL.SqlLib('translates.translate_t');
+
+
+                SQL.upsert(pgClient,{link:row.link,data:data.desc,lang:data.lang},['link'], cb);
+            }
+        });
+
     }
     ,getUserByName : function(pgClient, userName, cb){
         var sql = 'SELECT id, name, full_name, pass,admin FROM usr WHERE name = $1';
