@@ -27,7 +27,7 @@ module.exports = {
             }
         }
     },templates_get : function (request){
-        console.log(request.params) ;
+        console.log('index view', request.params) ;
         var template = request.params.params;
 
         request.reply.view('templates/' + template + '.jade', {userId:request.user.id, admin:request.user.admin == 1});

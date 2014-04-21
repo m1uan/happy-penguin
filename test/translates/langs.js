@@ -141,6 +141,42 @@ describe('translates', function(){
         });
 
 
+        it('gettranslate page 0', function(cb){
+
+            var dataContainer = {
+                lang :  'en',
+                page : 0
+            };
+            var dataContainer1 = {
+                lang :  'en',
+                key : '_hello1',
+                desc: 'Hello1'
+            };
+
+            translates.addtranslate(pgClient, dataContainer1, function(translate1,data1){
+                translates.get(pgClient, ['link','data','description','key'], dataContainer, function(translate,data){
+                    data.should.be.ok;
+                    data.should.be.a.array;
+                    data.length.should.be.above(0);
+
+                    var find = false;
+
+                    data.forEach(function(trans){
+                        trans.should.have.property('description');
+                        trans.should.have.property('key');
+                        trans.should.have.property('data')
+                        if(trans.description == dataContainer1.desc){
+                            find = true;
+                        }
+                    });
+
+                    find.should.be.ok;
+
+                    cb();
+                });
+            });
+        });
+
     });
 
 

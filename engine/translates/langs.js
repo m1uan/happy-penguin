@@ -131,5 +131,39 @@ module.exports = {
             console.log(err ? err : data);
           cb(err, data);
         })
+    },get: function(pgClient, fields, data, cb){
+
+
+        if(!data.lang){
+            cb('data.lang missing!');
+            return ;
+        }
+
+        var indexOfDesc = fields.indexOf("description");
+
+        if(indexOfDesc > -1){
+            fields[indexOfDesc] = 'translates.link_t.description as description';
+        }
+
+        var indexOfLink = fields.indexOf("link");
+
+        if(indexOfLink > -1){
+            fields[indexOfLink] = 'translates.translate_t.link as link';
+        }
+
+        var sql = new SL.SqlLib('translates.translate_t', fields);
+        if(indexOfDesc > -1){
+            var join =  'translates.link_t.link=translates.translate_t.link';
+            sql.join('translates.link_t',join);
+        }
+
+        sql.whereAnd('lang=\''+data.lang +'\'');
+
+        // TODO: page moving
+        // var size=100;
+        //sql.offset(data.page * size);
+        //sql.limit((data.page+1) * size);
+
+        sql.select(pgClient, cb);
     }
 }

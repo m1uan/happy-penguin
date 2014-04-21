@@ -27,10 +27,10 @@ module.exports = {
             }
         }
     },templates_get : function (request){
-        console.log(request.params) ;
+        console.log('admin view', request.params) ;
         var template = request.params.params;
 
-        request.reply.view('templates/' + template + '.jade', {userId:request.user.id, admin:request.user.admin == 1});
+        request.reply.view('templates/translates/' + template + '.jade', {userId:request.user.id, admin:request.user.admin == 1});
     }
     ,index_get : function (request){
         request.reply.view('admin', {userId:request.user.id, admin:request.user.admin == 1});

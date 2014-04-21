@@ -1,7 +1,23 @@
 var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
     function($routeProvider, $locationProvider) {
+        $routeProvider.when('/trans/:page/:lang', {
+            templateUrl: '/templates/translates/trans',
+            controller: TranslateCtrl
+        });
+        $routeProvider.when('/trans/:lang', {
+            templateUrl: '/templates/translates/trans',
+            controller: TranslateCtrl
+        });
 
 
+        $routeProvider.when('/langs', {
+            templateUrl: '/templates/translates/langs',
+            controller: AddLangCtrl
+        });
+        $routeProvider.otherwise( {
+            templateUrl: '/templates/translates/langs',
+            controller: AddLangCtrl
+        });
 
 
         // configure html5 to get links working on jsfiddle
@@ -49,7 +65,13 @@ function request(method, $http, func, data, success, failed){
 
 }
 
+function TranslateCtrl($scope, $routeParams) {
+    console.log($routeParams);
 
+    $scope.page = $routeParams.page;
+    $scope.lang = $routeParams.lang;
+
+}
 
 function MainCtrl($scope) {
 
