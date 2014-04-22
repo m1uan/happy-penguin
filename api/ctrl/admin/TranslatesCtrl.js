@@ -18,7 +18,6 @@ module.exports = {
         return {
             auth:'passport',
             get_get : {
-
                 params : '{params*}'
             }, index_get : {
                 auth : 'passport'
@@ -69,6 +68,48 @@ module.exports = {
 
         langEngine.get(pgClient, fields, dataContainer, function(err,data){
             response(request, err, {page: dataContainer.page, trans:data, lang:dataContainer.lang});
+        });
+    },add_post : function(request){
+        var dataContainer = request.payload;
+
+        if(!dataContainer.lang){
+            response(request, 'field \'lang\' missing');
+            return ;
+        }
+
+        if(!dataContainer.key){
+            response(request, 'field \'key\' missing');
+            return ;
+        }
+
+        if(!dataContainer.desc){
+            response(request, 'field \'desc\' missing');
+            return ;
+        }
+
+        langEngine.addtranslate(pgClient, dataContainer, function(err,data){
+             response(request, err, data);
+        });
+    },update_post : function(request){
+        var dataContainer = request.payload;
+
+        if(!dataContainer.lang){
+            response(request, 'field \'lang\' missing!');
+            return ;
+        }
+
+        if(!dataContainer.link){
+            response(request, 'field \'link\' missing!');
+            return ;
+        }
+
+        if(!dataContainer.data){
+            response(request, 'field \'data\' missing!');
+            return ;
+        }
+
+        langEngine.translate(pgClient, dataContainer, function(err,data){
+            response(request, err, data);
         });
     }
 

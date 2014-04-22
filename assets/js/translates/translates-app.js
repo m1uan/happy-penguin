@@ -65,11 +65,88 @@ function request(method, $http, func, data, success, failed){
 
 }
 
-function TranslateCtrl($scope, $routeParams) {
+function TranslateCtrl($scope, $http, $routeParams) {
     console.log($routeParams);
 
     $scope.page = $routeParams.page;
     $scope.lang = $routeParams.lang;
+
+    $scope.translates = [];
+
+    loadTranslates();
+
+    $scope.key = '';
+    $scope.desc = '';
+    $scope.trans = '';
+
+
+    $scope.add = function(){
+        if(!$scope.trans){
+            $scope.trans = $scope.desc;
+        }
+        var dataContainer = {
+            lang :  $scope.lang,
+            key : $scope.key,
+            desc:  $scope.desc
+        };
+
+
+        requestPOST($http, 'add/', dataContainer, function(data){
+            console.log(data);
+            //trans.origin=data.data;
+
+            //$scope.key = '';
+            //$scope.desc = '';
+            data.description = data.desc;
+            $scope.translates.splice(0,0,data);
+
+            //loadTranslates();
+        });
+    };
+
+    $scope.showUpdateDialog = function(trans){
+        $scope.updatekey = trans.key;
+        $scope.updatedesc = trans.description;
+        $scope.updatelink = trans.link;
+
+        $('#modal-update-desc').modal('show');
+    }
+
+    $scope.doUpdate = function(){
+
+    }
+
+    $scope.save = function(trans){
+        console.log(trans);
+
+        var dataContainer = {
+            lang :  $scope.lang,
+            link : trans.link,
+            data:  trans.data
+        };
+
+        requestPOST($http, 'update/', dataContainer, function(data){
+            console.log(data);
+            trans.origin=data.data;
+            //loadTranslates();
+        });
+
+    }
+
+    function loadTranslates(){
+        var date = new Date();
+
+        requestGET($http, 'get/'+$scope.lang+'/?fields=link,key,description,data&timestamp='+date.getMilliseconds(), function(response, status){
+            $scope.translates=[];
+
+            response.trans.forEach(function(trans){
+                trans.origin = trans.data;
+
+
+                $scope.translates.push(trans);
+            });
+        });
+    }
 
 }
 

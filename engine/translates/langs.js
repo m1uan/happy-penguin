@@ -45,7 +45,7 @@ module.exports = {
 
 
     },addtranslate : function(pgClient, data, cb){
-        var sql = 'INSERT INTO translates.link_t (key,description) VALUES ($1,$2) RETURNING link';
+        var sql = 'INSERT INTO translates.link_t (key,description) VALUES ($1,$2) RETURNING link,description as desc,key';
 
 
         pgClient.query(sql, [data.key,data.desc], function(err, user){
@@ -54,6 +54,8 @@ module.exports = {
             } else {
                 var row = user.rows[0];
                 data.link = row.link;
+                data.data = row.desc;
+                data.desc = row.desc;
                 module.exports.translate(pgClient, data, cb);
             }
         });
@@ -63,13 +65,23 @@ module.exports = {
         SQL.whereAnd('link=' + data.link + ' AND lang=\'' +data.lang +'\'');
         //var sql = SQL.generateUpsert({'link':data.link,data:data.desc,'lang':data.lang},['link']);
 
-        SQL.upsert(pgClient,{'link':data.link,data:data.desc,'lang':data.lang},['link','data'], function(err, res){
+        SQL.upsert(pgClient,{'link':data.link,data:data.data,'lang':data.lang},['link','data'], function(err, res){
             var out = null;
             if(!err){
                 out = {
                     link : res[0].link,
                     data : res[0].data
                 };
+
+                // from add translate - in this table doesnt
+                if(data.key){
+                    out.key = data.key;
+                }
+                if(data.desc){
+                    out.desc = data.desc;
+                }
+
+
             }
             cb(err, out);
         });
@@ -139,31 +151,34 @@ module.exports = {
             return ;
         }
 
-        var indexOfDesc = fields.indexOf("description");
+        var indexOfDesc = fields.indexOf("desc");
 
         if(indexOfDesc > -1){
-            fields[indexOfDesc] = 'translates.link_t.description as description';
+            fields[indexOfDesc] = 'translates.link_t.description as desc';
         }
 
         var indexOfLink = fields.indexOf("link");
 
         if(indexOfLink > -1){
-            fields[indexOfLink] = 'translates.translate_t.link as link';
+            fields[indexOfLink] = 'translates.link_t.link as link';
         }
 
-        var sql = new SL.SqlLib('translates.translate_t', fields);
-        if(indexOfDesc > -1){
-            var join =  'translates.link_t.link=translates.translate_t.link';
-            sql.join('translates.link_t',join);
+        var indexOfData = fields.indexOf("data");
+        var indexOfKey = fields.indexOf("key");
+
+        var sql = new SL.SqlLib('translates.link_t', fields);
+        if(indexOfData > -1 || indexOfKey > -1){
+            var join = 'translates.translate_t.link=translates.link_t.link AND translates.translate_t.lang=\''+data.lang +'\'';
+            sql.join('translates.translate_t',join);
         }
 
-        sql.whereAnd('lang=\''+data.lang +'\'');
 
         // TODO: page moving
         // var size=100;
         //sql.offset(data.page * size);
         //sql.limit((data.page+1) * size);
 
+        sql.addOrderBy('link_t.changed DESC');
         sql.select(pgClient, cb);
     }
 }

@@ -1,5 +1,46 @@
 div
+    div
+        input(ng-model="key",placeholder="_key_")
+        input(ng-model="desc",placeholder="description")
+        //input(ng-model="trans",placeholder="translate (if empty -> use desc)");
+        button(ng-click="add()").btn.btn-primary add
+
     a(href="#/langs")
         h2 page {{page}} : {{lang}}
 
 
+
+    div(ng-repeat="trans in translates")
+        div.container-fluid
+            div.row
+                div.col-md-1
+                    div(ng-click="showUpdateDialog(trans)") # {{trans.link}}
+                    div
+                        i {{trans.key}}
+                    div(ng-hide="trans.origin==trans.data",ng-click="save(trans)").btn-xs.btn-danger save
+                div.col-md-10
+                    div
+                        p {{trans.description}}
+                    div
+                        textarea(ng-model="trans.data",rows="3",cols="60")
+                div.col-md-1
+
+
+        hr
+
+
+    div#modal-update-desc.modal.fade
+        div.modal-dialog
+            div.modal-content
+                div.modal-header
+                    a(data-dismiss="modal").close &times;
+                    h3#warning_dialog_title Update description # {{updatelink}}
+                div.modal-body
+                    div key
+                    input(ng-model="updatekey")
+                    div descritpion
+                    textarea(ng-model="updatedesc",rows="4",cols="60")
+
+                div.modal-footer
+                    button(ng-click="doUpdate()",data-dismiss="modal").btn.btn-danger Save
+                    button(data-dismiss="modal").btn.btn-primary Close
