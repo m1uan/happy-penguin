@@ -33,6 +33,7 @@ describe('translates', function(){
             }
 
             sqlMake(pgClient, [
+                "UPDATE translates.lang_t SET link=NULL;",
                 "DELETE FROM translates.translate_t;",
                 "DELETE FROM translates.link_t;",
                 "DELETE FROM translates.lang_t;"
@@ -144,7 +145,7 @@ describe('translates', function(){
         it('updatedesc', function(cb){
 
             var dataContainer = {
-                lang :  'kp',
+                lang :  'en',
                 key : '_hello18',
                 desc: 'Hello18'
             };
@@ -157,6 +158,15 @@ describe('translates', function(){
                 };
 
                 translates.updatedesc(pgClient, dataContainer2, function(err2,data2){
+                    data2.should.be.ok;
+                    data2.should.be.a.array;
+                    data2.length.should.be.equal(1);
+
+                    var row = data2[0];
+                    row.should.have.property('desc');
+                    row.should.have.property('key');
+                    row.desc.should.be.equal(dataContainer2.desc);
+                    row.key.should.be.equal(dataContainer2.key);
                         cb();
                 });
             });
@@ -172,12 +182,12 @@ describe('translates', function(){
             };
             var dataContainer1 = {
                 lang :  'en',
-                key : '_hello1',
-                desc: 'Hello1'
+                key : '_hello11',
+                desc: 'Hello11'
             };
 
             translates.addtranslate(pgClient, dataContainer1, function(translate1,data1){
-                translates.get(pgClient, ['link','data','description','key'], dataContainer, function(translate,data){
+                translates.get(pgClient, ['link','data','desc','key'], dataContainer, function(translate,data){
                     data.should.be.ok;
                     data.should.be.a.array;
                     data.length.should.be.above(0);
@@ -185,10 +195,10 @@ describe('translates', function(){
                     var find = false;
 
                     data.forEach(function(trans){
-                        trans.should.have.property('description');
+                        trans.should.have.property('desc');
                         trans.should.have.property('key');
                         trans.should.have.property('data')
-                        if(trans.description == dataContainer1.desc){
+                        if(trans.desc == dataContainer1.desc){
                             find = true;
                         }
                     });
@@ -210,12 +220,12 @@ describe('translates', function(){
             };
             var dataContainerAdd = {
                 lang :  'en',
-                key : '_hello2',
-                desc: 'Hello2'
+                key : '_hello12',
+                desc: 'Hello12'
             };
 
             translates.addtranslate(pgClient, dataContainerAdd, function(translate1,data1){
-                translates.get(pgClient, ['link','data','description','key'], dataContainerGet, function(translate,data){
+                translates.get(pgClient, ['link','data','desc','key'], dataContainerGet, function(translate,data){
                     data.should.be.ok;
                     data.should.be.a.array;
                     data.length.should.be.above(0);
@@ -223,7 +233,7 @@ describe('translates', function(){
                     var find = false;
 
                     data.forEach(function(trans){
-                        trans.should.have.property('description');
+                        trans.should.have.property('desc');
                         trans.should.have.property('key');
                         trans.should.have.property('data')
                         if(trans.data == dataContainerAdd.desc){

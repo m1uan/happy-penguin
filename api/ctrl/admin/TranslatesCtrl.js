@@ -47,7 +47,17 @@ module.exports = {
             response(request, err, 'ok');
         });
     }, get_get : function(request){
-        // http://localhost:8080/admin/translates/get/en/?fields=data,description,link,key
+
+
+        // http://localhost:8080/admin/translates/get/en/?fields=data,description,link,key&type=api
+        // note : #get-type - default json
+        // type = json - output in json
+        //        api - standard output for editor
+        //        csv - output in csv format with ';'
+
+
+
+
         var data = request.params.params.split('/');
         var dataContainer = {
             lang: data[0]
@@ -57,6 +67,12 @@ module.exports = {
             dataContainer.page = data[1];
         } else {
             dataContainer.page = false;
+        }
+
+        // note : #get-type
+        var type = 'json';
+        if(request.query.type){
+            type = request.query.type;
         }
 
         var fields = ['link']
@@ -71,7 +87,15 @@ module.exports = {
         console.log(fields, dataContainer);
 
         langEngine.get(pgClient, fields, dataContainer, function(err,data){
-            response(request, err, {page: dataContainer.page, trans:data, lang:dataContainer.lang});
+
+            if(err || type == 'api'){
+                response(request, err, {page: dataContainer.page, trans:data, lang:dataContainer.lang});
+            } else if(type=='csv'){
+                response.reply('not implemented yet ');
+            } else {
+                response.reply('not implemented yet');
+            }
+
         });
     },add_post : function(request){
         var dataContainer = request.payload;

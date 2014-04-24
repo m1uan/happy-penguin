@@ -45,7 +45,7 @@ module.exports = {
 
 
     },addtranslate : function(pgClient, data, cb){
-        var sql = 'INSERT INTO translates.link_t (key,description) VALUES ($1,$2) RETURNING link,description as desc,key';
+        var sql = 'INSERT INTO translates.link_t ("key","desc") VALUES ($1,$2) RETURNING link,"desc","key"';
 
 
         pgClient.query(sql, [data.key,data.desc], function(err, user){
@@ -161,7 +161,7 @@ module.exports = {
         var indexOfDesc = fields.indexOf("desc");
 
         if(indexOfDesc > -1){
-            fields[indexOfDesc] = 'translates.link_t.description as desc';
+            fields[indexOfDesc] = '"desc"';
         }
 
         var indexOfLink = fields.indexOf("link");
@@ -206,12 +206,9 @@ module.exports = {
         var SQL = SL.SqlLib('translates.link_t');
         SQL.whereAnd('link=' + data.link);
         //var sql = SQL.generateUpsert({'link':data.link,data:data.desc,'lang':data.lang},['link']);
-        if(!data.description){
-            data.description = data.desc;
-        }
 
 
-        SQL.update(pgClient,{'description':data.desc,'key':data.key,'changed':'now()'}, function(err, res){
+        SQL.update(pgClient,{'"desc"':data.desc,'"key"':data.key,'changed':'now()'}, function(err, res){
             cb(err, res);
         });
     }

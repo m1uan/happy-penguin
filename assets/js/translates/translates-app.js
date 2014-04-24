@@ -155,7 +155,8 @@ function TranslateCtrl($scope, $http, $routeParams) {
         var date = new Date();
         var url = 'get/'+$scope.lang+'/?fields=link,key,description,data'
                     + '&lastUpdateFirst=true'
-                    +'&timestamp='+ date.getMilliseconds();
+                    + '&type=api'
+                    + '&timestamp='+ date.getMilliseconds();
         requestGET($http, url, function(response, status){
             $scope.translates=[];
 
