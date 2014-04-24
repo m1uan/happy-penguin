@@ -97,7 +97,7 @@ function TranslateCtrl($scope, $http, $routeParams) {
 
             //$scope.key = '';
             //$scope.desc = '';
-            data.description = data.desc;
+
             $scope.translates.splice(0,0,data);
 
             //loadTranslates();
@@ -106,7 +106,7 @@ function TranslateCtrl($scope, $http, $routeParams) {
 
     $scope.showUpdateDialog = function(trans){
         $scope.updatekey = trans.key;
-        $scope.updatedesc = trans.description;
+        $scope.updatedesc = trans.desc;
         $scope.updatelink = trans.link;
 
         $('#modal-update-desc').modal('show');
@@ -123,7 +123,7 @@ function TranslateCtrl($scope, $http, $routeParams) {
             console.log('comming data', data);
             $scope.translates.some(function(trans){
                 if(trans.link == dataContainer.link){
-                    trans.description = data[0].description;
+                    trans.desc = data[0].desc;
                     trans.key = data[0].key;
                     console.log('trans',trans);
                     return true;
@@ -153,7 +153,7 @@ function TranslateCtrl($scope, $http, $routeParams) {
 
     function loadTranslates(){
         var date = new Date();
-        var url = 'get/'+$scope.lang+'/?fields=link,key,description,data'
+        var url = 'get/'+$scope.lang+'/?fields=link,key,desc,data'
                     + '&lastUpdateFirst=true'
                     + '&type=api'
                     + '&timestamp='+ date.getMilliseconds();
