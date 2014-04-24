@@ -144,13 +144,20 @@ module.exports = {
           cb(err, data);
         })
     },get: function(pgClient, fields, data, cb){
-
+// example data
+//        var data = {
+//            lang :  'cz',
+//            page : 0,
+//            second: 'en',
+//            lastUpdateFirst: true - for editor first show the last updated
+//        };
 
         if(!data.lang){
             cb('data.lang missing!');
             return ;
         }
 
+        // in fields could be desc instead description
         var indexOfDesc = fields.indexOf("desc");
 
         if(indexOfDesc > -1){
@@ -166,9 +173,20 @@ module.exports = {
         var indexOfData = fields.indexOf("data");
         var indexOfKey = fields.indexOf("key");
 
+
         var sql = new SL.SqlLib('translates.link_t', fields);
         if(indexOfData > -1 || indexOfKey > -1){
-            var join = 'translates.translate_t.link=translates.link_t.link AND translates.translate_t.lang=\''+data.lang +'\'';
+
+            var join = 'translates.translate_t.link=translates.link_t.link AND (translates.translate_t.lang=\''+data.lang +'\'';
+
+            // for selecting and the language is not there use second lang
+            // in most cases will be en because is base
+            if(data.second){
+                join += ' OR translates.translate_t.lang=\''+data.second +'\'';
+            }
+
+            join += ')';
+
             sql.join('translates.translate_t',join);
         }
 
@@ -178,7 +196,11 @@ module.exports = {
         //sql.offset(data.page * size);
         //sql.limit((data.page+1) * size);
 
-        sql.addOrderBy('link_t.changed DESC');
+        // for normal purpose
+        if(data.lastUpdateFirst){
+            sql.addOrderBy('link_t.changed DESC');
+        }
+
         sql.select(pgClient, cb);
     },updatedesc : function(pgClient, data, cb){
         var SQL = SL.SqlLib('translates.link_t');

@@ -167,7 +167,8 @@ describe('translates', function(){
 
             var dataContainer = {
                 lang :  'en',
-                page : 0
+                page : 0,
+                lastUpdateFirst: true
             };
             var dataContainer1 = {
                 lang :  'en',
@@ -188,6 +189,44 @@ describe('translates', function(){
                         trans.should.have.property('key');
                         trans.should.have.property('data')
                         if(trans.description == dataContainer1.desc){
+                            find = true;
+                        }
+                    });
+
+                    find.should.be.ok;
+
+                    cb();
+                });
+            });
+        });
+
+
+        it('gettranslate second lang en', function(cb){
+
+            var dataContainerGet = {
+                lang :  'cz',
+                page : 0,
+                second: 'en'
+            };
+            var dataContainerAdd = {
+                lang :  'en',
+                key : '_hello2',
+                desc: 'Hello2'
+            };
+
+            translates.addtranslate(pgClient, dataContainerAdd, function(translate1,data1){
+                translates.get(pgClient, ['link','data','description','key'], dataContainerGet, function(translate,data){
+                    data.should.be.ok;
+                    data.should.be.a.array;
+                    data.length.should.be.above(0);
+
+                    var find = false;
+
+                    data.forEach(function(trans){
+                        trans.should.have.property('description');
+                        trans.should.have.property('key');
+                        trans.should.have.property('data')
+                        if(trans.data == dataContainerAdd.desc){
                             find = true;
                         }
                     });

@@ -64,6 +64,10 @@ module.exports = {
             fields = request.query.fields.split(',') ;
         }
 
+        if(request.query.lastUpdateFirst && request.query.lastUpdateFirst=='true'){
+           dataContainer.lastUpdateFirst = true;
+        }
+
         console.log(fields, dataContainer);
 
         langEngine.get(pgClient, fields, dataContainer, function(err,data){

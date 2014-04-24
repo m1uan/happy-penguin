@@ -153,8 +153,10 @@ function TranslateCtrl($scope, $http, $routeParams) {
 
     function loadTranslates(){
         var date = new Date();
-
-        requestGET($http, 'get/'+$scope.lang+'/?fields=link,key,description,data&timestamp='+date.getMilliseconds(), function(response, status){
+        var url = 'get/'+$scope.lang+'/?fields=link,key,description,data'
+                    + '&lastUpdateFirst=true'
+                    +'&timestamp='+ date.getMilliseconds();
+        requestGET($http, url, function(response, status){
             $scope.translates=[];
 
             response.trans.forEach(function(trans){
