@@ -111,6 +111,27 @@ module.exports = {
         langEngine.translate(pgClient, dataContainer, function(err,data){
             response(request, err, data);
         });
+    },updatedesc_post : function(request){
+        var dataContainer = request.payload;
+
+        if(!dataContainer.key){
+            response(request, 'field \'key\' missing!');
+            return ;
+        }
+
+        if(!dataContainer.link){
+            response(request, 'field \'link\' missing!');
+            return ;
+        }
+
+        if(!dataContainer.desc){
+            response(request, 'field \'desc\' missing!');
+            return ;
+        }
+
+        langEngine.updatedesc(pgClient, dataContainer, function(err,data){
+            response(request, err, data);
+        });
     }
 
 }

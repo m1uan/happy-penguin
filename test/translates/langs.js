@@ -14,7 +14,6 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
-
 describe('translates', function(){
 
     before(function(cb){
@@ -102,6 +101,8 @@ describe('translates', function(){
             });
         });
 
+
+
         it('getlangs', function(cb){
 
             var dataContainer = {
@@ -129,13 +130,34 @@ describe('translates', function(){
             };
 
             translates.addtranslate(pgClient, dataContainer, function(translate,data){
+
                 pgClient.query('SELECT * FROM translates.lang_t WHERE lang=$1', [dataContainer.lang], function(err, data){
                     data.should.be.ok;
                     data.should.have.property('rows');
                     data.rows.should.be.a.array;
                     data.rows.length.should.equal(1);
-
                     cb();
+                });
+            });
+        });
+
+        it('updatedesc', function(cb){
+
+            var dataContainer = {
+                lang :  'kp',
+                key : '_hello18',
+                desc: 'Hello18'
+            };
+
+            translates.addtranslate(pgClient, dataContainer, function(translate,data){
+                var dataContainer2 = {
+                    link : data.link,
+                    key : '_hello28',
+                    desc: 'Hello28'
+                };
+
+                translates.updatedesc(pgClient, dataContainer2, function(err2,data2){
+                        cb();
                 });
             });
         });

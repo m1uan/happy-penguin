@@ -180,5 +180,17 @@ module.exports = {
 
         sql.addOrderBy('link_t.changed DESC');
         sql.select(pgClient, cb);
+    },updatedesc : function(pgClient, data, cb){
+        var SQL = SL.SqlLib('translates.link_t');
+        SQL.whereAnd('link=' + data.link);
+        //var sql = SQL.generateUpsert({'link':data.link,data:data.desc,'lang':data.lang},['link']);
+        if(!data.description){
+            data.description = data.desc;
+        }
+
+
+        SQL.update(pgClient,{'description':data.desc,'key':data.key,'changed':'now()'}, function(err, res){
+            cb(err, res);
+        });
     }
 }

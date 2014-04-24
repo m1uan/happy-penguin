@@ -113,7 +113,25 @@ function TranslateCtrl($scope, $http, $routeParams) {
     }
 
     $scope.doUpdate = function(){
+        var dataContainer = {
+            link : $scope.updatelink,
+            key :  $scope.updatekey,
+            desc: $scope.updatedesc
+        };
 
+        requestPOST($http, 'updatedesc/', dataContainer, function(data){
+            console.log('comming data', data);
+            $scope.translates.some(function(trans){
+                if(trans.link == dataContainer.link){
+                    trans.description = data[0].description;
+                    trans.key = data[0].key;
+                    console.log('trans',trans);
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+        });
     }
 
     $scope.save = function(trans){
