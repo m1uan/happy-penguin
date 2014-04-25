@@ -1,0 +1,6 @@
+#world-main{
+    background-image: url('/assets/img/pinguin/globe.png');
+    width:1350px;
+    height:675px;
+    background-size: 100%;
+}

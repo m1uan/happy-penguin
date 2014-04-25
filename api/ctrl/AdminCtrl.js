@@ -37,6 +37,8 @@ module.exports = {
     }
     ,translates_get : function (request){
         request.reply.view('translates', {});
+    },levels_get : function (request){
+        request.reply.view('levels', {});
     }
     ,stats_get : function(request){
         request.reply.view('stats');
