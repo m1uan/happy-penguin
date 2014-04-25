@@ -5,7 +5,8 @@ var assert = require("assert"),
     should = require('should')
     , Async = require('async')
     ,config = require('../../config/local.js')
-    ,fs = require('fs');
+    ,fs = require('fs')
+    ,request = require('supertest');
 
 var pgClient = null;
 
@@ -59,7 +60,7 @@ describe('translates', function(){
     });
 
 
-    describe.only('langs', function(){
+    describe('langs', function(){
         it('addlang - simple', function(cb){
 
             var dataContainer = {
@@ -249,6 +250,37 @@ describe('translates', function(){
         });
 
     });
+    describe.only('request', function(){
+
+    it('get - json', function(cb){
+        //var ser = new server();
+
+
+        var req =  request('http://localhost:8080');
+
+        req.get('/admin/translates/get/cz/en/?type=angular-static')
+            //.expect('Content-Type', /json/)
+            //.expect('Content-Length', '20')
+            .set('Content-Encoding', /json/)
+            .expect(200)
+        .expect('Content-Type', /json/)
+            .end(function(err, res){
+                console.log(res);
+                if (err) {
+
+                    throw err;
+
+                }
+
+                res.body.should.be.ok;
+                res.body.should.have.a.property('_english');
+                res.body.should.have.a.property('_czech');
+                res.body._english.should.be.not.null;
+
+                cb();
+            });
+    });
+});
 
 
 })

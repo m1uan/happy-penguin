@@ -18,6 +18,7 @@ module.exports = {
         return {
             auth:'passport',
             get_get : {
+                auth:false,
                 params : '{params*}'
             }, index_get : {
                 auth : 'passport'
@@ -50,10 +51,11 @@ module.exports = {
 
 
         // http://localhost:8080/admin/translates/get/en/?fields=data,description,link,key&type=api
-        // note : #get-type - default json
-        // type = json - output in json
+        // note : #get-type - default angular-static
+        // type = angular-static - output in json for angular static
         //        api - standard output for editor
         //        csv - output in csv format with ';'
+        // second : second language if is the primary not available - mostly english
 
 
 
@@ -63,6 +65,11 @@ module.exports = {
             lang: data[0]
         };
 
+        if(data.length>1){
+            dataContainer.second = data[1];
+        }
+
+
         if(data.length > 1){
             dataContainer.page = data[1];
         } else {
@@ -70,13 +77,19 @@ module.exports = {
         }
 
         // note : #get-type
-        var type = 'json';
+        var type = 'angular-static';
         if(request.query.type){
             type = request.query.type;
         }
 
-        var fields = ['link']
-        if(request.query.fields){
+        var fields = ['link'];
+
+        // angular-static have just key and data
+        if(type == 'angular-static') {
+            fields = ['key','data'];
+        }else if(type == 'csv') {
+            fields = ['link','data'];
+        }else if(request.query.fields){
             fields = request.query.fields.split(',') ;
         }
 
@@ -91,9 +104,20 @@ module.exports = {
             if(err || type == 'api'){
                 response(request, err, {page: dataContainer.page, trans:data, lang:dataContainer.lang});
             } else if(type=='csv'){
-                response.reply('not implemented yet ');
+                var out = 'Key;Translate ' +dataContainer.lang + "\n";
+                data.forEach(function(trans){
+                    out += trans.link.toString() + ';'
+                    + (trans.data ? trans.data : '') +"\n";
+                });
+
+                request.reply(out).type('text/plain');
             } else {
-                response.reply('not implemented yet');
+                var out = {};
+                data.forEach(function(trans){
+                    out[trans.key] = trans.data;
+                });
+
+                request.reply(out);
             }
 
         });
