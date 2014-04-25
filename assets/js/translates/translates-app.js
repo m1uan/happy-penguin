@@ -190,13 +190,24 @@ function TranslateCtrl($scope, $http, $routeParams) {
 }
 
 
-function ImportCtrl($scope, $http, $routeParams) {
+function ImportCtrl($scope, $http, $location,$routeParams) {
     console.log($routeParams);
     $scope.lang = $routeParams.lang;
     $scope.datacsv = '';
 
 
     loadcsv();
+
+    $scope.import = function(){
+        alertify.confirm('are you sure import the data?', function(e){
+            if(e){
+                requestPOST($http, 'import/'+$scope.lang+'/', {csv:$scope.datacsv}, function(data){
+                    $location.path('/trans/0/'+$scope.lang);
+                    alertify.log('CSV imported to ' + $scope.lang);
+                });
+            }
+        });
+    }
 
     function loadcsv(){
         var date = new Date();
