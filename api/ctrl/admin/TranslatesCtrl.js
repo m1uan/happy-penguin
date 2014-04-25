@@ -1,4 +1,5 @@
-var langEngine = require(process.cwd() + '/engine/translates/langs.js');
+var langEngine = require(process.cwd() + '/engine/translates/langs.js')
+    ,async = require('async');
 var Passport = null;
 var Travelelogue = null;
 var pgClient = null;
@@ -194,11 +195,66 @@ module.exports = {
             response(request, err, data);
         });
     },import_post : function(request){
-        response(request, 'not implement');
+        console.log('req3432', request.payload);
+        if(!request.payload.csv){
+            response(request, 'csv missing');
+            return ;
+        }
+
+        var params = request.params.params.split('/');
+        var lang = params[0];
+
+        var funcs = [];
+
+        var lines = request.payload.csv.split('\n');
+        var errorApear = lines.some(function(line, idx){
+            if(line && !isBlank(line)){
+                funcs.push(function(icb){
+
+
+                    // issue
+                    if(line.indexOf(';') < 0){
+                        response(request, 'line: '+idx+' missing separator for link and data');
+                        return true;
+                    }
+
+                    var linkData = line.split(';');
+                    var link = parseInt(linkData[0].trim());
+
+                    if(isNaN(link)){
+                        response(request, 'line: '+idx+' link is not a number');
+                        return true;
+                    }
+
+                    var data = linkData[1].trim();
+                    var dataContainer = {
+                        lang: lang,
+                        link : link,
+                        data : data
+                    }
+
+                    console.log('translate', dataContainer);
+
+                    langEngine.translate(pgClient, dataContainer, icb);
+                });
+            }
+        });
+
+        if(!errorApear){
+            async.parallel(funcs, function(err, data){
+                response(request, err, 'ok');
+            });
+        }
+
+        //
     }
 
 }
 
+
+function isBlank(str) {
+    return (!str || /^\s*$/.test(str));
+}
 
 function response(request, err, data){
     if(err){
