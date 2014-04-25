@@ -24,6 +24,8 @@ module.exports = {
                 auth : 'passport'
             },stat_get : {
                 auth : 'passport'
+            },import_post : {
+                params : '{params*}'
             }
         }
     }, langs_get : function(request){
@@ -191,6 +193,8 @@ module.exports = {
         langEngine.updatedesc(pgClient, dataContainer, function(err,data){
             response(request, err, data);
         });
+    },import_post : function(request){
+        response(request, 'not implement');
     }
 
 }

@@ -6,7 +6,8 @@ var assert = require("assert"),
     , Async = require('async')
     ,config = require('../../config/local.js')
     ,fs = require('fs')
-    ,request = require('supertest');
+    ,request = require('supertest'),
+    server = require('server.js');
 
 var pgClient = null;
 
@@ -122,34 +123,7 @@ describe.only('translates', function(){
         });
 
 
-        it('localhost:8080', function(cb){
-            //var ser = new server();
 
-
-            var req =  request('http://localhost:8080');
-
-            req.get('/admin/translates/get/cz/en/?type=api')
-                //.expect('Content-Type', /json/)
-                //.expect('Content-Length', '20')
-                .set('Content-Encoding', /json/)
-                .expect(200)
-                .expect('Content-Type', /json/)
-                .end(function(err, res){
-                    console.log(res);
-                    if (err) {
-
-                        throw err;
-
-                    }
-
-                    res.body.should.be.ok;
-                    res.body.should.have.a.property('_english');
-                    res.body.should.have.a.property('_czech');
-                    res.body._english.should.be.not.null;
-
-                    cb();
-                });
-        });
     });
         describe('trans', function(){
         it('addtranslate', function(cb){
@@ -382,6 +356,55 @@ describe.only('translates', function(){
                 cb();
             });
     });
+
+        it('import/export', function(cb){
+            //var ser = new server();
+
+            // works for local host - but is not connect to test DB
+            var req = request.agent('http://localhost:8080');
+            req
+                .post('/login/')
+                .send({ username: 'milan', password: 'milan' })
+                .end(function(err, res) {
+                    // user1 will manage its own cookies
+                    // res.redirects contains an Array of redirects
+
+
+            //var req =  request('http://localhost:8080');
+
+                    req.get('/admin/translates/get/cz/?type=csv')
+                //.expect('Content-Type', /json/)
+                //.expect('Content-Length', '20')
+                .set('Content-Encoding', /json/)
+                .expect(200)
+                .expect('Content-Type', /plain/)
+                .end(function(err, res){
+
+                    if (err) {
+                        throw err;
+
+                    }
+
+                    var lines = res.text.split('\n');
+                    var out = '';
+
+                    lines.forEach(function(line,idx){
+                        out+=line + 'a' +idx.toString() + '\n'
+                    })
+                    req.post('/admin/translates/import/cz/?type=csv')
+                        //.expect('Content-Type', /json/)
+                        //.expect('Content-Length', '20')
+                        .set('Content-Encoding', /text/)
+                        .expect(200)
+                        .send(out)
+                        .expect('Content-Type', /json/)
+                        .end(function(err, res){
+
+                            cb();
+                        });
+                });
+                });
+        });
 });
 
 
