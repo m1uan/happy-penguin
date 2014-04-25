@@ -1,0 +1,33 @@
+!!!
+//https://www.google.co.nz/search?q=mamka&source=lnms&tbm=isch
+
+html(ng-app="pinguin")
+    head
+        link(rel='stylesheet', href='/assets/css/pinguin/main.css')
+        link(rel='stylesheet', href='/assets/css/bootstrap.min.css', rel="stylesheet",media="screen")
+
+        link(rel='stylesheet', href='/assets/css/libs/alertify.core-0.3.11.css')
+        link(rel='stylesheet', href='/assets/css/libs/alertify.default-0.3.11.css')
+
+        meta(name="viewport",content="width=device-width, initial-scale=1.0")
+    body(ng-controller="PinguinCtrl as main")
+        div#body
+            h1 * Pinguin on way *
+            div(ng-view).main-view
+
+
+
+    script(src="/assets/js/libs/jquery.min-2.1.0.js")
+    script(src="/assets/js/libs/alertify.min-0.3.11.js")
+    script(src="/assets/js/bootstrap.min.js")
+    script(src="/assets/js/libs/angular.min-1.2.16.js")
+    script(src="/assets/js/libs/angular-translate.min.js")
+    script(src="/assets/js/libs/angular-translate-loader-static-files.min.js")
+
+    script(src="http://code.angularjs.org/1.2.1/angular-route.min.js")
+
+    script(src="/assets/js/moment.min.js")
+    script(src="/assets/js/pinguin/pinguin-app.js")
+
+    script(src="/assets/js/libs/angular-local-storage.js")
+    //script(src="assets/js/angular-file-upload.min.js")
