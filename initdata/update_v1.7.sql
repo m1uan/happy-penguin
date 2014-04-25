@@ -17,7 +17,7 @@ CREATE TABLE link_t (
     link SERIAL NOT NULL,
     "key" VARCHAR(50) NOT NULL,
     "desc" TEXT,
-    "type" SMALLINT DEFAULT 0,
+    "group" INT DEFAULT 0,
     changed TIMESTAMP DEFAULT now(),
     PRIMARY KEY(link),
     UNIQUE(key)

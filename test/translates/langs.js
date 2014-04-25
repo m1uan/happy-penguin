@@ -15,7 +15,7 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
-describe('translates', function(){
+describe.only('translates', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -58,7 +58,6 @@ describe('translates', function(){
         pgClient.close();
         cb();
     });
-
 
     describe('langs', function(){
         it('addlang - simple', function(cb){
@@ -121,8 +120,8 @@ describe('translates', function(){
                 cb();
             });
         });
-
-
+    });
+        describe('trans', function(){
         it('addtranslate', function(cb){
 
             var dataContainer = {
@@ -172,6 +171,40 @@ describe('translates', function(){
                 });
             });
         });
+
+
+            it('updatedesc - with group', function(cb){
+
+                var dataContainer = {
+                    lang :  'en',
+                    key : '_hello38',
+                    desc: 'Hello38',
+                    group: 5
+                };
+
+                translates.addtranslate(pgClient, dataContainer, function(translate,data){
+                    var dataContainer2 = {
+                        link : data.link,
+                        key : '_hello48',
+                        desc: 'Hello48',
+                        group: 7
+                    };
+
+                    data.should.have.property('group');
+                    data.group.should.be.equal(5);
+                    translates.updatedesc(pgClient, dataContainer2, function(err2,data2){
+                        data2.should.be.ok;
+                        data2.should.be.a.array;
+                        data2.length.should.be.equal(1);
+
+                        var row = data2[0];
+
+                        row.should.have.property('group');
+                        row.group.should.be.equal(7);
+                        cb();
+                    });
+                });
+            });
 
 
         it('gettranslate page 0', function(cb){
@@ -249,8 +282,47 @@ describe('translates', function(){
             });
         });
 
+            it('gettranslate group 8', function(cb){
+
+                var dataContainerGet = {
+                    lang :  'cz',
+                    page : 0,
+                    second: 'en',
+                    group: 8
+                };
+                var dataContainerAdd = {
+                    lang :  'en',
+                    key : '_hello52',
+                    desc: 'Hello52',
+                    group : 8
+                };
+
+                translates.addtranslate(pgClient, dataContainerAdd, function(translate1,data1){
+                    translates.get(pgClient, ['link','group'], dataContainerGet, function(translate,data){
+                        data.should.be.ok;
+                        data.should.be.a.array;
+                        data.length.should.be.above(0);
+
+                        var find = false;
+                        data.forEach(function(trans){
+                            trans.should.have.property('group');
+                            if(trans.link == data1.link){
+                                find = true;
+                            }
+
+                            // between selection with group 8 should be nothing else than 8
+                            trans.group.should.be.equal(dataContainerGet.group);
+                        });
+
+                        find.should.be.ok;
+
+                        cb();
+                    });
+                });
+            });
+
     });
-    describe.only('request', function(){
+    describe('request', function(){
 
     it('get - json', function(cb){
         //var ser = new server();
@@ -283,4 +355,4 @@ describe('translates', function(){
 });
 
 
-})
+});

@@ -16,7 +16,7 @@ div
                 div.col-md-1
                     div(ng-click="showUpdateDialog(trans)") # {{trans.link}}
                     div
-                        i {{trans.key}}
+                        i {{trans.group}} / {{trans.key}}
                     div(ng-hide="trans.origin==trans.data",ng-click="save(trans)").btn-xs.btn-danger save
                 div.col-md-10
                     div
@@ -38,6 +38,8 @@ div
                 div.modal-body
                     div key
                     input(ng-model="updatekey")
+                    div group
+                    input(ng-model="updategroup")
                     div descritpion
                     textarea(ng-model="updatedesc",rows="4",cols="60")
 

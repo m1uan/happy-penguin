@@ -44,11 +44,29 @@ module.exports = {
 
 
 
+    },updatedesc : function(pgClient, data, cb){
+        var SQL = SL.SqlLib('translates.link_t');
+        SQL.whereAnd('link=' + data.link);
+        //var sql = SQL.generateUpsert({'link':data.link,data:data.desc,'lang':data.lang},['link']);
+
+
+        if(isNaN(data.group)){
+            data.group = 0;
+        }
+
+        SQL.update(pgClient,{'"desc"':data.desc,'"key"':data.key,'"group"':data.group,'changed':'now()'}, function(err, res){
+            cb(err, res);
+        });
     },addtranslate : function(pgClient, data, cb){
-        var sql = 'INSERT INTO translates.link_t ("key","desc") VALUES ($1,$2) RETURNING link,"desc","key"';
+
+        if(isNaN(data.group)){
+            data.group = 0;
+        }
+
+        var sql = 'INSERT INTO translates.link_t ("key","desc","group") VALUES ($1,$2,$3) RETURNING link,"desc","key","group"';
 
 
-        pgClient.query(sql, [data.key,data.desc], function(err, user){
+        pgClient.query(sql, [data.key,data.desc, data.group], function(err, user){
             if(err){
                 cb(err || 'no user with this userName', false);
             } else {
@@ -56,6 +74,7 @@ module.exports = {
                 data.link = row.link;
                 data.data = row.desc;
                 data.desc = row.desc;
+                data.group = row.group;
                 module.exports.translate(pgClient, data, cb);
             }
         });
@@ -80,7 +99,9 @@ module.exports = {
                 if(data.desc){
                     out.desc = data.desc;
                 }
-
+                if(!isNaN(data.group)){
+                    out.group = data.group;
+                }
 
             }
             cb(err, out);
@@ -149,7 +170,8 @@ module.exports = {
 //            lang :  'cz',
 //            page : 0,
 //            second: 'en',
-//            lastUpdateFirst: true - for editor first show the last updated
+//            lastUpdateFirst: true - for editor first show the last updated,
+//              group : number - select just the translates from group
 //        };
 
         if(!data.lang){
@@ -162,6 +184,11 @@ module.exports = {
 
         if(indexOfDesc > -1){
             fields[indexOfDesc] = '"desc"';
+        }
+
+        var indexOfGroup = fields.indexOf("group");
+        if(indexOfGroup > -1){
+            fields[indexOfGroup] = '"group"';
         }
 
         var indexOfLink = fields.indexOf("link");
@@ -201,15 +228,10 @@ module.exports = {
             sql.addOrderBy('link_t.changed DESC');
         }
 
+        if(!isNaN(data.group)){
+            sql.whereAnd('"group"='+data.group.toString());
+        }
+
         sql.select(pgClient, cb);
-    },updatedesc : function(pgClient, data, cb){
-        var SQL = SL.SqlLib('translates.link_t');
-        SQL.whereAnd('link=' + data.link);
-        //var sql = SQL.generateUpsert({'link':data.link,data:data.desc,'lang':data.lang},['link']);
-
-
-        SQL.update(pgClient,{'"desc"':data.desc,'"key"':data.key,'changed':'now()'}, function(err, res){
-            cb(err, res);
-        });
     }
 }
