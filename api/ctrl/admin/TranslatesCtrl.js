@@ -50,12 +50,13 @@ module.exports = {
     }, get_get : function(request){
 
 
-        // http://localhost:8080/admin/translates/get/en/?fields=data,description,link,key&type=api
+        // http://localhost:8080/admin/translates/get/en/second/?fields=data,description,link,key&type=api&group=1
         // note : #get-type - default angular-static
         // type = angular-static - output in json for angular static
         //        api - standard output for editor
         //        csv - output in csv format with ';'
         // second : second language if is the primary not available - mostly english
+        // group : specify just the group of translates
 
 
 
@@ -65,7 +66,7 @@ module.exports = {
             lang: data[0]
         };
 
-        if(data.length>1){
+        if(data.length > 1){
             dataContainer.second = data[1];
         }
 
@@ -95,6 +96,10 @@ module.exports = {
 
         if(request.query.lastUpdateFirst && request.query.lastUpdateFirst=='true'){
            dataContainer.lastUpdateFirst = true;
+        }
+
+        if(!isNaN(request.query.group)){
+            dataContainer.group = request.query.group;
         }
 
         console.log(fields, dataContainer);
