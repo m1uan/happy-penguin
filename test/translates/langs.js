@@ -120,6 +120,36 @@ describe.only('translates', function(){
                 cb();
             });
         });
+
+
+        it('localhost:8080', function(cb){
+            //var ser = new server();
+
+
+            var req =  request('http://localhost:8080');
+
+            req.get('/admin/translates/get/cz/en/?type=api')
+                //.expect('Content-Type', /json/)
+                //.expect('Content-Length', '20')
+                .set('Content-Encoding', /json/)
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .end(function(err, res){
+                    console.log(res);
+                    if (err) {
+
+                        throw err;
+
+                    }
+
+                    res.body.should.be.ok;
+                    res.body.should.have.a.property('_english');
+                    res.body.should.have.a.property('_czech');
+                    res.body._english.should.be.not.null;
+
+                    cb();
+                });
+        });
     });
         describe('trans', function(){
         it('addtranslate', function(cb){

@@ -32,6 +32,7 @@ module.exports = {
         };
 
         langEngine.getlangs(pgClient, ['lang','name','translate'], dataContainer, function(err,data){
+            console.log('get langs:',err, data);
             response(request, err, {'langs':data});
         });
 
@@ -109,7 +110,8 @@ module.exports = {
             if(err || type == 'api'){
                 response(request, err, {page: dataContainer.page, trans:data, lang:dataContainer.lang});
             } else if(type=='csv'){
-                var out = 'Key;Translate ' +dataContainer.lang + "\n";
+                var out = '';
+
                 data.forEach(function(trans){
                     out += trans.link.toString() + ';'
                     + (trans.data ? trans.data : '') +"\n";

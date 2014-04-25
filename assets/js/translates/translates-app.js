@@ -14,6 +14,12 @@ var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
             templateUrl: '/templates/translates/langs',
             controller: AddLangCtrl
         });
+
+        $routeProvider.when('/import/:lang', {
+            templateUrl: '/templates/translates/import',
+            controller: ImportCtrl
+        });
+
         $routeProvider.otherwise( {
             templateUrl: '/templates/translates/langs',
             controller: AddLangCtrl
@@ -41,9 +47,17 @@ function request(method, $http, func, data, success, failed){
         url: ROUTE + func,
         data: data}).
         success(function(data, status, headers, config) {
-            console.log(data, status);
+            console.log('request',data, status,headers,config);
             if(success){
-                success(data.response, status);
+                var response = data;
+
+                if(data.response){
+                    response = data.response;
+                } else {
+                    alert('no response field!');
+                }
+
+                success(response, status);
             }
 
         }).
@@ -173,6 +187,28 @@ function TranslateCtrl($scope, $http, $routeParams) {
         });
     }
 
+}
+
+
+function ImportCtrl($scope, $http, $routeParams) {
+    console.log($routeParams);
+    $scope.lang = $routeParams.lang;
+    $scope.datacsv = '';
+
+
+    loadcsv();
+
+    function loadcsv(){
+        var date = new Date();
+
+        var url = 'get/'+$scope.lang+'/?'
+            + 'type=csv'
+            + '&timestamp='+ date.getMilliseconds();
+        requestGET($http, url, function(response, status){
+            console.log('response',response);
+            $scope.datacsv = response;
+        });
+    }
 }
 
 function MainCtrl($scope) {
