@@ -63,6 +63,16 @@ module.exports = {
             data.group = 0;
         }
 
+        if(!data.desc){
+            cb('missing column desc');
+            return;
+        }
+
+        if(!data.key){
+            data.key = null;
+        }
+
+
         var sql = 'INSERT INTO translates.link_t ("key","desc","group") VALUES ($1,$2,$3) RETURNING link,"desc","key","group"';
 
 
@@ -233,5 +243,16 @@ module.exports = {
         }
 
         sql.select(pgClient, cb);
+    },delete:function(pg, dataContainer, cb){
+        if(!dataContainer.link){
+            cb('missing link');
+            return;
+        }
+
+        pg.query("DELETE FROM translates.translate_t USING translates.link_t WHERE translates.link_t.link = "+ dataContainer.link+" AND translates.translate_t.link = translates.link_t.link;"
+            + ";DELETE FROM translates.link_t WHERE translates.link_t.link=" + dataContainer.link
+            , [], function(err, data){
+                cb(err, dataContainer);
+            });
     }
 }

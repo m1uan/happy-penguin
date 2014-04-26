@@ -4,6 +4,7 @@ var LocalStrategy = require('passport-local').Strategy,
     ,async = require('async');
 
 var LEVEL_GROUP = 1000;
+var QUESTION_GROUP = 1001;
 
 module.exports = {
     initialize : function(server, Passport) {
@@ -131,6 +132,39 @@ module.exports = {
 
             cb(err, place);
         })
+    },qadd : function(pg, dataContainer, cb){
+        if(!dataContainer.place){
+            cb('place id missing "place"');
+            return;
+        }
+
+        if(!dataContainer.question){
+            cb('question id missing');
+            return;
+        }
+
+        if(!dataContainer.answers){
+            cb('answers id missing');
+            return;
+        }
+
+
+        var parallel = [];
+        var watter = [];
+
+
+        parallel.push(function(icb){
+            var questinData = {
+                desc:dataContainer.question,
+                group: QUESTION_GROUP
+            }
+            translate.addtranslate()
+        });
+
+
+        var SQL = SL.SqlLib('pinguin.question_t as pq');
+        SQL.insert()
+
     }
 }
 
@@ -218,6 +252,12 @@ function updateTextField(pg, dataContainer, type, cb){
 // update and tranalsate because in levels
 // you see only description of translation
 // have to be same with english version of translate
+// dataContainer = {
+//          desc:'desc',
+//          key:'key',
+//          group:'* group',
+//          link:xxx
+// }
 function updateDescAndTranslate(pg, dataContainer, cb){
     var parallel = [];
 

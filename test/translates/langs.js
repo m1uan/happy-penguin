@@ -15,7 +15,7 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
-describe('translates', function(){
+describe.only('translates', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -34,6 +34,8 @@ describe('translates', function(){
             }
 
             sqlMake(pgClient, [
+                "DELETE FROM pinguin.question_t;",
+                "DELETE FROM pinguin.place_t;",
                 "UPDATE translates.lang_t SET link=NULL;",
                 "DELETE FROM translates.translate_t;",
                 "DELETE FROM translates.link_t;",
@@ -125,7 +127,7 @@ describe('translates', function(){
 
     });
         describe('trans', function(){
-        it('addtranslate', function(cb){
+        it('addtranslate - with key', function(cb){
 
             var dataContainer = {
                 lang :  'en',
@@ -133,17 +135,68 @@ describe('translates', function(){
                 desc: 'Hello'
             };
 
-            translates.addtranslate(pgClient, dataContainer, function(translate,data){
-
-                pgClient.query('SELECT * FROM translates.lang_t WHERE lang=$1', [dataContainer.lang], function(err, data){
+            translates.addtranslate(pgClient, dataContainer, function(err,trans){
+                if(err) err.should.be.null;
+                pgClient.query('SELECT * FROM translates.translate_t as tt JOIN translates.link_t as tl ON tt.link=tl.link WHERE lang=$1 AND tt.link=$2', [dataContainer.lang,trans.link], function(err, data){
                     data.should.be.ok;
                     data.should.have.property('rows');
                     data.rows.should.be.a.array;
                     data.rows.length.should.equal(1);
+
+                    var row = data.rows[0];
+                    row.key.should.be.equal(dataContainer.key);
+                    row.desc.should.be.equal(dataContainer.desc);
+                    row.data.should.be.equal(dataContainer.desc);
                     cb();
                 });
             });
         });
+
+            it('addtranslate - whitout key', function(cb){
+
+                var dataContainer = {
+                    lang :  'en',
+                    desc: 'Hello'
+                };
+
+                translates.addtranslate(pgClient, dataContainer, function(err,trans){
+
+                    if(err) err.should.be.null;
+                    pgClient.query('SELECT * FROM translates.translate_t as tt JOIN translates.link_t as tl ON tt.link=tl.link WHERE lang=$1 AND tt.link=$2', [dataContainer.lang,trans.link], function(err, data){
+                        data.should.be.ok;
+                        data.should.have.property('rows');
+                        data.rows.should.be.a.array;
+                        data.rows.length.should.equal(1);
+
+                        var row = data.rows[0];
+                        row.desc.should.be.equal(dataContainer.desc);
+                        row.data.should.be.equal(dataContainer.desc);
+                        cb();
+                    });
+                });
+            });
+
+            it('delete', function(cb){
+
+                var dataContainer = {
+                    lang :  'en',
+                    desc: 'Hello'
+                };
+
+                translates.addtranslate(pgClient, dataContainer, function(err,trans){
+                    translates.delete(pgClient, trans, function(err2, del){
+                        if(err) err.should.be.null;
+                        pgClient.query('SELECT * FROM translates.translate_t WHERE lang=$1 AND link=$2', [dataContainer.lang,trans.link], function(err, data){
+                            data.should.be.ok;
+                            data.should.have.property('rows');
+                            data.rows.should.be.a.array;
+                            data.rows.length.should.equal(0);
+                            cb();
+                        });
+                    });
+
+                });
+            });
 
         it('updatedesc', function(cb){
 
