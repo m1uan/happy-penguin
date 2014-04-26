@@ -44,11 +44,15 @@ module.exports = {
                 levelEngine.updatepos(pgClient,dataContainer, icb);
             });
 
-        } else if(dataContainer.name){
+        }
+
+        if(dataContainer.name){
             updated.push(function(icb){
-                levelEngine.updatedesc(pgClient,dataContainer, icb);
+                levelEngine.updatename(pgClient,dataContainer, icb);
             });
-        } else if(dataContainer.info){
+        }
+
+        if(dataContainer.info){
             updated.push(function(icb){
                 levelEngine.updateinfo(pgClient,dataContainer, icb);
             });

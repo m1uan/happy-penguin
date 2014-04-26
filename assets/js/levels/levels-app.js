@@ -42,6 +42,7 @@ function PlaceCtrl($scope, $routeParams, $http) {
             info : $scope.info
         }
 
+        console.log('updateData',updateData);
         requestPOST($http, 'update/', updateData, function(response, status){
             console.log(response);
             fillScopeFromResponse(response);
