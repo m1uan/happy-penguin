@@ -156,6 +156,49 @@ describe.only('levels', function(){
                 });
 
             });
+        });
+
+        it('get', function(cb){
+            var dataContainerCreate = {
+                name : 'place_wonderful',
+                posx: 0.15,
+                posy: 0.15
+            };
+
+
+            // create for update
+            levels.create(pgClient, dataContainerCreate, function(err, crated){
+
+                var dataContainerUpdateInfo = {
+                    id : crated.id,
+                    info: 'this is the most beautifully place'
+                };
+
+
+                levels.updateinfo(pgClient, dataContainerUpdateInfo, function(err, updated){
+                    var dataContainer = {
+                        id: crated.id,
+                        fields : ['id','name','posx','posy','info'],
+                        lang : 'en'
+                    }
+
+
+                    levels.get(pgClient, dataContainer, function(err, getData){
+                        if(err)err.should.be.not.ok;
+                        getData.should.have.property('id');
+                        getData.should.have.property('name');
+                        getData.should.have.property('posx');
+                        getData.should.have.property('posy');
+                        getData.should.have.property('info');
+                        getData.info.should.be.equal(dataContainerUpdateInfo.info);
+                        getData.name.should.be.equal(dataContainerCreate.name);
+                        getData.id.should.be.equal(dataContainerUpdateInfo.id);
+                        cb();
+                    })
+
+                });
+
+            });
 
 
         });

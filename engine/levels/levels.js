@@ -47,6 +47,7 @@ module.exports = {
     },updatepos : function(pg, dataContainer, cb){
         if(!dataContainer.id ){
             cb('missing id');
+            return;
         }
 
         var setData = null;
@@ -83,15 +84,64 @@ module.exports = {
         updateTextField(pg, {id:dataContainer.id, text: dataContainer.name}, 'name', cb);
     },updateinfo: function(pg, dataContainer, cb){
         updateTextField(pg, {id:dataContainer.id, text: dataContainer.info}, 'info', cb);
+    },get: function(pg, dataContainer, cb){
+        if(!dataContainer.id){
+            cb('missing id!');
+            return;
+        }
+
+        if(!dataContainer.lang){
+            dataContainer.lang = 'en';
+        }
+
+        var fields = dataContainer.fields;
+
+        if(!fields){
+            fields = ['id'];
+        }
+
+
+        var indexOfName = fields.indexOf('name');
+        if(indexOfName> -1){
+            fields[indexOfName] = 'ttn.data as name'
+        }
+
+        var indexOfInfo = fields.indexOf('info');
+        if(indexOfInfo> -1){
+            fields[indexOfInfo] = 'tti.data as info'
+        }
+
+        var SQL = SL.SqlLib('pinguin.place_t as pp', fields);
+        SQL.whereAnd('id=' + dataContainer.id);
+
+
+        if(indexOfName> -1){
+            SQL.join('translates.translate_t as ttn','ttn.link=pp.name AND (ttn.lang=\''+dataContainer.lang+'\')');
+        }
+
+        if(indexOfInfo> -1){
+            SQL.join('translates.translate_t as tti','tti.link=pp.info AND (tti.lang=\''+dataContainer.lang+'\')');
+        }
+
+
+        SQL.select(pg,function(err, place){
+            if(place && place[0]){
+                place = place[0];
+            }
+
+            cb(err, place);
+        })
     }
 }
 
 function updateTextField(pg, dataContainer, type, cb){
     if(!dataContainer.id){
         cb('missing field id!');
+        return;
     }
     if(!dataContainer.text){
         cb('missing field '+type+'!');
+        return;
     }
 
     var typeSQL = type ;
