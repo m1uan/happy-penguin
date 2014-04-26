@@ -1,8 +1,15 @@
 link(rel='stylesheet', href='/assets/css/levels/world.css')
 
 div spot
-    p english name of place/spot
-    input(ng-model="name")
     p positions x and y
     input(ng-model="posx")
     input(ng-model="posy")
+
+    p english name of place/spot
+    input(ng-model="name",size="50",maxlength="70")
+
+    p travel information about place/spot
+    textarea(ng-model="info",rows="5",cols="150")
+
+    span(ng-click="update()").btn.btn-danger update
+

@@ -28,7 +28,42 @@ function MainCtrl($scope) {
 }
 
 
-function PlaceCtrl($scope) {
+function PlaceCtrl($scope, $routeParams, $http) {
+
+    var self = {};
+    self.id = $routeParams.id;
+
+    $scope.update = function(){
+        var updateData = {
+            id : self.id,
+            posx : $scope.posx,
+            posy : $scope.posy,
+            name : $scope.name,
+            info : $scope.info
+        }
+
+        requestPOST($http, 'update/', updateData, function(response, status){
+            console.log(response);
+            fillScopeFromResponse(response);
+        });
+    }
+
+
+    var url ='get/'+self.id+'?fields=id,name,info,posx,posy';
+
+    requestGET($http, url, function(response, status){
+        console.log(response);
+        fillScopeFromResponse(response);
+
+    });
+
+
+    function fillScopeFromResponse(response){
+        $scope.info = (response.info? response.info : '');
+        $scope.name = response.name;
+        $scope.posx = response.posx;
+        $scope.posy = response.posy;
+    }
 
 }
 
