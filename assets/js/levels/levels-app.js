@@ -56,13 +56,14 @@ function WorldCtrl($scope, $location, $http) {
 
         var portX = parseFloat(x)/parseFloat(element.width());
         var portY = parseFloat(y)/parseFloat(element.height());
-        alertify.confirm('portX:'+portX+ ' - protY:'+portY, function(e){
+        alertify.prompt('portX:'+portX+ ' - protY:'+portY, function(e, placeName){
             if(e){
-                var url = 'get/en/?fields=link,key,desc,data,group'
-                    + '&lastUpdateFirst=true'
-                    + '&type=api';
-                requestGET($http, url, function(response, status){
-                    $location.path('/place/'+portX);
+                var url = 'create/';
+                requestPOST($http, url, {x:portX, y:portY, name:placeName}, function(response, status){
+                    console.log(response)
+
+
+                    $location.path('/place/'+response.id);
                 });
 
 

@@ -15,7 +15,7 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
-describe.only('translates', function(){
+describe('translates', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
