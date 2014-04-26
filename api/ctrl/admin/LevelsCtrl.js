@@ -22,8 +22,11 @@ module.exports = {
         }
     },
     create_post: function(request){
+        var dataContainer = request.payload;
 
-        response(request, null, {id:1});
+        levelEngine.create(pgClient,dataContainer, function(err, created){
+            response(request, err, created);
+        });
     }
 
 }

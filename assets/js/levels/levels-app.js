@@ -59,7 +59,7 @@ function WorldCtrl($scope, $location, $http) {
         alertify.prompt('portX:'+portX+ ' - protY:'+portY, function(e, placeName){
             if(e){
                 var url = 'create/';
-                requestPOST($http, url, {x:portX, y:portY, name:placeName}, function(response, status){
+                requestPOST($http, url, {posx:portX, posy:portY, name:placeName}, function(response, status){
                     console.log(response)
 
 

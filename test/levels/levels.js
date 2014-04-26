@@ -60,6 +60,7 @@ describe.only('levels', function(){
     });
 
     describe('place', function(){
+
         it('create', function(cb){
             var dataContainer = {
                 name : 'place',
@@ -73,9 +74,11 @@ describe.only('levels', function(){
 
                 data.should.have.property('id');
                 data.should.have.property('name');
-                data.should.have.property('namelink');
                 data.should.have.property('posx');
                 data.should.have.property('posy');
+                data.posx.should.be.equal(dataContainer.posx);
+                data.posy.should.be.equal(dataContainer.posy);
+                data.name.should.be.equal(dataContainer.name);
                 cb();
             });
 
@@ -83,7 +86,41 @@ describe.only('levels', function(){
 
 
         });
-});
+
+
+        it('update', function(cb){
+            var dataContainerCreate = {
+                name : 'place_1',
+                posx: 0.15,
+                posy: 0.15
+            };
+
+
+            // create for update
+            levels.create(pgClient, dataContainerCreate, function(err, crated){
+
+                var dataContainer = {
+                    id : crated.id,
+                    name : 'place_5',
+                    posx: 0.5,
+                    posy: 0.5,
+                    info: 'this is the most beautifully place'
+                };
+
+
+                levels.update(pgClient,dataContainer, function(err, updated){
+                    assert(!err);
+
+                    updated.should.have.property('posx');
+                    updated.should.have.property('posy');
+                    cb();
+                });
+
+            });
+
+
+        });
+    });
 
 
 });

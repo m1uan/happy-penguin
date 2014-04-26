@@ -42,5 +42,42 @@ module.exports = {
 
 
         async.waterfall(cascade, cb);
+    },update : function(pg, dataContainer, cb){
+        if(!dataContainer.id ){
+            cb('missing id');
+        }
+
+        var setData = null;
+
+        if(dataContainer.posx){
+            if(!setData){
+                setData = {};
+            }
+            setData.posx = dataContainer.posx;
+        }
+
+        if(dataContainer.posy){
+            if(!setData){
+                setData = {};
+            }
+            setData.posy = dataContainer.posy;
+        }
+
+        if(setData){
+            var SQL = SL.SqlLib('pinguin.place_t');
+            SQL.whereAnd('id=' + dataContainer.id);
+
+
+            SQL.update(pg, setData, function(err, res){
+                if(res && res[0]){
+                    res = res[0];
+                }
+                cb(err, res);
+            });
+        } else {
+            cb('nothing to update (just posx, posy could be updated)!');
+        }
+
+
     }
 }
