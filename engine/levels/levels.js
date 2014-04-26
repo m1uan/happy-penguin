@@ -81,6 +81,8 @@ module.exports = {
         }
     },updatename: function(pg, dataContainer, cb){
         updateTextField(pg, {id:dataContainer.id, text: dataContainer.name}, 'name', cb);
+    },updateinfo: function(pg, dataContainer, cb){
+        updateTextField(pg, {id:dataContainer.id, text: dataContainer.info}, 'info', cb);
     }
 }
 
@@ -129,7 +131,7 @@ function updateTextField(pg, dataContainer, type, cb){
                     added.createdlink = added.link;
                 }
 
-                cb(err, added);
+                icb(err, added);
             });
         }
     });
@@ -138,10 +140,14 @@ function updateTextField(pg, dataContainer, type, cb){
     // store link to place if was created
     watter.push(function(lang, icb){
         if(lang.createdlink){
-            var SQL = SL.SqlLib('pinguin.place_t',['"' + type + '"']);
+
+            var SQL = SL.SqlLib('pinguin.place_t');
             SQL.whereAnd('id=' + dataContainer.id);
 
-            SQL.update(pg, {type : lang.createdlink}, function(err, updated){
+
+            var ud = {};
+            ud[type] = lang.createdlink;
+            SQL.update(pg, ud, function(err, updated){
                 icb(err, lang);
             });
         } else {

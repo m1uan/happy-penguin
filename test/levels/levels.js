@@ -123,7 +123,7 @@ describe.only('levels', function(){
 
         });
 
-        it('updatename', function(cb){
+        it('updatename and update info', function(cb){
             var dataContainerCreate = {
                 name : 'place_2',
                 posx: 0.15,
@@ -136,7 +136,8 @@ describe.only('levels', function(){
 
                 var dataContainer = {
                     id : crated.id,
-                    name : 'place_5'
+                    name : 'place_5',
+                    info : 'krasne misto'
                 };
 
                 levels.updatename(pgClient,dataContainer, function(err, updated){
@@ -144,7 +145,14 @@ describe.only('levels', function(){
 
                     updated.should.have.property('name');
                     updated.name.should.be.equal(dataContainer.name);
-                    cb();
+
+                    levels.updateinfo(pgClient,dataContainer, function(err2, updated2){
+                        assert(!err2);
+
+                        updated2.should.have.property('info');
+                        updated2.info.should.be.equal(dataContainer.info);
+                        cb();
+                    });
                 });
 
             });
