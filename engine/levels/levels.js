@@ -3,6 +3,8 @@ var LocalStrategy = require('passport-local').Strategy,
     , translate = require('../translates/langs.js')
     ,async = require('async');
 
+var LEVEL_GROUP = 1000;
+
 module.exports = {
     initialize : function(server, Passport) {
 
@@ -19,7 +21,7 @@ module.exports = {
                 key : '_city_' + dataContainer.name,
                 desc: dataContainer.name,
                 lang:'en',
-                group:1000
+                group:LEVEL_GROUP
             }
             translate.addtranslate(pg, add, icb);
         });
@@ -42,7 +44,7 @@ module.exports = {
 
 
         async.waterfall(cascade, cb);
-    },update : function(pg, dataContainer, cb){
+    },updatepos : function(pg, dataContainer, cb){
         if(!dataContainer.id ){
             cb('missing id');
         }
@@ -77,7 +79,103 @@ module.exports = {
         } else {
             cb('nothing to update (just posx, posy could be updated)!');
         }
-
-
+    },updatename: function(pg, dataContainer, cb){
+        updateTextField(pg, {id:dataContainer.id, text: dataContainer.name}, 'name', cb);
     }
+}
+
+function updateTextField(pg, dataContainer, type, cb){
+    if(!dataContainer.id){
+        cb('missing field id!');
+    }
+    if(!dataContainer.text){
+        cb('missing field '+type+'!');
+    }
+
+    var typeSQL = type ;
+    var watter = [];
+
+    // get exists of text in table
+    watter.push(function(icb){
+        var SQL = SL.SqlLib('pinguin.place_t',[typeSQL]);
+        SQL.whereAnd('id=' + dataContainer.id);
+        SQL.select(pg, icb);
+    });
+
+
+    // try create if not exists for this level
+    watter.push(function(selectLinkOfType, icb){
+        var addOrUpdate = {
+            key : '_city_' + type + '_' + dataContainer.id,
+            desc: dataContainer.text,
+            data: dataContainer.text,
+            group: LEVEL_GROUP,
+            lang : 'en'
+        }
+
+        // the translation is already connected to this table
+        // update just the translation
+        if(selectLinkOfType[0] && selectLinkOfType[0][type]){
+            // add linked link :-)
+            addOrUpdate.link = selectLinkOfType[0][type];
+            updateDescAndTranslate(pg, addOrUpdate, icb);
+        } else {
+            // create new translation
+            translate.addtranslate(pg, addOrUpdate, function(err, added){
+
+                // created link is for next step to know
+                // he have update place_t table
+                if(added){
+                    added.createdlink = added.link;
+                }
+
+                cb(err, added);
+            });
+        }
+    });
+
+
+    // store link to place if was created
+    watter.push(function(lang, icb){
+        if(lang.createdlink){
+            var SQL = SL.SqlLib('pinguin.place_t',['"' + type + '"']);
+            SQL.whereAnd('id=' + dataContainer.id);
+
+            SQL.update(pg, {type : lang.createdlink}, function(err, updated){
+                icb(err, lang);
+            });
+        } else {
+            // skip because language.link_t table was update
+            // and link was already add to this table before
+            icb(null, lang);
+        }
+
+    });
+
+    async.waterfall(watter, function(err, data){
+        data[type] = data.desc;
+        cb(err, data);
+    })
+
+}
+
+// update and tranalsate because in levels
+// you see only description of translation
+// have to be same with english version of translate
+function updateDescAndTranslate(pg, dataContainer, cb){
+    var parallel = [];
+
+    // update desc
+    parallel.push(function(icb){
+        translate.updatedesc(pg, dataContainer, icb);
+    });
+
+    // update english version
+    parallel.push(function(icb){
+        translate.translate(pg, dataContainer, icb);
+    });
+
+    async.parallel(parallel, function(err, updatedesc, translate){
+        cb(err, updatedesc[1]);
+    });
 }

@@ -88,7 +88,7 @@ describe.only('levels', function(){
         });
 
 
-        it('update', function(cb){
+        it('updatepos', function(cb){
             var dataContainerCreate = {
                 name : 'place_1',
                 posx: 0.15,
@@ -108,11 +108,42 @@ describe.only('levels', function(){
                 };
 
 
-                levels.update(pgClient,dataContainer, function(err, updated){
+                levels.updatepos(pgClient,dataContainer, function(err, updated){
                     assert(!err);
 
                     updated.should.have.property('posx');
                     updated.should.have.property('posy');
+                    updated.posx.should.be.equal(dataContainer.posx);
+                    updated.posy.should.be.equal(dataContainer.posy);
+                    cb();
+                });
+
+            });
+
+
+        });
+
+        it('updatename', function(cb){
+            var dataContainerCreate = {
+                name : 'place_2',
+                posx: 0.15,
+                posy: 0.15
+            };
+
+
+            // create for update
+            levels.create(pgClient, dataContainerCreate, function(err, crated){
+
+                var dataContainer = {
+                    id : crated.id,
+                    name : 'place_5'
+                };
+
+                levels.updatename(pgClient,dataContainer, function(err, updated){
+                    assert(!err);
+
+                    updated.should.have.property('name');
+                    updated.name.should.be.equal(dataContainer.name);
                     cb();
                 });
 
