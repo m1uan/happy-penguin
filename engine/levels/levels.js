@@ -133,8 +133,8 @@ module.exports = {
             cb(err, place);
         })
     },qadd : function(pg, dataContainer, cb){
-        if(!dataContainer.place){
-            cb('place id missing "place"');
+        if(!dataContainer.place_id){
+            cb('place_id missing "place_t.id"');
             return;
         }
 
@@ -181,7 +181,7 @@ module.exports = {
         watter.push(function(qa, icb){
             var sql = 'INSERT INTO pinguin.question_t (place_id,question,answers) VALUES ($1,$2,$3) RETURNING qid';
 
-            pg.query(sql, [dataContainer.place, qa[0].link, qa[1].link], icb);
+            pg.query(sql, [dataContainer.place_id, qa[0].link, qa[1].link], icb);
         });
 
         // select the result
@@ -200,7 +200,7 @@ module.exports = {
             SQL.select(pg, icb);
         });
 
-        async.waterfall(watter, cb);
+        async.waterfall(watter, function(err, data){cb(err, data[0])});
 
 
     }
