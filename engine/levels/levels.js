@@ -234,7 +234,7 @@ module.exports = {
 
             parallel.push(function(icb2){
                 var questionContainer = {
-                    desc:dataContainer.question,
+                    data:dataContainer.question,
                     link:q[0].question
                 };
                 updateDescAndTranslate(pg, questionContainer, icb2)
@@ -242,7 +242,7 @@ module.exports = {
 
             parallel.push(function(icb2){
                 var answersContainer = {
-                    desc:dataContainer.answers,
+                    data:dataContainer.answers,
                     link:q[0].answers
                 };
                 updateDescAndTranslate(pg, answersContainer, icb2)
@@ -257,8 +257,8 @@ module.exports = {
             var question = null;
             if(updated){
                 question = {
-                    question: updated[0].desc,
-                    answers: updated[1].desc,
+                    question: updated[0].data,
+                    answers: updated[1].data,
                     qid:dataContainer.qid
                 }
             }
@@ -361,8 +361,8 @@ function updateTextField(pg, dataContainer, type, cb){
 function updateDescAndTranslate(pg, dataContainer, cb){
     var parallel = [];
 
-    if(!dataContainer.data){
-        dataContainer.data = dataContainer.desc;
+    if(!dataContainer.desc){
+        dataContainer.desc = dataContainer.data;
     }
 
     // update desc
