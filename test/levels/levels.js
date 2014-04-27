@@ -257,11 +257,11 @@ describe.only('levels', function(){
                 }
                 levels.qupdate(pgClient, dataContainer, function(err, question){
                     if(err)err.should.be.null;
-                    question.should.have.property('place_id');
+
                     question.should.have.property('qid');
                     question.should.have.property('question');
                     question.should.have.property('answers');
-                    question.place_id.should.have.be.equal(dataContainer.place_id);
+                    question.qid.should.have.be.equal(dataContainer.qid);
                     question.question.should.have.be.equal(dataContainer.question);
                     question.answers.should.have.be.equal(dataContainer.answers);
                     cb();

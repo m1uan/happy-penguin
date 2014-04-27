@@ -201,8 +201,70 @@ module.exports = {
         });
 
         async.waterfall(watter, function(err, data){cb(err, data[0])});
+    },qupdate : function(pg, dataContainer, cb){
+        if(!dataContainer.qid){
+            cb('qid missing');
+            return;
+        }
+
+        if(!dataContainer.question){
+            cb('question text missing');
+            return;
+        }
+
+        if(!dataContainer.answers){
+            cb('answers text missing');
+            return;
+        }
+
+        var watter = [];
+        var parallel = [];
 
 
+
+        watter.push(function(icb){
+            var SQL = SL.SqlLib('pinguin.question_t as pq', ['question','answers']);
+            SQL.whereAnd('pq.qid='+dataContainer.qid);
+            SQL.select(pg, icb);
+        });
+
+        watter.push(function(q, icb){
+            dataContainer.question_link = q[0].question;
+            dataContainer.answers_link = q[0].answers;
+
+            parallel.push(function(icb2){
+                var questionContainer = {
+                    desc:dataContainer.question,
+                    link:q[0].question
+                };
+                updateDescAndTranslate(pg, questionContainer, icb2)
+            });
+
+            parallel.push(function(icb2){
+                var answersContainer = {
+                    desc:dataContainer.answers,
+                    link:q[0].answers
+                };
+                updateDescAndTranslate(pg, answersContainer, icb2)
+            });
+
+            async.parallel(parallel, icb);
+        });
+
+
+
+        async.waterfall(watter, function(err, updated){
+            var question = null;
+            if(updated){
+                question = {
+                    question: updated[0].desc,
+                    answers: updated[1].desc,
+                    qid:dataContainer.qid
+                }
+            }
+
+            cb(err, question);
+        });
     }
 }
 
@@ -298,6 +360,10 @@ function updateTextField(pg, dataContainer, type, cb){
 // }
 function updateDescAndTranslate(pg, dataContainer, cb){
     var parallel = [];
+
+    if(!dataContainer.data){
+        dataContainer.data = dataContainer.desc;
+    }
 
     // update desc
     parallel.push(function(icb){

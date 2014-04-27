@@ -48,13 +48,20 @@ module.exports = {
         var SQL = SL.SqlLib('translates.link_t');
         SQL.whereAnd('link=' + data.link);
         //var sql = SQL.generateUpsert({'link':data.link,data:data.desc,'lang':data.lang},['link']);
+        var updateDATA = {
+            '"desc"':data.desc,
+            'changed':'now()'
+        };
 
-
-        if(isNaN(data.group)){
-            data.group = 0;
+        if(!isNaN(data.group)){
+            updateDATA['"group"'] = data.group;
         }
 
-        SQL.update(pgClient,{'"desc"':data.desc,'"key"':data.key,'"group"':data.group,'changed':'now()'}, function(err, res){
+        if(data.key){
+            updateDATA['key'] = data.key;
+        }
+
+        SQL.update(pgClient, updateDATA, function(err, res){
             cb(err, res);
         });
     },addtranslate : function(pgClient, data, cb){
