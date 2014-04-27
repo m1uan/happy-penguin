@@ -17,8 +17,8 @@ div spot
     div(ng-repeat="question in questions")#questions
         input(ng-model="question.question")
         input(ng-model="question.answers")
-        button(ng-click="qUpdate(qustion)").btn.btn-danger update
-        button(ng-click="qDelete(qustion)").btn.btn-danger delete
+        button(ng-click="qUpdate(question)").btn.btn-danger update
+        button(ng-click="qDelete(question, $index)").btn.btn-danger delete
 
     p add questions
     input(ng-model="add_question")

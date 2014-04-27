@@ -109,6 +109,14 @@ module.exports = {
         levelEngine.qadd(pgClient, request.payload, function(err, data){
             response(request, err, data);
         });
+    },qupdate_post : function(request){
+        levelEngine.qupdate(pgClient, request.payload, function(err, data){
+            response(request, err, data);
+        });
+    },qdelete_post : function(request){
+        levelEngine.qdelete(pgClient, request.payload, function(err, data){
+            response(request, err, data);
+        });
     }
 
 }

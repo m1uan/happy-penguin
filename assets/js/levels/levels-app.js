@@ -80,6 +80,38 @@ function PlaceCtrl($scope, $routeParams, $http) {
             $scope.questions.push(response);
         });
     }
+
+    $scope.qUpdate = function(question){
+        var dataConteiner = {
+            qid: question.qid,
+            question: question.question,
+            answers: question.answers};
+
+        requestPOST($http, 'qupdate/',dataConteiner, function(response, status){
+            console.log(response);
+            question.question = response.question;
+            question.answers = response.answers;
+        });
+    }
+
+    $scope.qDelete = function(question, index){
+        var dataConteiner = {
+            qid: question.qid,
+            place_id: self.id
+        };
+
+        alertify.confirm('are you sure about remove it?',function(e){
+            if(!e){
+                return;
+            }
+
+            requestPOST($http, 'qdelete/',dataConteiner, function(response, status){
+                console.log(index, response);
+                $scope.questions.splice(index, 1);
+            });
+        });
+
+    }
 }
 
 function WorldCtrl($scope, $location, $http) {
