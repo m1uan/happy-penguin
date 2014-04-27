@@ -287,13 +287,16 @@ describe.only('levels', function(){
             createPlace(pgClient, dataContainerCreate, function(err, created){
 
                 var dataContainer = {
-                    qid: created[1].qid
+                    qid: created[1].qid,
+                    place_id: created[0].id
                 }
+
                 levels.qdelete(pgClient, dataContainer, function(err, question){
                     if(err)err.should.be.null;
 
-                    question.should.have.property('qid');
-                    question.qid.should.have.be.equal(dataContainer.qid);
+                    question.should.be.array;
+                    question.length.should.be.equal(1);
+                    question[0].should.have.be.equal(dataContainer.qid);
                     cb();
                 })
 

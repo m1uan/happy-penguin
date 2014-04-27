@@ -266,8 +266,8 @@ module.exports = {
             cb(err, question);
         });
     },qdelete : function(pg, dataContainer, cb){
-        if(!dataContainer.qid){
-            cb('qid missing');
+        if(!dataContainer.place_id){
+            cb('place_id missing');
             return;
         }
 
@@ -276,13 +276,20 @@ module.exports = {
         var parallel = [];
 
         series.push(function(icb){
-            var SQL = SL.SqlLib('pinguin.question_t as pq', ['question','answers']);
-            SQL.whereAnd('pq.qid='+dataContainer.qid);
+            var SQL = SL.SqlLib('pinguin.question_t as pq', ['qid','question','answers']);
+            SQL.whereAnd('pq.place_id='+dataContainer.place_id);
+            if(dataContainer.qid){
+                SQL.whereAnd('pq.qid='+dataContainer.qid);
+            }
+
             SQL.select(pg, icb);
         });
 
         series.push(function(icb){
-            var sql = 'DELETE FROM pinguin.question_t WHERE qid=' +dataContainer.qid;
+            var sql = 'DELETE FROM pinguin.question_t WHERE place_id=' +dataContainer.place_id;
+            if(dataContainer.qid){
+                sql += ' AND qid='+dataContainer.qid;
+            }
             pg.query(sql,icb);
         })
 
@@ -291,36 +298,35 @@ module.exports = {
         });
 
         watter.push(function(q, icb){
+            var qids = [];
+            // add to parallel every selected question
+            q[0].forEach(function(question){
+                parallel.push(function(icb2){
+                    var questionContainer = {
+                        link:question.question
+                    };
+                    translate.delete(pg, questionContainer, icb2)
+                });
 
-            parallel.push(function(icb2){
-                var questionContainer = {
-                    link:q[0][0].question
-                };
-                translate.delete(pg, questionContainer, icb2)
+                parallel.push(function(icb2){
+                    var answersContainer = {
+                        link:question.answers
+                    };
+                    translate.delete(pg, answersContainer, icb2)
+                });
+
+                qids.push(question.qid);
             });
 
-            parallel.push(function(icb2){
-                var answersContainer = {
-                    link:q[0][0].answers
-                };
-                translate.delete(pg, answersContainer, icb2)
-            });
 
-            async.parallel(parallel, icb);
+            async.parallel(parallel, function(err, trans){
+                icb(err, qids);
+            });
         });
 
 
 
-        async.waterfall(watter, function(err, deleted){
-            var question = null;
-            if(deleted){
-                question = {
-                    qid:dataContainer.qid
-                }
-            }
-
-            cb(err, question);
-        });
+        async.waterfall(watter, cb);
     }
 }
 
