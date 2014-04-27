@@ -265,6 +265,62 @@ module.exports = {
 
             cb(err, question);
         });
+    },qdelete : function(pg, dataContainer, cb){
+        if(!dataContainer.qid){
+            cb('qid missing');
+            return;
+        }
+
+        var series = []
+        var watter = [];
+        var parallel = [];
+
+        series.push(function(icb){
+            var SQL = SL.SqlLib('pinguin.question_t as pq', ['question','answers']);
+            SQL.whereAnd('pq.qid='+dataContainer.qid);
+            SQL.select(pg, icb);
+        });
+
+        series.push(function(icb){
+            var sql = 'DELETE FROM pinguin.question_t WHERE qid=' +dataContainer.qid;
+            pg.query(sql,icb);
+        })
+
+        watter.push(function(icb){
+            async.series(series, icb);
+        });
+
+        watter.push(function(q, icb){
+
+            parallel.push(function(icb2){
+                var questionContainer = {
+                    link:q[0][0].question
+                };
+                translate.delete(pg, questionContainer, icb2)
+            });
+
+            parallel.push(function(icb2){
+                var answersContainer = {
+                    link:q[0][0].answers
+                };
+                translate.delete(pg, answersContainer, icb2)
+            });
+
+            async.parallel(parallel, icb);
+        });
+
+
+
+        async.waterfall(watter, function(err, deleted){
+            var question = null;
+            if(deleted){
+                question = {
+                    qid:dataContainer.qid
+                }
+            }
+
+            cb(err, question);
+        });
     }
 }
 

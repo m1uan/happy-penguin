@@ -273,6 +273,34 @@ describe.only('levels', function(){
 
 
 
+        it('delete', function(cb){
+            var dataContainerCreate = {
+                name : 'place_152',
+                posx: 0.15,
+                posy: 0.15,
+                question : 'How many inhabitans living here?',
+                answers: 'in this city living 20 inhabitans.'
+            };
+
+
+            // create for update
+            createPlace(pgClient, dataContainerCreate, function(err, created){
+
+                var dataContainer = {
+                    qid: created[1].qid
+                }
+                levels.qdelete(pgClient, dataContainer, function(err, question){
+                    if(err)err.should.be.null;
+
+                    question.should.have.property('qid');
+                    question.qid.should.have.be.equal(dataContainer.qid);
+                    cb();
+                })
+
+            });
+
+        })
+
     });
 
 });
