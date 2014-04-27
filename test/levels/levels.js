@@ -160,43 +160,91 @@ describe.only('levels', function(){
 
         it('get', function(cb){
             var dataContainerCreate = {
-                name : 'place_wonderful',
+                name : 'wonderful_place',
                 posx: 0.15,
-                posy: 0.15
+                posy: 0.15,
+                info: 'Place with 20 inhabitans'
+
             };
 
 
             // create for update
-            levels.create(pgClient, dataContainerCreate, function(err, crated){
+            createPlace(pgClient, dataContainerCreate, function(err, created){
 
-                var dataContainerUpdateInfo = {
-                    id : crated.id,
-                    info: 'this is the most beautifully place'
-                };
-
-
-                levels.updateinfo(pgClient, dataContainerUpdateInfo, function(err, updated){
-                    var dataContainer = {
-                        id: crated.id,
-                        fields : ['id','name','posx','posy','info'],
-                        lang : 'en'
-                    }
+                var dataContainer = {
+                    id: created[0].id,
+                    fields : ['id','name','posx','posy','info'],
+                    lang : 'en'
+                }
 
 
-                    levels.get(pgClient, dataContainer, function(err, getData){
-                        if(err)err.should.be.not.ok;
-                        getData.should.have.property('id');
-                        getData.should.have.property('name');
-                        getData.should.have.property('posx');
-                        getData.should.have.property('posy');
-                        getData.should.have.property('info');
-                        getData.info.should.be.equal(dataContainerUpdateInfo.info);
-                        getData.name.should.be.equal(dataContainerCreate.name);
-                        getData.id.should.be.equal(dataContainerUpdateInfo.id);
-                        cb();
-                    })
+                levels.get(pgClient, dataContainer, function(err, getData){
+                    should.not.exist(err);
+                    should.exist(getData);
+                    getData.should.have.property('id');
+                    getData.should.have.property('name');
+                    getData.should.have.property('posx');
+                    getData.should.have.property('posy');
+                    getData.should.have.property('info');
+                    getData.posx.should.be.approximately(dataContainerCreate.posx, 0.01);
+                    getData.posy.should.be.approximately(dataContainerCreate.posy, 0.01);
+                    getData.info.should.be.equal(dataContainerCreate.info);
+                    getData.name.should.be.equal(dataContainerCreate.name);
+                    getData.id.should.be.equal(created[0].id);
+                    cb();
+                })
 
-                });
+            });
+
+
+        });
+
+        it('get - with questions', function(cb){
+            var dataContainerCreate = {
+                name : 'wonderful_place 2',
+                posx: 0.15,
+                posy: 0.15,
+                info: 'Place with 20 inhabitans',
+                question : 'How many inhabitans living here?',
+                answers: 'in this city living 20 inhabitans.',
+                question2 : '2How many inhabitans living here?',
+                answers2: '2in this city living 20 inhabitans.',
+                question3 : '3How many inhabitans living here?',
+                answers3: '3in this city living 20 inhabitans.'
+
+            };
+
+
+            // create for update
+            createPlace(pgClient, dataContainerCreate, function(err, created){
+
+                var dataContainer = {
+                    id: created[0].id,
+                    fields : ['id','name','posx','posy','info'],
+                    question_fields : ['question','answers'],
+                    qlang : 'en',
+                    lang : 'en'
+                }
+
+
+                levels.get(pgClient, dataContainer, function(err, getData){
+                    should.not.exist(err);
+                    should.exist(getData);
+                    getData.should.have.property('id');
+                    getData.should.have.property('name');
+                    getData.should.have.property('posx');
+                    getData.should.have.property('posy');
+                    getData.should.have.property('info');
+                    getData.posx.should.be.approximately(dataContainerCreate.posx, 0.01);
+                    getData.posy.should.be.approximately(dataContainerCreate.posy, 0.01);
+                    getData.info.should.be.equal(dataContainerCreate.info);
+                    getData.name.should.be.equal(dataContainerCreate.name);
+                    getData.id.should.be.equal(created[0].id);
+
+                    getData.should.have.property('questions');
+                    getData.questions.length.equal(3);
+                    cb();
+                })
 
             });
 
@@ -334,6 +382,49 @@ describe.only('levels', function(){
                     question.length.should.be.equal(2);
                     question.should.containEql(created[1].qid);
                     question.should.containEql(created[2].qid);
+                    cb();
+                })
+
+            });
+
+        })
+
+        it('get', function(cb){
+            var dataContainerCreate = {
+                name : 'place_154',
+                posx: 0.15,
+                posy: 0.15,
+                question : 'How many inhabitans living here?',
+                answers: 'in this city living 20 inhabitans.',
+                question2 : '2How many inhabitans living here?',
+                answers2: '2in this city living 20 inhabitans.'
+            };
+
+
+            // create for update
+            createPlace(pgClient, dataContainerCreate, function(err, created){
+
+                var dataContainer = {
+                    place_id: created[0].id,
+                    fields : ['qid','place_id','question','answers'],
+                    qlang:'en',
+                    alang:'en'
+                }
+
+                levels.qget(pgClient, dataContainer, function(err, question){
+                    should.not.exist(err);
+                    should.exist(question);
+
+                    question.should.be.array;
+                    question.length.should.be.equal(2);
+                    question.forEach(function(q,idx){
+                        q.should.have.property('qid');
+                        q.should.have.property('place_id');
+                        q.answers.should.be.equal(created[idx+1].answers);
+                        q.question.should.be.equal(created[idx+1].question);
+                    })
+                    //question.should.containEql(created[1].qid);
+                    //question.should.containEql(created[2].qid);
                     cb();
                 })
 

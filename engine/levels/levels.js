@@ -95,6 +95,36 @@ module.exports = {
             dataContainer.lang = 'en';
         }
 
+        var parallel = [];
+
+        parallel.push(function(icb){
+            module.exports.placeget(pg, dataContainer, icb);
+        });
+
+        if(dataContainer.question_fields){
+            parallel.push(function(icb){
+                var questionContainer = {
+                    qlang : dataContainer.qlang,
+                    alang : dataContainer.lang,
+                    place_id : dataContainer.id,
+                    fields : dataContainer.question_fields
+                }
+                module.exports.qget(pg, questionContainer, icb);
+            });
+        }
+
+        async.parallel(parallel, function(err, gets){
+            var out = null;
+            if(gets){
+                out = gets[0];
+                if(gets.length > 1){
+                    out.questions = gets[1];
+                }
+            }
+            cb(err,out);
+        });
+
+    },placeget: function(pg, dataContainer, cb){
         var fields = dataContainer.fields;
 
         if(!fields){
@@ -123,7 +153,6 @@ module.exports = {
         if(indexOfInfo> -1){
             SQL.join('translates.translate_t as tti','tti.link=pp.info AND (tti.lang=\''+dataContainer.lang+'\')');
         }
-
 
         SQL.select(pg,function(err, place){
             if(place && place[0]){
@@ -327,6 +356,53 @@ module.exports = {
 
 
         async.waterfall(watter, cb);
+    },qget: function(pg, dataContainer, cb){
+
+        if(!dataContainer.place_id){
+            cb('place_id missing');
+            return;
+        }
+
+        if(!dataContainer.qlang){
+            cb('qlang missing');
+            return;
+        }
+
+        if(!dataContainer.alang){
+            cb('alang missing');
+            return;
+        }
+
+        var qlang = dataContainer.qlang;
+        var alang = dataContainer.alang;
+
+
+        var fields = [ 'qid' ];
+        if(dataContainer.fields){
+            fields = dataContainer.fields;
+        }
+
+        var indexOfQuestion = fields.indexOf('question');
+        if(indexOfQuestion > -1){
+            fields[indexOfQuestion] = 'ttq.data as question';
+        }
+
+        var indexOfAnswers = fields.indexOf('answers');
+        if(indexOfAnswers > -1){
+            fields[indexOfAnswers] = 'tta.data as answers';
+        }
+
+        var SQL = SL.SqlLib('pinguin.question_t as pq', fields);
+
+        if(indexOfQuestion > -1){
+            SQL.join('translates.translate_t as ttq','ttq.link=pq.question AND ttq.lang=\''+qlang+'\'');
+        }
+
+        if(indexOfAnswers > -1){
+            SQL.join('translates.translate_t as tta','tta.link=pq.answers AND tta.lang=\''+alang+'\'');
+        }
+        SQL.whereAnd('pq.place_id='+ dataContainer.place_id);
+        SQL.select(pg, cb);
     }
 }
 
