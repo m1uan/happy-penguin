@@ -89,13 +89,25 @@ module.exports = {
             dataContainer.lang = data[1];
         }
 
+        if(data.length > 2){
+            dataContainer.qlang = data[2];
+        }
+
 
         if(request.query.fields){
             dataContainer.fields = request.query.fields.split(',') ;
         }
 
+        if(request.query.qfields){
+            dataContainer.qfields = request.query.qfields.split(',') ;
+        }
+
         levelEngine.get(pgClient, dataContainer, function(err, getData){
             response(request, err, getData);
+        });
+    },qadd_post : function(request){
+        levelEngine.qadd(pgClient, request.payload, function(err, data){
+            response(request, err, data);
         });
     }
 

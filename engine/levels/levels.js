@@ -95,19 +95,23 @@ module.exports = {
             dataContainer.lang = 'en';
         }
 
+        if(!dataContainer.qlang){
+            dataContainer.qlang = 'en';
+        }
+
         var parallel = [];
 
         parallel.push(function(icb){
             module.exports.placeget(pg, dataContainer, icb);
         });
 
-        if(dataContainer.question_fields){
+        if(dataContainer.qfields){
             parallel.push(function(icb){
                 var questionContainer = {
                     qlang : dataContainer.qlang,
                     alang : dataContainer.lang,
                     place_id : dataContainer.id,
-                    fields : dataContainer.question_fields
+                    fields : dataContainer.qfields
                 }
                 module.exports.qget(pg, questionContainer, icb);
             });
@@ -115,10 +119,15 @@ module.exports = {
 
         async.parallel(parallel, function(err, gets){
             var out = null;
-            if(gets){
+            if(!err && gets){
                 out = gets[0];
-                if(gets.length > 1){
-                    out.questions = gets[1];
+                if(gets.length > 1 && gets[1]){
+                    if(gets[1]){
+                        out.questions = gets[1];
+                    } else {
+                        out.questions = [];
+                    }
+
                 }
             }
             cb(err,out);

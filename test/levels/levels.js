@@ -221,7 +221,7 @@ describe.only('levels', function(){
                 var dataContainer = {
                     id: created[0].id,
                     fields : ['id','name','posx','posy','info'],
-                    question_fields : ['question','answers'],
+                    qfields : ['question','answers'],
                     qlang : 'en',
                     lang : 'en'
                 }
@@ -242,7 +242,7 @@ describe.only('levels', function(){
                     getData.id.should.be.equal(created[0].id);
 
                     getData.should.have.property('questions');
-                    getData.questions.length.equal(3);
+                    getData.questions.length.should.be.equal(3);
                     cb();
                 })
 

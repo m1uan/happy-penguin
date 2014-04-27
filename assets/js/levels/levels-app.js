@@ -50,7 +50,7 @@ function PlaceCtrl($scope, $routeParams, $http) {
     }
 
 
-    var url ='get/'+self.id+'?fields=id,name,info,posx,posy';
+    var url ='get/'+self.id+'?fields=id,name,info,posx,posy&qfields=qid,question,answers';
 
     requestGET($http, url, function(response, status){
         console.log(response);
@@ -64,8 +64,22 @@ function PlaceCtrl($scope, $routeParams, $http) {
         $scope.name = response.name;
         $scope.posx = response.posx;
         $scope.posy = response.posy;
+        $scope.questions = response.questions;
     }
 
+
+    $scope.qAdd = function(){
+        var dataConteiner = {
+            place_id: self.id,
+            question: $scope.add_question,
+            answers: $scope.add_answers}
+        requestPOST($http, 'qadd/',dataConteiner, function(response, status){
+            console.log(response);
+            $scope.add_question = '';
+            $scope.add_answers = '';
+            $scope.questions.push(response);
+        });
+    }
 }
 
 function WorldCtrl($scope, $location, $http) {
