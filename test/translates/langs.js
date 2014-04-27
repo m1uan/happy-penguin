@@ -15,7 +15,7 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
-describe.only('translates', function(){
+describe('translates', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -171,6 +171,7 @@ describe.only('translates', function(){
                         var row = data.rows[0];
                         row.desc.should.be.equal(dataContainer.desc);
                         row.data.should.be.equal(dataContainer.desc);
+                        if(row.key)row.key.should.be.null;
                         cb();
                     });
                 });

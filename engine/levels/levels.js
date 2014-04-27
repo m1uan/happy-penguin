@@ -139,12 +139,12 @@ module.exports = {
         }
 
         if(!dataContainer.question){
-            cb('question id missing');
+            cb('question text missing');
             return;
         }
 
         if(!dataContainer.answers){
-            cb('answers id missing');
+            cb('answers text missing');
             return;
         }
 
@@ -153,17 +153,55 @@ module.exports = {
         var watter = [];
 
 
+        // add question
         parallel.push(function(icb){
             var questinData = {
                 desc:dataContainer.question,
                 group: QUESTION_GROUP
             }
-            translate.addtranslate()
+            translate.addtranslate(pg, questinData, icb);
+        });
+
+        // add answer
+        parallel.push(function(icb){
+            var questinData = {
+                desc:dataContainer.answers,
+                group: QUESTION_GROUP
+            }
+            translate.addtranslate(pg, questinData, icb);
         });
 
 
-        var SQL = SL.SqlLib('pinguin.question_t as pq');
-        SQL.insert()
+        // add parallaly question and answer
+        watter.push(function(icb){
+            async.parallel(parallel, icb);
+        });
+
+        // update question with answer and question
+        watter.push(function(qa, icb){
+            var sql = 'INSERT INTO pinguin.question_t (place_id,question,answers) VALUES ($1,$2,$3) RETURNING qid';
+
+            pg.query(sql, [dataContainer.place, qa[0].link, qa[1].link], icb);
+        });
+
+        // select the result
+        watter.push(function(q, icb){
+            var fields = [
+                'qid',
+                'place_id',
+                'ttq.data as question',
+                'tta.data as answers'
+            ]
+
+            var SQL = SL.SqlLib('pinguin.question_t as pq', fields);
+            SQL.join('translates.translate_t as ttq','ttq.link=pq.question AND ttq.lang=\'en\'');
+            SQL.join('translates.translate_t as tta','tta.link=pq.answers AND tta.lang=\'en\'');
+            SQL.whereAnd('pq.qid='+ q.rows[0].qid);
+            SQL.select(pg, icb);
+        });
+
+        async.waterfall(watter, cb);
+
 
     }
 }

@@ -90,6 +90,11 @@ module.exports = {
         });
 
     },translate : function(pgClient, data, cb){
+
+        if(!data.lang){
+            data.lang = 'en';
+        }
+
         var SQL = SL.SqlLib('translates.translate_t');
         SQL.whereAnd('link=' + data.link + ' AND lang=\'' +data.lang +'\'');
         //var sql = SQL.generateUpsert({'link':data.link,data:data.desc,'lang':data.lang},['link']);

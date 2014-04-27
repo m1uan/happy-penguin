@@ -203,6 +203,34 @@ describe.only('levels', function(){
 
         });
     });
+    describe('question', function(){
 
+        it('add', function(cb){
+            var dataContainerCreate = {
+                name : 'place_150',
+                posx: 0.15,
+                posy: 0.15
+            };
+
+
+            // create for update
+            levels.create(pgClient, dataContainerCreate, function(err, crated){
+
+                var dataContainer = {
+                    place : crated.id,
+                    question : 'How many inhabitans living here?',
+                    answers: 'in this city living 20 inhabitans.'
+                }
+                levels.qadd(pgClient, dataContainer, function(err, question){
+                    cb();
+                })
+
+            });
+
+        })
+
+
+
+    });
 
 });
