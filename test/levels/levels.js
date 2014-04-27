@@ -237,8 +237,79 @@ describe.only('levels', function(){
 
         })
 
+        it('update', function(cb){
+            var dataContainerCreate = {
+                name : 'place_151',
+                posx: 0.15,
+                posy: 0.15,
+                question : 'How many inhabitans living here?',
+                answers: 'in this city living 20 inhabitans.'
+            };
+
+
+            // create for update
+            createPlace(pgClient, dataContainerCreate, function(err, created){
+
+                var dataContainer = {
+                    qid: created[1].qid,
+                    question : '2 How many inhabitans living here?',
+                    answers: '2 in this city living 20 inhabitans.'
+                }
+                levels.qupdate(pgClient, dataContainer, function(err, question){
+                    if(err)err.should.be.null;
+                    question.should.have.property('place_id');
+                    question.should.have.property('qid');
+                    question.should.have.property('question');
+                    question.should.have.property('answers');
+                    question.place_id.should.have.be.equal(dataContainer.place_id);
+                    question.question.should.have.be.equal(dataContainer.question);
+                    question.answers.should.have.be.equal(dataContainer.answers);
+                    cb();
+                })
+
+            });
+
+        })
+
 
 
     });
 
 });
+
+
+function createPlace(pg, dataContainer, cb){
+    var watter = [];
+    var parallel = [];
+
+    watter.push(function(icb){
+        levels.create(pg, dataContainer, icb);
+    });
+
+    watter.push(function(created, icb){
+        dataContainer.id = created.id;
+
+        // add data container to first
+        parallel.push(function(icb){
+            icb(null, created);
+        });
+
+        if(dataContainer.question){
+            parallel.push(function(icb){
+                dataContainer.place_id = created.id;
+                levels.qadd(pgClient, dataContainer, icb);
+            })
+        }
+
+        if(dataContainer.info){
+            parallel.push(function(icb){
+                levels.updateinfo(pgClient, dataContainer, icb);
+            })
+        }
+
+        Async.parallel(parallel, icb);
+    });
+
+    Async.waterfall(watter, cb);
+
+}
