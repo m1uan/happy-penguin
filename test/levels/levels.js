@@ -273,13 +273,15 @@ describe.only('levels', function(){
 
 
 
-        it('delete', function(cb){
+        it('delete - by qid', function(cb){
             var dataContainerCreate = {
                 name : 'place_152',
                 posx: 0.15,
                 posy: 0.15,
                 question : 'How many inhabitans living here?',
-                answers: 'in this city living 20 inhabitans.'
+                answers: 'in this city living 20 inhabitans.',
+                question2 : '2How many inhabitans living here?',
+                answers2: '2in this city living 20 inhabitans.'
             };
 
 
@@ -297,6 +299,41 @@ describe.only('levels', function(){
                     question.should.be.array;
                     question.length.should.be.equal(1);
                     question[0].should.have.be.equal(dataContainer.qid);
+                    cb();
+                })
+
+            });
+
+        })
+
+
+        it('delete - all', function(cb){
+            var dataContainerCreate = {
+                name : 'place_153',
+                posx: 0.15,
+                posy: 0.15,
+                question : 'How many inhabitans living here?',
+                answers: 'in this city living 20 inhabitans.',
+                question2 : '2How many inhabitans living here?',
+                answers2: '2in this city living 20 inhabitans.'
+            };
+
+
+            // create for update
+            createPlace(pgClient, dataContainerCreate, function(err, created){
+
+                var dataContainer = {
+                    place_id: created[0].id
+                }
+
+                levels.qdelete(pgClient, dataContainer, function(err, question){
+                    should.not.exist(err);
+                    should.exist(question);
+
+                    question.should.be.array;
+                    question.length.should.be.equal(2);
+                    question.should.containEql(created[1].qid);
+                    question.should.containEql(created[2].qid);
                     cb();
                 })
 
@@ -329,6 +366,31 @@ function createPlace(pg, dataContainer, cb){
             parallel.push(function(icb){
                 dataContainer.place_id = created.id;
                 levels.qadd(pgClient, dataContainer, icb);
+            })
+        }
+
+        if(dataContainer.question2){
+            parallel.push(function(icb){
+                var question2Container = {
+                    place_id : created.id,
+                    question : dataContainer.question2,
+                    answers : dataContainer.answers2
+                };
+
+                levels.qadd(pgClient, question2Container, icb);
+            })
+        }
+
+
+        if(dataContainer.question3){
+            parallel.push(function(icb){
+                var question3Container = {
+                    place_id : created.id,
+                    question : dataContainer.question3,
+                    answers : dataContainer.answers3
+                };
+
+                levels.qadd(pgClient, question3Container, icb);
             })
         }
 
