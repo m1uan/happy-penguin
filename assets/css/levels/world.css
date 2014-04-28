@@ -4,3 +4,9 @@
     height:675px;
     background-size: 100%;
 }
+
+#uploader {
+    background-color:dodgerblue;
+    width:200px;
+    height:500px;
+}

@@ -1,5 +1,5 @@
 link(rel='stylesheet', href='/assets/css/levels/world.css')
-
+div#uploader
 div spot
     p positions x and y
     input(ng-model="posx")
@@ -24,3 +24,8 @@ div spot
     input(ng-model="add_question")
     input(ng-model="add_answers")
     button(ng-click="qAdd()").btn.btn-primary add
+
+
+    div
+        img#canvasHelper
+        canvas(width="128",height="128")#myCanvas

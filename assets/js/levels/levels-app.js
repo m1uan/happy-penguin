@@ -33,6 +33,8 @@ function PlaceCtrl($scope, $routeParams, $http) {
     var self = {};
     self.id = $routeParams.id;
 
+    dragImage($('#uploader'), $('#uploader'), $('#uploader'), self.id, {UPLOAD_URL:'uploadimg/'})
+
     $scope.update = function(){
         var updateData = {
             id : self.id,

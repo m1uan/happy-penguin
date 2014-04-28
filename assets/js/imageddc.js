@@ -14,8 +14,23 @@ function focusElement(el, focusShow){
     }
 }
 
-function dragImage(element, imageElement, fileElement, linkId){
+function dragImage(element, imageElement, fileElement, linkId, uploadConfig){
+    var UPLOAD_URL =  '/words/uploadimg';
     var IMAGE_ORIG = '/assets/img/orig/';
+    var IMAGE_THUMB = '/assets/img/orig/';
+
+    if(uploadConfig && uploadConfig.UPLOAD_URL){
+        UPLOAD_URL = uploadConfig.UPLOAD_URL;
+    }
+
+    if(uploadConfig && uploadConfig.IMAGE_ORIG){
+        IMAGE_ORIG = uploadConfig.IMAGE_ORIG;
+    }
+
+    if(uploadConfig && uploadConfig.IMAGE_THUMB){
+        IMAGE_THUMB = uploadConfig.IMAGE_THUMB;
+    }
+
     //console.log('dragImage', imageElement.attr('id'), linkId);
     element.on(
         'dragenter',
@@ -181,7 +196,7 @@ function dragImage(element, imageElement, fileElement, linkId){
 
 
         $.ajax({
-            url: "/words/uploadimg",
+            url: UPLOAD_URL,
             type: "POST",
             data: fd,
             processData: false,
@@ -218,7 +233,7 @@ function dragImage(element, imageElement, fileElement, linkId){
 
                     if(val.thumbfile){
                         // show in thumb
-                        var thumb = '/assets/img/thumb/' + val.thumbfile;
+                        var thumb = IMAGE_THUMB + val.thumbfile;
                         imageElement.attr('src', thumb);
                     }
                     console.log('src', src, thumb);

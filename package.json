@@ -25,7 +25,7 @@
   "dependencies": {
     "passport-local": "~0.1.6",
     "jade": "~0.35.0",
-    "hapi": "~1.14.0",
+    "hapi": "~1.20.0",
     "mega": "~0.2.0",
     "travelogue": "~0.4.2",
     "passport": "~0.1.17",

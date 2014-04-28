@@ -117,6 +117,8 @@ module.exports = {
         levelEngine.qdelete(pgClient, request.payload, function(err, data){
             response(request, err, data);
         });
+    },uploadimg_post : function (request){
+        response(request, null, request.payload);
     }
 
 }
