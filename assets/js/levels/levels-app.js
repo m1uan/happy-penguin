@@ -33,7 +33,13 @@ function PlaceCtrl($scope, $routeParams, $http) {
     var self = {};
     self.id = $routeParams.id;
 
-    dragImage($('#uploader'), $('#uploader'), $('#uploader'), self.id, {UPLOAD_URL:'uploadimg/'})
+    dragImage($('#uploader'), $('#uploader'), $('#uploader'), self.id, {UPLOAD_URL:'uploadimg/', callback : function(err, data){
+        if(err){
+            alert(err.responseText);
+        } else {
+
+        }
+    }});
 
     $scope.update = function(){
         var updateData = {
@@ -113,6 +119,10 @@ function PlaceCtrl($scope, $routeParams, $http) {
             });
         });
 
+    }
+
+    function uploadImageSuccess(imageData){
+        alertify.success('Image upload like ' + imageData.response.imageFile);
     }
 }
 

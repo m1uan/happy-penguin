@@ -461,7 +461,8 @@ describe.only('levels', function(){
             var dataExtra = {
                 tableName : 'pinguin.image_t',
                 usrField : 'place_id',
-                fileNamePrefix : 'place/'
+                fileNamePrefix : 'place/',
+                skipMD5Identity : true
             };
 
             images.storeImgFromData(pgClient, created[0].id,data, function(err, iid1){

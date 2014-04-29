@@ -143,7 +143,8 @@ module.exports = {
         var dataExtra = {
             tableName : 'pinguin.image_t',
             usrField : 'place_id',
-            fileNamePrefix : 'place/'
+            fileNamePrefix : 'place/',
+            skipMD5Identity : true
         };
 
         image.storeImgFromData(pgClient, request.payload.link, dataInfo, function(err, imageData){

@@ -174,6 +174,11 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb, 
         fileNamePrefix = extraDataContainer.fileNamePrefix;
     }
 
+    var skipMD5Identity = false;
+    if(extraDataContainer && extraDataContainer.skipMD5Identity){
+        skipMD5Identity = extraDataContainer.skipMD5Identity;
+    }
+
     console.log('BEGIN:image.storeImgFromFileName', userId, userId, imageInfo) ;
     async.waterfall([
         function(icb){
@@ -203,6 +208,11 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb, 
     }
 
     function isExistsSameImgWithMD5(md5data, icb){
+        if(skipMD5Identity){
+            icb(null, md5data);
+            return;
+        }
+
         console.log('storeImgFromFileName:isExistsSameImgWithMD5', md5data) ;
         var sql = 'SELECT iid, image FROM '+tableName+' WHERE md5 = $1';
 

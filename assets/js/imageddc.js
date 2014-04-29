@@ -206,13 +206,21 @@ function dragImage(element, imageElement, fileElement, linkId, uploadConfig){
                 console.log(response);
 
                 loadImageFromResource(response);
+                if(uploadConfig && uploadConfig.callback){
+                    uploadConfig.callback(null, response);
+                }
             },
             error: function(jqXHR, textStatus, errorMessage) {
-                // jqXHR.responseText
-                var modalDialog = $('#modal-error');
-                modalDialog.find('#origin-message').text(jqXHR.responseText);
-                modalDialog.modal('show');
-                console.log(errorMessage,jqXHR); // Optional
+                if(uploadConfig && uploadConfig.callback){
+                    uploadConfig.callback(jqXHR, errorMessage);
+                } else {
+                    // jqXHR.responseText
+                    var modalDialog = $('#modal-error');
+                    modalDialog.find('#origin-message').text(jqXHR.responseText);
+                    modalDialog.modal('show');
+                    console.log(errorMessage,jqXHR); // Optional
+                }
+
             }
         });
     }
