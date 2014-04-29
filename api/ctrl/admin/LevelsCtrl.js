@@ -119,7 +119,6 @@ module.exports = {
         });
     },uploadimg_post : function (request){
         var image = require(process.cwd() + '/engine/image.js');
-        var linkEngine = require(process.cwd() + '/engine/link.js');
 
         console.log('payload', request.payload.link);
 

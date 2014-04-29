@@ -430,6 +430,73 @@ module.exports = {
 
         SQL.whereAnd('pinguin.image_t.place_id='+ dataContainer.place_id);
         SQL.select(pg, cb);
+    },idelete: function(pg, dataContainer, cb){
+
+        if(!dataContainer.place_id){
+            cb('place_id missing');
+            return;
+        }
+
+//        if(!dataContainer.iid){
+//            cb('iid missing');
+//            return;
+//        }
+
+
+
+        var series = []
+        var watter = [];
+        var parallel = [];
+
+        series.push(function(icb){
+            var SQL = SL.SqlLib('pinguin.image_t', ['iid','image']);
+            SQL.whereAnd('pinguin.image_t.place_id='+dataContainer.place_id);
+            if(dataContainer.iid){
+                SQL.whereAnd('pinguin.image_t.iid='+dataContainer.iid);
+            }
+
+            SQL.select(pg, icb);
+        });
+
+        series.push(function(icb){
+            var sql = 'DELETE FROM pinguin.image_t WHERE place_id=' +dataContainer.place_id;
+            if(dataContainer.iid){
+                sql += ' AND iid='+dataContainer.iid;
+            }
+            pg.query(sql,icb);
+        })
+
+        watter.push(function(icb){
+            async.series(series, icb);
+        });
+
+        watter.push(function(i, icb){
+            var iids = [];
+            // add to parallel every selected question
+            i[0].forEach(function(image){
+                parallel.push(function(icb2){
+
+
+                    removeImageFile('orig',image.image, icb2);
+                });
+
+                parallel.push(function(icb2){
+                    removeImageFile('thumb',image.image, icb2);
+                });
+
+
+                iids.push(image.iid);
+            });
+
+
+            async.parallel(parallel, function(err, trans){
+                icb(err, iids);
+            });
+        });
+
+
+
+        async.waterfall(watter, cb);
     }
 }
 
@@ -543,4 +610,24 @@ function updateDescAndTranslate(pg, dataContainer, cb){
     async.parallel(parallel, function(err, updatedesc, translate){
         cb(err, updatedesc[1]);
     });
+}
+
+
+function removeImageFile(type, fileName, cb){
+    var fs = require('fs');
+    var image = require(process.cwd() + '/engine/image.js');
+
+    var path = image.IMG_ORIG_DIR;
+    if(type=='thumb'){
+        path = image.IMG_THUMB_DIR;
+    }
+
+    var filePath = path+ fileName;
+
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+    }
+
+    cb();
+
 }

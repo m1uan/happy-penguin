@@ -467,6 +467,63 @@ describe.only('levels', function(){
             })
 
         });
+
+        it('delete one', function(cb){
+            createPlaceWithImage('place_157', function(err, iid, created){
+                var dataContainer = {
+                    place_id : created[0].id,
+                    iid : iid[0].imageId
+                }
+
+                levels.idelete(pgClient, dataContainer, function(err, deleted){
+                    deleted[0].should.be.equal(dataContainer.iid);
+                    var getDataContainer = {
+                        place_id : created[0].id,
+                        fields : ['*']
+                    }
+
+                    // createPlaceWithImage create 3 images
+                    // after delete one should be still there 2two
+                    levels.iget(pgClient, getDataContainer, function(err, geted){
+                        geted.length.should.be.equal(2);
+                        cb();
+                    });
+                });
+            })
+
+        });
+
+        it('delete all', function(cb){
+            var image = require(process.cwd() + '/engine/image.js');
+            createPlaceWithImage('place_158', function(err, iid, created){
+                var dataContainer = {
+                    place_id : created[0].id
+                }
+
+                levels.idelete(pgClient, dataContainer, function(err, deleted){
+                    deleted.length.should.be.eql(iid.length);
+                    iid.forEach(function(image){
+                        deleted.should.containEql(image.imageId);
+                        var exists = fs.existsSync(image.IMG_ORIG_DIR + image.image);
+                        exists.should.not.ok;
+                        var exists2 = fs.existsSync(image.IMG_THUMB_DIR + image.image);
+                        exists2.should.not.ok;
+                    })
+                    var getDataContainer = {
+                        place_id : created[0].id,
+                        fields : ['*']
+                    }
+
+                    // createPlaceWithImage create 3 images
+                    // after delete one should be still there 2two
+                    levels.iget(pgClient, getDataContainer, function(err, geted){
+                        geted.length.should.be.equal(0);
+                        cb();
+                    });
+                });
+            })
+
+        });
     });
 
 });
@@ -567,9 +624,11 @@ function createPlaceWithImage(name, cb){
             fileNamePrefix : 'place/',
             skipMD5Identity : true
         };
-
         images.storeImgFromData(pgClient, created[0].id,data, function(err, iid1){
-           cb(err, iid1, created);
-        }, dataExtra);
+            images.storeImgFromData(pgClient, created[0].id,data, function(err, iid2){
+
+        images.storeImgFromData(pgClient, created[0].id,data, function(err, iid3){
+           cb(err, [iid1,iid2,iid3], created);
+        }, dataExtra)}, dataExtra)}, dataExtra);
     });
 }
