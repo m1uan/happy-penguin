@@ -118,7 +118,41 @@ module.exports = {
             response(request, err, data);
         });
     },uploadimg_post : function (request){
-        response(request, null, request.payload);
+        var image = require(process.cwd() + '/engine/image.js');
+        var linkEngine = require(process.cwd() + '/engine/link.js');
+
+        console.log('payload', request.payload.link);
+
+
+        var dataInfo = {
+            file : request.payload.file,
+            type : request.payload.type
+
+        };
+
+
+        // must be specified image for which imageId
+        if(request.payload.thumbFor){
+            dataInfo.thumbFor = request.payload.thumbFor;
+        }
+
+        if(request.payload.thumbData){
+            dataInfo.thumbData = request.payload.thumbData;
+        }
+
+        var dataExtra = {
+            tableName : 'pinguin.image_t',
+            usrField : 'place_id',
+            fileNamePrefix : 'place/'
+        };
+
+        image.storeImgFromData(pgClient, request.payload.link, dataInfo, function(err, imageData){
+
+
+                response(request, err, imageData);
+
+        },dataExtra);
+
     }
 
 }
