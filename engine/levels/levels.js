@@ -412,6 +412,24 @@ module.exports = {
         }
         SQL.whereAnd('pq.place_id='+ dataContainer.place_id);
         SQL.select(pg, cb);
+    },iget: function(pg, dataContainer, cb){
+
+        if(!dataContainer.place_id){
+            cb('place_id missing');
+            return;
+        }
+
+
+
+        var fields = [ 'iid' ];
+        if(dataContainer.fields){
+            fields = dataContainer.fields;
+        }
+
+        var SQL = SL.SqlLib('pinguin.image_t', fields);
+
+        SQL.whereAnd('pinguin.image_t.place_id='+ dataContainer.place_id);
+        SQL.select(pg, cb);
     }
 }
 
