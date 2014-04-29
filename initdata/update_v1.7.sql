@@ -69,4 +69,14 @@ CREATE TABLE question_t (
     FOREIGN KEY (answers) REFERENCES translates.link_t (link),
 
     PRIMARY KEY(qid)
+)
+
+
+CREATE TABLE image_t (
+    iid SERIAL NOT NULL,
+    image VARCHAR(255),
+    md5 VARCHAR(255),
+    place_id INT NOT NULL,
+    FOREIGN KEY (place_id) REFERENCES pinguin.place_t (id),
+    PRIMARY KEY(iid)
 );

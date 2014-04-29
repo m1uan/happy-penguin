@@ -82,7 +82,7 @@ module.exports.saveFromUrl = function(pgClient, userId, linkId, url, cb){
  * @param thumb Integer => store this image like thumbmail of link
  * @param cb
  */
-module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
+module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb, extraDataContainer){
 
 
 
@@ -108,7 +108,7 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
                     cb(err, data);
                 }
 
-            });
+            },extraDataContainer);
         });
     } else if(imageInfo.thumbData && imageInfo.thumbFor){
         /**
@@ -158,7 +158,22 @@ module.exports.storeImgFromData = function(pgClient, userId, imageInfo, cb){
     }
 }
 
-module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
+module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb, extraDataContainer){
+    var tableName = 'image'
+    if(extraDataContainer && extraDataContainer.tableName){
+        tableName = extraDataContainer.tableName;
+    }
+
+    var usrField = 'usr';
+    if(extraDataContainer && extraDataContainer.usrField){
+        usrField = extraDataContainer.usrField;
+    }
+
+    var fileNamePrefix = '';
+    if(extraDataContainer && extraDataContainer.fileNamePrefix){
+        fileNamePrefix = extraDataContainer.fileNamePrefix;
+    }
+
     console.log('BEGIN:image.storeImgFromFileName', userId, userId, imageInfo) ;
     async.waterfall([
         function(icb){
@@ -189,7 +204,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
 
     function isExistsSameImgWithMD5(md5data, icb){
         console.log('storeImgFromFileName:isExistsSameImgWithMD5', md5data) ;
-        var sql = 'SELECT iid, image FROM image WHERE md5 = $1';
+        var sql = 'SELECT iid, image FROM '+tableName+' WHERE md5 = $1';
 
         var data  = [md5data.md5];
         console.log(sql, data);
@@ -222,7 +237,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
             return;
         } else if(copyData.md5 && copyData.data){
             // copy
-            var writeFileName = generateName();
+            var writeFileName = fileNamePrefix + generateName();
 
             if(imageInfo.type == 'image/png'){
                 writeFileName += '.png';
@@ -260,7 +275,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
         }
 
 
-        var sql = 'INSERT INTO image (image, md5, usr) VALUES ($1,$2,$3) RETURNING iid';
+        var sql = 'INSERT INTO '+tableName+' (image, md5, '+usrField+') VALUES ($1,$2,$3) RETURNING iid';
         var sqldata = [storeData.file, storeData.md5, userId];
         console.log(sql, sqldata);
 
@@ -302,7 +317,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
                 }
 
                 // copy
-                var writeFileName = generateName();
+                var writeFileName = fileNamePrefix + generateName();
 
                 if(imageInfo.type == 'data:image/png'){
                     writeFileName += '.png';
@@ -310,7 +325,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb){
                     writeFileName += '.jpeg';
                 }
 
-                var writeFile = module.exports.IMG_ORIG_DIR +writeFileName;
+                var writeFile = module.exports.IMG_ORIG_DIR + writeFileName;
                 console.log('countMD5AndCopy before wrote:', writeFile) ;
                 fs.writeFile(writeFile, data, function(err){
                     // create new image in DB with file name and md5
