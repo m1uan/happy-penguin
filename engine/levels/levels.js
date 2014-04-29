@@ -117,17 +117,30 @@ module.exports = {
             });
         }
 
+        if(dataContainer.ifields){
+            parallel.push(function(icb){
+                var imagesContainer = {
+                    place_id : dataContainer.id,
+                    fields : dataContainer.ifields
+                }
+                module.exports.iget(pg, imagesContainer, icb);
+            });
+        }
+
         async.parallel(parallel, function(err, gets){
             var out = null;
             if(!err && gets){
                 out = gets[0];
                 if(gets.length > 1 && gets[1]){
-                    if(gets[1]){
-                        out.questions = gets[1];
-                    } else {
-                        out.questions = [];
-                    }
+                   out.questions = gets[1];
+                } else {
+                   out.questions = [];
+                }
 
+                if(gets.length > 2 && gets[2]){
+                    out.images = gets[2];
+                } else {
+                    out.images = [];
                 }
             }
             cb(err,out);

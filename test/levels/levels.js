@@ -251,6 +251,34 @@ describe.only('levels', function(){
 
 
         });
+
+        it('get - with images', function(cb){
+
+            createPlaceWithImage('place_159', function(err, iid, created){
+                var dataContainer = {
+                    id: created[0].id,
+                    fields : ['id','name','posx','posy','info'],
+                    qfields : ['question','answers'],
+                    ifields : ['iid','image'],
+                    qlang : 'en',
+                    lang : 'en'
+                }
+
+
+                levels.get(pgClient, dataContainer, function(err, getData){
+                    should.not.exist(err);
+                    should.exist(getData);
+
+
+                    getData.should.have.property('questions');
+                    getData.questions.length.should.be.equal(2);
+
+                    getData.should.have.property('images');
+                    getData.images.length.should.be.equal(3);
+                    cb();
+                })
+            });
+        });
     });
     describe('question', function(){
 
