@@ -437,9 +437,16 @@ describe.only('levels', function(){
 
     describe('images', function(){
         it('from data - pinguin table', function(cb){
-            createPlaceWithImage('place_155', function(err, iid1, created){
+            createPlaceWithImage('place_155', function(err, iid, created){
                 should.not.exists(err);
-                should.exists(iid1);
+                should.exists(iid);
+
+                iid.forEach(function(image){
+                    var exists = fs.existsSync(images.IMG_ORIG_DIR + image.imageFile);
+                    exists.should.be.ok;
+//                    var exists2 = fs.existsSync(image.IMG_THUMB_DIR + image.image);
+//                    exists2.should.not.ok;
+                })
                 //data.file = file;
 
                 cb();
@@ -455,13 +462,18 @@ describe.only('levels', function(){
                     fields : ['*']
                 }
 
-                levels.iget(pgClient, dataContainer, function(err, question){
-                    question.should.be.a.array;
-                    question.length.should.be.above(0);
-                    var row = question[0];
+                levels.iget(pgClient, dataContainer, function(err, image){
+                    image.should.be.a.array;
+                    image.length.should.be.above(0);
+                    var row = image[0];
                     row.should.have.property('image');
                     row.should.have.property('iid');
                     row.place_id.should.be.equal(dataContainer.place_id);
+
+                    image.forEach(function(img){
+                        var exists = fs.existsSync(images.IMG_ORIG_DIR + img.image);
+                        exists.should.be.ok;
+                    });
                     cb();
                 });
             })
@@ -494,7 +506,7 @@ describe.only('levels', function(){
         });
 
         it('delete all', function(cb){
-            var image = require(process.cwd() + '/engine/image.js');
+
             createPlaceWithImage('place_158', function(err, iid, created){
                 var dataContainer = {
                     place_id : created[0].id
@@ -504,9 +516,9 @@ describe.only('levels', function(){
                     deleted.length.should.be.eql(iid.length);
                     iid.forEach(function(image){
                         deleted.should.containEql(image.imageId);
-                        var exists = fs.existsSync(image.IMG_ORIG_DIR + image.image);
+                        var exists = fs.existsSync(images.IMG_ORIG_DIR + image.image);
                         exists.should.not.ok;
-                        var exists2 = fs.existsSync(image.IMG_THUMB_DIR + image.image);
+                        var exists2 = fs.existsSync(images.IMG_THUMB_DIR + image.image);
                         exists2.should.not.ok;
                     })
                     var getDataContainer = {
