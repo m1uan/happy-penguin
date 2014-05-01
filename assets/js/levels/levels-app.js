@@ -37,7 +37,7 @@ function PlaceCtrl($scope, $routeParams, $http) {
         if(err){
             alert(err.responseText);
         } else {
-
+            uploadImageSuccess(data);
         }
     }});
 
@@ -122,7 +122,35 @@ function PlaceCtrl($scope, $routeParams, $http) {
 
     }
 
+    $scope.onDeleteImage = function(image, index){
+        var dataConteiner = {
+            iid: image.iid,
+            place_id: self.id
+        };
+
+        alertify.confirm('are you sure about remove image?',function(e){
+            if(!e){
+                return;
+            }
+
+            requestPOST($http, 'idelete/',dataConteiner, function(response, status){
+                console.log(index, response);
+                $scope.images.splice(index, 1);
+                alertify.error('Image delete ' + response[0]);
+            });
+        });
+    }
+
     function uploadImageSuccess(imageData){
+        var image = {
+            image : imageData.response.imageFile,
+            iid : imageData.response.imageId
+        };
+
+
+        $scope.$apply(function(){
+            $scope.images.push(image);
+        })
         alertify.success('Image upload like ' + imageData.response.imageFile);
     }
 }

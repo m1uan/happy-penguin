@@ -1,0 +1,22 @@
+.btn-image-delete {
+    position:relative;
+
+    margin-top:-150px;
+    margin-left:-30px;
+}
+
+.image-place-preview {
+    width:400px;
+}
+
+.image-frame{
+    background-color:black;
+    padding:10px;
+    float:left;
+}
+
+#uploader {
+    background-color:dodgerblue;
+    width:500px;
+    height:100px;
+}

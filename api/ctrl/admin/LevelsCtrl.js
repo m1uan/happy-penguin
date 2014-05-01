@@ -155,6 +155,25 @@ module.exports = {
 
         },dataExtra);
 
+    },idelete_post: function(request){
+        if(!request.payload.place_id){
+            response(request,'place_id missing');
+            return;
+        }
+        if(!request.payload.iid){
+            response(request,'iid missing');
+            return;
+        }
+
+
+        var dataContainer = {
+            place_id :request.payload.place_id,
+            iid : request.payload.iid
+        }
+
+        levelEngine.idelete(pgClient, dataContainer, function(err, deleted){
+            response(request, err, deleted);
+        });
     }
 
 }

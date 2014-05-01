@@ -1,7 +1,12 @@
 link(rel='stylesheet', href='/assets/css/levels/world.css')
 div#uploader
-div(ng-repeat="image in images")
-    img(src="/assets/img/orig/{{image.image}}").imageplace
+div(ng-repeat="image in images").image-frame
+    img(src="/assets/img/orig/{{image.image}}").image-place-preview
+    button(ng-click="onDeleteImage(image, $index)").btn.btn-danger.btn-image-delete x
+
+div.clear
+    span images
+
 div spot
     p positions x and y
     input(ng-model="posx")
