@@ -60,7 +60,9 @@ describe.only('levels', function(){
         cb();
     });
 
-    describe('place', function(){
+    describe('place', function(err, data){
+
+
 
         it('create', function(cb){
             var dataContainer = {
@@ -277,6 +279,17 @@ describe.only('levels', function(){
                     getData.images.length.should.be.equal(3);
                     cb();
                 })
+            });
+        });
+
+        it('list',function(cb){
+            var dataFields = {
+                fields: ['id','name','posx','posy','info'],
+                lang : 'en'
+            }
+
+            levels.list(pgClient, dataFields, function(err,data){
+                cb();
             });
         });
     });

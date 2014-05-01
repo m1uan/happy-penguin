@@ -1,12 +1,5 @@
 link(rel='stylesheet', href='/assets/css/levels/world.css')
-div#uploader
-div.row
-    div(ng-repeat="image in images").image-frame.col-md-3
-        img(src="/assets/img/orig/{{image.image}}").image-place-preview
-        button(ng-click="onDeleteImage(image, $index)").btn.btn-danger.btn-image-delete x
 
-
-div.clear
 
 
 div spot
@@ -38,3 +31,11 @@ div spot
     div
         img#canvasHelper
         canvas(width="128",height="128")#myCanvas
+
+
+div#uploader
+div.row
+    div(ng-repeat="image in images").image-frame.col-md-3
+        img(src="/assets/img/orig/{{image.image}}").image-place-preview
+        button(ng-click="onDeleteImage(image, $index)").btn.btn-danger.btn-image-delete x
+div.clear
