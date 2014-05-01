@@ -1,5 +1,7 @@
 link(rel='stylesheet', href='/assets/css/levels/world.css')
 div#uploader
+div(ng-repeat="image in images")
+    img(src="/assets/img/orig/{{image.image}}").imageplace
 div spot
     p positions x and y
     input(ng-model="posx")

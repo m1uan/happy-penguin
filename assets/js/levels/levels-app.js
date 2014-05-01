@@ -58,7 +58,7 @@ function PlaceCtrl($scope, $routeParams, $http) {
     }
 
 
-    var url ='get/'+self.id+'?fields=id,name,info,posx,posy&qfields=qid,question,answers';
+    var url ='get/'+self.id+'?fields=id,name,info,posx,posy&qfields=qid,question,answers&ifields=iid,image';
 
     requestGET($http, url, function(response, status){
         console.log(response);
@@ -73,6 +73,7 @@ function PlaceCtrl($scope, $routeParams, $http) {
         $scope.posx = response.posx;
         $scope.posy = response.posy;
         $scope.questions = response.questions;
+        $scope.images = response.images;
     }
 
 

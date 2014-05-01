@@ -102,6 +102,10 @@ module.exports = {
             dataContainer.qfields = request.query.qfields.split(',') ;
         }
 
+        if(request.query.ifields){
+            dataContainer.ifields = request.query.ifields.split(',') ;
+        }
+
         levelEngine.get(pgClient, dataContainer, function(err, getData){
             response(request, err, getData);
         });
@@ -147,8 +151,6 @@ module.exports = {
         };
 
         image.storeImgFromData(pgClient, request.payload.link, dataInfo, function(err, imageData){
-
-
                 response(request, err, imageData);
 
         },dataExtra);
