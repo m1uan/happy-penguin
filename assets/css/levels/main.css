@@ -6,17 +6,15 @@
 }
 
 .image-place-preview {
-    width:400px;
+    width:300px;
 }
 
 .image-frame{
     background-color:black;
     padding:10px;
-    float:left;
 }
 
 #uploader {
-    background-color:dodgerblue;
-    width:500px;
+    background-color:cadetblue;
     height:100px;
 }
