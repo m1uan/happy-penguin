@@ -191,7 +191,11 @@ function WorldCtrl($scope, $location, $http) {
                 item.css({top: top, left: left});
                 item.appendTo(element);
                 item.click(function(){
-                    $location.path('/place/'+pl.id);
+                    console.log('click');
+                    $scope.$apply(function(){
+                        $location.path('/place/'+pl.id);
+                    })
+
                 })
 
                 console.log(pl, top, left, parseFloat(element.width()) , parseFloat(element.height()));
@@ -202,7 +206,7 @@ function WorldCtrl($scope, $location, $http) {
 
 
 
-    $scope.onWorldClick = function(evt){
+    element.dblclick(function(evt){
 
         var x = evt.pageX - element.offset().left;
         var y = evt.pageY - element.offset().top;
@@ -224,7 +228,7 @@ function WorldCtrl($scope, $location, $http) {
             }
         });
 
-    };
+    });
 
 }
 
