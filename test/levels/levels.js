@@ -284,11 +284,16 @@ describe.only('levels', function(){
 
         it('list',function(cb){
             var dataFields = {
-                fields: ['id','name','posx','posy','info'],
+                fields: ['id','name','posx','posy'],
                 lang : 'en'
             }
 
             levels.list(pgClient, dataFields, function(err,data){
+                should.not.exists(err);
+                should.exist(data);
+                data.should.be.a.Array;
+                data.length.should.be.above(1);
+                data[0].name.should.be.String;
                 cb();
             });
         });
