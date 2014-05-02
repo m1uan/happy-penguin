@@ -158,6 +158,24 @@ module.exports = {
 
         },dataExtra);
 
+    },saveimgurl_post : function(request){
+        console.log(request.payload);
+        var imageEngine = require(process.cwd() + '/engine/image.js');
+        var updateImg = request.payload;
+
+
+        var dataExtra = {
+            tableName : 'pinguin.image_t',
+            usrField : 'place_id',
+            fileNamePrefix : 'place/',
+            skipMD5Identity : true
+        };
+
+        var userId = request.user.id;
+
+        imageEngine.storeUrl(pgClient, request.payload.link, updateImg.url, function(err, data){
+            request.reply(err || data);
+        }, dataExtra);
     },idelete_post: function(request){
         if(!request.payload.place_id){
             response(request,'place_id missing');

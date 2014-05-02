@@ -16,11 +16,16 @@ function focusElement(el, focusShow){
 
 function dragImage(element, imageElement, fileElement, linkId, uploadConfig){
     var UPLOAD_URL =  '/words/uploadimg';
+    var UPLOADURL_URL = '/words/saveimgurl';
     var IMAGE_ORIG = '/assets/img/orig/';
     var IMAGE_THUMB = '/assets/img/orig/';
 
     if(uploadConfig && uploadConfig.UPLOAD_URL){
         UPLOAD_URL = uploadConfig.UPLOAD_URL;
+    }
+
+    if(uploadConfig && uploadConfig.UPLOADURL_URL){
+        UPLOADURL_URL = uploadConfig.UPLOADURL_URL;
     }
 
     if(uploadConfig && uploadConfig.IMAGE_ORIG){
@@ -111,7 +116,7 @@ function dragImage(element, imageElement, fileElement, linkId, uploadConfig){
         fd.append("url", url);
         $.ajax({
             type: 'POST',
-            url: '/words/saveimgurl',
+            url: UPLOADURL_URL,
             data: fd,
             processData: false,
             contentType: false,

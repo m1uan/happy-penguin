@@ -38,7 +38,7 @@ function PlaceCtrl($scope, $routeParams, $http) {
     var self = {};
     self.id = $routeParams.id;
 
-    dragImage($('#uploader'), $('#uploader'), $('#uploader'), self.id, {UPLOAD_URL:'uploadimg/', callback : function(err, data){
+    dragImage($('#uploader'), $('#uploader'), $('#uploader'), self.id, {UPLOAD_URL:'uploadimg/',UPLOADURL_URL:'saveimgurl/', callback : function(err, data){
         if(err){
             alert(err.responseText);
         } else {

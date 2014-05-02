@@ -348,7 +348,7 @@ module.exports.storeImgFromFileName = function(pgClient, userId, imageInfo, cb, 
     }
 }
 
-module.exports.storeUrl = function(pgClient, userId, url, cb){
+module.exports.storeUrl = function(pgClient, userId, url, cb, extraDataContainer){
     console.log('BEGIN:image.storeUrl', userId, url, url) ;
     var http;
     if(url.indexOf('http:') == 0) {
@@ -378,7 +378,7 @@ module.exports.storeUrl = function(pgClient, userId, url, cb){
     var file = fs.createWriteStream(imageInfo.file);
     file.on('close', function(){
         console.log('end of pipe')
-        module.exports.storeImgFromFileName(pgClient, userId, imageInfo, cb)
+        module.exports.storeImgFromFileName(pgClient, userId, imageInfo, cb, extraDataContainer)
     });
 
     try {
