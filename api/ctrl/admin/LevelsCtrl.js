@@ -21,6 +21,9 @@ module.exports = {
             get_get : {
                 auth:false,
                 params : '{params*}'
+            },list_get : {
+                auth:false,
+                params : '{params*}'
             }
         }
     },
@@ -174,6 +177,25 @@ module.exports = {
         levelEngine.idelete(pgClient, dataContainer, function(err, deleted){
             response(request, err, deleted);
         });
+    },list_get: function(request){
+
+
+        var data = request.params.params.split('/');
+        var dataContainer = {
+            lang: data[0]
+        };
+
+
+        if(request.query.fields){
+            dataContainer.fields = request.query.fields.split(',') ;
+        }
+
+        if(!dataContainer.lang){
+            response(request,'lang missing (list/lang/)');
+            return;
+        }
+
+        levelEngine.list(pgClient, dataContainer, superResponse(request));
     }
 
 }
@@ -191,5 +213,11 @@ function response(request, err, data){
         request.reply({error:err, success:-1}).code(400);
     } else {
         request.reply({success:1,error:'',response:data});
+    }
+}
+
+function superResponse(request){
+    return function(err, data){
+        response(request, err, data);
     }
 }

@@ -1,0 +1,10 @@
+link(rel='stylesheet', href='/assets/css/levels/world.css')
+
+table.table
+    tr(ng-repeat="place in places")
+        td
+            a(href="#/place/{{place.id}}") # {{place.id}}
+        td {{place.posx}}
+        td {{place.posy}}
+        td {{place.name}}
+

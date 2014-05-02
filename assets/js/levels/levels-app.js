@@ -6,6 +6,11 @@ var app = angular.module('voc4u', ['ngRoute'],
             controller: WorldCtrl
         });
 
+        $routeProvider.when('/places', {
+            templateUrl: '/templates/levels/places',
+            controller: PlacesCtrl
+        });
+
         $routeProvider.when('/place/:id', {
             templateUrl: '/templates/levels/place',
             controller: PlaceCtrl
@@ -196,4 +201,15 @@ function WorldCtrl($scope, $location, $http) {
 
     };
 
+}
+
+
+
+function PlacesCtrl($scope, $http) {
+    var url ='list/en/?fields=id,name,posx,posy';
+
+    requestGET($http, url, function(response, status){
+        console.log(response);
+        $scope.places = response;
+    });
 }
