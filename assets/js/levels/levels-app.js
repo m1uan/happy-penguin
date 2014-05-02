@@ -173,7 +173,32 @@ function WorldCtrl($scope, $location, $http) {
 //    });
 
     //element.click(onClick);
+    update();
 
+    function update(){
+        var url ='list/en/?fields=id,name,posx,posy';
+        requestGET($http, url, function(response, status){
+            console.log(response);
+            $scope.places = response;
+
+            $scope.places.forEach(function(pl){
+
+                var item = $('<div>' + pl.id + '</div>').addClass('place');
+
+                var left = parseFloat(1350) * parseFloat(pl.posx);
+                var top = parseFloat(675) * parseFloat(pl.posy);
+
+                item.css({top: top, left: left});
+                item.appendTo(element);
+                item.click(function(){
+                    $location.path('/place/'+pl.id);
+                })
+
+                console.log(pl, top, left, parseFloat(element.width()) , parseFloat(element.height()));
+                //$('#world-main').append('ahoj').addClass('place');
+            });
+        });
+    }
 
 
 
@@ -190,7 +215,7 @@ function WorldCtrl($scope, $location, $http) {
                 requestPOST($http, url, {posx:portX, posy:portY, name:placeName}, function(response, status){
                     console.log(response)
 
-
+                    update();
                     $location.path('/place/'+response.id);
                 });
 
