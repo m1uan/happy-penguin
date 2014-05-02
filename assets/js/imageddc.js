@@ -121,9 +121,13 @@ function dragImage(element, imageElement, fileElement, linkId, uploadConfig){
             processData: false,
             contentType: false,
             success : function(data, status, headers, config) {
-                console.log(data);
+                console.log('data', data);
                 loadImageFromResource(data);
                 uploadThumbIfNeed(data);
+
+                if(uploadConfig && uploadConfig.callback){
+                    uploadConfig.callback(null, {'response':data});
+                }
             },
             error:function(jqXHR, status, headers, config) {
                 // called asynchronously if an error occurs

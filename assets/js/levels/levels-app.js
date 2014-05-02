@@ -42,6 +42,7 @@ function PlaceCtrl($scope, $routeParams, $http) {
         if(err){
             alert(err.responseText);
         } else {
+
             uploadImageSuccess(data);
         }
     }});
