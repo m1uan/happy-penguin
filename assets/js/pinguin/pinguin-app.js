@@ -7,6 +7,11 @@ var app = angular.module('pinguin', ['ngRoute', 'pinguin.LocalStorageService','p
             controller: IntroCtrl
         });
 
+        $routeProvider.when('/world', {
+            templateUrl: '/templates/levels/world',
+            controller: WorldCtrl
+        });
+
         $routeProvider.when('/404', {
             templateUrl: '/templates/pinguin/404'
         });
@@ -25,60 +30,18 @@ var app = angular.module('pinguin', ['ngRoute', 'pinguin.LocalStorageService','p
         // configure html5 to get links working on jsfiddle
         //$locationProvider.html5Mode(true);
     });
-function requestPOST($http, func, data, success, failed){
-    request('POST',$http, func, data, success, failed);
-}
-
-function requestGET($http, func, success, failed){
-    request('GET',$http, func, null, success, failed);
-}
-
-function request(method, $http, func, data, success, failed){
-    var ROUTE = '/pinguin/';
 
 
-
-    $http({
-        method: method,
-        url: ROUTE + func,
-        data: data}).
-        success(function(data, status, headers, config) {
-            console.log('request',data, status,headers,config);
-            if(success){
-                var response = data;
-
-                if(data.response){
-                    response = data.response;
-                } else {
-                    alertify.alert('no response field!');
-                }
-
-                success(response, status);
-            }
-
-        }).
-        error(function(data, status, headers, config) {
-            console.log(data, status);
-            var errorMessage = data;
-            if(data.error && data.error.detail){
-                errorMessage = data.error.detail;
-            } else if(data.error){
-                errorMessage = data.error;
-            }
-
-            alertify.alert('Error:' + errorMessage);
-            if(failed){
-                failed(data, status);
-            }
-
-        });
-
-}
 
 function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService) {
 
     var game = localStorageService.get('pinguin.game');
     //var base = {};
+
+    game = {
+        lang:'en',
+        learn: 'en'
+    }
     if(game){
         $location.path('/world');
     } else {
@@ -105,5 +68,94 @@ function IntroCtrl($scope, $http, $routeParams) {
         $scope.pagePrev = false;
     }
 
+
+}
+
+function WorldCtrl($scope, $location, $http) {
+    var element = $('#world-main');
+    //console.log(element);
+//    element.mousemove(function(evt) {
+//        var x = evt.pageX - element.offset().left;
+//        var y = evt.pageY - element.offset().top;
+//
+//        var portX = parseFloat(x)/parseFloat(element.width());
+//        var portY = parseFloat(y)/parseFloat(element.height());
+//        console.log({x:x, y:y, portX:portX, portY:portY});
+//    });
+
+    //element.click(onClick);
+    update();
+
+    function generateInfo(place){
+        return place.name + place.name;
+    }
+
+    function update(){
+        var url ='list/en/?fields=id,name,posx,posy';
+        requestGET($http, url, function(response, status){
+            console.log(response);
+            $scope.places = response;
+
+            $scope.places.forEach(function(pl){
+
+                var item = $('<div data-toggle="tooltip" data-placement="left" title="'+pl.name+'">' + pl.id + '</div>').addClass('place');
+
+                var left = parseFloat(1350) * parseFloat(pl.posx);
+                var top = parseFloat(675) * parseFloat(pl.posy);
+
+                item.css({top: top, left: left});
+                item.appendTo(element);
+                item.click(function(){
+                    console.log('click');
+                    $scope.$apply(function(){
+                        $location.path('/place/'+pl.id);
+                    })
+
+                });
+
+                item.popover({trigger:'hover',html:true,title:pl.name,content:function(){
+                    return generateInfo(pl);
+                }});
+
+//                item.mouseenter(function(){
+//
+//                    console.log('tooltip');
+//                })
+//                item.mouseleave(function(){
+//                    item.popover('hide');
+//                    console.log('tooltip');
+//                })
+
+                console.log(pl, top, left, parseFloat(element.width()) , parseFloat(element.height()));
+                //$('#world-main').append('ahoj').addClass('place');
+            });
+        });
+    }
+
+
+
+    element.dblclick(function(evt){
+
+        var x = evt.pageX - element.offset().left;
+        var y = evt.pageY - element.offset().top;
+
+        var portX = parseFloat(x)/parseFloat(element.width());
+        var portY = parseFloat(y)/parseFloat(element.height());
+        alertify.prompt('portX:'+portX+ ' - protY:'+portY, function(e, placeName){
+            if(e){
+                var url = 'create/';
+                requestPOST($http, url, {posx:portX, posy:portY, name:placeName}, function(response, status){
+                    console.log(response)
+
+                    update();
+                    $location.path('/place/'+response.id);
+                });
+
+
+                console.log(' $location.path(/place/0)');
+            }
+        });
+
+    });
 
 }
