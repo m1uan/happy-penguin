@@ -35,18 +35,13 @@ var app = angular.module('pinguin', ['ngRoute', 'pinguin.LocalStorageService','p
 
 function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService) {
 
-    var game = localStorageService.get('pinguin.game');
+    var game = null;//localStorageService.get('pinguin.game');
     //var base = {};
 
-    game = {
-        lang:'en',
-        learn: 'en',
-        posx: 0.525925925925926,
-        posy: 0.224296287254051,
-        placeId : 6
+    if(!game){
+        game = createNewGame(localStorageService);
     }
 
-    localStorageService.set('pinguin.game', game);
 
     if(game){
         $location.path('/world');
@@ -93,12 +88,14 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
     //element.click(onClick);
     update();
 
-    $scope.fly = 10;
-    $scope.walk = 10;
-    $scope.swim = 10;
-    $scope.exp = 10;
 
     var game = localStorageService.get('pinguin.game');
+
+    $scope.fly = game.fly;
+    $scope.walk = game.walk;
+    $scope.swim = game.swim;
+    $scope.exp = game.exp;
+
 
     self.generateInfo = function(place){
         var place_popover = $('#place_popover');
@@ -117,14 +114,14 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
             console.log(response);
             $scope.places = response;
             $scope.placesIds = {};
-            setupPlacesDistancesAndExp();
+
 
             $scope.places.forEach(function(pl){
                 $scope.placesIds[pl.id] = pl;
                 var item = $('<div data-toggle="tooltip" data-placement="left" title="'+pl.name+'">' + pl.id + '</div>').addClass('place');
 
-                var left = parseFloat(1350) * parseFloat(pl.posx);
-                var top = parseFloat(675) * parseFloat(pl.posy);
+                var left = parseFloat(1350) * parseFloat(pl.posx) - 12;
+                var top = parseFloat(675) * parseFloat(pl.posy) -12;
 
 
                 item.css({top: top, left: left});
@@ -149,19 +146,26 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
                 console.log(pl, top, left, parseFloat(element.width()) , parseFloat(element.height()));
                 //$('#world-main').append('ahoj').addClass('place');
             });
+            setupPlacesDistancesAndExp();
             showPenguin();
         });
     }
 
 
     function showPenguin(){
-        var item = $('<img id="penguin" src="assets/img/pinguin/penguin_3.png"/>');
+        var item = $('#penguin');
+
+        if(!item.length){
+            item  = $('<img id="penguin" src="assets/img/pinguin/penguin_3.png"/>');
+            item.appendTo(element);
+        }
 
 
-        item.appendTo(element);
 
-        var w2 = 16;//(item.clientWidth/2);
-        var h2 = 16;//(item.clientHeight/2);
+
+
+        var w2 = 18;//(item.clientWidth/2);
+        var h2 = 34;//(item.clientHeight/2);
 
         var gamePlace = $scope.placesIds[game.placeId];
 
@@ -189,6 +193,18 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
                 $scope.fly -= place.fly;
                 $scope.swim -= place.swim;
                 $scope.walk -= place.walk;
+
+                game.placeId = place.id;
+                game.visited.push(game.placeId);
+                showPenguin();
+                setupPlacesDistancesAndExp();
+
+
+                game.fly = $scope.fly;
+                game.swim = $scope.swim;
+                game.walk = $scope.walk;
+
+                localStorageService.set('pinguin.game', game);
                 //element.hide();
                 //$location.path('/place/'+pl.id);
             })
@@ -197,11 +213,11 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
 
 
     function setupPlacesDistancesAndExp(){
-
+        var gamePlace = $scope.placesIds[game.placeId];
 
         $scope.places.forEach(function(place){
-            var xd = game.posx - place.posx;
-            var yd = game.posy - place.posy;
+            var xd = gamePlace.posx - place.posx;
+            var yd = gamePlace.posy - place.posy;
             var distance = Math.sqrt((xd*xd)+(yd*yd));
             place.superDistance = Math.round(distance*100);
 
@@ -212,4 +228,28 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
 
     }
 
+
+
+}
+
+
+function createNewGame(localStorageService){
+    var game = {
+        fly : 20,
+        swim :20,
+        walk :20,
+        exp : 20,
+        lang:'en',
+        learn: 'en',
+        posx: 0.525925925925926,
+        posy: 0.224296287254051,
+        placeId : 6,
+        visited : []
+    }
+
+
+
+    localStorageService.set('pinguin.game', game);
+
+    return game;
 }

@@ -8,13 +8,14 @@
 
 .place {
     position:absolute;
-    width:10px;
-    height:10px;
+    width:22px;
+    height:22px;
     color:white;
     font-size: 7px;
     font-weight: bold;
     padding:2px;
-    background-color:#000000;
+    background-image: url('/assets/img/pinguin/place_red.png');
+    background-size: 100%;
 }
 
 #game_resources{
