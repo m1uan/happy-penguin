@@ -35,7 +35,7 @@ var app = angular.module('pinguin', ['ngRoute', 'pinguin.LocalStorageService','p
 
 function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService) {
 
-    var game = null;//localStorageService.get('pinguin.game');
+    var game = localStorageService.get('pinguin.game');
     //var base = {};
 
     if(!game){
@@ -148,6 +148,7 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
             });
             setupPlacesDistancesAndExp();
             showPenguin();
+            testEndGame();
         });
     }
 
@@ -205,6 +206,8 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
                 game.walk = $scope.walk;
 
                 localStorageService.set('pinguin.game', game);
+
+                testEndGame();
                 //element.hide();
                 //$location.path('/place/'+pl.id);
             })
@@ -226,6 +229,21 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
             place.walk = (place.superDistance - (place.fly*5) - (place.swim*2));
         });
 
+    }
+
+
+    function testEndGame(){
+        var canPlay = $scope.places.some(function(place){
+            return place.id != game.placeId &&  place.fly <= game.fly && place.swim <= game.swim && place.walk <= game.walk;
+        });
+
+
+        if(!canPlay){
+            alertify.alert('Game over!');
+            game = createNewGame(localStorageService);
+            showPenguin();
+            setupPlacesDistancesAndExp();
+        }
     }
 
 
