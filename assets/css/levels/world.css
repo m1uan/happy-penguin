@@ -27,3 +27,8 @@
 #game_resources span {
     margin:4px;
 }
+
+#penguin {
+    position:absolute;
+    width: 32px;
+}

@@ -42,7 +42,8 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService)
         lang:'en',
         learn: 'en',
         posx: 0.525925925925926,
-        posy: 0.224296287254051
+        posy: 0.224296287254051,
+        placeId : 6
     }
 
     localStorageService.set('pinguin.game', game);
@@ -115,49 +116,21 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
         requestGET($http, url, function(response, status){
             console.log(response);
             $scope.places = response;
+            $scope.placesIds = {};
+            setupPlacesDistancesAndExp();
 
             $scope.places.forEach(function(pl){
-
+                $scope.placesIds[pl.id] = pl;
                 var item = $('<div data-toggle="tooltip" data-placement="left" title="'+pl.name+'">' + pl.id + '</div>').addClass('place');
 
                 var left = parseFloat(1350) * parseFloat(pl.posx);
                 var top = parseFloat(675) * parseFloat(pl.posy);
 
-                var xd = game.posx - pl.posx;
-                var yd = game.posy - pl.posy;
-                var distance = Math.sqrt((xd*xd)+(yd*yd));
-
-
-                pl.superDistance = Math.round(distance*100);
-
-                pl.fly = Math.round(pl.superDistance / 9);
-                pl.swim = Math.round((pl.superDistance - (pl.fly*6)) / 3);
-                pl.walk = (pl.superDistance - (pl.fly*5) - (pl.swim*2));
-
 
                 item.css({top: top, left: left});
                 item.appendTo(element);
                 item.click(function(){
-                    if($scope.fly < pl.fly){
-                        alertify.error('Sorry you have enought FLY... you have just ' + $scope.fly+ ' but you need at least '+pl.fly);
-                        $('#game_resources_fly').css({color:'red'});
-                    } else if($scope.swim < pl.swim){
-                        alertify.error('Sorry you have enought SWIM... you have just ' + $scope.swim+ ' but you need at least '+pl.swim);
-                        $('#game_resources_swim').css({color:'red'});
-                    } else if($scope.walk < pl.walk){
-                        alertify.error('Sorry you have enought WALK... you have just ' + $scope.walk+ ' but you need at least '+pl.walk);
-                        $('#game_resources_walk').css({color:'red'});
-                    } else {
-                        $scope.$apply(function(){
-                            $scope.fly -= pl.fly;
-                            $scope.swim -= pl.swim;
-                            $scope.walk -= pl.walk;
-
-                            //$location.path('/place/'+pl.id);
-                        })
-                    }
-
-
+                    moveToPlace(pl);
                 });
 
                 item.popover({trigger:'hover',html:true,title:pl.name,content:function(){
@@ -176,33 +149,67 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
                 console.log(pl, top, left, parseFloat(element.width()) , parseFloat(element.height()));
                 //$('#world-main').append('ahoj').addClass('place');
             });
+            showPenguin();
         });
     }
 
 
-
-    element.dblclick(function(evt){
-
-        var x = evt.pageX - element.offset().left;
-        var y = evt.pageY - element.offset().top;
-
-        var portX = parseFloat(x)/parseFloat(element.width());
-        var portY = parseFloat(y)/parseFloat(element.height());
-        alertify.prompt('portX:'+portX+ ' - protY:'+portY, function(e, placeName){
-            if(e){
-                var url = 'create/';
-                requestPOST($http, url, {posx:portX, posy:portY, name:placeName}, function(response, status){
-                    console.log(response)
-
-                    update();
-                    $location.path('/place/'+response.id);
-                });
+    function showPenguin(){
+        var item = $('<img id="penguin" src="assets/img/pinguin/penguin_3.png"/>');
 
 
-                console.log(' $location.path(/place/0)');
-            }
+        item.appendTo(element);
+
+        var w2 = 16;//(item.clientWidth/2);
+        var h2 = 16;//(item.clientHeight/2);
+
+        var gamePlace = $scope.placesIds[game.placeId];
+
+
+        var left = parseFloat(1350) * parseFloat(gamePlace.posx) - w2;
+        var top = parseFloat(675) * parseFloat(gamePlace.posy) - h2;
+
+
+        item.css({top: top, left: left});
+    }
+
+
+    function moveToPlace(place){
+        if($scope.fly < place.fly){
+            alertify.error('Sorry you have enought FLY... you have just ' + $scope.fly+ ' but you need at least '+place.fly);
+            $('#game_resources_fly').css({color:'red'});
+        } else if($scope.swim < place.swim){
+            alertify.error('Sorry you have enought SWIM... you have just ' + $scope.swim+ ' but you need at least '+place.swim);
+            $('#game_resources_swim').css({color:'red'});
+        } else if($scope.walk < place.walk){
+            alertify.error('Sorry you have enought WALK... you have just ' + $scope.walk+ ' but you need at least '+place.walk);
+            $('#game_resources_walk').css({color:'red'});
+        } else {
+            $scope.$apply(function(){
+                $scope.fly -= place.fly;
+                $scope.swim -= place.swim;
+                $scope.walk -= place.walk;
+                //element.hide();
+                //$location.path('/place/'+pl.id);
+            })
+        }
+    }
+
+
+    function setupPlacesDistancesAndExp(){
+
+
+        $scope.places.forEach(function(place){
+            var xd = game.posx - place.posx;
+            var yd = game.posy - place.posy;
+            var distance = Math.sqrt((xd*xd)+(yd*yd));
+            place.superDistance = Math.round(distance*100);
+
+            place.fly = Math.round(place.superDistance / 9);
+            place.swim = Math.round((place.superDistance - (place.fly*6)) / 3);
+            place.walk = (place.superDistance - (place.fly*5) - (place.swim*2));
         });
 
-    });
+    }
 
 }
