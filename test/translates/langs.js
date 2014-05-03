@@ -131,7 +131,7 @@ describe('translates', function(){
 
             var dataContainer = {
                 lang :  'en',
-                key : '_hello',
+                key : '_hello88',
                 desc: 'Hello'
             };
 

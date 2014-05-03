@@ -3,7 +3,7 @@
 var app = angular.module('pinguin', ['ngRoute', 'pinguin.LocalStorageService','pascalprecht.translate'],
     function($routeProvider, $locationProvider, $translateProvider) {
         $routeProvider.when('/intro/:page', {
-            templateUrl: '/templates/pinguin/intro',
+            templateUrl: '/templates/penguin/intro',
             controller: IntroCtrl
         });
 
@@ -12,12 +12,17 @@ var app = angular.module('pinguin', ['ngRoute', 'pinguin.LocalStorageService','p
             controller: WorldCtrl
         });
 
+        $routeProvider.when('/wordstest/:placeid', {
+            templateUrl: '/templates/penguin/wordstest',
+            controller: WordsTestCtrl
+        });
+
         $routeProvider.when('/404', {
-            templateUrl: '/templates/pinguin/404'
+            templateUrl: '/templates/penguin/404'
         });
 
         $routeProvider.otherwise( {
-            redirectTo: '/404'
+            redirectTo: '/world'
         });
 
 
@@ -180,6 +185,7 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
 
 
     function moveToPlace(place){
+        $location.path('/wordstest/'+place.id);
         if($scope.fly < place.fly){
             alertify.error('Sorry you have enought FLY... you have just ' + $scope.fly+ ' but you need at least '+place.fly);
             $('#game_resources_fly').css({color:'red'});
@@ -209,7 +215,7 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
 
                 testEndGame();
                 //element.hide();
-                //$location.path('/place/'+pl.id);
+
             })
         }
     }
@@ -250,6 +256,12 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
 
 }
 
+
+function WordsTestCtrl($scope, $http){
+    requestGET($http, '/words/get/1001/cs/de?fields=link,word%20as%20w&deleted=false&type=api',function(data){
+
+    });
+}
 
 function createNewGame(localStorageService){
     var game = {

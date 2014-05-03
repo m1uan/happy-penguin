@@ -7,13 +7,20 @@ function requestGET($http, func, success, failed){
 }
 
 function request(method, $http, func, data, success, failed){
+    var url = func;
+    if(func.indexOf('/')!=0){
+        url = ROUTE + func;
+    } else {
+        url = '//' + window.location.host +  func;
+    }
 
+    console.log(func.indexOf('/'), window.location.host, url);
 
 
 
     $http({
         method: method,
-        url: ROUTE + func,
+        url: url,
         data: data}).
         success(function(data, status, headers, config) {
             console.log('request',data, status,headers,config);
