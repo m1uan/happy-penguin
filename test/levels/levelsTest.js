@@ -16,7 +16,7 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
-describe('levels', function(){
+describe.only('levels', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -582,6 +582,41 @@ describe('levels', function(){
             })
 
         });
+    });
+
+    describe('request', function(){
+
+        it('get - levels', function(cb){
+            //var ser = new server();
+
+
+            var req =  request('http://localhost:8080');
+
+            req.get('/pinguin/game/list/en/?fields=id,name,posx,posy')
+                //.expect('Content-Type', /json/)
+                //.expect('Content-Length', '20')
+                .set('Content-Encoding', /json/)
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .end(function(err, res){
+                    console.log(res.body);
+
+                    res.body.response.should.be.array;
+                    res.body.response.length.should.be.above(0);
+                    var row = res.body.response[1];
+                    row.should.have.a.property('id');
+                    row.should.have.a.property('posx');
+                    row.should.have.a.property('posy');
+                    row.should.have.a.property('name');
+                    if (err) {
+
+                        throw err;
+
+                    }
+                    cb();
+                });
+        });
+
     });
 
 });
