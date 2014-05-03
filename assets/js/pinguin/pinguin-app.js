@@ -40,8 +40,13 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService)
 
     game = {
         lang:'en',
-        learn: 'en'
+        learn: 'en',
+        posx: 0.525925925925926,
+        posy: 0.224296287254051
     }
+
+    localStorageService.set('pinguin.game', game);
+
     if(game){
         $location.path('/world');
     } else {
@@ -71,7 +76,8 @@ function IntroCtrl($scope, $http, $routeParams) {
 
 }
 
-function WorldCtrl($scope, $location, $http) {
+function WorldCtrl($scope, $location, $http, localStorageService) {
+    var self = this;
     var element = $('#world-main');
     //console.log(element);
 //    element.mousemove(function(evt) {
@@ -86,8 +92,19 @@ function WorldCtrl($scope, $location, $http) {
     //element.click(onClick);
     update();
 
-    function generateInfo(place){
-        return place.name + place.name;
+    var game = localStorageService.get('pinguin.game');
+
+    self.generateInfo = function(place){
+        var place_popover = $('#place_popover');
+        place_popover.find('#place_popover_posx').text(place.posx);
+        place_popover.find('#place_popover_posy').text(place.posy);
+
+
+        var xd = game.posx - place.posx;
+        var yd = game.posy - place.posy;
+        var distance = Math.sqrt((xd*xd)+(yd*yd));
+        place_popover.find('#place_popover_distance').text(distance);
+        return place_popover.html();
     }
 
     function update(){
@@ -114,7 +131,7 @@ function WorldCtrl($scope, $location, $http) {
                 });
 
                 item.popover({trigger:'hover',html:true,title:pl.name,content:function(){
-                    return generateInfo(pl);
+                    return self.generateInfo(pl);
                 }});
 
 //                item.mouseenter(function(){
