@@ -34,6 +34,7 @@ describe('translates', function(){
             }
 
             sqlMake(pgClient, [
+                "DELETE FROM pinguin.image_t;",
                 "DELETE FROM pinguin.question_t;",
                 "DELETE FROM pinguin.place_t;",
                 "UPDATE translates.lang_t SET link=NULL;",

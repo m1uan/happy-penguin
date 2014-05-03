@@ -3,7 +3,8 @@ var assert = require("assert"),
     pg = require('pg'),
     should = require('should')
     , async = require('async')
-    ,config = require('../../config/local.js');
+    ,config = require('../../config/local.js')
+    ,request = require('supertest');
 
 var pgClient = null;
 var dbuser = config.DB_USER_TEST;
@@ -564,5 +565,103 @@ describe('getWords', function(){
 
     });
 
+    describe('request', function(){
 
+        it('get normal', function(cb){
+            //var ser = new server();
+
+
+            var req =  request('http://localhost:8080');
+
+            req.get('/words/get/1001/cs/en?fields=word as w,del')
+                //.expect('Content-Type', /json/)
+                //.expect('Content-Length', '20')
+                .set('Content-Encoding', /json/)
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .end(function(err, res){
+                    console.log(res.body);
+
+                    res.body.should.be.array;
+                    var foundDeleted = res.body.some(function(r){
+                        return r.del != 0;
+                    });
+
+
+                    foundDeleted.should.be.true;
+                    if (err) {
+
+                        throw err;
+
+                    }
+                    cb();
+                });
+        });
+
+        it('get - not deleted', function(cb){
+            //var ser = new server();
+
+
+            var req =  request('http://localhost:8080');
+
+            req.get('/words/get/1001/cs/en?fields=word as w,del&nd=0')
+                //.expect('Content-Type', /json/)
+                //.expect('Content-Length', '20')
+                .set('Content-Encoding', /json/)
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .end(function(err, res){
+                    console.log(res.body);
+
+                    res.body.should.be.array;
+                    var foundDeleted = res.body.some(function(r){
+                        return r.del != 0;
+                    });
+
+                    foundDeleted.should.be.false;
+
+                    if (err) {
+
+                        throw err;
+
+                    }
+                    cb();
+                });
+        });
+
+        it('get - type api', function(cb){
+            //var ser = new server();
+
+
+            var req =  request('http://localhost:8080');
+
+            req.get('/words/get/1001/cs/en?fields=word as w,del&nd=0&type=api')
+                //.expect('Content-Type', /json/)
+                //.expect('Content-Length', '20')
+                .set('Content-Encoding', /json/)
+                .expect(200)
+                .expect('Content-Type', /json/)
+                .end(function(err, res){
+                    console.log(res.body);
+
+                    res.body.should.have.property('response');
+                    res.body.response.should.have.property('words');
+                    res.body.response.words.should.be.array;
+                    var foundDeleted = res.body.response.words.some(function(r){
+                        return r.del != 0;
+                    });
+
+                    foundDeleted.should.be.false;
+
+                    if (err) {
+
+                        throw err;
+
+                    }
+                    cb();
+                });
+        });
+
+
+    });
 })

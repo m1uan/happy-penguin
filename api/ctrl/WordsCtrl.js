@@ -19,6 +19,8 @@ module.exports = {
             ,params : '{params*}'
             ,test_get : {
                 auth : false
+            },get_get : {
+                auth : false
             },lesson_get : {
                 params : '{params*}'
             }
@@ -36,12 +38,23 @@ module.exports = {
             word.addLang(val);
         });
 
-        var fields = request.query.fields.split(',') ;
+        var fields = request.query.fields ? request.query.fields.split(',') : ['link'] ;
+        // not deleted : 1 - show all (not deleted and unaproved)
+        //              0 - NOT show deleted files
+        var deleted = request.query.nd ? parseInt(request.query.nd)==0: false;
+
+        var api = request.query.type ? request.query.type=='api' : false;
         console.log(request);
         console.log(request.query);
         word.get(fields, function(err, words){
-            request.reply(words);
-        });
+            if(api){
+                response(request, err, {'words': words});
+            } else {
+                request.reply(words);
+            }
+
+
+        },deleted);
 
     },
     ivana_get : function (request){
@@ -282,4 +295,18 @@ function err_response(request, err){
     var error = Hapi.error.badRequest(err);
     error.reformat();
     request.reply(error);
+}
+
+function response(request, err, data){
+    if(err){
+        request.reply({error:err, success:-1}).code(400);
+    } else {
+        request.reply({success:1,error:'',response:data});
+    }
+}
+
+function superResponse(request){
+    return function(err, data){
+        response(request, err, data);
+    }
 }
