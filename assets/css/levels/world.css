@@ -16,3 +16,14 @@
     padding:2px;
     background-color:#000000;
 }
+
+#game_resources{
+    position: absolute;
+    top:0px;
+    right:0px;
+    background-color: lightblue;
+}
+
+#game_resources span {
+    margin:4px;
+}

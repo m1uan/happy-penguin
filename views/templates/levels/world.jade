@@ -1,5 +1,14 @@
 link(rel='stylesheet', href='/assets/css/levels/world.css')
 
+div#game_resources
+    span walk:
+    span#game_resources_walk {{walk}}
+    span swim:
+    span#game_resources_swim {{swim}}
+    span fly:
+    span#game_resources_fly {{fly}}
+    span exp:
+    span#game_resources_exp {{exp}}
 div()#world-main
 
 div
@@ -15,6 +24,15 @@ div
                 div
                     span distance:
                     span#place_popover_distance 0.5
+                div
+                    span walk:
+                    span#place_popover_walk
+                div
+                    span swim:
+                    span#place_popover_swim
+                div
+                    span fly:
+                    span#place_popover_fly
 
             div.col-xs-8
                 img(src="http://localhost:8080/assets/img/orig/place/1399024444677-21306-1qw7b9t.jpg",height="10px")
