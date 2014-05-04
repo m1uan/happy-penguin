@@ -15,9 +15,7 @@
                 exp : 20,
                 lang:'en',
                 learn: 'en',
-                posx: 0.525925925925926,
-                posy: 0.224296287254051,
-                placeId : 6,
+                placeId : 16,
                 visited : []
             }
 
@@ -50,9 +48,21 @@
             return true;
         }
 
+        function _place(place){
+
+            self.game.visited.push(self.game.placeId);
+            self.game.placeId = place.id;
+        }
+
+        function _store(){
+            localStorageService.set('pinguin.game', self.game);
+        }
+
         return {
             createNewGame: _createNewGame
             ,game:_game
-            ,update:_update};
+            ,update:_update
+            ,store:_store
+            ,setPlace:_place};
     });
 }).call(this);

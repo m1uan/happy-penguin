@@ -40,8 +40,9 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','p
 
 function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,penguinGame) {
 
-    var mygame = localStorageService.get('pinguin.game');
+
     //var base = {};
+    var mygame = penguinGame.game();
 
     if(!mygame){
         mygame = penguinGame.createNewGame(localStorageService);
@@ -170,7 +171,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
         var w2 = 18;//(item.clientWidth/2);
         var h2 = 34;//(item.clientHeight/2);
 
-        var gamePlace = $scope.placesIds[mygame.placeId];
+        var gamePlace = $scope.placesIds[penguinGame.game().placeId];
 
 
         var left = parseFloat(1350) * parseFloat(gamePlace.posx) - w2;
@@ -183,32 +184,27 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
 
     function moveToPlace(place){
         $location.path('/wordstest/'+place.id);
-        if($scope.fly < place.fly){
-            alertify.error('Sorry you have enought FLY... you have just ' + $scope.fly+ ' but you need at least '+place.fly);
+        if(penguinGame.game().fly < place.fly){
+            alertify.error('Sorry you have enought FLY... you have just ' + penguinGame.game().fly+ ' but you need at least '+place.fly);
             $('#game_resources_fly').css({color:'red'});
-        } else if($scope.swim < place.swim){
-            alertify.error('Sorry you have enought SWIM... you have just ' + $scope.swim+ ' but you need at least '+place.swim);
+        } else if(penguinGame.game().swim < place.swim){
+            alertify.error('Sorry you have enought SWIM... you have just ' + penguinGame.game().swim+ ' but you need at least '+place.swim);
             $('#game_resources_swim').css({color:'red'});
-        } else if($scope.walk < place.walk){
-            alertify.error('Sorry you have enought WALK... you have just ' + $scope.walk+ ' but you need at least '+place.walk);
+        } else if(penguinGame.game().walk < place.walk){
+            alertify.error('Sorry you have enought WALK... you have just ' + penguinGame.game().walk+ ' but you need at least '+place.walk);
             $('#game_resources_walk').css({color:'red'});
         } else {
             $scope.$apply(function(){
-                $scope.fly -= place.fly;
-                $scope.swim -= place.swim;
-                $scope.walk -= place.walk;
+                penguinGame.game().fly -= place.fly;
+                penguinGame.game().swim -= place.swim;
+                penguinGame.game().walk -= place.walk;
 
-                mygame.placeId = place.id;
-                mygame.visited.push(mygame.placeId);
+                penguinGame.setPlace(place);
+
                 showPenguin();
                 setupPlacesDistancesAndExp();
+                penguinGame.update($scope);
 
-
-                mygame.fly = $scope.fly;
-                mygame.swim = $scope.swim;
-                mygame.walk = $scope.walk;
-
-                localStorageService.set('pinguin.game', mygame);
 
                 testEndGame();
                 //element.hide();
@@ -219,7 +215,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
 
 
     function setupPlacesDistancesAndExp(){
-        var gamePlace = $scope.placesIds[mygame.placeId];
+        var gamePlace = $scope.placesIds[penguinGame.game().placeId];
 
         $scope.places.forEach(function(place){
             var xd = gamePlace.posx - place.posx;
@@ -237,13 +233,13 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
 
     function testEndGame(){
         var canPlay = $scope.places.some(function(place){
-            return place.id != mygame.placeId &&  place.fly <= mygame.fly && place.swim <= mygame.swim && place.walk <= mygame.walk;
+            return place.id != penguinGame.game().placeId &&  place.fly <= penguinGame.game().fly && place.swim <= penguinGame.game().swim && place.walk <= penguinGame.game().walk;
         });
 
 
         if(!canPlay){
             alertify.alert('Game over!');
-            mygame = penguinGame.createNewGame(localStorageService);
+            penguinGame.createNewGame(localStorageService);
             showPenguin();
             setupPlacesDistancesAndExp();
         }
