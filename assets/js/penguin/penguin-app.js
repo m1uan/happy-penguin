@@ -112,46 +112,30 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
     }
 
     function update(){
-        var url ='list/en/?fields=id,name,posx,posy';
-        requestGET($http, url, function(response, status){
-            console.log(response);
-            $scope.places = response;
-            $scope.placesIds = {};
+        penguinGame.loadPlaces(function(places,placesIds){
 
+            places.forEach(function(place){
+                var item = $('<div data-toggle="tooltip" data-placement="left" title="'+place.name+'">' + place.id + '</div>').addClass('place');
 
-            $scope.places.forEach(function(pl){
-                $scope.placesIds[pl.id] = pl;
-                var item = $('<div data-toggle="tooltip" data-placement="left" title="'+pl.name+'">' + pl.id + '</div>').addClass('place');
-
-                var left = parseFloat(1350) * parseFloat(pl.posx) - 12;
-                var top = parseFloat(675) * parseFloat(pl.posy) -12;
+                var left = parseFloat(1350) * parseFloat(place.posx) - 12;
+                var top = parseFloat(675) * parseFloat(place.posy) -12;
 
 
                 item.css({top: top, left: left});
                 item.appendTo(element);
                 item.click(function(){
-                    moveToPlace(pl);
+                    moveToPlace(place);
                 });
 
-                item.popover({trigger:'hover',html:true,title:pl.name,content:function(){
-                    return self.generateInfo(pl);
+                item.popover({trigger:'hover',html:true,title:place.name,content:function(){
+                    return self.generateInfo(place);
                 }});
-
-//                item.mouseenter(function(){
-//
-//                    console.log('tooltip');
-//                })
-//                item.mouseleave(function(){
-//                    item.popover('hide');
-//                    console.log('tooltip');
-//                })
-
-                console.log(pl, top, left, parseFloat(element.width()) , parseFloat(element.height()));
-                //$('#world-main').append('ahoj').addClass('place');
             });
-            setupPlacesDistancesAndExp();
-            showPenguin();
+
+
+            penguinGame.setupPlacesDistancesAndExp();
             testEndGame();
+            showPenguin();
         });
     }
 
@@ -171,8 +155,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
         var w2 = 18;//(item.clientWidth/2);
         var h2 = 34;//(item.clientHeight/2);
 
-        var gamePlace = $scope.placesIds[penguinGame.game().placeId];
-
+        var gamePlace = penguinGame.getCurrentPlace();
 
         var left = parseFloat(1350) * parseFloat(gamePlace.posx) - w2;
         var top = parseFloat(675) * parseFloat(gamePlace.posy) - h2;
@@ -183,7 +166,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
 
 
     function moveToPlace(place){
-        $location.path('/wordstest/'+place.id);
+        //$location.path('/wordstest/'+place.id);
         if(penguinGame.game().fly < place.fly){
             alertify.error('Sorry you have enought FLY... you have just ' + penguinGame.game().fly+ ' but you need at least '+place.fly);
             $('#game_resources_fly').css({color:'red'});
@@ -195,16 +178,13 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
             $('#game_resources_walk').css({color:'red'});
         } else {
             $scope.$apply(function(){
-                penguinGame.game().fly -= place.fly;
-                penguinGame.game().swim -= place.swim;
-                penguinGame.game().walk -= place.walk;
+
 
                 penguinGame.setPlace(place);
 
                 showPenguin();
-                setupPlacesDistancesAndExp();
+                penguinGame.setupPlacesDistancesAndExp();
                 penguinGame.update($scope);
-
 
                 testEndGame();
                 //element.hide();
@@ -214,36 +194,15 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
     }
 
 
-    function setupPlacesDistancesAndExp(){
-        var gamePlace = $scope.placesIds[penguinGame.game().placeId];
-
-        $scope.places.forEach(function(place){
-            var xd = gamePlace.posx - place.posx;
-            var yd = gamePlace.posy - place.posy;
-            var distance = Math.sqrt((xd*xd)+(yd*yd));
-            place.superDistance = Math.round(distance*100);
-
-            place.fly = Math.round(place.superDistance / 9);
-            place.swim = Math.round((place.superDistance - (place.fly*6)) / 3);
-            place.walk = (place.superDistance - (place.fly*5) - (place.swim*2));
-        });
-
-    }
-
-
     function testEndGame(){
-        var canPlay = $scope.places.some(function(place){
-            return place.id != penguinGame.game().placeId &&  place.fly <= penguinGame.game().fly && place.swim <= penguinGame.game().swim && place.walk <= penguinGame.game().walk;
-        });
-
-
-        if(!canPlay){
+        if(!penguinGame.testEndGame()){
             alertify.alert('Game over!');
-            penguinGame.createNewGame(localStorageService);
-            showPenguin();
-            setupPlacesDistancesAndExp();
+            penguinGame.createNewGame();
+            penguinGame.setupPlacesDistancesAndExp();
         }
     }
+
+
 
 
 
