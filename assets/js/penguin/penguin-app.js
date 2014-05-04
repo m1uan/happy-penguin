@@ -94,12 +94,9 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
     update();
 
 
-    var mygame = localStorageService.get('pinguin.game');
 
-    $scope.fly = mygame.fly;
-    $scope.walk = mygame.walk;
-    $scope.swim = mygame.swim;
-    $scope.exp = mygame.exp;
+
+    penguinGame.update($scope);
 
 
     self.generateInfo = function(place){
