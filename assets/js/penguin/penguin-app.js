@@ -1,6 +1,6 @@
 "use strict";
 
-var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','penguin.game','pascalprecht.translate'],
+var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','milan.world.factory','pascalprecht.translate'],
     function($routeProvider, $locationProvider, $translateProvider) {
         $routeProvider.when('/intro/:page', {
             templateUrl: '/templates/penguin/intro',
@@ -38,14 +38,14 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','p
 
 
 
-function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,penguinGame) {
+function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory) {
 
 
     //var base = {};
-    var mygame = penguinGame.game();
+    var mygame = worldFactory.game();
 
     if(!mygame){
-        mygame = penguinGame.createNewGame(localStorageService);
+        mygame = worldFactory.createNewGame(localStorageService);
     }
 
 
@@ -78,7 +78,7 @@ function IntroCtrl($scope, $http, $routeParams) {
 
 }
 
-function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
+function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) {
     var self = this;
     var element = $('#world-main');
     //console.log(element);
@@ -97,7 +97,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
 
 
 
-    penguinGame.update($scope);
+    worldFactory.update($scope);
 
 
     self.generateInfo = function(place){
@@ -112,7 +112,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
     }
 
     function update(){
-        penguinGame.loadPlaces(function(places,placesIds){
+        worldFactory.loadPlaces(function(places,placesIds){
 
             places.forEach(function(place){
                 var item = $('<div data-toggle="tooltip" data-placement="left" title="'+place.name+'">' + place.id + '</div>').addClass('place');
@@ -133,7 +133,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
             });
 
 
-            penguinGame.setupPlacesDistancesAndExp();
+            worldFactory.setupPlacesDistancesAndExp();
             testEndGame();
             showPenguin();
         });
@@ -155,7 +155,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
         var w2 = 18;//(item.clientWidth/2);
         var h2 = 34;//(item.clientHeight/2);
 
-        var gamePlace = penguinGame.getCurrentPlace();
+        var gamePlace = worldFactory.getCurrentPlace();
 
         var left = parseFloat(1350) * parseFloat(gamePlace.posx) - w2;
         var top = parseFloat(675) * parseFloat(gamePlace.posy) - h2;
@@ -167,24 +167,24 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
 
     function moveToPlace(place){
         //$location.path('/wordstest/'+place.id);
-        if(penguinGame.game().fly < place.fly){
-            alertify.error('Sorry you have enought FLY... you have just ' + penguinGame.game().fly+ ' but you need at least '+place.fly);
+        if(worldFactory.game().fly < place.fly){
+            alertify.error('Sorry you have enought FLY... you have just ' + worldFactory.game().fly+ ' but you need at least '+place.fly);
             $('#game_resources_fly').css({color:'red'});
-        } else if(penguinGame.game().swim < place.swim){
-            alertify.error('Sorry you have enought SWIM... you have just ' + penguinGame.game().swim+ ' but you need at least '+place.swim);
+        } else if(worldFactory.game().swim < place.swim){
+            alertify.error('Sorry you have enought SWIM... you have just ' + worldFactory.game().swim+ ' but you need at least '+place.swim);
             $('#game_resources_swim').css({color:'red'});
-        } else if(penguinGame.game().walk < place.walk){
-            alertify.error('Sorry you have enought WALK... you have just ' + penguinGame.game().walk+ ' but you need at least '+place.walk);
+        } else if(worldFactory.game().walk < place.walk){
+            alertify.error('Sorry you have enought WALK... you have just ' + worldFactory.game().walk+ ' but you need at least '+place.walk);
             $('#game_resources_walk').css({color:'red'});
         } else {
             $scope.$apply(function(){
 
 
-                penguinGame.setPlace(place);
+                worldFactory.setPlace(place);
 
                 showPenguin();
-                penguinGame.setupPlacesDistancesAndExp();
-                penguinGame.update($scope);
+                worldFactory.setupPlacesDistancesAndExp();
+                worldFactory.update($scope);
 
                 testEndGame();
                 //element.hide();
@@ -195,10 +195,10 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
 
 
     function testEndGame(){
-        if(!penguinGame.testEndGame()){
+        if(!worldFactory.testEndGame()){
             alertify.alert('Game over!');
-            penguinGame.createNewGame();
-            penguinGame.setupPlacesDistancesAndExp();
+            worldFactory.createNewGame();
+            worldFactory.setupPlacesDistancesAndExp();
         }
     }
 
@@ -209,9 +209,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
 }
 
 
-function WordsTestCtrl($scope, $http){
-    requestGET($http, '/words/get/1001/cs/en?fields=link,word%20as%20w&deleted=false&type=api',function(data){
-        $scope.words = data.words;
-    });
+function WordsTestCtrl($scope, $http, vocabularyFactory){
+
 }
 

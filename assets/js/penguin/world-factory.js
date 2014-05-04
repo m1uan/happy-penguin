@@ -1,9 +1,9 @@
 (function() {
     /* Start angularLocalStorage */
     'use strict';
-    var penguinGame = angular.module('penguin.game', ['penguin.LocalStorageService']);
+    var penguinGame = angular.module('milan.world.factory', ['penguin.LocalStorageService']);
 
-    penguinGame.factory('penguinGame', function($http, localStorageService) {
+    penguinGame.factory('worldFactory', function($http, localStorageService) {
         var self = this;
         self.game = null;
 
