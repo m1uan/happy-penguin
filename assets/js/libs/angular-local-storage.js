@@ -1,7 +1,7 @@
 (function() {
     /* Start angularLocalStorage */
     'use strict';
-    var angularLocalStorage = angular.module('pinguin.LocalStorageService', []);
+    var angularLocalStorage = angular.module('penguin.LocalStorageService', []);
 
     angularLocalStorage.provider('localStorageService', function() {
 

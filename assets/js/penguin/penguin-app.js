@@ -1,6 +1,6 @@
 "use strict";
 
-var app = angular.module('pinguin', ['ngRoute', 'pinguin.LocalStorageService','pascalprecht.translate'],
+var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','penguin.game','pascalprecht.translate'],
     function($routeProvider, $locationProvider, $translateProvider) {
         $routeProvider.when('/intro/:page', {
             templateUrl: '/templates/penguin/intro',
@@ -38,18 +38,18 @@ var app = angular.module('pinguin', ['ngRoute', 'pinguin.LocalStorageService','p
 
 
 
-function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService) {
+function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,penguinGame) {
 
-    var game = localStorageService.get('pinguin.game');
+    var mygame = localStorageService.get('pinguin.game');
     //var base = {};
 
-    if(!game){
-        game = createNewGame(localStorageService);
+    if(!mygame){
+        mygame = penguinGame.createNewGame(localStorageService);
     }
 
 
-    if(game){
-        $location.path('/world');
+    if(mygame){
+        //$location.path('/world');
     } else {
         $location.path('/intro/1');
     }
@@ -77,7 +77,7 @@ function IntroCtrl($scope, $http, $routeParams) {
 
 }
 
-function WorldCtrl($scope, $location, $http, localStorageService) {
+function WorldCtrl($scope, $location, $http, localStorageService, penguinGame) {
     var self = this;
     var element = $('#world-main');
     //console.log(element);
@@ -94,12 +94,12 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
     update();
 
 
-    var game = localStorageService.get('pinguin.game');
+    var mygame = localStorageService.get('pinguin.game');
 
-    $scope.fly = game.fly;
-    $scope.walk = game.walk;
-    $scope.swim = game.swim;
-    $scope.exp = game.exp;
+    $scope.fly = mygame.fly;
+    $scope.walk = mygame.walk;
+    $scope.swim = mygame.swim;
+    $scope.exp = mygame.exp;
 
 
     self.generateInfo = function(place){
@@ -173,7 +173,7 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
         var w2 = 18;//(item.clientWidth/2);
         var h2 = 34;//(item.clientHeight/2);
 
-        var gamePlace = $scope.placesIds[game.placeId];
+        var gamePlace = $scope.placesIds[mygame.placeId];
 
 
         var left = parseFloat(1350) * parseFloat(gamePlace.posx) - w2;
@@ -201,17 +201,17 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
                 $scope.swim -= place.swim;
                 $scope.walk -= place.walk;
 
-                game.placeId = place.id;
-                game.visited.push(game.placeId);
+                mygame.placeId = place.id;
+                mygame.visited.push(mygame.placeId);
                 showPenguin();
                 setupPlacesDistancesAndExp();
 
 
-                game.fly = $scope.fly;
-                game.swim = $scope.swim;
-                game.walk = $scope.walk;
+                mygame.fly = $scope.fly;
+                mygame.swim = $scope.swim;
+                mygame.walk = $scope.walk;
 
-                localStorageService.set('pinguin.game', game);
+                localStorageService.set('pinguin.game', mygame);
 
                 testEndGame();
                 //element.hide();
@@ -222,7 +222,7 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
 
 
     function setupPlacesDistancesAndExp(){
-        var gamePlace = $scope.placesIds[game.placeId];
+        var gamePlace = $scope.placesIds[mygame.placeId];
 
         $scope.places.forEach(function(place){
             var xd = gamePlace.posx - place.posx;
@@ -240,13 +240,13 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
 
     function testEndGame(){
         var canPlay = $scope.places.some(function(place){
-            return place.id != game.placeId &&  place.fly <= game.fly && place.swim <= game.swim && place.walk <= game.walk;
+            return place.id != mygame.placeId &&  place.fly <= mygame.fly && place.swim <= mygame.swim && place.walk <= mygame.walk;
         });
 
 
         if(!canPlay){
             alertify.alert('Game over!');
-            game = createNewGame(localStorageService);
+            mygame = penguinGame.createNewGame(localStorageService);
             showPenguin();
             setupPlacesDistancesAndExp();
         }
@@ -258,28 +258,8 @@ function WorldCtrl($scope, $location, $http, localStorageService) {
 
 
 function WordsTestCtrl($scope, $http){
-    requestGET($http, '/words/get/1001/cs/de?fields=link,word%20as%20w&deleted=false&type=api',function(data){
-
+    requestGET($http, '/words/get/1001/cs/en?fields=link,word%20as%20w&deleted=false&type=api',function(data){
+        $scope.words = data.words;
     });
 }
 
-function createNewGame(localStorageService){
-    var game = {
-        fly : 20,
-        swim :20,
-        walk :20,
-        exp : 20,
-        lang:'en',
-        learn: 'en',
-        posx: 0.525925925925926,
-        posy: 0.224296287254051,
-        placeId : 6,
-        visited : []
-    }
-
-
-
-    localStorageService.set('pinguin.game', game);
-
-    return game;
-}
