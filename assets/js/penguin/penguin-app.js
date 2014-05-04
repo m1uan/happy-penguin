@@ -1,6 +1,6 @@
 "use strict";
 
-var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','milan.world.factory','pascalprecht.translate'],
+var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','milan.world.factory','milan.vocabulary.factory','pascalprecht.translate'],
     function($routeProvider, $locationProvider, $translateProvider) {
         $routeProvider.when('/intro/:page', {
             templateUrl: '/templates/penguin/intro',
@@ -166,7 +166,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
 
     function moveToPlace(place){
-        //$location.path('/wordstest/'+place.id);
+        $location.path('/wordstest/'+place.id);
         if(worldFactory.game().fly < place.fly){
             alertify.error('Sorry you have enought FLY... you have just ' + worldFactory.game().fly+ ' but you need at least '+place.fly);
             $('#game_resources_fly').css({color:'red'});
@@ -210,6 +210,11 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
 
 function WordsTestCtrl($scope, $http, vocabularyFactory){
+    vocabularyFactory.getVocabularyRandomSet(function(words){
+        $scope.words = words;
+        console.log(words.word1)
 
+
+    });
 }
 

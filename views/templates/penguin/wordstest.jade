@@ -1,1 +1,13 @@
 h2 game
+
+
+
+div.row
+    div.col-md-2
+        div(ng-repeat="w in words.word1")
+            span {{w.word}}
+            span {{w.link}}
+    div.col-md-2
+        div(ng-repeat="w in words.word2")
+            span {{w.word}}
+            span {{w.link}}
