@@ -216,6 +216,9 @@ function WordsTestCtrl($scope, $http, vocabularyFactory){
     var BUTTON_STATUS_CORRECT = 2;
     var BUTTON_STATUS_WRONG = 3;
 
+    $scope.correct = 0;
+    $scope.wrong = 0;
+
     vocabularyFactory.getVocabularyRandomSet(function(words){
         $scope.words = words;
         console.log(words.word1)
@@ -247,8 +250,10 @@ function WordsTestCtrl($scope, $http, vocabularyFactory){
         if(link1 !=-1 && link2 !=-1){
             if(link2 == link1){
                 status = BUTTON_STATUS_CORRECT;
+                $scope.correct+=1;
             } else {
                 status = BUTTON_STATUS_WRONG;
+                $scope.wrong+=1;
             }
             // select also second side of buttons with this status
             setStatusButton(side == 0 ? 1 : 0, status);
