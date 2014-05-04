@@ -210,11 +210,115 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
 
 function WordsTestCtrl($scope, $http, vocabularyFactory){
+
+    var BUTTON_STATUS_NORMAL = 0;
+    var BUTTON_STATUS_SELECT = 1;
+    var BUTTON_STATUS_CORRECT = 2;
+    var BUTTON_STATUS_WRONG = 3;
+
     vocabularyFactory.getVocabularyRandomSet(function(words){
         $scope.words = words;
         console.log(words.word1)
-
+        updateButtons();
 
     });
+
+    $scope.select = function(side, word, event){
+        // button already coreclty selected
+        if(word.status == BUTTON_STATUS_CORRECT) {
+            return ;
+        }
+
+
+        // select this side to normal for case there is selected another button
+        setStatusButton(side, BUTTON_STATUS_NORMAL);
+
+        var status = BUTTON_STATUS_SELECT;
+
+        if(!word.status){
+            word.status = status;
+        }
+
+
+
+        var link1 = getLinkOfSelectedButton(0);
+        var link2 = getLinkOfSelectedButton(1);
+
+        if(link1 !=-1 && link2 !=-1){
+            if(link2 == link1){
+                status = BUTTON_STATUS_CORRECT;
+            } else {
+                status = BUTTON_STATUS_WRONG;
+            }
+            // select also second side of buttons with this status
+            setStatusButton(side == 0 ? 1 : 0, status);
+        }
+
+        console.log(link1,link2,status);
+
+
+        word.status = status;
+
+
+
+        console.log(side, word, event);
+        updateButtons();
+
+    }
+
+
+    function updateButtons(){
+        _updateButtons(0);
+        _updateButtons(1);
+    }
+
+    function _updateButtons(side){
+        var words = side == 0 ? $scope.words.word1 : $scope.words.word2;
+        words.forEach(function(w,idx){
+            var id = '#testbtn_'+side+'_' + idx;
+            var btn = $(id);
+            btn.removeClass('btn-default');
+            btn.removeClass('btn-primary');
+            btn.removeClass('btn-success');
+            btn.removeClass('btn-warning');
+
+            if(w.status == BUTTON_STATUS_SELECT){
+                btn.addClass('btn-primary');
+            } else if(w.status == BUTTON_STATUS_CORRECT){
+                btn.addClass('btn-success');
+            } else if(w.status == BUTTON_STATUS_WRONG){
+                btn.addClass('btn-warning');
+            } else {
+                btn.addClass('btn-default');
+            }
+
+
+        })
+    }
+
+
+    function setStatusButton(side, status){
+        var words = side == 0 ? $scope.words.word1 : $scope.words.word2;
+        words.some(function(w,idx){
+            if(w.status == BUTTON_STATUS_SELECT || w.status == BUTTON_STATUS_WRONG){
+                w.status = status;
+                return true;
+            }
+        });
+    };
+
+
+    function getLinkOfSelectedButton(side){
+        var words = side == 0 ? $scope.words.word1 : $scope.words.word2;
+        var link = -1;
+        words.some(function(w,idx){
+            if(w.status == BUTTON_STATUS_SELECT || w.status == BUTTON_STATUS_WRONG){
+                link = w.link;
+                return true;
+            }
+        });
+
+        return link;
+    };
 }
 

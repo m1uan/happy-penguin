@@ -105,9 +105,9 @@
             words.forEach(function(w){
                 var countEmpty = numEmpty(ret);
 
-                var randpos1 = 1;
+                var randpos1 = 0;
                 if(countEmpty > 1){
-                    randpos1 = Math.floor((Math.random() * 1000)) % (countEmpty-1);
+                    randpos1 = Math.floor((Math.random() * 1000)) % (countEmpty);
                 }
                 putToEmptyIndex(ret, w, randpos1);
                 console.log(countEmpty,randpos1);
