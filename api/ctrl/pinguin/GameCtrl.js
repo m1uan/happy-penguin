@@ -22,6 +22,9 @@ function func(){
             },list_get : {
                 auth:false,
                 params : '{params*}'
+            },get_get : {
+                auth:false,
+                params : '{params*}'
             }
         }
     }
@@ -31,6 +34,9 @@ function func(){
         levelCtrl.list_get(request);
     }
 
+    self.get_get = function(request){
+        levelCtrl.get_get(request);
+    }
 
 
 

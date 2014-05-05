@@ -209,7 +209,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 }
 
 
-function WordsTestCtrl($scope, $http, vocabularyFactory, $interval){
+function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval){
 
     var BUTTON_STATUS_NORMAL = 0;
     var BUTTON_STATUS_SELECT = 1;
@@ -223,12 +223,29 @@ function WordsTestCtrl($scope, $http, vocabularyFactory, $interval){
     $scope.wrong = 0;
     $scope.timer = GAME_TIME;
 
-    loadOrNext();
+    var placeid = $routeParams.placeid;
+
+    //startVocabularyTest();
+    showIntroduction();
+
+    function showIntroduction(){
+        worldFactory.loadPlace(placeid, function(place){
+
+        });
+    }
+
+    function startVocabularyTest(){
+        loadOrNext();
+
+        $interval(function(){
+            $scope.timer -= 1;
+        }, 1000, GAME_TIME);
+    }
 
 
-    $interval(function(){
-        $scope.timer -= 1;
-    },1000, GAME_TIME);
+
+
+
 
     function loadOrNext(){
         vocabularyFactory.getVocabularyRandomSet(function(words){

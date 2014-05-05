@@ -7,8 +7,12 @@
         var self = this;
         self.game = null;
 
-        var places = null;
-        var placesIds = null;
+        var placesInWorld = null;
+        var placesInWorldIds = null;
+
+        var placesForVocabularyTest = {};
+
+
 
         function _createNewGame(){
             self.game = {
@@ -65,34 +69,34 @@
 
 
         function loadPlaces(cb){
-            if(places && placesIds){
-                cb(places, placesIds);
+            if(placesInWorld && placesInWorldIds){
+                cb(placesInWorld, placesInWorldIds);
             } else {
                 var url ='list/en/?fields=id,name,posx,posy';
                 requestGET($http, url, function(response, status){
-                    places = response;
-                    placesIds = {};
+                    placesInWorld = response;
+                    placesInWorldIds = {};
 
 
-                    places.forEach(function(place){
-                       placesIds[place.id] = place;
+                    placesInWorld.forEach(function(place){
+                       placesInWorldIds[place.id] = place;
                     });
 
 
-                    cb(places, placesIds);
+                    cb(placesInWorld, placesInWorldIds);
                 });
             }
         }
 
 
         function getCurrentPlace(){
-            return placesIds[self.game.placeId];
+            return placesInWorldIds[self.game.placeId];
         }
 
         function setupPlacesDistancesAndExp(){
             var gamePlace = getCurrentPlace();
 
-            places.forEach(function(place){
+            placesInWorld.forEach(function(place){
                 var xd = gamePlace.posx - place.posx;
                 var yd = gamePlace.posy - place.posy;
                 var distance = Math.sqrt((xd*xd)+(yd*yd));
@@ -107,12 +111,27 @@
 
 
         function testEndGame(){
-            var canPlay = places.some(function(place){
+            var canPlay = placesInWorld.some(function(place){
                 return place.id != self.game.placeId &&  place.fly <= self.game.fly && place.swim <= self.game.swim && place.walk <= self.game.walk;
             });
 
             return canPlay;
         }
+
+        function loadPlace(placeid, cb){
+            if(placesForVocabularyTest[placeid]){
+                cb(placesForVocabularyTest[placeid]);
+                return ;
+            }
+
+            var url ='get/'+placeid+'/'+self.game.learn+'/'+self.game.lang+'/?fields=id,name,info&qfields=qid,question,answers&ifields=iid,image';
+            requestGET($http, url, function(response, status){
+
+                placesForVocabularyTest[placeid] = response;
+                cb(response);
+            });
+        }
+
 
         return {
             createNewGame: _createNewGame
@@ -123,6 +142,7 @@
             ,loadPlaces : loadPlaces
             ,setupPlacesDistancesAndExp: setupPlacesDistancesAndExp
             ,testEndGame:testEndGame
-            ,getCurrentPlace: getCurrentPlace};
+            ,getCurrentPlace: getCurrentPlace
+            ,loadPlace:loadPlace};
     });
 }).call(this);
