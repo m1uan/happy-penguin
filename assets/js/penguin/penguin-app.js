@@ -209,22 +209,36 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 }
 
 
-function WordsTestCtrl($scope, $http, vocabularyFactory){
+function WordsTestCtrl($scope, $http, vocabularyFactory, $interval){
 
     var BUTTON_STATUS_NORMAL = 0;
     var BUTTON_STATUS_SELECT = 1;
     var BUTTON_STATUS_CORRECT = 2;
     var BUTTON_STATUS_WRONG = 3;
 
+    var GAME_TIME = 6;
+
     $scope.correct = 0;
+    $scope.correctTotal = 0;
     $scope.wrong = 0;
+    $scope.timer = GAME_TIME;
 
-    vocabularyFactory.getVocabularyRandomSet(function(words){
-        $scope.words = words;
-        console.log(words.word1)
-        updateButtons();
+    loadOrNext();
 
-    });
+
+    $interval(function(){
+        $scope.timer -= 1;
+    },1000, GAME_TIME);
+
+    function loadOrNext(){
+        vocabularyFactory.getVocabularyRandomSet(function(words){
+            $scope.correct = 0;
+            $scope.words = words;
+            console.log(words.word1)
+            updateButtons();
+
+        });
+    }
 
     $scope.select = function(side, word, event){
         // button already coreclty selected
@@ -250,6 +264,7 @@ function WordsTestCtrl($scope, $http, vocabularyFactory){
         if(link1 !=-1 && link2 !=-1){
             if(link2 == link1){
                 status = BUTTON_STATUS_CORRECT;
+                $scope.correctTotal+=1;
                 $scope.correct+=1;
             } else {
                 status = BUTTON_STATUS_WRONG;
@@ -265,10 +280,11 @@ function WordsTestCtrl($scope, $http, vocabularyFactory){
         word.status = status;
 
 
-
-        console.log(side, word, event);
         updateButtons();
 
+        if(status == BUTTON_STATUS_CORRECT && $scope.correct == $scope.words.word1.length){
+            loadOrNext();
+        }
     }
 
 
