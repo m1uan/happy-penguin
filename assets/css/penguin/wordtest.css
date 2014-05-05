@@ -6,6 +6,22 @@
 }
 
 .btn-word {
-    width:140px;
+    width:150px;
     margin:5px;
+}
+
+#vt_content{
+    width:700px;
+    margin-left: auto;
+    margin-right:auto;
+    background-color: #ddd;
+    opacity: 0.9;
+    padding:40px;
+}
+
+#vt_background{
+    width: 100%;
+    background-size: 100%;
+    height: 500px;
+    padding:40px;
 }

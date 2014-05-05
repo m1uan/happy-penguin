@@ -223,6 +223,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.wrong = 0;
     $scope.timer = GAME_TIME;
 
+    $scope.part = 0;
+
     var placeid = $routeParams.placeid;
 
     //startVocabularyTest();
@@ -230,7 +232,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     function showIntroduction(){
         worldFactory.loadPlace(placeid, function(place){
-
+            $scope.place = place;
+            showRandomBackground();
         });
     }
 
@@ -244,6 +247,12 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
 
 
+    function showRandomBackground(){
+        //http://localhost:8080/assets/img/orig/place/1399279830623-27882-ldhox9.jpg
+        var img = '/assets/img/orig/' + $scope.place.images[0].image;
+
+        $('#vt_background').css("background-image", "url("+img+")");
+    }
 
 
 
