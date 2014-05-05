@@ -9,11 +9,11 @@ div.row
         div(ng-repeat="w in words.word1")
             span {{w.link}}
             span(id="testctn_0 _{{$index}}")
-                span(id="testbtn_0_{{$index}}",ng-click="select(0,w, $event)").btn.btn-default {{w.word}}
+                span(id="testbtn_0_{{$index}}",ng-click="select(0,w, $event)").btn.btn-default.btn-word {{w.word}}
     div.col-md-1
 
     div.col-md-2
         div(ng-repeat="w in words.word2")
             span(id="testctn_1_{{$index}}")
-                span(id="testbtn_1_{{$index}}",ng-click="select(1,w, $event)").btn.btn-default {{w.word}}
+                span(id="testbtn_1_{{$index}}",ng-click="select(1,w, $event)").btn.btn-default.btn-word {{w.word}}
             span {{w.link}}

@@ -4,40 +4,58 @@
     var vocabularyFactory = angular.module('milan.vocabulary.factory', ['penguin.LocalStorageService']);
 
     vocabularyFactory.factory('vocabularyFactory', function($http, localStorageService) {
-        var words = null;
-        var wordsIds = null;
-        var MAX_IN_SET = 10;
+        var words = [];
+        var usedWords = [];
+        var wordsIds = [];
+        var MAX_IN_SET = 2;
+        var CURRENT_WORDS = 1001;
 
-        function getWords(cb){
-            if(words){
-                cb(words, wordsIds);
+
+        function getWords(lesson, cb){
+            if(words[lesson]){
+                cb(words[lesson], wordsIds[lesson]);
             } else {
-                requestGET($http, '/words/get/1001/cs/en?fields=link,word%20as%20w&deleted=false&type=api',function(data){
-                    words = data.words;
-                    wordsIds = {};
-                    words.forEach(function(word){
-                        wordsIds[word.link] = word;
+                requestGET($http, '/words/get/'+lesson+'/cs/en?fields=link,word%20as%20w&deleted=false&type=api',function(data){
+                    words[lesson] = data.words;
+                    wordsIds[lesson] = {};
+                    words[lesson].forEach(function(word){
+                        wordsIds[lesson][word.link] = word;
                     });
 
-                    cb(words, wordsIds);
+                    cb(words[lesson], wordsIds[lesson]);
                 });
             }
         }
 
-        function getNextWords(){
-            var max = MAX_IN_SET;
+        function getNextWords(lesson){
             var rw = [];
-            words.some(function(w){
+
+            // set first time
+            if(!usedWords[lesson]){
+                usedWords[lesson] = [];
+            }
+
+            do{
+                var w = words[lesson].shift();
+
+                // words empty lets use usedWords again
+                // TODO: implement load next lang
+                if(!w){
+                    w = usedWords[lesson].shift();
+                    words[lesson] = usedWords[lesson];
+                    usedWords[lesson] = [];
+                }
+
                 rw.push(w);
-                return (max--) == 0;
-            });
+                usedWords[lesson].push(w);
+            } while(rw.length < MAX_IN_SET)
 
             return rw;
         }
 
         function getVocabularyRandomSet(cb){
-            getWords(function(w,i){
-                var s1 = getNextWords();
+            getWords(CURRENT_WORDS, function(w,i){
+                var s1 = getNextWords(CURRENT_WORDS);
 
                 var ret = {};
                 ret.word1 = [];

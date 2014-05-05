@@ -30,7 +30,7 @@ module.exports = {
         console.log('index view', request.params) ;
         var template = request.params.params;
 
-        request.reply.view('templates/' + template + '.jade', {userId:request.user.id, admin:request.user.admin == 1});
+        request.reply.view('templates/' + template + '.jade', request.user ? {userId:request.user.id, admin:request.user.admin == 1} : null);
     }
     ,index_get : function (request){
         request.reply.view('pinguin', {});
