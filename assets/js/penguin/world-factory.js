@@ -23,7 +23,8 @@
                 lang:'en',
                 learn: 'en',
                 placeId : 16,
-                visited : []
+                visited : [],
+                randomScenarios : {}
             }
 
 
@@ -132,6 +133,38 @@
             });
         }
 
+        /**
+         * get random numbers for specified scenarios images, questions
+         * key is for ensure it will be not generate the same random number
+         * for similar scenario
+         * @param scenario - identifier of scenario
+         * @param max - max for this number
+         */
+        function getRandomNumber(scenario, max){
+            if(!self.game.randomScenarios){
+                self.game.randomScenarios = {};
+            }
+
+            var lastRandom = self.game.randomScenarios[scenario];
+            var rand = -1;
+            if(max < 2){
+                return 0;
+            }
+
+            do {
+                if(max >= 3){
+                    rand = Math.floor((Math.random() * 1000)) % (max);
+                } else {
+                    rand ++;
+                }
+
+            }while(lastRandom == rand);
+
+
+
+            self.game.randomScenarios[scenario] = rand;
+            return rand;
+        }
 
         return {
             createNewGame: _createNewGame
@@ -143,6 +176,7 @@
             ,setupPlacesDistancesAndExp: setupPlacesDistancesAndExp
             ,testEndGame:testEndGame
             ,getCurrentPlace: getCurrentPlace
-            ,loadPlace:loadPlace};
+            ,loadPlace:loadPlace,
+            getRandomNumber: getRandomNumber};
     });
 }).call(this);

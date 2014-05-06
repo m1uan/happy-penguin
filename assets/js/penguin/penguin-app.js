@@ -256,15 +256,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     function showRandomBackground(){
         var img = '/assets/img/orig/place/1399279830623-27882-ldhox9.jpg'
         if($scope.place.images && $scope.place.images.length > 0){
-            var pos = 0;
-
-            if($scope.place.images.length > 1){
-                // repeat till you dont find not used before
-                do {
-                    pos = Math.floor((Math.random() * 100)) % ($scope.place.images.length);
-                }while(pos == $scope.lastBackgroundImage);
-
-            }
+            var pos = worldFactory.getRandomNumber('image_place_'+placeid,$scope.place.images.length);
 
             img = '/assets/img/orig/' + $scope.place.images[pos].image;
             $scope.lastBackgroundImage = pos;
