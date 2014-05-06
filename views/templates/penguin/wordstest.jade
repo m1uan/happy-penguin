@@ -25,3 +25,30 @@ div#vt_background
                         span(id="testctn_1_{{$index}}")
                             span(id="testbtn_1_{{$index}}",ng-click="select(1,w, $event)").btn.btn-default.btn-word {{w.word}}
                         span {{w.link}}
+
+        div(ng-show="part==3")
+            h2 Question
+            p {{questionText}}
+            div(ng-hide="user_answered")
+                input(placeholder="please answer in your jorney language and whole sentence",ng-model="user_answer")
+                span(ng-show="user_answer",ng-click="answer()").btn.btn-primary answer
+            div(ng-show="user_answered")
+                div(ng-show="user_answered==1")
+                    h3 Wrong answer
+                    p {{user_answer}}
+                    h3 possible answers
+                    p(ng-repeat="answer in questionAnswers") {{answer}}
+                div(ng-show="user_answered==2")
+                    h3 Your answer was correct
+                    p {{user_answer}}
+                div
+                    span(ng-click="conclusion()").btn.btn-primary conculsion
+
+        div(ng-show="part==4")
+            h2 Score
+            div walk: {{score.walk}}
+            div swim: {{score.swim}}
+            div fly: {{score.fly}}
+            div exp: {{score.exp}}
+            div
+                span(ng-click="backToMap()").btn.btn-primary back to map

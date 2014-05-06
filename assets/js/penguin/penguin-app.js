@@ -209,7 +209,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 }
 
 
-function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval){
+function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval, $location){
 
     var BUTTON_STATUS_NORMAL = 0;
     var BUTTON_STATUS_SELECT = 1;
@@ -219,17 +219,43 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var GAME_TIME = 60;
 
     $scope.correct = 0;
-    $scope.correctTotal = 0;
-    $scope.wrong = 0;
+    $scope.correctTotal = 20;
+    $scope.wrong = 11;
     $scope.timer = GAME_TIME;
 
     $scope.part = 0;
+
+    $scope.score = {
+        fly : 1,
+        swim : 2,
+        walk : 1,
+        exp : 0
+    }
 
 
     var placeid = $routeParams.placeid;
 
     //startVocabularyTest();
-    showIntroduction();
+    //showIntroduction();
+    showQuestion();
+
+    function showQuestion(){
+        worldFactory.loadPlace(placeid, function(place){
+            $scope.place = place;
+            $scope.part = 3;
+
+            if($scope.place.questions && $scope.place.questions.length > 0){
+                var pos = worldFactory.getRandomNumber('question_place_'+placeid, $scope.place.questions.length);
+
+                $scope.questionText = $scope.place.questions[pos].question;
+                var answers = $scope.place.questions[pos].answers;
+                $scope.questionAnswers = answers.split(';');
+
+            }
+
+            showRandomBackground();
+        });
+    }
 
     function showIntroduction(){
         worldFactory.loadPlace(placeid, function(place){
@@ -384,5 +410,27 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         return link;
     };
+
+
+    $scope.answer = function(){
+        if(!$scope.user_answer){
+            return ;
+        }
+
+        $scope.user_answered = $scope.questionAnswers.some(function(ans){
+            return ans == $scope.user_answer;
+        }) ? 2 : 1;
+
+        $scope.score.exp = $scope.user_answered;
+    }
+
+    $scope.conclusion = function(){
+        $scope.part = 4;
+        $scope.score.walk = Math.floor(($scope.correctTotal- $scope.wrong)/3);
+    }
+
+    $scope.backToMap = function(){
+        $location.path('/world');
+    }
 }
 

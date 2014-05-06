@@ -64,6 +64,14 @@
             self.game.placeId = place.id;
         }
 
+        function _addScore(score){
+            self.game.fly += score.fly;
+            self.game.swim += score.swim;
+            self.game.walk += score.walk;
+            // maybe useles
+            self.game.lastScore = score;
+        }
+
         function _store(){
             localStorageService.set('pinguin.game', self.game);
         }
