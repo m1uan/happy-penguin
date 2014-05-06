@@ -216,7 +216,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var BUTTON_STATUS_CORRECT = 2;
     var BUTTON_STATUS_WRONG = 3;
 
-    var GAME_TIME = 60;
+    var GAME_TIME = 6;
 
     $scope.correct = 0;
     $scope.correctTotal = 20;
@@ -236,10 +236,20 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var placeid = $routeParams.placeid;
 
     //startVocabularyTest();
-    //showIntroduction();
-    showQuestion();
+    showIntroduction();
+
 
     function showQuestion(){
+        // if not question there jump to the conclusion
+        if(!$scope.place.questions && $scope.place.questions.length < 1){
+            $scope.user_answered = 1;
+            $scope.conclusion();
+            return;
+        }
+
+        // load place is here just for debuginin
+        // can be switch in initial insead showIntroducitin
+        // and manipulate with layout and so on
         worldFactory.loadPlace(placeid, function(place){
             $scope.place = place;
             $scope.part = 3;
@@ -272,6 +282,10 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
             if($scope.timer % 10 == 0){
                 showRandomBackground();
+            }
+
+            if($scope.timer == 0){
+                showQuestion();
             }
 
         }, 1000, GAME_TIME);
