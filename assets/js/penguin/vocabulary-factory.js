@@ -7,7 +7,7 @@
         var words = [];
         var usedWords = [];
         var wordsIds = [];
-        var MAX_IN_SET = 2;
+        var MAX_IN_SET = 8;
         var CURRENT_WORDS = 1001;
 
 

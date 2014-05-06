@@ -79,6 +79,8 @@ module.exports = {
             data.key = null;
         }
 
+        //var sql = 'INSERT INTO translates.link_t ("key","desc","group") VALUES ($1,E\''+data.desc+'\',$2) RETURNING link,"desc","key","group"';
+        //pgClient.query(sql, [data.key,data.group], function(err, user){
 
         var sql = 'INSERT INTO translates.link_t ("key","desc","group") VALUES ($1,$2,$3) RETURNING link,"desc","key","group"';
 

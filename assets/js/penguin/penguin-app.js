@@ -216,7 +216,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var BUTTON_STATUS_CORRECT = 2;
     var BUTTON_STATUS_WRONG = 3;
 
-    var GAME_TIME = 6;
+    var GAME_TIME = 60;
 
     $scope.correct = 0;
     $scope.correctTotal = 0;
@@ -224,6 +224,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.timer = GAME_TIME;
 
     $scope.part = 0;
+
 
     var placeid = $routeParams.placeid;
 
@@ -242,18 +243,42 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         $interval(function(){
             $scope.timer -= 1;
+
+            if($scope.timer % 10 == 0){
+                showRandomBackground();
+            }
+
         }, 1000, GAME_TIME);
     }
 
 
 
     function showRandomBackground(){
-        //http://localhost:8080/assets/img/orig/place/1399279830623-27882-ldhox9.jpg
-        var img = '/assets/img/orig/' + $scope.place.images[0].image;
+        var img = '/assets/img/orig/place/1399279830623-27882-ldhox9.jpg'
+        if($scope.place.images && $scope.place.images.length > 0){
+            var pos = 0;
+
+            if($scope.place.images.length > 1){
+                // repeat till you dont find not used before
+                do {
+                    pos = Math.floor((Math.random() * 100)) % ($scope.place.images.length);
+                }while(pos == $scope.lastBackgroundImage);
+
+            }
+
+            img = '/assets/img/orig/' + $scope.place.images[pos].image;
+            $scope.lastBackgroundImage = pos;
+        }
+
 
         $('#vt_background').css("background-image", "url("+img+")");
     }
 
+
+    $scope.visit = function(){
+        $scope.part = 1;
+        startVocabularyTest();
+    }
 
 
     function loadOrNext(){
