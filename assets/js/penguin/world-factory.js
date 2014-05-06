@@ -184,7 +184,8 @@
             ,setupPlacesDistancesAndExp: setupPlacesDistancesAndExp
             ,testEndGame:testEndGame
             ,getCurrentPlace: getCurrentPlace
-            ,loadPlace:loadPlace,
-            getRandomNumber: getRandomNumber};
+            ,loadPlace:loadPlace
+            ,getRandomNumber: getRandomNumber
+            ,addScore:_addScore};
     });
 }).call(this);

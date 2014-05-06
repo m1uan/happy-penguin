@@ -422,15 +422,19 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         }) ? 2 : 1;
 
         $scope.score.exp = $scope.user_answered;
+        $scope.score.walk = Math.floor(($scope.correctTotal- $scope.wrong)/3);
+
+
     }
 
     $scope.conclusion = function(){
         $scope.part = 4;
-        $scope.score.walk = Math.floor(($scope.correctTotal- $scope.wrong)/3);
+
     }
 
     $scope.backToMap = function(){
         $location.path('/world');
+        worldFactory.addScore($scope.score);
     }
 }
 
