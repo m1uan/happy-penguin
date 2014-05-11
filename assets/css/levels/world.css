@@ -29,7 +29,7 @@
     margin:4px;
 }
 
-#penguin {
+#penguin,#penguin2 {
     position:absolute;
     width: 32px;
 }

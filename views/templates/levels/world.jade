@@ -1,4 +1,44 @@
 link(rel='stylesheet', href='/assets/css/levels/world.css')
+link(rel='stylesheet', href='/assets/css/libs/jqvmap.css')
+
+script(src="/assets/js/libs/jquery-jvectormap.js")
+script(src="/assets/js/libs/jquery-mousewheel.js")
+
+//script(src="/assets/js/libs/vmap/proj.js")
+
+//script(src="/assets/js/libs/vmap/jvectormap.js")
+
+//script(src="/assets/js/libs/vmap/abstract-element.js")
+//script(src="/assets/js/libs/vmap/abstract-canvas-element.js")
+//script(src="/assets/js/libs/vmap/abstract-shape-element.js")
+
+//script(src="/assets/js/libs/vmap/svg-element.js")
+//script(src="/assets/js/libs/vmap/svg-group-element.js")
+
+//script(src="/assets/js/libs/vmap/svg-canvas-element.js")
+
+//script(src="/assets/js/libs/vmap/svg-shape-element.js")
+//script(src="/assets/js/libs/vmap/svg-circle-element.js")
+//script(src="/assets/js/libs/vmap/svg-path-element.js")
+
+
+//script(src="/assets/js/libs/vmap/vml-element.js")
+//script(src="/assets/js/libs/vmap/vml-group-element.js")
+//script(src="/assets/js/libs/vmap/vml-canvas-element.js")
+//script(src="/assets/js/libs/vmap/vml-shape-element.js")
+//script(src="/assets/js/libs/vmap/vml-path-element.js")
+//script(src="/assets/js/libs/vmap/vml-circle-element.js")
+//
+//script(src="/assets/js/libs/vmap/vector-canvas.js")
+//script(src="/assets/js/libs/vmap/simple-scale.js")
+//script(src="/assets/js/libs/vmap/numeric-scale.js")
+//script(src="/assets/js/libs/vmap/ordinal-scale.js")
+//script(src="/assets/js/libs/vmap/color-scale.js")
+//script(src="/assets/js/libs/vmap/data-series.js")
+//script(src="/assets/js/libs/vmap/proj.js")
+//script(src="/assets/js/libs/vmap/world-map.js")
+
+script(src="/assets/js/libs/jquery-jvectormap-world-mill-en.js")
 
 div#game_resources
     span walk:
@@ -9,6 +49,8 @@ div#game_resources
     span#game_resources_fly {{fly}}
     span exp:
     span#game_resources_exp {{exp}}
+
+div(style="width: 800px; height: 600px")#world-map
 div()#world-main
 
 div
@@ -37,3 +79,5 @@ div
             div.col-xs-8
                 img(src="http://localhost:8080/assets/img/orig/place/1399024444677-21306-1qw7b9t.jpg",height="10px")
 
+script
+    //jQuery.noConflict();
