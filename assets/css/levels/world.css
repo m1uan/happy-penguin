@@ -1,9 +1,15 @@
+#world-container {
+    width:800px;
+    height:600px;
+    overflow: hidden;
+}
 #world-main{
-    position:relative;
-    background-image: url('/assets/img/pinguin/globe.png');
-    width:1350px;
-    height:675px;
-    background-size: 100%;
+    position: relative;
+    /* background-image: url('/assets/img/pinguin/globe.png'); */
+    width:800px;
+    height:600px;
+    background-color: red;
+    /*background-size: 100%;*/
 }
 
 .place {

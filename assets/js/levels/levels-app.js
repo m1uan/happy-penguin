@@ -163,6 +163,7 @@ function PlaceCtrl($scope, $routeParams, $http) {
 
 function WorldCtrl($scope, $location, $http) {
     var element = $('#world-main');
+    var map = null;
     //console.log(element);
 //    element.mousemove(function(evt) {
 //        var x = evt.pageX - element.offset().left;
@@ -174,49 +175,28 @@ function WorldCtrl($scope, $location, $http) {
 //    });
 
     //element.click(onClick);
-    update();
+
 
     function update(){
         var url ='list/en/?fields=id,name,posx,posy';
         requestGET($http, url, function(response, status){
             console.log(response);
-            $scope.places = response;
 
-            $scope.places.forEach(function(pl){
-
-                var item = $('<div>' + pl.id + '</div>').addClass('place');
-
-                var left = parseFloat(1350) * parseFloat(pl.posx);
-                var top = parseFloat(675) * parseFloat(pl.posy);
-
-                item.css({top: top, left: left});
-                item.appendTo(element);
-                item.click(function(){
-                    console.log('click');
-                    $scope.$apply(function(){
-                        $location.path('/place/'+pl.id);
-                    })
-
-                })
-
-                console.log(pl, top, left, parseFloat(element.width()) , parseFloat(element.height()));
+            var markers = [];
+            response.forEach(function(pl){
+                var marker = {latLng: [pl.posx, pl.posy], name: pl.name, style: {r: 8, fill: 'yellow'}};
+                markers.push(marker);
+                //map.addMarker(''+pl.id, marker);
                 //$('#world-main').append('ahoj').addClass('place');
             });
+
+            map.addMarkers(markers);
         });
     }
 
 
 
-    element.dblclick(function(evt){
 
-        var x = evt.pageX - element.offset().left;
-        var y = evt.pageY - element.offset().top;
-
-        var portX = parseFloat(x)/parseFloat(element.width());
-        var portY = parseFloat(y)/parseFloat(element.height());
-
-        createPoint(portX, portY, "CZ");
-    });
 
     function createPoint(portX, portY, code){
         alertify.prompt('portX:'+portX+ ' - protY:'+portY + ' - code:' + code, function(e, placeName){
@@ -235,24 +215,26 @@ function WorldCtrl($scope, $location, $http) {
         });
     }
 
-    jQuery(function(){
-        var markers = [
+
+        /* var markers = [
                 [0.5, 0.5],
                 {latLng:[49.5, 17.3]},
                 {latLng: [40.66, -73.56], name: 'New York City', style: {r: 8, fill: 'yellow'}},
                 {latLng: [41.52, -87.37], style: {fill: 'red', r: 10}}
             ],
             values1 = [1, 2, 3, 4],
-            values2 = [1, 2, 3, 4];
-        var vm = jQuery('#world-map').vectorMap({
-            onRegionClick:function(event, code, map,e){
-                console.log('region-over', e, code,map);
-                var v = map.getMarkerPosition(markers[2]);
-                var offset = vm.offset();
+            values2 = [1, 2, 3, 4];*/
+
+    jQuery(function(){
+        element.vectorMap({
+            onRegionClick:function(event, code, imap,e){
+                console.log('region-over', e, code,imap);
+                //var v = map.getMarkerPosition(markers[2]);
+                var offset = element.offset();
                 var px = Math.floor(e.clientX - offset.left);
                 var py = Math.floor(e.clientY - offset.top);
 
-                var latlng = map.pointToLatLng(px, py);
+                var latlng = imap.pointToLatLng(px, py);
                 console.log('v x y', latlng);
 
                 createPoint(latlng.lat, latlng.lng, code);
@@ -263,8 +245,8 @@ function WorldCtrl($scope, $location, $http) {
                 //event.target.add('<div>ahoj</div>');
 
             },onViewportChange : function(e1,e2,e3,e4){
-                console.log('onViewportChange', e1, e2, e3, e4);
-                e2.repositionMarkers();
+                //console.log('onViewportChange', e1, e2, e3, e4);
+                /*e2.repositionMarkers();
                 var v = e2.getMarkerPosition(markers[2]);
                 console.log(e2, v);
 
@@ -275,9 +257,11 @@ function WorldCtrl($scope, $location, $http) {
                     item.appendTo(jQuery('#world-map'));
                 }
 
-                item.css({top: v.y +40, left: v.x-12});
+                item.css({top: v.y +40, left: v.x-12});*/
+                map = e2;
+                update();
             },
-            markers:markers,
+            /* markers:markers, */
             backgroundColor: '#8888ff',
             borderColor: '#000',
             borderOpacity: 0.9,
@@ -297,7 +281,10 @@ function WorldCtrl($scope, $location, $http) {
                     }
                 }]
             }});
-    });
+
+        //update();
+    })
+
 }
 
 
