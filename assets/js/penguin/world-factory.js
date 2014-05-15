@@ -99,7 +99,12 @@
 
 
         function getCurrentPlace(){
-            return placesInWorldIds[self.game.placeId];
+            if(placesInWorldIds){
+                return placesInWorldIds[self.game.placeId];
+            } else {
+                return null;
+            }
+
         }
 
         function setupPlacesDistancesAndExp(){

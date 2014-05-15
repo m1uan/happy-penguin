@@ -121,6 +121,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
                 markers.push(marker);
                 //map.addMarker(''+pl.id, marker);
                 //$('#world-main').append('ahoj').addClass('place');
+
             });
 
             map.addMarkers(markers);
@@ -135,6 +136,13 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
     function showPenguin(){
         var currPlace = worldFactory.getCurrentPlace();
+
+        // showPenguin is call from onViewportChange
+        // but placesInWorldIds is still null
+        if(!currPlace){
+            return;
+        }
+
         var currentMarkers = {latLng: [currPlace.posx, currPlace.posy]};
 
         var v = map.getMarkerPosition(currentMarkers);
