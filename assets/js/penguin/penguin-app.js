@@ -81,6 +81,7 @@ function IntroCtrl($scope, $http, $routeParams) {
 function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) {
     var self = this;
     var element = $('#world-main');
+    var map = null;
     //console.log(element);
 //    element.mousemove(function(evt) {
 //        var x = evt.pageX - element.offset().left;
@@ -92,7 +93,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 //    });
 
     //element.click(onClick);
-    update();
+
 
 
 
@@ -114,23 +115,15 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
     function update(){
         worldFactory.loadPlaces(function(places,placesIds){
 
-            places.forEach(function(place){
-                var item = $('<div data-toggle="tooltip" data-placement="left" title="'+place.name+'">' + place.id + '</div>').addClass('place');
-
-                var left = parseFloat(1350) * parseFloat(place.posx) - 12;
-                var top = parseFloat(675) * parseFloat(place.posy) -12;
-
-
-                item.css({top: top, left: left});
-                item.appendTo(element);
-                item.click(function(){
-                    moveToPlace(place);
-                });
-
-                item.popover({trigger:'hover',html:true,title:place.name,content:function(){
-                    return self.generateInfo(place);
-                }});
+            var markers = [];
+            places.forEach(function(pl){
+                var marker = {latLng: [pl.posx, pl.posy], name: pl.name, style: {r: 8, fill: 'yellow'}};
+                markers.push(marker);
+                //map.addMarker(''+pl.id, marker);
+                //$('#world-main').append('ahoj').addClass('place');
             });
+
+            map.addMarkers(markers);
 
 
             worldFactory.setupPlacesDistancesAndExp();
@@ -204,15 +197,8 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
 
     jQuery(function(){
-        var markers = [
-                [0.5, 0.5],
-                {latLng:[49.5, 17.3]},
-                {latLng: [40.66, -73.56], name: 'New York City', style: {r: 8, fill: 'yellow'}},
-                {latLng: [41.52, -87.37], style: {fill: 'red', r: 10}}
-            ],
-            values1 = [1, 2, 3, 4],
-            values2 = [1, 2, 3, 4];
-        var vm = jQuery('#world-map').vectorMap({
+
+        element.vectorMap({
             onRegionClick:function(event, code){
                 console.log('region-over', event, code);
             },onMarkerClick:function(event, marker, over){
@@ -221,22 +207,27 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
                 item.appendTo(event.target);
                 //event.target.add('<div>ahoj</div>');
 
+            },onMarkerOver: function(e1,e2){
+
             },onViewportChange : function(e1,e2,e3,e4){
-                console.log('onViewportChange', e1, e2, e3, e4);
-                e2.repositionMarkers();
-                var v = e2.getMarkerPosition(markers[2]);
-                console.log(e2, v);
+                /*console.log('onViewportChange', e1, e2, e3, e4);
+                 e2.repositionMarkers();
+                 var v = e2.getMarkerPosition(markers[2]);
+                 console.log(e2, v);
 
-                var item = $('#penguin2');
+                 var item = $('#penguin2');
 
-                if(!item.length){
-                    item  = $('<img id="penguin2" src="assets/img/pinguin/penguin_3.png"/>');
-                    item.appendTo(jQuery('#world-map'));
+                 if(!item.length){
+                 item  = $('<img id="penguin2" src="assets/img/pinguin/penguin_3.png"/>');
+                 item.appendTo(jQuery('#world-map'));
+                 }
+
+                 item.css({top: v.y +40, left: v.x-12});*/
+                if(!map){
+                    map = e2;
+                    update();
                 }
-
-                item.css({top: v.y +40, left: v.x-12});
             },
-            markers:markers,
             backgroundColor: '#8888ff',
             borderColor: '#000',
             borderOpacity: 0.9,
