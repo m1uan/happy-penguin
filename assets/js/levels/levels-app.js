@@ -214,10 +214,15 @@ function WorldCtrl($scope, $location, $http) {
 
         var portX = parseFloat(x)/parseFloat(element.width());
         var portY = parseFloat(y)/parseFloat(element.height());
-        alertify.prompt('portX:'+portX+ ' - protY:'+portY, function(e, placeName){
+
+        createPoint(portX, portY, "CZ");
+    });
+
+    function createPoint(portX, portY, code){
+        alertify.prompt('portX:'+portX+ ' - protY:'+portY + ' - code:' + code, function(e, placeName){
             if(e){
                 var url = 'create/';
-                requestPOST($http, url, {posx:portX, posy:portY, name:placeName}, function(response, status){
+                requestPOST($http, url, {posx:portX, posy:portY, name:placeName, 'code': code}, function(response, status){
                     console.log(response)
 
                     update();
@@ -228,8 +233,7 @@ function WorldCtrl($scope, $location, $http) {
                 console.log(' $location.path(/place/0)');
             }
         });
-
-    });
+    }
 
     jQuery(function(){
         var markers = [
@@ -250,6 +254,8 @@ function WorldCtrl($scope, $location, $http) {
 
                 var latlng = map.pointToLatLng(px, py);
                 console.log('v x y', latlng);
+
+                createPoint(latlng.lat, latlng.lng, code);
             },onMarkerClick:function(event, marker, over){
                 console.log('region-over', event, marker, over);
                 var item  = $('<img src="assets/img/pinguin/penguin_3.png"/>');

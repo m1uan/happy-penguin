@@ -10,8 +10,8 @@ module.exports = {
     initialize : function(server, Passport) {
 
     },create: function(pg, dataContainer, cb){
-        if(!dataContainer.posx || !dataContainer.posy || !dataContainer.name){
-            cb('missing position posx, posy or/and name');
+        if(!dataContainer.posx || !dataContainer.posy || !dataContainer.name || !dataContainer.code){
+            cb('missing position posx, posy, name or/and code');
         }
 
         var cascade = [];
@@ -29,7 +29,7 @@ module.exports = {
 
         // create new place
         cascade.push(function(addtranslate, icb){
-            var sql = 'INSERT INTO pinguin.place_t (posx,posy,name) VALUES ($1,$2,$3) RETURNING id,posx,posy';
+            var sql = 'INSERT INTO pinguin.place_t (posx,posy,name,code) VALUES ($1,$2,$3,$4) RETURNING id,posx,posy,code';
 
 
             pg.query(sql, [dataContainer.posx,dataContainer.posy, addtranslate.link], function(err, place){

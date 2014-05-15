@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS pinguin.image_t;
 DROP TABLE IF EXISTS pinguin.question_t;
 DROP TABLE IF EXISTS pinguin.place_t;
 DROP SCHEMA IF EXISTS pinguin;
@@ -52,6 +53,7 @@ CREATE TABLE place_t (
     posx FLOAT NOT NULL,
     posy FLOAT NOT NULL,
     name INTEGER NOT NULL,
+    code CHAR(2),
     FOREIGN KEY (name) REFERENCES translates.link_t (link),
     "info" INTEGER DEFAULT NULL,
     FOREIGN KEY (info) REFERENCES translates.link_t (link),
@@ -80,3 +82,5 @@ CREATE TABLE image_t (
     FOREIGN KEY (place_id) REFERENCES pinguin.place_t (id),
     PRIMARY KEY(iid)
 );
+
+
