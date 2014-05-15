@@ -22,7 +22,7 @@
                 exp : 20,
                 lang:'en',
                 learn: 'en',
-                placeId : 16,
+                placeId : 5,
                 visited : [],
                 randomScenarios : {}
             }
@@ -124,7 +124,7 @@
                 return place.id != self.game.placeId &&  place.fly <= self.game.fly && place.swim <= self.game.swim && place.walk <= self.game.walk;
             });
 
-            return canPlay;
+            return true || canPlay;
         }
 
         function loadPlace(placeid, cb){

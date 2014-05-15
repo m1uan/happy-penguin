@@ -134,27 +134,23 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
 
     function showPenguin(){
-        var item = $('#penguin');
+        var currPlace = worldFactory.getCurrentPlace();
+        var currentMarkers = {latLng: [currPlace.posx, currPlace.posy]};
+
+        var v = map.getMarkerPosition(currentMarkers);
+
+        var item = $('#penguin2');
 
         if(!item.length){
-            item  = $('<img id="penguin" src="assets/img/pinguin/penguin_3.png"/>');
-            item.appendTo(element);
+            item  = $('<img id="penguin2" src="assets/img/pinguin/penguin_3.png"/>');
+            item.appendTo(jQuery('#world-main'));
         }
 
+        item.css({top: v.y-30, left: v.x-18});
 
 
 
 
-        var w2 = 18;//(item.clientWidth/2);
-        var h2 = 34;//(item.clientHeight/2);
-
-        var gamePlace = worldFactory.getCurrentPlace();
-
-        var left = parseFloat(1350) * parseFloat(gamePlace.posx) - w2;
-        var top = parseFloat(675) * parseFloat(gamePlace.posy) - h2;
-
-
-        item.css({top: top, left: left});
     }
 
 
@@ -226,6 +222,8 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
                 if(!map){
                     map = e2;
                     update();
+                } else {
+                    showPenguin();
                 }
             },
             backgroundColor: '#8888ff',

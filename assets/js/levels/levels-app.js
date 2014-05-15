@@ -258,8 +258,10 @@ function WorldCtrl($scope, $location, $http) {
                 }
 
                 item.css({top: v.y +40, left: v.x-12});*/
-                map = e2;
-                update();
+                if(!map){
+                    map = e2;
+                    update();
+                }
             },
             /* markers:markers, */
             backgroundColor: '#8888ff',
