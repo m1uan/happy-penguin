@@ -32,7 +32,7 @@ module.exports = {
             var sql = 'INSERT INTO pinguin.place_t (posx,posy,name,code) VALUES ($1,$2,$3,$4) RETURNING id,posx,posy,code';
 
 
-            pg.query(sql, [dataContainer.posx,dataContainer.posy, addtranslate.link], function(err, place){
+            pg.query(sql, [dataContainer.posx,dataContainer.posy, addtranslate.link, dataContainer.code], function(err, place){
                 if(place && place.rows){
                     place = place.rows[0];
                     place.namelink = addtranslate.link;

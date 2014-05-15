@@ -68,7 +68,8 @@ describe.only('levels', function(){
             var dataContainer = {
                 name : 'place',
                 posx: 0.5,
-                posy: 0.5
+                posy: 0.5,
+                code: 'CZ'
             };
 
 
@@ -94,6 +95,7 @@ describe.only('levels', function(){
         it('updatepos', function(cb){
             var dataContainerCreate = {
                 name : 'place_1',
+                code: 'cz',
                 posx: 0.15,
                 posy: 0.15
             };
@@ -129,6 +131,7 @@ describe.only('levels', function(){
         it('updatename and update info', function(cb){
             var dataContainerCreate = {
                 name : 'place_2',
+                code: 'cz',
                 posx: 0.15,
                 posy: 0.15
             };
@@ -166,6 +169,7 @@ describe.only('levels', function(){
                 name : 'wonderful_place',
                 posx: 0.15,
                 posy: 0.15,
+                code: 'cz',
                 info: 'Place with 20 inhabitans'
 
             };
@@ -207,6 +211,7 @@ describe.only('levels', function(){
                 name : 'wonderful_place 2',
                 posx: 0.15,
                 posy: 0.15,
+                code: 'cz',
                 info: 'Place with 20 inhabitans',
                 question : 'How many inhabitans living here?',
                 answers: 'in this city living 20 inhabitans.',
@@ -303,6 +308,7 @@ describe.only('levels', function(){
         it('add', function(cb){
             var dataContainerCreate = {
                 name : 'place_150',
+                code: 'cz',
                 posx: 0.15,
                 posy: 0.15
             };
@@ -337,6 +343,7 @@ describe.only('levels', function(){
                 name : 'place_151',
                 posx: 0.15,
                 posy: 0.15,
+                code: 'cz',
                 question : 'How many inhabitans living here?',
                 answers: 'in this city living 20 inhabitans.'
             };
@@ -373,6 +380,7 @@ describe.only('levels', function(){
                 name : 'place_152',
                 posx: 0.15,
                 posy: 0.15,
+                code: 'cz',
                 question : 'How many inhabitans living here?',
                 answers: 'in this city living 20 inhabitans.',
                 question2 : '2How many inhabitans living here?',
@@ -407,6 +415,7 @@ describe.only('levels', function(){
                 name : 'place_153',
                 posx: 0.15,
                 posy: 0.15,
+                code: 'cz',
                 question : 'How many inhabitans living here?',
                 answers: 'in this city living 20 inhabitans.',
                 question2 : '2How many inhabitans living here?',
@@ -441,6 +450,7 @@ describe.only('levels', function(){
                 name : 'place_154',
                 posx: 0.15,
                 posy: 0.15,
+                code: 'cz',
                 question : 'How many inhabitans living here?',
                 answers: 'in this city living 20 inhabitans.',
                 question2 : '2How many inhabitans living here?',
@@ -592,7 +602,7 @@ describe.only('levels', function(){
 
             var req =  request('http://localhost:8080');
 
-            req.get('/pinguin/game/list/en/?fields=id,name,posx,posy')
+            req.get('/pinguin/game/list/en/?fields=id,name,posx,posy,code')
                 //.expect('Content-Type', /json/)
                 //.expect('Content-Length', '20')
                 .set('Content-Encoding', /json/)
@@ -689,6 +699,7 @@ function createPlaceWithImage(name, cb){
         name : name,
         posx: 0.15,
         posy: 0.15,
+        code: 'cz',
         question : 'How many inhabitans living here?',
         answers: 'in this city living 20 inhabitans.',
         question2 : '2How many inhabitans living here?',
