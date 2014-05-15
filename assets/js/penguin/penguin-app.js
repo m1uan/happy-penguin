@@ -211,8 +211,27 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
                 item.appendTo(event.target);
                 //event.target.add('<div>ahoj</div>');
 
-            },onMarkerOver: function(e1,e2){
+            },onMarkerLabelShow: function(event, label, index){
+                var h = label.html();
+                label.html('aoooj');
 
+                //alert(h);
+
+                //e1.preventDefault();
+//                e2[0].text('ahoj');
+//                e2.text('ahoj');
+                var place = worldFactory.getCurrentPlace();
+//                var item  = $('<span />');
+//                item.appendTo(element);
+//
+                var popovers= $('.jvectormap-marker');
+                popovers.forEach(function(p){
+                    p.popover({trigger:'hover',html:true,title:place.name,content:function(){
+                        return self.generateInfo(place);
+                    }});
+                });
+
+                //event.target.css({top: 20, left: 20});
             },onViewportChange : function(e1,e2,e3,e4){
                 /*console.log('onViewportChange', e1, e2, e3, e4);
                  e2.repositionMarkers();
