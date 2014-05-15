@@ -1134,6 +1134,7 @@ jvm.WorldMap = function(params) {
 
     for (e in jvm.WorldMap.apiEvents) {
         if (this.params[e]) {
+            console.log('HERE!',this.params[e]);
             this.container.bind(jvm.WorldMap.apiEvents[e]+'.jvectormap', this.params[e]);
         }
     }
@@ -1459,7 +1460,7 @@ jvm.WorldMap.prototype = {
                 element = type == 'region' ? map.regions[code].element : map.markers[code].element;
 
             if (!mouseMoved) {
-                map.container.trigger(clickEvent, [code]);
+                map.container.trigger(clickEvent, [code,map,e]);
                 if ((type === 'region' && map.params.regionsSelectable) || (type === 'marker' && map.params.markersSelectable)) {
                     if (!clickEvent.isDefaultPrevented()) {
                         if (map.params[type+'sSelectableOne']) {

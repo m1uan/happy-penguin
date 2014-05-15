@@ -231,6 +231,67 @@ function WorldCtrl($scope, $location, $http) {
 
     });
 
+    jQuery(function(){
+        var markers = [
+                [0.5, 0.5],
+                {latLng:[49.5, 17.3]},
+                {latLng: [40.66, -73.56], name: 'New York City', style: {r: 8, fill: 'yellow'}},
+                {latLng: [41.52, -87.37], style: {fill: 'red', r: 10}}
+            ],
+            values1 = [1, 2, 3, 4],
+            values2 = [1, 2, 3, 4];
+        var vm = jQuery('#world-map').vectorMap({
+            onRegionClick:function(event, code, map,e){
+                console.log('region-over', e, code,map);
+                var v = map.getMarkerPosition(markers[2]);
+                var offset = vm.offset();
+                var px = Math.floor(e.clientX - offset.left);
+                var py = Math.floor(e.clientY - offset.top);
+
+                var latlng = map.pointToLatLng(px, py);
+                console.log('v x y', latlng);
+            },onMarkerClick:function(event, marker, over){
+                console.log('region-over', event, marker, over);
+                var item  = $('<img src="assets/img/pinguin/penguin_3.png"/>');
+                item.appendTo(event.target);
+                //event.target.add('<div>ahoj</div>');
+
+            },onViewportChange : function(e1,e2,e3,e4){
+                console.log('onViewportChange', e1, e2, e3, e4);
+                e2.repositionMarkers();
+                var v = e2.getMarkerPosition(markers[2]);
+                console.log(e2, v);
+
+                var item = $('#penguin2');
+
+                if(!item.length){
+                    item  = $('<img id="penguin2" src="assets/img/pinguin/penguin_3.png"/>');
+                    item.appendTo(jQuery('#world-map'));
+                }
+
+                item.css({top: v.y +40, left: v.x-12});
+            },
+            markers:markers,
+            backgroundColor: '#8888ff',
+            borderColor: '#000',
+            borderOpacity: 0.9,
+            borderWidth: 30,
+            color: '#f4fff0',
+            markersSelectable: true,
+            markersSelectableOne: true,
+            focusOn: {
+                x: 0.5,
+                y: 0.5,
+                scale: 2
+            },map: 'world_mill_en',series: {
+                regions: [{
+                    values: {
+                        "CZ":'#22FF22',
+                        "DE":2
+                    }
+                }]
+            }});
+    });
 }
 
 
