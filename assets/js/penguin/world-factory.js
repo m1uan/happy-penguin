@@ -114,7 +114,7 @@
                 var xd = gamePlace.posx - place.posx;
                 var yd = gamePlace.posy - place.posy;
                 var distance = Math.sqrt((xd*xd)+(yd*yd));
-                place.superDistance = Math.round(distance*100);
+                place.superDistance = Math.round(distance);
 
                 place.fly = Math.round(place.superDistance / 9);
                 place.swim = Math.round((place.superDistance - (place.fly*6)) / 3);
