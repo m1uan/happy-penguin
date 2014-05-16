@@ -82,6 +82,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
     var self = this;
     var element = $('#world-main');
     var map = null;
+    var places;
     //console.log(element);
 //    element.mousemove(function(evt) {
 //        var x = evt.pageX - element.offset().left;
@@ -112,10 +113,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
         return place_popover.html();
     }
 
-    function update(){
-        worldFactory.loadPlaces(function(places,placesIds){
-
-            var markers = [];
+    function updatePlaces(places){
             places.forEach(function(place){
 
                 var placeid = 'placeid_'+place.id;
@@ -145,14 +143,15 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
             });
 
-            map.addMarkers(markers);
+    }
 
-
+    function setupMap(){
+        worldFactory.loadPlaces(function(iplaces,placesIds){
+            places = iplaces;
+            updatePlaces(places);
             worldFactory.setupPlacesDistancesAndExp();
             testEndGame();
             showPenguin();
-
-
         });
     }
 
@@ -222,6 +221,17 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
         }
     }
 
+    function onViewportChange(e1,imap){
+        if(!map){
+            map = imap;
+            setupMap();
+        } else if(places) {
+            updatePlaces(places);
+            showPenguin();
+
+        }
+    }
+
 
     jQuery(function(){
 
@@ -255,29 +265,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
                 });
 
                 //event.target.css({top: 20, left: 20});
-            },onViewportChange : function(e1,e2,e3,e4){
-                /*console.log('onViewportChange', e1, e2, e3, e4);
-                 e2.repositionMarkers();
-                 var v = e2.getMarkerPosition(markers[2]);
-                 console.log(e2, v);
-
-                 var item = $('#penguin2');
-
-                 if(!item.length){
-                 item  = $('<img id="penguin2" src="assets/img/pinguin/penguin_3.png"/>');
-                 item.appendTo(jQuery('#world-map'));
-                 }
-
-                 item.css({top: v.y +40, left: v.x-12});*/
-                if(!map){
-                    map = e2;
-
-                } else {
-                    //showPenguin();
-                }
-
-                update();
-            },
+            },onViewportChange : onViewportChange,
             backgroundColor: '#8888ff',
             borderColor: '#000',
             borderOpacity: 0.9,
