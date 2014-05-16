@@ -116,9 +116,30 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
         worldFactory.loadPlaces(function(places,placesIds){
 
             var markers = [];
-            places.forEach(function(pl){
-                var marker = {latLng: [pl.posx, pl.posy], name: pl.name, style: {r: 8, fill: 'yellow'}};
-                markers.push(marker);
+            places.forEach(function(place){
+
+                var placeid = 'placeid_'+place.id;
+                var item = $('#'+placeid);
+
+                if(!item.length){
+                    var item = $('<div id="'+placeid+'" data-toggle="tooltip" data-placement="left" title="'+place.name+'">' + place.id + '</div>').addClass('place');
+
+                    item.appendTo(element);
+                    item.click(function(){
+                        moveToPlace(place);
+                    });
+
+                    item.popover({trigger:'hover',html:true,title:place.name,content:function(){
+                        return self.generateInfo(place);
+                    }});
+                }
+
+                var pos = map.latLngToPoint(place.posx, place.posy);
+                item.css({top: pos.y, left: pos.x});
+
+
+//                var marker = {latLng: [pl.posx, pl.posy], name: pl.name, style: {r: 8, fill: 'yellow'}};
+//                markers.push(marker);
                 //map.addMarker(''+pl.id, marker);
                 //$('#world-main').append('ahoj').addClass('place');
 
@@ -130,6 +151,8 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
             worldFactory.setupPlacesDistancesAndExp();
             testEndGame();
             showPenguin();
+
+
         });
     }
 
@@ -248,10 +271,12 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
                  item.css({top: v.y +40, left: v.x-12});*/
                 if(!map){
                     map = e2;
-                    update();
+
                 } else {
-                    showPenguin();
+                    //showPenguin();
                 }
+
+                update();
             },
             backgroundColor: '#8888ff',
             borderColor: '#000',
