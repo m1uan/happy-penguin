@@ -202,7 +202,10 @@ function dragImage(element, imageElement, fileElement, linkId, uploadConfig){
             fd.append("thumbData", thumb);
         }
 
-
+//        var xhr = new XMLHttpRequest();
+//        xhr.open('POST', UPLOAD_URL, true);
+//        xhr.onload = function(e) { alert('ahoj' + this.responseText) };
+//        xhr.send(fd);
 
         $.ajax({
             url: UPLOAD_URL,
