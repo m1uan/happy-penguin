@@ -31,8 +31,6 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','m
             suffix: '/en/?group=0'
         });
 
-        $routeProvider.when('/empty', {
-        });
 
         $translateProvider.preferredLanguage('en');
         // configure html5 to get links working on jsfiddle
@@ -175,7 +173,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
         var item = $('#penguin2');
 
         if(!item.length){
-            item  = $('<img id="penguin2" src="assets/img/pinguin/penguin_3.png"/>');
+            item  = $('<img id="penguin2" src="assets/img/penguin/penguin_3.png"/>');
             item.appendTo(jQuery('#world-main'));
         }
 
@@ -388,7 +386,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         }
 
 
-        $('#vt_background').css("background-image", "url("+img+")");
+        $('body').css("background-image", "url("+img+")");
     }
 
 

@@ -1,3 +1,7 @@
+.wordtest {
+    padding:10px;
+}
+
 #conection-canvas {
     width:1000px;
     height:1000px;
@@ -11,5 +15,14 @@
 }
 
 #introduction {
-    height:600px;
+    height:350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+}
+
+#btn_explore {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
 }

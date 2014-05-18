@@ -1,3 +1,8 @@
+body {
+    background-image: url('/assets/img/orig/place/1400385212810-24811-isedqn.jpg');
+    background-size: 100%, 100%;
+}
+
 .main-view {
     width:800px;
     height:600px;

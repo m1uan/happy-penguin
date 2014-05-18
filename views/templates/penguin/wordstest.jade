@@ -1,12 +1,12 @@
 link(rel='stylesheet', href='/assets/css/penguin/wordtest.css')
 
 
-div(ng-show="part==0")#introduction
+div(ng-show="part==0").wordtest
     h2 welcome in {{place.name}}
-    div {{place.info}}
-    span(ng-click="visit()").btn.btn-primary visit
+    div#introduction {{place.info}}
+    span(ng-click="visit()",translate="explore").btn.btn-primary#btn_explore Explore
 
-div(ng-show="part==1")
+div(ng-show="part==1").wordtest
     h2 game {{correct}} {{correctTotal}} {{wrong}} {{timer}}
 
     //canvas#conection-canvas
@@ -25,7 +25,7 @@ div(ng-show="part==1")
                     span(id="testbtn_1_{{$index}}",ng-click="select(1,w, $event)").btn.btn-default.btn-word {{w.word}}
                 span {{w.link}}
 
-div(ng-show="part==3")
+div(ng-show="part==3").wordtest
     h2 Question
     p {{questionText}}
     div(ng-hide="user_answered")
@@ -43,7 +43,7 @@ div(ng-show="part==3")
         div
             span(ng-click="conclusion()").btn.btn-primary conculsion
 
-div(ng-show="part==4")
+div(ng-show="part==4").wordtest
     h2 Score
     div walk: {{score.walk}}
     div swim: {{score.swim}}
