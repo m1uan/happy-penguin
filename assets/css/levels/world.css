@@ -1,14 +1,11 @@
-#world-container {
-    width:800px;
-    height:600px;
-    overflow: hidden;
-}
+
 #world-main{
    position: relative;
     /* background-image: url('/assets/img/pinguin/globe.png'); */
-    width:800px;
-    height:600px;
+    width:100%;
+    height:525px;
     background-color: red;
+    overflow: hidden;
     /*background-size: 100%;*/
 }
 
@@ -25,10 +22,11 @@
 }
 
 #game_resources{
-    position: absolute;
+    position: relative;
     top:0px;
     right:0px;
-    background-color: lightblue;
+    color:white;
+    background-color: darkslategray;
 }
 
 #game_resources span {

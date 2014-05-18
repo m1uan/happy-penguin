@@ -31,6 +31,9 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','m
             suffix: '/en/?group=0'
         });
 
+        $routeProvider.when('/empty', {
+        });
+
         $translateProvider.preferredLanguage('en');
         // configure html5 to get links working on jsfiddle
         //$locationProvider.html5Mode(true);
