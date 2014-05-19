@@ -25,6 +25,9 @@ function func(){
             },get_get : {
                 auth:false,
                 params : '{params*}'
+            },langs_get : {
+                auth:false,
+                params : '{params*}'
             }
         }
     }
@@ -38,6 +41,12 @@ function func(){
         levelCtrl.get_get(request);
     }
 
+
+    self.langs_get = function(request){
+
+        var data = request.params.params.split('/');
+        levelEngine.langsAndCities(pg, data[0], superResponse(request));
+    }
 
 
     return self;

@@ -491,6 +491,13 @@ describe.only('levels', function(){
 
     });
 
+    describe.only('langs', function(){
+        it('with cz', function(cb){
+            levels.langsAndCities(pgClient, 'en', function(err, image){
+                cb();
+            });
+        });
+    });
     describe('images', function(){
         it('from data - pinguin table', function(cb){
             createPlaceWithImage('place_155', function(err, iid, created){
