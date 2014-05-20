@@ -1,6 +1,6 @@
 "use strict";
 
-var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','milan.world.factory','milan.vocabulary.factory','pascalprecht.translate'],
+var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','milan.penguin.factory','milan.world.factory','milan.vocabulary.factory','pascalprecht.translate'],
     function($routeProvider, $locationProvider, $translateProvider) {
         $routeProvider.when('/intro/:page', {
             templateUrl: '/templates/penguin/intro',
@@ -39,8 +39,12 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','m
 
 
 
-function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory) {
+function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory) {
 
+    $scope.langs = [];
+    penguinFactory.getLangs('en', function(langs){
+        $scope.langs = langs;
+    })
 
     //var base = {};
     var mygame = worldFactory.game();
@@ -56,15 +60,22 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
         $location.path('/intro/1');
     }
 
+
+    $scope.changeLang = function(lang){
+        alert(lang);
+    }
 }
 
-function IntroCtrl($scope, $http, $routeParams) {
+function IntroCtrl($scope, $http, $routeParams,penguinFactory) {
     var PAGEMAX = 4;
 
     $scope.page = parseInt($routeParams.page);
     if(isNaN($scope.page) || $scope.page < 1 || $scope.page > PAGEMAX){
         $scope.page = 1;
     }
+
+
+
 
     $scope.pageNext = $scope.page + 1;
     $scope.pagePrev = $scope.page - 1;

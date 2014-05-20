@@ -12,7 +12,12 @@ html(ng-app="pinguin")
         meta(name="viewport",content="width=device-width, initial-scale=1.0")
     body(ng-controller="PinguinCtrl as main")
         div#body
+            div#langs
+                span(ng-repeat="lang in langs",ng-click="changeLang(lang.lang)")
+                    img(src="/assets/img/flags/flag_{{lang.lang}}.png").translate_flag
+                    span {{lang.lang}}
             h1 * Happy penguin *
+
             div(ng-view).main-view
 
 
@@ -34,6 +39,7 @@ html(ng-app="pinguin")
     script(src="/assets/js/simple-request.js")
     script(src="/assets/js/penguin/world-factory.js")
     script(src="/assets/js/penguin/vocabulary-factory.js")
+    script(src="/assets/js/penguin/penguin-factory.js")
     script(src="/assets/js/penguin/penguin-app.js")
 
 
