@@ -39,7 +39,7 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','m
 
 
 
-function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory) {
+function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate) {
 
     $scope.langs = [];
     penguinFactory.getLangs('en', function(langs){
@@ -62,7 +62,8 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 
 
     $scope.changeLang = function(lang){
-        alert(lang);
+        $translate.use(lang);
+        alertify.error('lang changed to : ' + lang);
     }
 }
 

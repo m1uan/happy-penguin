@@ -22,10 +22,12 @@ body {
 
 }
 
-#vt_content{
-
-
+.translate_flag {
+    width:25px;
+    margin-left:5px;
+    margin-right:5px;
 }
 
-#vt_background{
+.translation:hover {
+    cursor:pointer;
 }

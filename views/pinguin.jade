@@ -13,9 +13,9 @@ html(ng-app="pinguin")
     body(ng-controller="PinguinCtrl as main")
         div#body
             div#langs
-                span(ng-repeat="lang in langs",ng-click="changeLang(lang.lang)")
+                span(ng-repeat="lang in langs",ng-click="changeLang(lang.lang)").translation
                     img(src="/assets/img/flags/flag_{{lang.lang}}.png").translate_flag
-                    span {{lang.lang}}
+                    span.media-heading {{lang.lang}}
             h1 * Happy penguin *
 
             div(ng-view).main-view
