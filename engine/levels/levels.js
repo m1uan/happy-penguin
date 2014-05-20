@@ -241,7 +241,8 @@ module.exports = {
                 'qid',
                 'place_id',
                 'ttq.data as question',
-                'tta.data as answers'
+                'tta.data as answers',
+                'ttq.link as link_question'
             ]
 
             var SQL = SL.SqlLib('pinguin.question_t as pq', fields);
@@ -548,7 +549,7 @@ module.exports = {
             var SQL = '';
             langData.forEach(function(lang){
                 SQL += ' UNION SELECT (SELECT count(*) from pinguin.place_t' +
-                    ' join translates.translate_t on translates.translate_t.link=pinguin.place_t.name where translates.translate_t.lang=\''+lang.lang+'\') as cities' +
+                    ' JOIN translates.translate_t on translates.translate_t.link=pinguin.place_t.info where translates.translate_t.lang=\''+lang.lang+'\') as cities' +
                     ',(SELECT count(*) from pinguin.place_t' +
                     ' join pinguin.question_t on pinguin.question_t.place_id=pinguin.place_t.id' +
                      ' join translates.translate_t on translates.translate_t.link=pinguin.question_t.question' +

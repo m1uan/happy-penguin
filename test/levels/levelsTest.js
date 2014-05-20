@@ -39,7 +39,9 @@ describe.only('levels', function(){
                 "DELETE FROM pinguin.question_t;",
                 "DELETE FROM pinguin.place_t;",
                 "DELETE FROM translates.translate_t USING translates.link_t WHERE translates.link_t.group = 1000 AND translates.translate_t.link = translates.link_t.link;",
-                "DELETE FROM translates.link_t WHERE translates.link_t.group = 1000;"
+                "DELETE FROM translates.link_t WHERE translates.link_t.group = 1000;",
+                "DELETE FROM translates.translate_t WHERE lang='f1';",
+                "DELETE FROM translates.lang_t WHERE lang='f1';"
                 //, "SELECT generate_langs();"
                 //, "SELECT remove_test_data();"
 
@@ -492,10 +494,63 @@ describe.only('levels', function(){
     });
 
     describe.only('langs', function(){
-        it('with cz', function(cb){
-            levels.langsAndCities(pgClient, 'en', function(err, image){
-                cb();
+        it('with fr', function(cb){
+            var lang = require('../../engine/translates/langs.js')
+            var series = [];
+
+            series.push(function(icb){
+                lang.addlang(pgClient, {lang:'f1',name:'france1'}, icb)
+            })
+
+            series.push(function(icb){
+                var dataContainerCreate = {
+                    name : 'place_254',
+                    posx: 0.15,
+                    posy: 0.15,
+                    code: 'f1',
+                    info: 'info of place 254',
+                    question : 'How many inhabitans living here?',
+                    answers: 'in this city living 20 inhabitans.',
+                    question2 : '2How many inhabitans living here?',
+                    answers2: '2in this city living 20 inhabitans.'
+                };
+
+                // create for update
+                createPlace(pgClient, dataContainerCreate, function(err, place){
+                    var ser2 = [];
+
+                    ser2.push(function(icb2){
+                        lang.translate(pgClient, {link:place[3].link, lang:'f1',data:'f1placename'}, icb2);
+                    })
+
+                    ser2.push(function(icb2){
+                        lang.translate(pgClient, {link:place[2].link_question, lang:'f1',data:'f1placename_question1'}, icb2);
+                    })
+
+                    ser2.push(function(icb2){
+                        lang.translate(pgClient, {link:place[1].link_question, lang:'f1',data:'f1placename_question2'}, icb2);
+                    })
+
+                    Async.series(ser2, icb);
+                });
+            })
+
+
+            series.push(function(icb){
+                levels.langsAndCities(pgClient, 'en', function(err, image){
+                    image.length.should.be.equal(3);
+                    var f1 = image[2];
+                    f1.cities.should.be.equal('1');
+                    f1.questions.should.be.equal('1');
+                    icb();
+                });
             });
+
+
+
+
+
+            Async.series(series, cb);
         });
     });
     describe('images', function(){
