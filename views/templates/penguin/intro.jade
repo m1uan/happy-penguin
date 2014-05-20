@@ -7,4 +7,14 @@ div
 div(translate="intro1",ng-show="page==1") page 1 - {{page}}
 div(translate="intro2",ng-show="page==2") page 2 - {{page}}
 div(translate="intro3",ng-show="page==3") page 3 - {{page}}
-div(translate="intro4",ng-show="page==4") page 4 - {{page}}
+div(ng-show="page==4")
+    table.table.table-hover
+       tr(ng-repeat="lang in langs")
+            td
+                img(src="/assets/img/flags/flag_{{lang.lang}}.png")
+            td
+                div {{lang.translate}}
+            td
+                div {{lang.cities}}
+            td
+                div {{lang.questions}}

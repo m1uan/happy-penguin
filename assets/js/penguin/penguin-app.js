@@ -43,6 +43,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 
     $scope.langs = [];
     penguinFactory.getLangs('en', function(langs){
+
         $scope.langs = langs;
     })
 
@@ -62,12 +63,15 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 
 
     $scope.changeLang = function(lang){
-        $translate.use(lang);
-        alertify.error('lang changed to : ' + lang);
+        if($translate.use() != lang){
+            $translate.use(lang);
+            alertify.success('lang changed to : ' + lang);
+        }
+
     }
 }
 
-function IntroCtrl($scope, $http, $routeParams,penguinFactory) {
+function IntroCtrl($scope, $http, $routeParams,penguinFactory,$translate) {
     var PAGEMAX = 4;
 
     $scope.page = parseInt($routeParams.page);
@@ -75,6 +79,11 @@ function IntroCtrl($scope, $http, $routeParams,penguinFactory) {
         $scope.page = 1;
     }
 
+    $scope.langs = [];
+    penguinFactory.getLangs($translate.use(), function(langs){
+
+        $scope.langs = langs;
+    });
 
 
 
