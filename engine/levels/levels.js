@@ -550,10 +550,10 @@ module.exports = {
             langData.forEach(function(lang){
                 SQL += ' UNION SELECT (SELECT count(*) from pinguin.place_t' +
                     ' JOIN translates.translate_t on translates.translate_t.link=pinguin.place_t.info where translates.translate_t.lang=\''+lang.lang+'\') as cities' +
-                    ',(SELECT count(*) from pinguin.place_t' +
+                    ',(SELECT count(*) from (SELECT count(*) from pinguin.place_t' +
                     ' join pinguin.question_t on pinguin.question_t.place_id=pinguin.place_t.id' +
-                     ' join translates.translate_t on translates.translate_t.link=pinguin.question_t.question' +
-                    ' where translates.translate_t.lang=\''+lang.lang+'\') as questions' +
+                    ' join translates.translate_t on translates.translate_t.link=pinguin.question_t.question' +
+                    ' where translates.translate_t.lang=\''+lang.lang+'\' group by pinguin.place_t.id) as count_question) as questions' +
                     ', \'' + lang.lang +'\' as lang'
 
             });
@@ -561,7 +561,7 @@ module.exports = {
             SQL = SQL.substr(6);
             pg.query(SQL, function(err, data){
 
-                if(data.rows){
+                if(data && data.rows){
                     data.rows.forEach(function(city){
                         langData.some(function(lang){
                             if(lang.lang == city.lang){
