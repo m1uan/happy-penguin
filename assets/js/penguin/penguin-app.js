@@ -98,6 +98,10 @@ function IntroCtrl($scope, $http, $routeParams,penguinFactory,$translate) {
     }
 
 
+    $scope.startGame = function(lang){
+        alertify.error('jorney:' + lang + ' native:' + $translate.use());
+    }
+
 }
 
 function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) {

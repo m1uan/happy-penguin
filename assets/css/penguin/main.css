@@ -31,3 +31,24 @@ body {
 .translation:hover {
     cursor:pointer;
 }
+
+#lang_table {
+   padding:4px;
+   background-color: white;
+   height:420px;
+   overflow-y: auto;
+}
+
+.intro-navigate-button-area {
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    height: 60px;
+    padding:15px;
+}
+
+.intro-page {
+    position: relative;
+    height: 600px;
+    overflow: hidden;
+}
