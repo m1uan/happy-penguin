@@ -27,6 +27,9 @@ div(ng-show="page==2").intro-page#intro_2
         a(href="#/intro/{{pageNext}}").btn.btn-default next {{pageNext}}
 
 div(ng-show="page==3").intro-page
+    h2(translate="intro_where")
+    img(src="/assets/img/penguin/intro_vocabulary.png")
+    p(translate="intro_vocabulary_info")
     div.intro-navigate-button-area
         a(href="#/intro/{{pagePrev}}").btn.btn-default prev {{pagePrev}}
         a(href="#/intro/{{pageNext}}").btn.btn-default next {{pageNext}}

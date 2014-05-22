@@ -324,7 +324,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var BUTTON_STATUS_CORRECT = 2;
     var BUTTON_STATUS_WRONG = 3;
 
-    var GAME_TIME = 6;
+    var GAME_TIME = 120;
 
     $scope.correct = 0;
     $scope.correctTotal = 20;
