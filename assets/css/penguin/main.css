@@ -52,3 +52,53 @@ body {
     height: 600px;
     overflow: hidden;
 }
+
+#intro_globe{
+    width:400px;
+    height: 400px;
+}
+
+#intro_1 {
+    background-image: url('/assets/img/penguin/intro_globe.png');
+    background-size: 100%;
+}
+
+#intro_2 {
+    background-image: url('/assets/img/penguin/intro_distances.png');
+    background-size: 100%;
+}
+
+#intro_2_head {
+    position: absolute;
+    right : 20px;
+    color: white;
+}
+
+#intro_1_penguin {
+    position: absolute;
+    right:50px;
+    width: 240px;
+}
+
+#intro_1_test ,#intro_2_test{
+    padding:4px;
+    position: absolute;
+    left:20px;
+    top: 240px;
+    width: 340px;
+    background-color: black;
+    opacity: 0.6;
+    color:white;
+}
+
+#intro_2_test {
+    color:black;
+    background-color: whitesmoke;
+    opacity: 0.9;
+}
+
+.intro_resource_icon{
+    width: 30px;
+    height: 30px;
+
+}

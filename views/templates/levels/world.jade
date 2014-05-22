@@ -56,33 +56,36 @@ div#game_resources
 
 div.hide
     div#place_popover
-        div.row
-            div.col-xs-4
+        div
+            div
                 div
-                    span -
+
                     span#place_popover_walk
+                    span x
                     img(src="/assets/img/penguin/ic_walk.png").resource_icon
-                div
-                    span -
+
                     span#place_popover_swim
+                    span x
                     img(src="/assets/img/penguin/ic_swim.png").resource_icon
-                div
-                    span -
+
+
                     span#place_popover_fly
+                    span x
                     img(src="/assets/img/penguin/ic_fly.png").resource_icon
 
-                div
-                    span posx:
-                    span#place_popover_posx 0.5
-                div
-                    span posy:
-                    span#place_popover_posy 0.5
-                div
-                    span distance:
-                    span#place_popover_distance 0.5
+                div.hide
+                    div
+                        span posx:
+                        span#place_popover_posx 0.5
+                    div
+                        span posy:
+                        span#place_popover_posy 0.5
+                    div
+                        span distance:
+                        span#place_popover_distance 0.5
 
 
-            div.col-xs-8
+            div.hide
                 img(src="http://localhost:8080/assets/img/orig/place/1399024444677-21306-1qw7b9t.jpg",height="10px")
 
 

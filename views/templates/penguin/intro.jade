@@ -1,11 +1,27 @@
 
 
 
-div(ng-show="page==1").intro-page
-    div.intro-navigate-button-area
-        a(href="#/intro/{{pageNext}}").btn.btn-default next {{pageNext}}
+div(ng-show="page==1").intro-page#intro_1
+    h2(translate="intro_whats_going_on")#intro_1_head
+    img(src="/assets/img/penguin/penguin_3.png")#intro_1_penguin
+    div(translate="pinguin_intro")#intro_1_test
 
-div(ng-show="page==2").intro-page
+    div.intro-navigate-button-area
+        a(href="#/intro/{{pageNext}}",translate="button_next").btn.btn-default
+
+div(ng-show="page==2").intro-page#intro_2
+    h2(translate="intro_what_i_need")#intro_2_head
+    div#intro_2_test
+        p(translate="intro_you_need_resources")
+        div
+            img(src="/assets/img/penguin/ic_walk.png").intro_resource_icon
+            span(translate="intro_walk_info")
+        div
+            img(src="/assets/img/penguin/ic_swim.png").intro_resource_icon
+            span(translate="intro_swim_info")
+        div
+            img(src="/assets/img/penguin/ic_fly.png").intro_resource_icon
+            span(translate="intro_fly_info")
     div.intro-navigate-button-area
         a(href="#/intro/{{pagePrev}}").btn.btn-default prev {{pagePrev}}
         a(href="#/intro/{{pageNext}}").btn.btn-default next {{pageNext}}
