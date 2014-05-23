@@ -71,7 +71,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
     }
 }
 
-function IntroCtrl($scope, $http, $routeParams,penguinFactory,$translate) {
+function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate) {
     var PAGEMAX = 4;
 
     $scope.page = parseInt($routeParams.page);
@@ -100,6 +100,9 @@ function IntroCtrl($scope, $http, $routeParams,penguinFactory,$translate) {
 
     $scope.startGame = function(lang){
         alertify.error('jorney:' + lang + ' native:' + $translate.use());
+        worldFactory.setup(lang,  $translate.use());
+        worldFactory.createNewGame();
+        $location.path('/world');
     }
 
 }

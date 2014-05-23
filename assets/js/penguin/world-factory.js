@@ -12,7 +12,13 @@
 
         var placesForVocabularyTest = {};
 
+        var learn = 'en';
+        var native = 'cz';
 
+        function setup(_learn, _native){
+            learn = _learn;
+            native = _native;
+        }
 
         function _createNewGame(){
             self.game = {
@@ -20,8 +26,8 @@
                 swim :20,
                 walk :20,
                 exp : 20,
-                lang:'en',
-                learn: 'en',
+                lang:learn,
+                learn: native,
                 placeId : 5,
                 visited : [],
                 randomScenarios : {}
@@ -191,6 +197,8 @@
             ,getCurrentPlace: getCurrentPlace
             ,loadPlace:loadPlace
             ,getRandomNumber: getRandomNumber
-            ,addScore:_addScore};
+            ,addScore:_addScore
+            ,setup : setup};
+
     });
 }).call(this);
