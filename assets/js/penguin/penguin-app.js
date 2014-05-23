@@ -333,9 +333,13 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.correctTotal = 20;
     $scope.correctInRow = 0;
     $scope.correctInRowScore = [0,0,0,0,0];
+    $scope.fastAnswerScore = [0,0,0];
+
     $scope.wrong = 11;
     $scope.timer = GAME_TIME;
 
+
+    var lastAnswer = new Date().getTime();
 
 
     $scope.score = {
@@ -391,12 +395,9 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     function startVocabularyTest(){
         loadOrNext();
 
+        lastAnswer = moment();
         $interval(function(){
             $scope.timer -= 1;
-
-            if($scope.timer % 10 == 0){
-                showRandomBackground();
-            }
 
             if($scope.timer == 0){
                 showQuestion();
@@ -464,6 +465,37 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         }
     }
 
+    function countFastAnswer(){
+        var time = new Date().getTime();
+        var diff = time - lastAnswer;
+        var name = 0;
+        if(diff < 1500){
+            name = 3;
+        }else if(diff < 2000){
+            name = 2;
+        } else if(diff < 2500){
+            name = 1;
+        }
+
+        if(name){
+            $scope.fastAnswerScore[name-1] += 1;
+            var ins = $translate.instant('correct_fast_' + name);
+            alertify.success(ins);
+        }
+
+        lastAnswer = new Date().getTime();
+    }
+
+    function correctAnswer(){
+        $scope.correctTotal+=1;
+        $scope.correct+=1;
+        $scope.correctInRow+=1;
+        countFastAnswer();
+        countCorrectInRow();
+
+
+    }
+
     $scope.select = function(side, word, event){
         // button already coreclty selected
         if(word.status == BUTTON_STATUS_CORRECT) {
@@ -488,10 +520,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         if(link1 !=-1 && link2 !=-1){
             if(link2 == link1){
                 status = BUTTON_STATUS_CORRECT;
-                $scope.correctTotal+=1;
-                $scope.correct+=1;
-                $scope.correctInRow+=1;
-                countCorrectInRow();
+                correctAnswer();
             } else {
                 status = BUTTON_STATUS_WRONG;
                 $scope.wrong+=1;
@@ -512,6 +541,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         if(status == BUTTON_STATUS_CORRECT && $scope.correct == $scope.words.word1.length){
             loadOrNext();
+            showRandomBackground();
         }
     }
 
