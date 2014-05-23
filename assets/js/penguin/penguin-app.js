@@ -425,7 +425,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
 
     function loadOrNext(){
-        vocabularyFactory.getVocabularyRandomSet(function(words){
+        vocabularyFactory.getVocabularyRandomSet(worldFactory.getLearn(), worldFactory.getNative(), function(words){
             $scope.correct = 0;
             $scope.words = words;
             console.log(words.word1)

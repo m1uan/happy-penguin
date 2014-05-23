@@ -185,6 +185,14 @@
             return rand;
         }
 
+        function getLearn(){
+            return learn;
+        }
+
+        function getNative(){
+            return native;
+        }
+
         return {
             createNewGame: _createNewGame
             ,game:_game
@@ -198,7 +206,10 @@
             ,loadPlace:loadPlace
             ,getRandomNumber: getRandomNumber
             ,addScore:_addScore
-            ,setup : setup};
+            ,setup : setup
+            ,getLearn : getLearn
+            ,getNative : getNative
+            };
 
     });
 }).call(this);

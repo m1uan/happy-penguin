@@ -11,11 +11,11 @@
         var CURRENT_WORDS = 1001;
 
 
-        function getWords(lesson, cb){
+        function getWords(lesson, learn, native, cb){
             if(words[lesson]){
                 cb(words[lesson], wordsIds[lesson]);
             } else {
-                requestGET($http, '/words/get/'+lesson+'/cs/en?fields=link,word%20as%20w&deleted=false&type=api',function(data){
+                requestGET($http, '/words/get/'+lesson+'/'+learn+'/'+native+'?fields=link,word%20as%20w&deleted=false&type=api',function(data){
                     words[lesson] = data.words;
                     wordsIds[lesson] = {};
                     words[lesson].forEach(function(word){
@@ -53,8 +53,8 @@
             return rw;
         }
 
-        function getVocabularyRandomSet(cb){
-            getWords(CURRENT_WORDS, function(w,i){
+        function getVocabularyRandomSet(learn, native, cb){
+            getWords(CURRENT_WORDS, learn, native,  function(w,i){
                 var s1 = getNextWords(CURRENT_WORDS);
 
                 var ret = {};
