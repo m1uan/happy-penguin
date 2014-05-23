@@ -320,7 +320,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 }
 
 
-function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval, $location){
+function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval, $location, $translate){
 
     var BUTTON_STATUS_NORMAL = 0;
     var BUTTON_STATUS_SELECT = 1;
@@ -331,10 +331,12 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     $scope.correct = 0;
     $scope.correctTotal = 20;
+    $scope.correctInRow = 0;
+    $scope.correctInRowScore = [0,0,0,0,0];
     $scope.wrong = 11;
     $scope.timer = GAME_TIME;
 
-    $scope.part = 0;
+
 
     $scope.score = {
         fly : 1,
@@ -346,8 +348,9 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     var placeid = $routeParams.placeid;
 
-    //startVocabularyTest();
-    showIntroduction();
+    $scope.part = 1;
+    startVocabularyTest();
+    //showIntroduction();
 
 
     function showQuestion(){
@@ -434,6 +437,33 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         });
     }
 
+    function countCorrectInRow(){
+        var tell = null;
+
+
+        if($scope.correctInRow > 50){
+            $scope.correctInRowScore[4] += 1;
+            tell='50';
+        } else if($scope.correctInRow == 30){
+            $scope.correctInRowScore[3] += 1;
+            tell = '30';
+        } else if($scope.correctInRow == 15){
+            $scope.correctInRowScore[2] += 1;
+            tell = '15';
+        } else if($scope.correctInRow == 10){
+            $scope.correctInRowScore[1] += 1;
+            tell = '10';
+        } else if($scope.correctInRow == 5){
+            $scope.correctInRowScore[0] += 1;
+            tell = '5';
+        }
+
+        if(tell){
+            var ins = $translate.instant('correct_in_row', {correct:tell});
+            alertify.success(ins);
+        }
+    }
+
     $scope.select = function(side, word, event){
         // button already coreclty selected
         if(word.status == BUTTON_STATUS_CORRECT) {
@@ -460,9 +490,13 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
                 status = BUTTON_STATUS_CORRECT;
                 $scope.correctTotal+=1;
                 $scope.correct+=1;
+                $scope.correctInRow+=1;
+                countCorrectInRow();
             } else {
                 status = BUTTON_STATUS_WRONG;
                 $scope.wrong+=1;
+                $scope.correctInRow=0;
+
             }
             // select also second side of buttons with this status
             setStatusButton(side == 0 ? 1 : 0, status);

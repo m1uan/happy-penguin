@@ -15,6 +15,14 @@
             if(words[lesson]){
                 cb(words[lesson], wordsIds[lesson]);
             } else {
+                if(learn == 'cz'){
+                    learn = 'cs';
+                }
+
+                if(native == 'cz'){
+                    native = 'cs';
+                }
+
                 requestGET($http, '/words/get/'+lesson+'/'+learn+'/'+native+'?fields=link,word%20as%20w&deleted=false&type=api',function(data){
                     words[lesson] = data.words;
                     wordsIds[lesson] = {};
