@@ -77,6 +77,7 @@
             self.game.fly += score.fly;
             self.game.swim += score.swim;
             self.game.walk += score.walk;
+            self.game.exp += score.exp;
             // maybe useles
             self.game.lastScore = score;
             _store();

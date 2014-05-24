@@ -328,7 +328,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var BUTTON_STATUS_CORRECT = 2;
     var BUTTON_STATUS_WRONG = 3;
 
-    var GAME_TIME = 20;
+    var GAME_TIME = 90;
 
     $scope.correct = 100;
     $scope.correctTotal = 0;
@@ -413,9 +413,9 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             +  $scope.correctInRowScore[4]*5.5);
 
         $scope.score.fly = Math.round(
-            $scope.fastAnswerScore[0]
-            + $scope.fastAnswerScore[1] * 1.7
-            + $scope.fastAnswerScore[2] * 2.2);
+            $scope.fastAnswerScore[0] / 4
+            + $scope.fastAnswerScore[1] /3
+            + $scope.fastAnswerScore[2] /2);
 
         $scope.score.exp = Math.round($scope.user_answered * 2 + $scope.first_time_visit);
     }
