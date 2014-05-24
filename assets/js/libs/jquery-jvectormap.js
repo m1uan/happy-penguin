@@ -1955,7 +1955,7 @@ jvm.WorldMap.prototype = {
 jvm.WorldMap.maps = {};
 jvm.WorldMap.defaultParams = {
     map: 'world_mill_en',
-    backgroundColor: '#505050',
+    backgroundColor: '#207cca',
     zoomButtons: true,
     zoomOnScroll: true,
     zoomMax: 118,
@@ -1966,7 +1966,7 @@ jvm.WorldMap.defaultParams = {
     bindTouchEvents: true,
     regionStyle: {
         initial: {
-            fill: 'black',
+            fill: 'white',
             "fill-opacity": 1,
             stroke: 'none',
             "stroke-width": 0,

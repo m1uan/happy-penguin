@@ -296,7 +296,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
                 //event.target.css({top: 20, left: 20});
             },onViewportChange : onViewportChange,
-            backgroundColor: '#8888ff',
+            backgroundColor: '#207cca',
             borderColor: '#000',
             borderOpacity: 0.9,
             borderWidth: 30,
@@ -310,8 +310,8 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
             },map: 'world_mill_en',series: {
                 regions: [{
                     values: {
-                        "CZ":'#22FF22',
-                        "DE":2
+                        "CZ":'#0b4e00',
+                        "NZ":'#0b4e00'
                     }
                 }]
             }});
