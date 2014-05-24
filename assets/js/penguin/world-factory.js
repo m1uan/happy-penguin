@@ -126,8 +126,8 @@
                 var distance = Math.sqrt((xd*xd)+(yd*yd));
                 place.superDistance = Math.round(distance);
 
-                place.fly = Math.round(place.superDistance / 9);
-                place.swim = Math.round((place.superDistance - (place.fly*6)) / 3);
+                place.fly = Math.floor(place.superDistance / 9);
+                place.swim = Math.floor((place.superDistance - (place.fly*6)) / 3);
                 place.walk = (place.superDistance - (place.fly*5) - (place.swim*2));
             });
 
@@ -136,7 +136,11 @@
 
         function testEndGame(){
             var canPlay = placesInWorld.some(function(place){
-                return place.id != self.game.placeId &&  place.fly <= self.game.fly && place.swim <= self.game.swim && place.walk <= self.game.walk;
+                if(place.id != self.game.placeId &&  place.fly <= self.game.fly && place.swim <= self.game.swim && place.walk <= self.game.walk){
+                    return true;
+                } else {
+                    return false;
+                }
             });
 
             return canPlay;

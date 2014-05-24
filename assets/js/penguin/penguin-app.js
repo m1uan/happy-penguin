@@ -234,7 +234,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
                 worldFactory.setupPlacesDistancesAndExp();
                 worldFactory.update($scope);
 
-                testEndGame();
+                //testEndGame();
                 //element.hide();
 
             })
@@ -247,6 +247,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
             alertify.alert('Game over!');
             worldFactory.createNewGame();
             worldFactory.setupPlacesDistancesAndExp();
+            worldFactory.update($scope);
         }
     }
 
