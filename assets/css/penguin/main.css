@@ -102,3 +102,30 @@ body {
     height: 30px;
 
 }
+
+.exchange_exp_icon{
+    width: 60px;
+    height: 60px;
+
+}
+
+#modal-exchange-exp {
+    font-size:large;
+}
+
+#modal-exchange-buttons-add-sub{
+    width:175px;
+    padding:30px 63px 70px 63px;
+    background-image: url('/assets/img/penguin/exchange-fork.gif');
+    background-size: 100%;
+
+}
+#modal-exchange-buttons-add-sub button {
+    font-weight: bold;
+}
+
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}

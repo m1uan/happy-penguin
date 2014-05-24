@@ -38,7 +38,44 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','m
     });
 
 
+function ExchangeDialog(){
+    var exchange = $('#modal-exchange');
 
+    // the values on inputs are put there from another controller
+    // with the same jQuery technics, so the models are not actualised...
+    // have to be recaived with the same technics
+    var exp = exchange.find('#modal-exchange-exp');
+    var walk = exchange.find('#modal-exchange_resources_walk');
+    var swim = exchange.find('#modal-exchange_resources_swim');
+    var fly = exchange.find('#modal-exchange_resources_fly');
+
+
+
+    return {
+        expToTravelers : function(){
+            var e = parseInt(exp.val());
+            if(e >= 3){
+                exp.val(e - 3);
+                walk.val(parseInt(walk.val())+1);
+                swim.val(parseInt(swim.val())+1);
+                fly.val(parseInt(fly.val())+1);
+            }
+        }, setup : function(e,w,s,f){
+            exp.val(e);
+            walk.val(w);
+            swim.val(s);
+            fly.val(f);
+        }, show : function(onClick){
+            exchange.modal('show');
+            if(onClick){
+                exchange.find('#modal-exchange-button').unbind().click(onClick);
+            }
+
+        },getValues : function(){
+            return {exp:parseInt(exp.val()),walk:parseInt(walk.val()), swim:parseInt(swim.val()), fly:parseInt(fly.val())}
+        }
+    }
+}
 function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate) {
 
     $scope.langs = [];
@@ -46,6 +83,8 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 
         $scope.langs = langs;
     })
+
+
 
     //var base = {};
     var mygame = worldFactory.game();
@@ -67,6 +106,11 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
             $translate.use(lang);
             alertify.success('lang changed to : ' + lang);
         }
+
+    }
+
+    $scope.expToTravelers = function(){
+        ExchangeDialog().expToTravelers();
 
     }
 }
@@ -130,6 +174,35 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
     worldFactory.update($scope);
 
+
+    $scope.showExchange = function(){
+
+
+        var ed = ExchangeDialog();
+        ed.setup(worldFactory.game().exp, worldFactory.game().walk, worldFactory.game().swim, worldFactory.game().fly);
+        ed.show(function(){
+            $scope.$apply(function(){
+                var values = ed.getValues();
+                var score = {
+                    exp: values.exp - parseInt(worldFactory.game().exp),
+                    walk : values.walk - parseInt(worldFactory.game().walk),
+                    swim : values.swim - parseInt(worldFactory.game().swim),
+                    fly : values.fly - parseInt(worldFactory.game().fly)
+                }
+
+
+                console.log('score', score, values);
+                worldFactory.addScore(score);
+
+                worldFactory.update($scope);
+
+                //testEndGame();
+                //element.hide();
+
+            })
+        });
+
+    }
 
     self.generateInfo = function(place){
         var place_popover = $('#place_popover');

@@ -19,7 +19,33 @@ html(ng-app="pinguin")
             h1 * Happy penguin *
 
             div(ng-view).main-view
+            // it is here because in main-view is disabled
+            // shadow screen cover the dialog as well
+            div#modal-exchange.modal.fade
+                div.modal-dialog
+                    div.modal-content
+                        div.modal-header
+                            a(data-dismiss="modal").close &times;
+                            h3#warning_dialog_title Exchange
+                        div.modal-body
+                            div(style="width:120px").center
+                                input(ng-model="expMax",size="3",readonly="true",hidden="true")#modal-exchange-exp-max
+                                input(ng-model="exp",size="3",readonly="true")#modal-exchange-exp
+                                img(src="/assets/img/penguin/ic_exp.png").exchange_exp_icon
+                            div#modal-exchange-buttons-add-sub.center
+                                button(ng-click="expToTravelers(true)").hide.btn.btn-success + 3
+                                button(ng-click="expToTravelers(false)").btn.btn-danger - 3
+                            div(style="width:210px").center
+                                img(src="/assets/img/penguin/ic_walk.png").resource_icon
+                                input(ng-model="walk",size="3",readonly="true")#modal-exchange_resources_walk
+                                img(src="/assets/img/penguin/ic_swim.png").resource_icon
+                                input(ng-model="swim",size="3",readonly="true")#modal-exchange_resources_swim
+                                img(src="/assets/img/penguin/ic_fly.png").resource_icon
+                                input(ng-model="fly",size="3",readonly="true")#modal-exchange_resources_fly
 
+                        div.modal-footer
+                            button(data-dismiss="modal")#modal-exchange-button.btn.btn-success Exchange
+                            button(data-dismiss="modal").btn.btn-primary Close
 
 
     script(src="/assets/js/libs/jquery.min-2.1.0.js")
