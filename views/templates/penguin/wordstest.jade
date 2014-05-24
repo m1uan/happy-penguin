@@ -47,15 +47,11 @@ div(ng-show="part==4").wordtest
     h2 Score
     table
         tr
-            td Total words
+            td Correct
             td {{correctTotal}}
         tr
             td Wrong
             td {{wrong}}
-        tr
-            td Correct
-            td {{(correctTotal-wrong)}}
-
         tr
             td
                 img(src="/assets/img/penguin/ic_walk.png").intro_resource_icon
@@ -110,6 +106,6 @@ div(ng-show="part==4").wordtest
         tr
             td
                 img(src="/assets/img/penguin/ic_exp.png").intro_resource_icon
-            td {{score.swim}}
+            td {{score.exp}}
     div
         span(ng-click="backToMap()").btn.btn-primary back to map

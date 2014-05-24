@@ -22,10 +22,10 @@
 
         function _createNewGame(){
             self.game = {
-                fly : 20,
-                swim :20,
-                walk :20,
-                exp : 20,
+                fly : 3,
+                swim :3,
+                walk :3,
+                exp : 3,
                 lang:learn,
                 learn: native,
                 placeId : 5,
@@ -35,7 +35,7 @@
 
 
 
-            localStorageService.set('pinguin.game', self.game);
+            _store();
 
             return self.game;
         }
@@ -58,6 +58,7 @@
             scope.swim = self.game.swim;
             scope.exp = self.game.exp;
 
+            _store();
 
             return true;
         }
@@ -68,6 +69,8 @@
             self.game.walk -= place.walk;
             self.game.visited.push(self.game.placeId);
             self.game.placeId = place.id;
+            _store();
+
         }
 
         function _addScore(score){
@@ -76,6 +79,7 @@
             self.game.walk += score.walk;
             // maybe useles
             self.game.lastScore = score;
+            _store();
         }
 
         function _store(){
@@ -135,7 +139,7 @@
                 return place.id != self.game.placeId &&  place.fly <= self.game.fly && place.swim <= self.game.swim && place.walk <= self.game.walk;
             });
 
-            return true || canPlay;
+            return canPlay;
         }
 
         function loadPlace(placeid, cb){

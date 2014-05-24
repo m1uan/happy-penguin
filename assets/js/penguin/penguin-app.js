@@ -50,13 +50,13 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
     //var base = {};
     var mygame = worldFactory.game();
 
-    if(!mygame){
-        mygame = worldFactory.createNewGame(localStorageService);
-    }
+//    if(!mygame){
+//        mygame = worldFactory.createNewGame(localStorageService);
+//    }
 
 
     if(mygame){
-        //$location.path('/world');
+        $location.path('/world');
     } else {
         $location.path('/intro/1');
     }
@@ -304,8 +304,8 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
             markersSelectableOne: true,
             focusOn: {
                 x: 0.5,
-                y: 0.5,
-                scale: 2
+                y: -0.39,
+                scale: 3
             },map: 'world_mill_en',series: {
                 regions: [{
                     values: {
@@ -327,18 +327,18 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var BUTTON_STATUS_CORRECT = 2;
     var BUTTON_STATUS_WRONG = 3;
 
-    var GAME_TIME = 120;
+    var GAME_TIME = 20;
 
     $scope.correct = 100;
-    $scope.correctTotal = 20;
+    $scope.correctTotal = 0;
     $scope.correctInRow = 0;
-    $scope.correctInRowScore = [3,2,1,1,1];
-    $scope.fastAnswerScore = [1,2,3];
+    $scope.correctInRowScore = [0,0,0,0,0];
+    $scope.fastAnswerScore = [0,0,0];
 
-    $scope.wrong = 11;
+    $scope.wrong = 0;
     $scope.timer = GAME_TIME;
 
-    $scope.user_answered = 1;
+    $scope.user_answered = 0;
     // TODO: detect if user have been here before
     $scope.first_time_visit = 1;
 
@@ -355,18 +355,18 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     var placeid = $routeParams.placeid;
 
-    $scope.part = 1;
+    $scope.part = 0;
 
     worldFactory.loadPlace(placeid, function(place){
         $scope.place = place;
         //startVocabularyTest();
-        //showIntroduction();
-        showConclusion();
+        showIntroduction();
+        //showConclusion();
     });
 
     function showQuestion(){
         // if not question there jump to the conclusion
-        if(!$scope.place.questions || $scope.place.questions.length < 1){
+        if(!$scope.questionText || $scope.questionText.length < 1 || !$scope.questionAnswers || $scope.questionAnswers.length < 1){
             $scope.conclusion();
             return;
         }
@@ -380,10 +380,14 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
             if($scope.place.questions && $scope.place.questions.length > 0){
                 var pos = worldFactory.getRandomNumber('question_place_'+placeid, $scope.place.questions.length);
-
-                $scope.questionText = $scope.place.questions[pos].question;
                 var answers = $scope.place.questions[pos].answers;
-                $scope.questionAnswers = answers.split(';');
+
+                // in some languages can answer missing
+                if(answers){
+                    $scope.questionText = $scope.place.questions[pos].question;
+                    $scope.questionAnswers = answers.split(';');
+                }
+
 
             }
 
@@ -392,14 +396,14 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
     function showIntroduction(){
-
-            showRandomBackground();
+        $scope.part = 0;
+        showRandomBackground();
 
     }
 
     function showConclusion(){
         $scope.part = 4;
-        $scope.score.walk = Math.round(($scope.correctTotal-$scope.wrong)/10);
+        $scope.score.walk = Math.round(($scope.correctTotal)/10);
         $scope.score.swim = Math.round(
             $scope.correctInRowScore[0]/3
             +  $scope.correctInRowScore[1]/2
