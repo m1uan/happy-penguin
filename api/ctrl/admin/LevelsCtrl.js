@@ -214,6 +214,19 @@ module.exports = {
         }
 
         levelEngine.list(pgClient, dataContainer, superResponse(request));
+    },delete_post: function(request){
+        if(!request.payload.place_id){
+            response(request,'place_id missing');
+            return;
+        }
+
+        var dataContainer = {
+            place_id :request.payload.place_id
+        }
+
+        levelEngine.delete(pgClient, dataContainer, function(err, deleted){
+            response(request, err, deleted);
+        });
     }
 
 }

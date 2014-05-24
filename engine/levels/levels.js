@@ -318,67 +318,7 @@ module.exports = {
             cb(err, question);
         });
     },qdelete : function(pg, dataContainer, cb){
-        if(!dataContainer.place_id){
-            cb('place_id missing');
-            return;
-        }
-
-        var series = []
-        var watter = [];
-        var parallel = [];
-
-        series.push(function(icb){
-            var SQL = SL.SqlLib('pinguin.question_t as pq', ['qid','question','answers']);
-            SQL.whereAnd('pq.place_id='+dataContainer.place_id);
-            if(dataContainer.qid){
-                SQL.whereAnd('pq.qid='+dataContainer.qid);
-            }
-
-            SQL.select(pg, icb);
-        });
-
-        series.push(function(icb){
-            var sql = 'DELETE FROM pinguin.question_t WHERE place_id=' +dataContainer.place_id;
-            if(dataContainer.qid){
-                sql += ' AND qid='+dataContainer.qid;
-            }
-            pg.query(sql,icb);
-        })
-
-        watter.push(function(icb){
-            async.series(series, icb);
-        });
-
-        watter.push(function(q, icb){
-            var qids = [];
-            // add to parallel every selected question
-            q[0].forEach(function(question){
-                parallel.push(function(icb2){
-                    var questionContainer = {
-                        link:question.question
-                    };
-                    translate.delete(pg, questionContainer, icb2)
-                });
-
-                parallel.push(function(icb2){
-                    var answersContainer = {
-                        link:question.answers
-                    };
-                    translate.delete(pg, answersContainer, icb2)
-                });
-
-                qids.push(question.qid);
-            });
-
-
-            async.parallel(parallel, function(err, trans){
-                icb(err, qids);
-            });
-        });
-
-
-
-        async.waterfall(watter, cb);
+        qdelete(pg, dataContainer, cb);
     },qget: function(pg, dataContainer, cb){
 
         if(!dataContainer.place_id){
@@ -445,72 +385,7 @@ module.exports = {
         SQL.whereAnd('pinguin.image_t.place_id='+ dataContainer.place_id);
         SQL.select(pg, cb);
     },idelete: function(pg, dataContainer, cb){
-
-        if(!dataContainer.place_id){
-            cb('place_id missing');
-            return;
-        }
-
-//        if(!dataContainer.iid){
-//            cb('iid missing');
-//            return;
-//        }
-
-
-
-        var series = []
-        var watter = [];
-        var parallel = [];
-
-        series.push(function(icb){
-            var SQL = SL.SqlLib('pinguin.image_t', ['iid','image']);
-            SQL.whereAnd('pinguin.image_t.place_id='+dataContainer.place_id);
-            if(dataContainer.iid){
-                SQL.whereAnd('pinguin.image_t.iid='+dataContainer.iid);
-            }
-
-            SQL.select(pg, icb);
-        });
-
-        series.push(function(icb){
-            var sql = 'DELETE FROM pinguin.image_t WHERE place_id=' +dataContainer.place_id;
-            if(dataContainer.iid){
-                sql += ' AND iid='+dataContainer.iid;
-            }
-            pg.query(sql,icb);
-        })
-
-        watter.push(function(icb){
-            async.series(series, icb);
-        });
-
-        watter.push(function(i, icb){
-            var iids = [];
-            // add to parallel every selected question
-            i[0].forEach(function(image){
-                parallel.push(function(icb2){
-
-
-                    removeImageFile('orig',image.image, icb2);
-                });
-
-                parallel.push(function(icb2){
-                    removeImageFile('thumb',image.image, icb2);
-                });
-
-
-                iids.push(image.iid);
-            });
-
-
-            async.parallel(parallel, function(err, trans){
-                icb(err, iids);
-            });
-        });
-
-
-
-        async.waterfall(watter, cb);
+        idelete(pg, dataContainer, cb);
     }, list : function(pg, dataContainer, cb){
 
         var fields = 'id'
@@ -578,6 +453,63 @@ module.exports = {
                 cb(err, langData);
             });
         });
+    },delete : function(pg, dataContainer, cb){
+        if(!dataContainer.place_id){
+            cb('place_id missing');
+            return;
+        }
+
+        var parallel2 = []
+        var watter = [];
+        var parallel = [];
+
+        var info = null;
+
+        parallel.push(function(icb){
+            idelete(pg, dataContainer, icb);
+        });
+
+        parallel.push(function(icb){
+           qdelete(pg, dataContainer, icb);
+        })
+
+        watter.push(function(icb){
+            async.parallel(parallel, icb);
+        })
+
+        watter.push(function(par, icb){
+            var SQL = 'DELETE FROM pinguin.place_t WHERE id='+dataContainer.place_id + ' RETURNING info,name';
+            pg.query(SQL, icb);
+        });
+
+        watter.push(function(info, icb){
+            console.log('delete', info);
+            var data = info.rows[0];
+            if(data.info){
+                parallel2.push(function(icb2){
+                    var questionContainer = {
+                        link:data.info
+                    };
+                    translate.delete(pg, questionContainer, icb2);
+                })
+            }
+
+            if(data.name){
+                parallel2.push(function(icb2){
+                    var questionContainer = {
+                        link:data.name
+                    };
+                    translate.delete(pg, questionContainer, icb2);
+                })
+            }
+
+            async.parallel(parallel2, icb);
+
+        });
+
+
+
+        async.waterfall(watter, cb);
     }
 }
 
@@ -711,4 +643,136 @@ function removeImageFile(type, fileName, cb){
 
     cb();
 
+}
+
+function qdelete(pg, dataContainer, cb){
+    if(!dataContainer.place_id){
+        cb('place_id missing');
+        return;
+    }
+
+    var series = []
+    var watter = [];
+    var parallel = [];
+
+    series.push(function(icb){
+        var SQL = SL.SqlLib('pinguin.question_t as pq', ['qid','question','answers']);
+        SQL.whereAnd('pq.place_id='+dataContainer.place_id);
+        if(dataContainer.qid){
+            SQL.whereAnd('pq.qid='+dataContainer.qid);
+        }
+
+        SQL.select(pg, icb);
+    });
+
+    series.push(function(icb){
+        var sql = 'DELETE FROM pinguin.question_t WHERE place_id=' +dataContainer.place_id;
+        if(dataContainer.qid){
+            sql += ' AND qid='+dataContainer.qid;
+        }
+        pg.query(sql,icb);
+    })
+
+    watter.push(function(icb){
+        async.series(series, icb);
+    });
+
+    watter.push(function(q, icb){
+        var qids = [];
+        // add to parallel every selected question
+        q[0].forEach(function(question){
+            parallel.push(function(icb2){
+                var questionContainer = {
+                    link:question.question
+                };
+                translate.delete(pg, questionContainer, icb2)
+            });
+
+            parallel.push(function(icb2){
+                var answersContainer = {
+                    link:question.answers
+                };
+                translate.delete(pg, answersContainer, icb2)
+            });
+
+            qids.push(question.qid);
+        });
+
+
+        async.parallel(parallel, function(err, trans){
+            icb(err, qids);
+        });
+    });
+
+
+
+    async.waterfall(watter, cb);
+}
+
+function idelete(pg, dataContainer, cb){
+    if(!dataContainer.place_id){
+        cb('place_id missing');
+        return;
+    }
+
+//        if(!dataContainer.iid){
+//            cb('iid missing');
+//            return;
+//        }
+
+
+
+    var series = []
+    var watter = [];
+    var parallel = [];
+
+    series.push(function(icb){
+        var SQL = SL.SqlLib('pinguin.image_t', ['iid','image']);
+        SQL.whereAnd('pinguin.image_t.place_id='+dataContainer.place_id);
+        if(dataContainer.iid){
+            SQL.whereAnd('pinguin.image_t.iid='+dataContainer.iid);
+        }
+
+        SQL.select(pg, icb);
+    });
+
+    series.push(function(icb){
+        var sql = 'DELETE FROM pinguin.image_t WHERE place_id=' +dataContainer.place_id;
+        if(dataContainer.iid){
+            sql += ' AND iid='+dataContainer.iid;
+        }
+        pg.query(sql,icb);
+    })
+
+    watter.push(function(icb){
+        async.series(series, icb);
+    });
+
+    watter.push(function(i, icb){
+        var iids = [];
+        // add to parallel every selected question
+        i[0].forEach(function(image){
+            parallel.push(function(icb2){
+
+
+                removeImageFile('orig',image.image, icb2);
+            });
+
+            parallel.push(function(icb2){
+                removeImageFile('thumb',image.image, icb2);
+            });
+
+
+            iids.push(image.iid);
+        });
+
+
+        async.parallel(parallel, function(err, trans){
+            icb(err, iids);
+        });
+    });
+
+
+
+    async.waterfall(watter, cb);
 }

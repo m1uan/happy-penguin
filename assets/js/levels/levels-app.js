@@ -33,7 +33,7 @@ function MainCtrl($scope) {
 }
 
 
-function PlaceCtrl($scope, $routeParams, $http) {
+function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
 
     var self = {};
     self.id = $routeParams.id;
@@ -60,6 +60,29 @@ function PlaceCtrl($scope, $routeParams, $http) {
         requestPOST($http, 'update/', updateData, function(response, status){
             console.log(response);
             fillScopeFromResponse(response);
+        });
+    }
+
+    $scope.delete = function(){
+        alertify.confirm('are you sure about remove whole place? with images',function(e){
+            if(!e){
+                return;
+            }
+            $timeout(function(){
+        alertify.confirm('are you sure about remove whole place? with images',function(e){
+            if(!e){
+                return;
+            }
+            var updateData = {
+                place_id : self.id
+            }
+
+            console.log('updateData',updateData);
+            requestPOST($http, 'delete/', updateData, function(response, status){
+                $window.history.back();
+            });
+        });
+            }, 1000);
         });
     }
 
