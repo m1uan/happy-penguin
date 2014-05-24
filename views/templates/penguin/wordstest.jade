@@ -45,9 +45,71 @@ div(ng-show="part==3").wordtest
 
 div(ng-show="part==4").wordtest
     h2 Score
-    div walk: {{score.walk}}
-    div swim: {{score.swim}}
-    div fly: {{score.fly}}
-    div exp: {{score.exp}}
+    table
+        tr
+            td Total words
+            td {{correctTotal}}
+        tr
+            td Wrong
+            td {{wrong}}
+        tr
+            td Correct
+            td {{(correctTotal-wrong)}}
+
+        tr
+            td
+                img(src="/assets/img/penguin/ic_walk.png").intro_resource_icon
+            td {{score.walk}}
+            td
+                i Math.round(Correct / 10)
+
+        tr
+            td 5 in row
+            td {{correctInRowScore[0]}}
+        tr
+            td 10 in row
+            td {{correctInRowScore[1]}}
+        tr
+            td 15 in row
+            td {{correctInRowScore[2]}}
+        tr
+            td 30 in row
+            td {{correctInRowScore[3]}}
+        tr
+            td 60 in row
+            td {{correctInRowScore[4]}}
+
+        tr
+            td
+                img(src="/assets/img/penguin/ic_swim.png").intro_resource_icon
+            td {{score.swim}}
+            td
+                i Math.round(correctInRow[5]/3 +  correctInRow[10]/2 +  correctInRow[15] +  correctInRow[30]*2.5 +  correctInRow[60]*5.5);
+        tr
+            td Corrent answer faster than 1s
+            td {{fastAnswerScore[0]}}
+        tr
+            td Corrent answer faster than 2s
+            td {{fastAnswerScore[1]}}
+        tr
+            td Corrent answer faster than 3s
+            td {{fastAnswerScore[2]}}
+        tr
+            td
+                img(src="/assets/img/penguin/ic_fly.png").intro_resource_icon
+            td {{score.fly}}
+            td
+                i (fastAnswer[1]+fastAnswer[2]*1.5+fastAnswer[3]*2)
+        tr
+            td first time visited
+            td {{first_time_visit}}
+        tr
+            td num of correct answers
+            td {{user_answered}}
+
+        tr
+            td
+                img(src="/assets/img/penguin/ic_exp.png").intro_resource_icon
+            td {{score.swim}}
     div
         span(ng-click="backToMap()").btn.btn-primary back to map

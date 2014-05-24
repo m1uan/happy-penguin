@@ -329,15 +329,18 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     var GAME_TIME = 120;
 
-    $scope.correct = 0;
+    $scope.correct = 100;
     $scope.correctTotal = 20;
     $scope.correctInRow = 0;
-    $scope.correctInRowScore = [0,0,0,0,0];
-    $scope.fastAnswerScore = [0,0,0];
+    $scope.correctInRowScore = [3,2,1,1,1];
+    $scope.fastAnswerScore = [1,2,3];
 
     $scope.wrong = 11;
     $scope.timer = GAME_TIME;
 
+    $scope.user_answered = 1;
+    // TODO: detect if user have been here before
+    $scope.first_time_visit = 1;
 
     var lastAnswer = new Date().getTime();
 
@@ -353,14 +356,17 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var placeid = $routeParams.placeid;
 
     $scope.part = 1;
-    startVocabularyTest();
-    //showIntroduction();
 
+    worldFactory.loadPlace(placeid, function(place){
+        $scope.place = place;
+        //startVocabularyTest();
+        //showIntroduction();
+        showConclusion();
+    });
 
     function showQuestion(){
         // if not question there jump to the conclusion
         if(!$scope.place.questions || $scope.place.questions.length < 1){
-            $scope.user_answered = 1;
             $scope.conclusion();
             return;
         }
@@ -386,10 +392,27 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
     function showIntroduction(){
-        worldFactory.loadPlace(placeid, function(place){
-            $scope.place = place;
+
             showRandomBackground();
-        });
+
+    }
+
+    function showConclusion(){
+        $scope.part = 4;
+        $scope.score.walk = Math.round(($scope.correctTotal-$scope.wrong)/10);
+        $scope.score.swim = Math.round(
+            $scope.correctInRowScore[0]/3
+            +  $scope.correctInRowScore[1]/2
+            +  $scope.correctInRowScore[2]
+            +  $scope.correctInRowScore[3]*2.5
+            +  $scope.correctInRowScore[4]*5.5);
+
+        $scope.score.fly = Math.round(
+            $scope.fastAnswerScore[0]
+            + $scope.fastAnswerScore[1] * 1.7
+            + $scope.fastAnswerScore[2] * 2.2);
+
+        $scope.score.exp = Math.round($scope.user_answered * 2 + $scope.first_time_visit);
     }
 
     function startVocabularyTest(){
@@ -608,16 +631,15 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         $scope.user_answered = $scope.questionAnswers.some(function(ans){
             return ans == $scope.user_answer;
-        }) ? 2 : 1;
+        }) ? 1 : 0;
 
-        $scope.score.exp = $scope.user_answered;
-        $scope.score.walk = Math.floor(($scope.correctTotal- $scope.wrong)/3);
+
 
 
     }
 
     $scope.conclusion = function(){
-        $scope.part = 4;
+        showConclusion();
 
     }
 
