@@ -54,10 +54,10 @@ div(ng-show="part==4").wordtest
                 b {{score.walk}}
 
         tr
-            td Correct
+            td(translate="score_correct")
             td {{correctTotal}}
         tr
-            td Wrong
+            td(translate="score_wrong")
             td {{wrong}}
 
     table
@@ -70,19 +70,19 @@ div(ng-show="part==4").wordtest
                 b {{score.swim}}
 
         tr
-            td 5 in row
+            td(translate="score_correct_in_row",translate-values="{row:5}")
             td {{correctInRowScore[0]}}
         tr
-            td 10 in row
+            td(translate="score_correct_in_row",translate-values="{row:10}")
             td {{correctInRowScore[1]}}
         tr
-            td 15 in row
+            td(translate="score_correct_in_row",translate-values="{row:15}")
             td {{correctInRowScore[2]}}
         tr
-            td 30 in row
+            td(translate="score_correct_in_row",translate-values="{row:30}")
             td {{correctInRowScore[3]}}
         tr
-            td 60 in row
+            td(translate="score_correct_in_row",translate-values="{row:60}")
             td {{correctInRowScore[4]}}
 
     table
@@ -95,13 +95,13 @@ div(ng-show="part==4").wordtest
 
 
         tr
-            td Corrent answer faster than 1s
+            td(translate="score_correct_fast",translate-values="{time:1}")
             td {{fastAnswerScore[0]}}
         tr
-            td Corrent answer faster than 2s
+            td(translate="score_correct_fast",translate-values="{time:2}")
             td {{fastAnswerScore[1]}}
         tr
-            td Corrent answer faster than 3s
+            td(translate="score_correct_fast",translate-values="{time:3}")
             td {{fastAnswerScore[2]}}
 
     table
@@ -111,10 +111,10 @@ div(ng-show="part==4").wordtest
             td
                 b {{score.exp}}
         tr
-            td first time visited
+            td(translate="score_first_time_visited")
             td {{first_time_visit}}
         tr
-            td num of correct answers
+            td(translate="score_num_of_correct_answers")
             td {{user_answered}}
 
 
