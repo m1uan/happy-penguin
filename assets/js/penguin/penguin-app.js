@@ -401,10 +401,10 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var BUTTON_STATUS_CORRECT = 2;
     var BUTTON_STATUS_WRONG = 3;
 
-    var GAME_TIME = 90;
+    var GAME_TIME = 20;
 
     $scope.correct = 100;
-    $scope.correctTotal = 0;
+    $scope.correctTotal = 30;
     $scope.correctInRow = 0;
     //$scope.correctInRowScore = [0,0,0,0,0];
     //$scope.fastAnswerScore = [0,0,0];
@@ -437,25 +437,25 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     worldFactory.loadPlace(placeid, function(place){
         $scope.place = place;
         //startVocabularyTest();
-       // showIntroduction();
-        showConclusion();
+        //showIntroduction();
+        //showConclusion();
+        showQuestion();
     });
 
+    /**
+     * have to be call after place loaded
+     */
     function showQuestion(){
-        // if not question there jump to the conclusion
-        if(!$scope.questionText || $scope.questionText.length < 1 || !$scope.questionAnswers || $scope.questionAnswers.length < 1){
-            $scope.conclusion();
-            return;
-        }
 
-        // load place is here just for debuginin
-        // can be switch in initial insead showIntroducitin
-        // and manipulate with layout and so on
-        worldFactory.loadPlace(placeid, function(place){
-            $scope.place = place;
-            $scope.part = 3;
+        $scope.part = 3;
 
-            if($scope.place.questions && $scope.place.questions.length > 0){
+        var haveAtleastOneQuestionWithAnswer = $scope.place.questions.some(function(q){
+            // could happen the question is null, because is not translated to player-native-language
+            return q && q.question && q.answers;
+        });
+
+        if(haveAtleastOneQuestionWithAnswer){
+            do {
                 var pos = worldFactory.getRandomNumber('question_place_'+placeid, $scope.place.questions.length);
                 var answers = $scope.place.questions[pos].answers;
 
@@ -464,12 +464,16 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
                     $scope.questionText = $scope.place.questions[pos].question;
                     $scope.questionAnswers = answers.split(';');
                 }
+                // could happend the quesiton is not translanted
+                // like above (because is not translated to player-native-language)
+                // generate random question till you reach the question
+                // with question-text and questionAnswers
+            } while(!$scope.questionText || !$scope.questionAnswers);
+        } else {
+            $scope.conclusion();
+        }
 
-
-            }
-
-            showRandomBackground();
-        });
+        showRandomBackground();
     }
 
     function showIntroduction(){
@@ -710,9 +714,12 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             return ;
         }
 
+        // have to be 2 or 1
+        // because 0 - mean the user didn't answer yet
+        // any other mean show the area with naswered text
         $scope.user_answered = $scope.questionAnswers.some(function(ans){
             return ans == $scope.user_answer;
-        }) ? 1 : 0;
+        }) ? 2 : 1;
 
 
 

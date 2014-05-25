@@ -2,9 +2,12 @@ link(rel='stylesheet', href='/assets/css/penguin/wordtest.css')
 
 
 div(ng-show="part==0").wordtest
-    h2 welcome in {{place.name}}
+    h2(translate="place_welcome",translate-values="{name:place.name}")
+    div(translate="place_info_help").alert.alert-info
     div#introduction {{place.info}}
-    span(ng-click="visit()",translate="explore").btn.btn-primary#btn_explore Explore
+
+    div.text-center
+        button(ng-click="visit()",translate="explore").btn.btn-primary#btn_explore Explore
 
 div(ng-show="part==1").wordtest
     h2 time left {{timer}}
@@ -26,21 +29,20 @@ div(ng-show="part==1").wordtest
                 span {{w.link}}
 
 div(ng-show="part==3").wordtest
-    h2 Question
+    h2(translate="place_question_title")
+    div(translate="place_question_help").alert.alert-info
     p {{questionText}}
     div(ng-hide="user_answered")
-        input(placeholder="please answer in your jorney language and whole sentence",ng-model="user_answer")
-        span(ng-show="user_answer",ng-click="answer()").btn.btn-primary answer
+        input(ng-model="user_answer",size="50")
+        button(ng-show="user_answer",ng-click="answer()",translate="btn_answer").btn.btn-primary
     div(ng-show="user_answered")
         div(ng-show="user_answered==1")
-            h3 Wrong answer
-            p {{user_answer}}
-            h3 possible answers
-            p(ng-repeat="answer in questionAnswers") {{answer}}
-        div(ng-show="user_answered==2")
-            h3 Your answer was correct
-            p {{user_answer}}
-        div
+            p(translate="place_wrong_answer",translate-values="{answer:user_answer}").alert.alert-warning
+            h3(translate="place_possible_answers")
+            p(ng-repeat="answer in questionAnswers").alert.alert-info {{answer}}
+        div(ng-show="user_answered==2").alert.alert-success
+            p(translate="place_correct_answer",translate-values="{answer:user_answer}")
+        div.center-text
             span(ng-click="conclusion()").btn.btn-primary conculsion
 
 div(ng-show="part==4").wordtest
