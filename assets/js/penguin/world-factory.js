@@ -4,6 +4,7 @@
     var penguinGame = angular.module('milan.world.factory', ['penguin.LocalStorageService']);
 
     penguinGame.factory('worldFactory', function($http, localStorageService) {
+        var BASE = 300;
         var self = this;
         self.game = null;
 
@@ -22,15 +23,28 @@
 
         function _createNewGame(){
             self.game = {
-                fly : 3,
-                swim :3,
-                walk :3,
-                exp : 3,
+                walk :BASE,
+                swim :BASE,
+                fly : BASE,
+                exp : BASE,
                 lang:learn,
                 learn: native,
                 placeId : 5,
                 visited : [],
-                randomScenarios : {}
+                randomScenarios : {},
+                stats :{
+                    correct : 0,
+                    wrong : 0,
+                    correctInRowScore : [0,0,0,0,0],
+                    fastAnswerScore : [0,0,0],
+                    questionsAnswer : 0,
+                    walkTotal : 0,
+                    swimTotal :0,
+                    flyTotal :0,
+                    expTotal : 0,
+                    wordTestTime : 0,
+                    placesTotal : 0
+                }
             }
 
 
@@ -67,8 +81,15 @@
             self.game.fly -= place.fly;
             self.game.swim -= place.swim;
             self.game.walk -= place.walk;
-            self.game.visited.push(self.game.placeId);
+
+            // TODO : dont add when already in list
+            if(self.game.visited.indexOf(self.game.placeId) == -1){
+                self.game.visited.push(self.game.placeId);
+            }
+
             self.game.placeId = place.id;
+
+            self.game.stats.placesTotal += 1;
             _store();
 
         }
@@ -218,6 +239,7 @@
             ,setup : setup
             ,getLearn : getLearn
             ,getNative : getNative
+            ,getStats : function(){ return _game().stats; }
             };
 
     });

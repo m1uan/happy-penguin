@@ -1,0 +1,32 @@
+link(rel='stylesheet', href='/assets/css/penguin/gameover.css')
+h2(translate="gameover_title")
+div.game_over
+
+    ul.nav.nav-tabs.nav-justified
+        li
+            a Travelers
+        li
+            a Words
+        li
+            a Cities
+        li.active
+            a Score
+
+
+    table
+        tr
+            td(translate="game_over_travelers_total")
+            td {{travelersTotal}}
+        tr
+            td(translate="game_over_words_total")
+            td {{wordsTotal}}
+        tr
+            td(translate="game_over_cities_total")
+            td {{citiesTotal}}
+
+        tr
+            td(translate="game_over_total")
+            td {{TOTAL}}
+
+div.text-center
+    button(ng-click="backToMap()",translate="btn_start").btn.btn-primary

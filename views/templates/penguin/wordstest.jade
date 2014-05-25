@@ -30,11 +30,12 @@ div(ng-show="part==1").wordtest
 
 div(ng-show="part==3").wordtest
     h2(translate="place_question_title")
-    div(translate="place_question_help").alert.alert-info
-    p {{questionText}}
-    div(ng-hide="user_answered")
-        input(ng-model="user_answer",size="50")
-        button(ng-show="user_answer",ng-click="answer()",translate="btn_answer").btn.btn-primary
+    h3 {{questionText}}
+    div(ng-hide="user_answered").input-group
+        input(ng-model="user_answer").form-control
+        span.input-group-btn
+            button(data-ng-disabled="user_answer.length < 2",ng-click="answer()",translate="btn_answer").btn.btn-primary
+    div(translate="place_question_help",ng-hide="user_answer").alert.alert-info
     div(ng-show="user_answered")
         div(ng-show="user_answered==1")
             p(translate="place_wrong_answer",translate-values="{answer:user_answer}").alert.alert-warning

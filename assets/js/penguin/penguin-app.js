@@ -17,6 +17,10 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','m
             controller: WordsTestCtrl
         });
 
+        $routeProvider.when('/gameover', {
+            templateUrl: '/templates/penguin/gameover',
+            controller: GameOverCtrl
+        });
         $routeProvider.when('/404', {
             templateUrl: '/templates/penguin/404'
         });
@@ -470,7 +474,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
                 // with question-text and questionAnswers
             } while(!$scope.questionText || !$scope.questionAnswers);
         } else {
-            $scope.conclusion();
+            showConclusion();
         }
 
         showRandomBackground();
@@ -497,7 +501,24 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             + $scope.fastAnswerScore[1] /3
             + $scope.fastAnswerScore[2] /2);
 
-        $scope.score.exp = Math.round($scope.user_answered * 2 + $scope.first_time_visit);
+        $scope.score.exp = Math.round(Math.floor($scope.user_answered/2) * 2 + $scope.first_time_visit);
+
+        var stats = worldFactory.getStats();
+        stats.correct += $scope.correctTotal;
+        stats.wrong += $scope.wrong;
+        stats.walkTotal += $scope.score.walk;
+        stats.swimTotal += $scope.score.swim;
+        stats.flyTotal += $scope.score.fly;
+        stats.expTotal += $scope.score.exp;
+        stats.user_answered += Math.floor($scope.user_answered/2);
+
+        $scope.correctInRowScore.forEach(function(cirs, idx){
+            stats.correctInRowScore[idx] += cirs;
+        });
+
+        $scope.fastAnswerScore.forEach(function(fas, idx){
+            stats.fastAnswerScore[idx] += fas;
+        });
     }
 
     function startVocabularyTest(){
@@ -506,7 +527,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         lastAnswer = moment();
         $interval(function(){
             $scope.timer -= 1;
-
+            worldFactory.getStats().wordTestTime+=1;
             if($scope.timer == 0){
                 showQuestion();
             }
@@ -737,3 +758,16 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 }
 
+function GameOverCtrl($scope, worldFactory){
+    var stats = worldFactory.getStats();
+
+
+    $scope.citiesTotal = stats.placesTotal * 1000;
+
+    $scope.wordsTotal = stats.correct * 1000;
+
+    $scope.travelersTotal = (stats.flyTotal + stats.flyTotal + stats.flyTotal) * 1000;
+
+    $scope.TOTAL = $scope.citiesTotal   + $scope.wordsTotal + $scope.travelersTotal;
+
+}
