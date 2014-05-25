@@ -235,7 +235,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
                 }
 
                 var pos = map.latLngToPoint(place.posx, place.posy);
-                item.css({top: pos.y, left: pos.x});
+                item.css({top: pos.y-14, left: pos.x-14});
 
 
 //                var marker = {latLng: [pl.posx, pl.posy], name: pl.name, style: {r: 8, fill: 'yellow'}};
