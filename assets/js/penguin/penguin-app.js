@@ -406,8 +406,11 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.correct = 100;
     $scope.correctTotal = 0;
     $scope.correctInRow = 0;
-    $scope.correctInRowScore = [0,0,0,0,0];
-    $scope.fastAnswerScore = [0,0,0];
+    //$scope.correctInRowScore = [0,0,0,0,0];
+    //$scope.fastAnswerScore = [0,0,0];
+
+    $scope.correctInRowScore = [1,1,1,1,1];
+    $scope.fastAnswerScore = [1,1,1];
 
     $scope.wrong = 0;
     $scope.timer = GAME_TIME;
@@ -434,8 +437,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     worldFactory.loadPlace(placeid, function(place){
         $scope.place = place;
         //startVocabularyTest();
-        showIntroduction();
-        //showConclusion();
+       // showIntroduction();
+        showConclusion();
     });
 
     function showQuestion(){
