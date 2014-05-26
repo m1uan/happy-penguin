@@ -321,7 +321,8 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
     function testEndGame(){
         if(!worldFactory.testEndGame()){
-            alertify.alert('Game over!');
+            //alertify.alert('Game over!');
+            $location.path('/gameover');
             worldFactory.createNewGame();
             worldFactory.setupPlacesDistancesAndExp();
             worldFactory.update($scope);
@@ -758,7 +759,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 }
 
-function GameOverCtrl($scope, worldFactory){
+function GameOverCtrl($scope, worldFactory, $location){
     var stats = worldFactory.getStats();
     $scope.game = worldFactory.game();
     $scope.view = 3;
@@ -775,5 +776,9 @@ function GameOverCtrl($scope, worldFactory){
 
     $scope.changeView = function(view){
         $scope.view = view;
+    }
+
+    $scope.startNewGame = function(){
+        $location.path('/intro/1');
     }
 }
