@@ -761,7 +761,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 function GameOverCtrl($scope, worldFactory){
     var stats = worldFactory.getStats();
     $scope.game = worldFactory.game();
-    $scope.view = 2;
+    $scope.view = 3;
 
     $scope.stats = stats;
     $scope.citiesTotal = stats.placesTotal * 1000;

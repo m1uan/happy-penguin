@@ -16,27 +16,25 @@ div.game_over
             tr
                 td
                     img(src="/assets/img/penguin/ic_walk.png").intro_resource_icon
-                td
-                    b {{stats.walkTotal}}
+                td {{stats.walkTotal}}
 
             tr
                 td
                     img(src="/assets/img/penguin/ic_swim.png").intro_resource_icon
-                td
-                    b {{stats.swimTotal}}
+                td {{stats.swimTotal}}
 
             tr
                 td
                     img(src="/assets/img/penguin/ic_fly.png").intro_resource_icon
 
-                td
-                    b {{stats.flyTotal}}
+                td {{stats.flyTotal}}
             tr
                 td
                     img(src="/assets/img/penguin/ic_exp.png").intro_resource_icon
-                td
-                    b {{stats.expTotal}}
-
+                td {{stats.expTotal}}
+            tr
+                td(translate="game_over_total")
+                td {{travelersTotal}}
     div(ng-show="view==1")
 
         table
@@ -61,8 +59,6 @@ div.game_over
             tr
                 td(translate="score_correct_in_row",translate-values="{row:60}")
                 td {{stats.correctInRowScore[4]}}
-
-        table
             tr
                 td(translate="score_correct_fast",translate-values="{time:1}")
                 td {{stats.fastAnswerScore[0]}}
@@ -72,6 +68,9 @@ div.game_over
             tr
                 td(translate="score_correct_fast",translate-values="{time:3}")
                 td {{stats.fastAnswerScore[2]}}
+            tr
+                td(translate="game_over_total")
+                td {{wordsTotal}}
 
     div(ng-show="view==2")
         table
@@ -85,6 +84,10 @@ div.game_over
             tr
                 td(translate="game_over_total_visited_time")
                 td {{stats.wordTestTime}}
+
+            tr
+                td(translate="game_over_total")
+                td {{citiesTotal}}
 
     div(ng-show="view==3")
         table
@@ -102,5 +105,5 @@ div.game_over
                 td(translate="game_over_total")
                 td {{TOTAL}}
 
-div.text-center
+div.text-center.bottom-panel
     button(ng-click="backToMap()",translate="btn_start").btn.btn-primary
