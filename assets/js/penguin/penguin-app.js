@@ -760,14 +760,20 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
 function GameOverCtrl($scope, worldFactory){
     var stats = worldFactory.getStats();
+    $scope.game = worldFactory.game();
+    $scope.view = 2;
 
-
+    $scope.stats = stats;
     $scope.citiesTotal = stats.placesTotal * 1000;
 
     $scope.wordsTotal = stats.correct * 1000;
 
-    $scope.travelersTotal = (stats.flyTotal + stats.flyTotal + stats.flyTotal) * 1000;
+    $scope.travelersTotal = (stats.walkTotal + stats.swimTotal + stats.flyTotal) * 1000;
 
     $scope.TOTAL = $scope.citiesTotal   + $scope.wordsTotal + $scope.travelersTotal;
 
+
+    $scope.changeView = function(view){
+        $scope.view = view;
+    }
 }
