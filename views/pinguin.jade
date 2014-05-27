@@ -17,6 +17,7 @@ html(ng-app="pinguin")
                     img(src="/assets/img/flags/flag_{{lang.lang}}.png").translate_flag
                     span.media-heading {{lang.lang}}
             h1 * Happy penguin *
+            div(data-href="https://voc4u2.com/penguin",data-layout="standard",data-action="like",data-show-faces="true",data-share="true").fb-like
 
             div(ng-view).main-view
             // it is here because in main-view is disabled
@@ -47,6 +48,9 @@ html(ng-app="pinguin")
                             button(data-dismiss="modal")#modal-exchange-button.btn.btn-success Exchange
                             button(data-dismiss="modal").btn.btn-primary Close
 
+    div#fb-root
+
+    div(data-href="http://voc4u.com/penguin",data-numposts="5",data-colorscheme="light").fb-comments
 
     script(src="/assets/js/libs/jquery.min-2.1.0.js")
     script(src="/assets/js/libs/alertify.min-0.3.11.js")
