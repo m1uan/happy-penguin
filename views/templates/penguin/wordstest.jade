@@ -35,6 +35,8 @@ div(ng-show="part==3").wordtest
         input(ng-model="user_answer").form-control
         span.input-group-btn
             button(data-ng-disabled="user_answer.length < 2",ng-click="answer()",translate="btn_answer").btn.btn-primary
+        span.input-group-btn
+            button(ng-click="answer(true)",translate="btn_skip").btn.btn-warning
     div(translate="place_question_help",ng-hide="user_answer").alert.alert-info
     div(ng-show="user_answered")
         div(ng-show="user_answered==1")

@@ -86,6 +86,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
     penguinFactory.getLangs('en', function(langs){
 
         $scope.langs = langs;
+
     })
 
 
@@ -110,7 +111,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
             $translate.use(lang);
             alertify.success('lang changed to : ' + lang);
         }
-
+        mixpanel.track("lang", lang);
     }
 
     $scope.expToTravelers = function(){
@@ -151,7 +152,16 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
         worldFactory.setup(lang,  $translate.use());
         worldFactory.createNewGame();
         $location.path('/world');
+        mixpanel.track("Start game", {jorney:lang, native: $translate.use()});
     }
+
+    var mixdata = {
+        page : $scope.page,
+        native: $translate.use()
+    }
+
+
+    mixpanel.track("intro", mixdata);
 
 }
 
@@ -315,6 +325,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
                 //element.hide();
 
             })
+            mixpanel.track("Place", {placeId: place.id});
         }
     }
 
@@ -488,8 +499,9 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
     function showConclusion(){
+        var game = worldFactory.game();
         $scope.part = 4;
-        $scope.score.walk = Math.round(($scope.correctTotal)/10);
+        $scope.score.walk = Math.round(($scope.correctTotal)/8);
         $scope.score.swim = Math.round(
             $scope.correctInRowScore[0]/3
             +  $scope.correctInRowScore[1]/2
@@ -520,6 +532,33 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         $scope.fastAnswerScore.forEach(function(fas, idx){
             stats.fastAnswerScore[idx] += fas;
         });
+
+        var mixdata = {
+            correct:$scope.correctTotal,
+            wrong:$scope.correctTotal,
+            'correctInRowScore[0]' : $scope.correctInRowScore[0],
+            'correctInRowScore[1]' : $scope.correctInRowScore[1],
+            'correctInRowScore[2]' : $scope.correctInRowScore[2],
+            'correctInRowScore[3]' : $scope.correctInRowScore[3],
+            'correctInRowScore[4]' : $scope.correctInRowScore[4],
+            'fastAnswerScore[0]' : $scope.fastAnswerScore[0],
+            'fastAnswerScore[1]' : $scope.fastAnswerScore[1],
+            'fastAnswerScore[2]' : $scope.fastAnswerScore[2],
+            'score.walk' : $scope.score.walk,
+            'score.swim' : $scope.score.swim,
+            'score.fly' : $scope.score.fly,
+            'score.exp' : $scope.score.exp,
+            'wordTestTime' : stats.wordTestTime,
+            travelersTotal: $scope.travelersTotal,
+            citiesTotal : $scope.citiesTotal,
+            'placesTotal': stats.placesTotal,
+            'placesUniq' : game.visited.length,
+            placeId : game.placeId,
+            lang: game.lang,
+            learn: game.learn
+        }
+
+        mixpanel.track("conclusion", mixdata);
     }
 
     function startVocabularyTest(){
@@ -731,17 +770,54 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     };
 
 
-    $scope.answer = function(){
+    $scope.answer = function(skip){
+
+
+
         if(!$scope.user_answer){
             return ;
         }
 
-        // have to be 2 or 1
-        // because 0 - mean the user didn't answer yet
-        // any other mean show the area with naswered text
-        $scope.user_answered = $scope.questionAnswers.some(function(ans){
-            return ans == $scope.user_answer;
-        }) ? 2 : 1;
+        if(skip){
+            // have to be 2 or 1
+            // because 0 - mean the user didn't answer yet
+            // any other mean show the area with naswered text
+            $scope.user_answered = $scope.questionAnswers.some(function(ans){
+                return ans == $scope.user_answer;
+            }) ? 2 : 1;
+
+
+            var game = worldFactory.game();
+            var mixdata = {
+                placeId : game.placeId,
+                lang: game.lang,
+                learn: game.learn,
+                user_answered: $scope.user_answered,
+                user_answer : $scope.user_answer,
+                questionAnswers : $scope.questionAnswers,
+                questionText : $scope.questionText
+            }
+
+
+            mixpanel.track("answer", mixdata);
+
+        } else {
+            // user press button skip
+            $scope.user_answered = 1;
+
+
+            var game = worldFactory.game();
+            var mixdata = {
+                placeId : game.placeId,
+                lang: game.lang,
+                learn: game.learn,
+                questionText : $scope.questionText
+            }
+
+
+            mixpanel.track("answer_skip", mixdata);
+            showConclusion();
+        }
 
 
 
@@ -781,4 +857,33 @@ function GameOverCtrl($scope, worldFactory, $location){
     $scope.startNewGame = function(){
         $location.path('/intro/1');
     }
+
+    var mixdata = {
+        correctTotal:stats.correct,
+        wrongTotal:stats.wrong,
+        wordsTotal:$scope.wordsTotal,
+        TOTAL:$scope.TOTAL,
+        travelersTotal: $scope.travelersTotal,
+        citiesTotal : $scope.citiesTotal,
+        'placesTotal': stats.placesTotal,
+        'placesUniq' : $scope.game.visited.length,
+        placeId : $scope.game.placeId,
+        lang: $scope.game.lang,
+        learn: $scope.game.learn,
+        'correctInRowScore[0]' : stats.correctInRowScore[0],
+        'correctInRowScore[1]' : stats.correctInRowScore[1],
+        'correctInRowScore[2]' : stats.correctInRowScore[2],
+        'correctInRowScore[3]' : stats.correctInRowScore[3],
+        'correctInRowScore[4]' : stats.correctInRowScore[4],
+        'fastAnswerScore[0]' : stats.fastAnswerScore[0],
+        'fastAnswerScore[1]' : stats.fastAnswerScore[1],
+        'fastAnswerScore[2]' : stats.fastAnswerScore[2],
+        'walkTotal' : stats.walkTotal,
+        'swimTotal' : stats.swimTotal,
+        'flyTotal' : stats.flyTotal,
+        'expTotal' : stats.expTotal,
+        'wordTestTime' : stats.wordTestTime
+    }
+
+    mixpanel.track("ganeover", mixdata);
 }
