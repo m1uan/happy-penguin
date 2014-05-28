@@ -117,7 +117,7 @@ module.exports = {
 
                 data.forEach(function(trans){
                     out += trans.link.toString() + ';'
-                    + (trans.data ? trans.data : '') +"\n";
+                    + (trans.data ? trans.data.split('\n').join(' ') : '') +"\n";
                 });
 
                 request.reply(out).type('text/plain');
@@ -219,14 +219,16 @@ module.exports = {
                     }
 
                     var linkData = line.split(';');
-                    var link = parseInt(linkData[0].trim());
+                    var linkT = linkData.shift();
+
+                    var link = parseInt(linkT.trim());
 
                     if(isNaN(link)){
                         response(request, 'line: '+idx+' link is not a number');
                         return true;
                     }
 
-                    var data = linkData[1].trim();
+                    var data = linkData.join(';').trim();
                     var dataContainer = {
                         lang: lang,
                         link : link,
