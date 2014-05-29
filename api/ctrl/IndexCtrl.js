@@ -1,6 +1,8 @@
 var userEngine = require(process.cwd() + '/engine/user.js');
+
 var Passport = null;
 var Travelelogue = null;
+
 
 module.exports = {
     /**
@@ -33,7 +35,8 @@ module.exports = {
         request.reply.view('templates/' + template + '.jade', request.user ? {userId:request.user.id, admin:request.user.admin == 1} : null);
     }
     ,index_get : function (request){
-        request.reply.view('pinguin', {});
+        var configLocal = require(process.cwd() + '/config/local.js');
+        request.reply.view('pinguin', {debugPenguin:configLocal.debugPenguin});
     }
     ,stats_get : function(request){
         request.reply.view('stats');

@@ -65,6 +65,9 @@ html(ng-app="pinguin")
 
     script
         var ROUTE = '/pinguin/game/';
+    -if(debugPenguin)
+        script
+            var DEBUG_PENGUIN = true;
 
     script(src="/assets/js/simple-request.js")
     script(src="/assets/js/penguin/world-factory.js")
