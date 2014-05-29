@@ -1,13 +1,16 @@
-body {
+#body {
     background-image: url('/assets/img/orig/place/1400385212810-24811-isedqn.jpg');
+
     background-size: 100%, 100%;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+
 }
 
 .main-view {
-    width:800px;
+
     height:600px;
-    margin-left: auto;
-    margin-right:auto;
+
     background-color: #ddd;
     opacity: 0.9;
     padding:0px;
@@ -22,6 +25,29 @@ body {
 
 }
 
+.column-center {
+    width:800px;
+    margin-left: auto;
+    margin-right:auto;
+}
+
+#h1{
+    text-align: center;
+    color:white;
+    background: #284049; /* Old browsers */
+    background: -moz-linear-gradient(top,  #284049 0%, #2989d8 100%, #207cca 100%, #005987 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#284049), color-stop(100%,#2989d8), color-stop(100%,#207cca), color-stop(100%,#005987)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #284049 0%,#2989d8 100%,#207cca 100%,#005987 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #284049 0%,#2989d8 100%,#207cca 100%,#005987 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #284049 0%,#2989d8 100%,#207cca 100%,#005987 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #284049 0%,#2989d8 100%,#207cca 100%,#005987 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#284049', endColorstr='#005987',GradientType=0 ); /* IE6-9 */
+    padding: 20px;
+    margin:0px 0px 0px 0px;
+    font-weight: bold;
+}
+
+
 .translate_flag {
     width:25px;
     margin-left:5px;
@@ -30,6 +56,22 @@ body {
 
 .translation:hover {
     cursor:pointer;
+}
+
+#langs {
+    margin-bottom: 15px;
+
+}
+
+#like {
+    margin-top: 15px;
+}
+
+.panel-dark {
+    margin: 0px 0px 0px 0px;
+    background-color: #313031;
+    text-align: center;
+    padding:3px;
 }
 
 #lang_table {

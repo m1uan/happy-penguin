@@ -422,11 +422,16 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.correct = 100;
     $scope.correctTotal = 30;
     $scope.correctInRow = 0;
-    //$scope.correctInRowScore = [0,0,0,0,0];
-    //$scope.fastAnswerScore = [0,0,0];
+    if(DEBUG_PENGUIN){
+        $scope.correctInRowScore = [1,1,1,1,1];
+        $scope.fastAnswerScore = [1,1,1];
+    } else {
+        $scope.correctInRowScore = [0,0,0,0,0];
+        $scope.fastAnswerScore = [0,0,0];
+    }
 
-    $scope.correctInRowScore = [1,1,1,1,1];
-    $scope.fastAnswerScore = [1,1,1];
+
+
 
     $scope.wrong = 0;
     $scope.timer = GAME_TIME;

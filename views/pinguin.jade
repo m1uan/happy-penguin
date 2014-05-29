@@ -12,14 +12,19 @@ html(ng-app="pinguin")
         meta(name="viewport",content="width=device-width, initial-scale=1.0")
     body(ng-controller="PinguinCtrl as main")
         div#body
-            div#langs
+            #h1
+                h1 * Happy penguin *
+            div#langs.panel-dark
                 span(ng-repeat="lang in langs",ng-click="changeLang(lang.lang)").translation
                     img(src="/assets/img/flags/flag_{{lang.lang}}.png").translate_flag
                     span.media-heading {{lang.lang}}
-            h1 * Happy penguin *
-            div(data-href="https://voc4u2.com/penguin",data-layout="standard",data-action="like",data-show-faces="true",data-share="true").fb-like
 
-            div(ng-view).main-view
+
+            div(ng-view).column-center.main-view
+
+            div#like.panel-dark
+                div(data-href="https://voc4u2.com/penguin",data-layout="standard",data-action="like",data-show-faces="false",data-share="true").fb-like
+
             // it is here because in main-view is disabled
             // shadow screen cover the dialog as well
             div#modal-exchange.modal.fade
@@ -50,7 +55,8 @@ html(ng-app="pinguin")
 
     div#fb-root
 
-    div(data-href="http://voc4u.com/penguin/real-test-1",data-numposts="5",data-colorscheme="light").fb-comments
+    div.column-center
+        div(data-href="http://voc4u.com/penguin/real-test-1",data-numposts="5",data-colorscheme="dark").fb-comments
 
     script(src="/assets/js/libs/jquery.min-2.1.0.js")
     script(src="/assets/js/libs/alertify.min-0.3.11.js")
