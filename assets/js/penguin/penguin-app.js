@@ -334,9 +334,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
         if(!worldFactory.testEndGame()){
             //alertify.alert('Game over!');
             $location.path('/gameover');
-            worldFactory.createNewGame();
-            worldFactory.setupPlacesDistancesAndExp();
-            worldFactory.update($scope);
+
         }
     }
 
@@ -417,15 +415,18 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var BUTTON_STATUS_CORRECT = 2;
     var BUTTON_STATUS_WRONG = 3;
 
-    var GAME_TIME = 20;
+    var GAME_TIME = 90;
 
     $scope.correct = 100;
-    $scope.correctTotal = 30;
+
     $scope.correctInRow = 0;
     if(DEBUG_PENGUIN){
+        GAME_TIME = 20;
+        $scope.correctTotal = 30;
         $scope.correctInRowScore = [1,1,1,1,1];
         $scope.fastAnswerScore = [1,1,1];
     } else {
+        $scope.correctTotal = 0;
         $scope.correctInRowScore = [0,0,0,0,0];
         $scope.fastAnswerScore = [0,0,0];
     }
@@ -460,7 +461,18 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         //startVocabularyTest();
         //showIntroduction();
         //showConclusion();
-        showQuestion();
+        if(DEBUG_PENGUIN){
+            showIntroduction();
+            //startVocabularyTest();
+            //showIntroduction();
+            //showConclusion();
+            //showQuestion();
+        } else {
+            // **** DONT CHANGE HERE ****
+            showIntroduction();
+            // **************************
+        }
+
     });
 
     /**
@@ -603,7 +615,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
 
     function loadOrNext(){
-        vocabularyFactory.getVocabularyRandomSet(worldFactory.getLearn(), worldFactory.getNative(), function(words){
+        vocabularyFactory.getVocabularyRandomSet(worldFactory.getLearn(), $translate.use(), function(words){
             $scope.correct = 0;
             $scope.words = words;
             console.log(words.word1)
@@ -915,4 +927,7 @@ function GameOverCtrl($scope, worldFactory, $location){
     }
 
     mixpanel.track("ganeover", mixdata);
+
+
+
 }
