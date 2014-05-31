@@ -29,7 +29,7 @@
                 exp : BASE,
                 lang:learn,
                 learn: native,
-                placeId : 5,
+                placeId : 1,
                 visited : [],
                 randomScenarios : {},
                 stats :{

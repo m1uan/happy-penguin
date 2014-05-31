@@ -13,4 +13,6 @@ mkdir /tmp/ahoj/assets/img/orig/place
 echo "test"
 psql voc4u -U uservoc4u -c 'delete from word;delete from package_t;delete from image;delete from lang_t;delete from link;delete from question_t; delete from question_status_t;delete from last_visit_t; delete from usr;delete from update_package_t ;delete from scores_t;'
 
+psql voc4u -U uservoc4u -c 'delete from pinguin.image_t;delete from pinguin.question_t;delete from pinguin.place_t;update translates.lang_t set link=null;delete from translates.translate_t;delete from translates.link_t;delete from translates.lang_t;'
+
 psql voc4u -U uservoc4u < /tmp/ahoj/dump-voc4u.sql
