@@ -11,20 +11,24 @@ html(ng-app="pinguin")
 
         meta(name="viewport",content="width=device-width, initial-scale=1.0")
     body(ng-controller="PinguinCtrl as main")
-        div#body
+        div
             #h1
-                h1 * Happy penguin *
+                -if(debugPenguin)
+                    h1 debug (hp)
+                -else
+                    h1 * Happy penguin *
                 i.text-center www.happy-penguin.eu
-            div#langs.panel-dark
-                span(ng-repeat="lang in langs",ng-click="changeLang(lang.lang)").translation
-                    img(src="/assets/img/flags/flag_{{lang.lang}}.png").translate_flag
-                    span.media-heading {{lang.lang}}
+            div#body
+                div#langs.panel-dark
+                    span(ng-repeat="lang in langs",ng-click="changeLang(lang.lang)").translation
+                        img(src="/assets/img/flags/flag_{{lang.lang}}.png").translate_flag
+                        span.media-heading {{lang.lang}}
 
 
-            div(ng-view).column-center.main-view
+                div(ng-view).column-center.main-view
 
-            div#like.panel-dark
-                div(data-href="https://voc4u2.com/penguin",data-layout="standard",data-action="like",data-show-faces="false",data-share="true").fb-like
+                div#like.panel-dark
+                    div(data-href="https://voc4u2.com/penguin",data-layout="standard",data-action="like",data-show-faces="false",data-share="true").fb-like
 
             // it is here because in main-view is disabled
             // shadow screen cover the dialog as well

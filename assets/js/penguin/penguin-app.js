@@ -165,7 +165,7 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
 
 }
 
-function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) {
+function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, $translate) {
     var self = this;
     var element = $('#world-main');
     var map = null;
@@ -302,14 +302,14 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
     function moveToPlace(place){
         $location.path('/wordstest/'+place.id);
+        var what = '';
         if(worldFactory.game().fly < place.fly){
-            alertify.error('Sorry you have enought FLY... you have just ' + worldFactory.game().fly+ ' but you need at least '+place.fly);
+            what = $translate.instant('fly');
             $('#game_resources_fly').css({color:'red'});
         } else if(worldFactory.game().swim < place.swim){
-            alertify.error('Sorry you have enought SWIM... you have just ' + worldFactory.game().swim+ ' but you need at least '+place.swim);
+            what = $translate.instant('swim');
             $('#game_resources_swim').css({color:'red'});
         } else if(worldFactory.game().walk < place.walk){
-            alertify.error('Sorry you have enought WALK... you have just ' + worldFactory.game().walk+ ' but you need at least '+place.walk);
             $('#game_resources_walk').css({color:'red'});
         } else {
             $scope.$apply(function(){
@@ -326,6 +326,10 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory) 
 
             })
             mixpanel.track("Place", {placeId: place.id});
+        }
+
+        if(what){
+            alertify.error($translate.instant('not_enought', {have:worldFactory.game().walk, need: place.walk, what: what}));
         }
     }
 
@@ -604,7 +608,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         }
 
 
-        $('body').css("background-image", "url("+img+")");
+        $('#body').css("background-image", "url("+img+")");
     }
 
 
