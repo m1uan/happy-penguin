@@ -112,26 +112,22 @@ button next
 }
 
 #intro_1 {
-    background-image: url('/assets/img/penguin/intro_globe.png');
+    background-image: url('/assets/img/penguin/intro_globe.jpg');
     background-size: 100%;
 }
 
 #intro_2 {
-    background-image: url('/assets/img/penguin/intro_distances.png');
+    background-image: url('/assets/img/penguin/intro_distances.jpg');
     background-size: 100%;
 }
 
 #intro_page_4 {
-    background-image: url('/assets/img/penguin/intro_place_info.png');
+    background-image: url('/assets/img/penguin/intro_place_info.jpg');
     background-size : 100% 100%;
 }
 
 
-#intro_2_head {
-    position: absolute;
-    right : 20px;
-    color: white;
-}
+
 
 #intro_1_penguin {
     position: absolute;
@@ -139,10 +135,10 @@ button next
     width: 240px;
 }
 
-#intro_1_test ,#intro_2_test, #intro_experience_info_1, #intro_experience_info_2, #intro_experience_info_3{
+#intro_1_test ,#intro_2_head, #intro_2_test , #intro_experience_info_1, #intro_experience_info_2, #intro_experience_info_3{
     padding:4px;
     background-color: black;
-    opacity: 0.6;
+    opacity: 0.85;
     position: absolute;
     left:20px;
     top: 240px;
@@ -151,10 +147,12 @@ button next
     color:white;
 }
 
+
+
 #intro_2_test {
-    color:black;
-    background-color: whitesmoke;
-    opacity: 0.9;
+    left:350px;
+    top: 20px;
+    width: 380px;
 }
 
 #intro_experience_info_1 {
