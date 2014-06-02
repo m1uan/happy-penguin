@@ -121,7 +121,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 }
 
 function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate) {
-    var PAGEMAX = 4;
+    var PAGEMAX = 5;
 
     $scope.page = parseInt($routeParams.page);
     if(isNaN($scope.page) || $scope.page < 1 || $scope.page > PAGEMAX){
@@ -422,6 +422,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var GAME_TIME = 90;
 
     $scope.correct = 100;
+    $scope.user_answer = '';
 
     $scope.correctInRow = 0;
     if(DEBUG_PENGUIN){
@@ -466,11 +467,11 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         //showIntroduction();
         //showConclusion();
         if(DEBUG_PENGUIN){
-            showIntroduction();
+            //showIntroduction();
             //startVocabularyTest();
             //showIntroduction();
             //showConclusion();
-            //showQuestion();
+            showQuestion();
         } else {
             // **** DONT CHANGE HERE ****
             showIntroduction();
@@ -799,7 +800,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             return ;
         }
 
-        if(skip){
+        if(!skip){
             // have to be 2 or 1
             // because 0 - mean the user didn't answer yet
             // any other mean show the area with naswered text
@@ -825,7 +826,6 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         } else {
             // user press button skip
             $scope.user_answered = 1;
-
 
             var game = worldFactory.game();
             var mixdata = {

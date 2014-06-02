@@ -83,15 +83,26 @@
 
 .intro-navigate-button-area {
     position: absolute;
-    bottom: 60px;
+    bottom: 0px;
     width: 100%;
     height: 60px;
-    padding:15px;
+    padding:8px;
+    background-color: #313031;
+    opacity: 0.95;
 }
+/*
+button next
+*/
+.intro-navigate-button-area a:last-child {
+    position: absolute;
+    right :5px;
+    font-weight: bold;
+}
+
 
 .intro-page {
     position: relative;
-    height: 600px;
+    height: 550px;
     overflow: hidden;
 }
 
@@ -110,6 +121,12 @@
     background-size: 100%;
 }
 
+#intro_page_4 {
+    background-image: url('/assets/img/penguin/intro_place_info.png');
+    background-size : 100% 100%;
+}
+
+
 #intro_2_head {
     position: absolute;
     right : 20px;
@@ -122,14 +139,15 @@
     width: 240px;
 }
 
-#intro_1_test ,#intro_2_test{
+#intro_1_test ,#intro_2_test, #intro_experience_info_1, #intro_experience_info_2, #intro_experience_info_3{
     padding:4px;
+    background-color: black;
+    opacity: 0.6;
     position: absolute;
     left:20px;
     top: 240px;
     width: 340px;
-    background-color: black;
-    opacity: 0.6;
+
     color:white;
 }
 
@@ -138,6 +156,20 @@
     background-color: whitesmoke;
     opacity: 0.9;
 }
+
+#intro_experience_info_1 {
+    top: 100px;
+}
+
+#intro_experience_info_2 {
+    top: 240px;
+}
+
+#intro_experience_info_3 {
+    top: 400px;
+}
+
+
 
 .intro_resource_icon{
     width: 30px;
