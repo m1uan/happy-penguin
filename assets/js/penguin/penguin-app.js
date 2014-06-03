@@ -112,7 +112,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
             $translate.use(lang);
             alertify.success('lang changed to : ' + lang);
         }
-        mixpanel.track("lang", lang);
+        track("lang", lang);
     }
 
     $scope.expToTravelers = function(){
@@ -122,23 +122,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 
 
     $scope.like = function(){
-        FB.ui(
-            {
-                method: 'feed',
-                name: $translate.instant('fb_name'),
-                caption: $translate.instant('fb_caption'),
-                description: $translate.instant('fb_share_base'),
-                link: 'www.happy-penguin.eu',
-                picture: 'www.happy-penguin.eu/assets/img/penguin/penguin_3.png'
-            },
-            function(response) {
-                if (response && response.post_id) {
-                    //alert('Post was published.');
-                } else {
-                    //alert('Post was not published.');
-                }
-            }
-        );
+        facebook($translate, 'fb_share_base');
     }
 }
 
@@ -174,7 +158,7 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
         worldFactory.setup(lang,  $translate.use());
         worldFactory.createNewGame();
         $location.path('/world');
-        mixpanel.track("Start game", {jorney:lang, native: $translate.use()});
+        track("Start game", {jorney:lang, native: $translate.use()});
     }
 
     var mixdata = {
@@ -183,7 +167,7 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
     }
 
 
-    mixpanel.track("intro", mixdata);
+    track("intro", mixdata);
 
 }
 
@@ -347,7 +331,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
                 //element.hide();
 
             })
-            mixpanel.track("Place", {placeId: place.id});
+            track("Place", {placeId: place.id});
         }
 
         if(what){
@@ -607,7 +591,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             learn: game.learn
         }
 
-        mixpanel.track("conclusion", mixdata);
+        track("conclusion", mixdata);
     }
 
     function startVocabularyTest(){
@@ -849,7 +833,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             }
 
 
-            mixpanel.track("answer", mixdata);
+            track("answer", mixdata);
 
         } else {
             // user press button skip
@@ -864,7 +848,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             }
 
 
-            mixpanel.track("answer_skip", mixdata);
+            track("answer_skip", mixdata);
             showConclusion();
         }
 
@@ -949,7 +933,7 @@ function GameOverCtrl($scope, worldFactory, $location, $translate){
         'wordTestTime' : stats.wordTestTime
     }
 
-    mixpanel.track("ganeover", mixdata);
+    track("ganeover", mixdata);
 
 
 
@@ -957,6 +941,7 @@ function GameOverCtrl($scope, worldFactory, $location, $translate){
 
 
 function facebook($translate, descCode, descData){
+    track(descCode);
     descData = descData || {};
 
     var desc = $translate.instant(descCode, descData);
@@ -972,9 +957,9 @@ function facebook($translate, descCode, descData){
         },
         function(response) {
             if (response && response.post_id) {
-                //alert('Post was published.');
+                track(descCode + '_published');
             } else {
-                //alert('Post was not published.');
+                track(descCode + '_notp');
             }
         }
     );

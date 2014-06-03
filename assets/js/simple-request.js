@@ -66,3 +66,11 @@ mixpanel.init("9b4fa505a5d50bdef461ba4e87ec54da");
     js.src = "//connect.facebook.net/cs_CZ/sdk.js#xfbml=1&appId=279786678866284&version=v2.0";
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+
+function track(code, mixdata){
+    if(!DEBUG_PENGUIN){
+        mixpanel.track(code, mixdata);
+    }
+
+}
