@@ -100,6 +100,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 
 
     if(mygame){
+        $translate.use(mygame.native);
         $location.path('/world');
     } else {
         $location.path('/intro/1');
@@ -352,6 +353,11 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
         }
     }
+
+    $scope.ahoj = function(){
+
+    }
+
 
 
     jQuery(function(){
@@ -620,7 +626,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
 
     function loadOrNext(){
-        vocabularyFactory.getVocabularyRandomSet(worldFactory.getLearn(), $translate.use(), function(words){
+        // get words from game setting - not for current user switch :-)
+        vocabularyFactory.getVocabularyRandomSet(worldFactory.getLearn(), worldFactory.getNative(), function(words){
             $scope.correct = 0;
             $scope.words = words;
             console.log(words.word1)

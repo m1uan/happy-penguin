@@ -40,10 +40,10 @@ script(src="/assets/js/libs/jquery-mousewheel.js")
 
 script(src="/assets/js/libs/jquery-jvectormap-world-mill-en.js")
 
-
-
-div#world-main
-
+// style is in this way because on
+// chrome browser is not size fit before map is initialized
+// and map have realy low height
+div(style="width:100%;height:100%;")#world-main
 
 div(ng-click="showExchange()")#game_resources
     img(src="/assets/img/penguin/ic_walk.png").resource_icon

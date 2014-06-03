@@ -27,8 +27,8 @@
                 swim :BASE,
                 fly : BASE,
                 exp : BASE,
-                lang:learn,
-                learn: native,
+                learn:learn,
+                native: native,
                 placeId : 1,
                 visited : [],
                 randomScenarios : {},
@@ -174,7 +174,7 @@
                 return ;
             }
 
-            var url ='get/'+placeid+'/'+self.game.learn+'/'+self.game.lang+'/?fields=id,name,info&qfields=qid,question,answers&ifields=iid,image';
+            var url ='get/'+placeid+'/'+self.game.learn+'/'+self.game.native+'/?fields=id,name,info&qfields=qid,question,answers&ifields=iid,image';
             requestGET($http, url, function(response, status){
 
                 placesForVocabularyTest[placeid] = response;

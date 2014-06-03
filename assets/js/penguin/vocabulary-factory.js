@@ -22,8 +22,10 @@
                 if(native == 'cz'){
                     native = 'cs';
                 }
-
-                requestGET($http, '/words/get/'+lesson+'/'+learn+'/'+native+'?fields=link,word%20as%20w&nd=false&type=api',function(data){
+                // who created this?????
+                // >>> not deleted : 1 - show all (not deleted and unaproved)
+                // >>>             0 - NOT show deleted files
+                requestGET($http, '/words/get/'+lesson+'/'+learn+'/'+native+'?fields=link,word%20as%20w&nd=0&type=api',function(data){
                     words[lesson] = data.words;
                     wordsIds[lesson] = {};
                     words[lesson].forEach(function(word){
