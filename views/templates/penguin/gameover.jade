@@ -1,109 +1,109 @@
 link(rel='stylesheet', href='/assets/css/penguin/gameover.css')
 h2(translate="gameover_title")
 div.game_over
+    div#game-over-switch
+        ul.nav.nav-tabs.nav-justified
+            li(ng-class="{active: view==0}")
+                a(ng-click="changeView(0)") Travelers
+            li(ng-class="{active: view==1}")
+                a(ng-click="changeView(1)") Words
+            li(ng-class="{active: view==2}")
+                a(ng-click="changeView(2)") Cities
+            li(ng-class="{active: view==3}")
+                a(ng-click="changeView(3)") Score
+        div(ng-show="view==0")
+            table
+                tr
+                    td
+                        img(src="/assets/img/penguin/ic_walk.png").intro_resource_icon
+                    td {{stats.walkTotal}}
 
-    ul.nav.nav-tabs.nav-justified
-        li(ng-class="{active: view==0}")
-            a(ng-click="changeView(0)") Travelers
-        li(ng-class="{active: view==1}")
-            a(ng-click="changeView(1)") Words
-        li(ng-class="{active: view==2}")
-            a(ng-click="changeView(2)") Cities
-        li(ng-class="{active: view==3}")
-            a(ng-click="changeView(3)") Score
-    div(ng-show="view==0")
-        table
-            tr
-                td
-                    img(src="/assets/img/penguin/ic_walk.png").intro_resource_icon
-                td {{stats.walkTotal}}
+                tr
+                    td
+                        img(src="/assets/img/penguin/ic_swim.png").intro_resource_icon
+                    td {{stats.swimTotal}}
 
-            tr
-                td
-                    img(src="/assets/img/penguin/ic_swim.png").intro_resource_icon
-                td {{stats.swimTotal}}
+                tr
+                    td
+                        img(src="/assets/img/penguin/ic_fly.png").intro_resource_icon
 
-            tr
-                td
-                    img(src="/assets/img/penguin/ic_fly.png").intro_resource_icon
+                    td {{stats.flyTotal}}
+                tr
+                    td
+                        img(src="/assets/img/penguin/ic_exp.png").intro_resource_icon
+                    td {{stats.expTotal}}
+                tr
+                    td(translate="game_over_total")
+                    td {{travelersTotal}}
+        div(ng-show="view==1")
 
-                td {{stats.flyTotal}}
-            tr
-                td
-                    img(src="/assets/img/penguin/ic_exp.png").intro_resource_icon
-                td {{stats.expTotal}}
-            tr
-                td(translate="game_over_total")
-                td {{travelersTotal}}
-    div(ng-show="view==1")
+            table
+                tr
+                    td(translate="game_over_correct_total")
+                    td {{stats.correct}}
+                tr
+                    td(translate="game_over_wrong_total")
+                    td {{stats.wrong}}
+                tr
+                    td(translate="score_correct_in_row",translate-values="{row:5}")
+                    td {{stats.correctInRowScore[0]}}
+                tr
+                    td(translate="score_correct_in_row",translate-values="{row:10}")
+                    td {{stats.correctInRowScore[1]}}
+                tr
+                    td(translate="score_correct_in_row",translate-values="{row:15}")
+                    td {{stats.correctInRowScore[2]}}
+                tr
+                    td(translate="score_correct_in_row",translate-values="{row:30}")
+                    td {{stats.correctInRowScore[3]}}
+                tr
+                    td(translate="score_correct_in_row",translate-values="{row:60}")
+                    td {{stats.correctInRowScore[4]}}
+                tr
+                    td(translate="score_correct_fast",translate-values="{time:1}")
+                    td {{stats.fastAnswerScore[0]}}
+                tr
+                    td(translate="score_correct_fast",translate-values="{time:2}")
+                    td {{stats.fastAnswerScore[1]}}
+                tr
+                    td(translate="score_correct_fast",translate-values="{time:3}")
+                    td {{stats.fastAnswerScore[2]}}
+                tr
+                    td(translate="game_over_total")
+                    td {{wordsTotal}}
 
-        table
-            tr
-                td(translate="game_over_correct_total")
-                td {{stats.correct}}
-            tr
-                td(translate="game_over_wrong_total")
-                td {{stats.wrong}}
-            tr
-                td(translate="score_correct_in_row",translate-values="{row:5}")
-                td {{stats.correctInRowScore[0]}}
-            tr
-                td(translate="score_correct_in_row",translate-values="{row:10}")
-                td {{stats.correctInRowScore[1]}}
-            tr
-                td(translate="score_correct_in_row",translate-values="{row:15}")
-                td {{stats.correctInRowScore[2]}}
-            tr
-                td(translate="score_correct_in_row",translate-values="{row:30}")
-                td {{stats.correctInRowScore[3]}}
-            tr
-                td(translate="score_correct_in_row",translate-values="{row:60}")
-                td {{stats.correctInRowScore[4]}}
-            tr
-                td(translate="score_correct_fast",translate-values="{time:1}")
-                td {{stats.fastAnswerScore[0]}}
-            tr
-                td(translate="score_correct_fast",translate-values="{time:2}")
-                td {{stats.fastAnswerScore[1]}}
-            tr
-                td(translate="score_correct_fast",translate-values="{time:3}")
-                td {{stats.fastAnswerScore[2]}}
-            tr
-                td(translate="game_over_total")
-                td {{wordsTotal}}
+        div(ng-show="view==2")
+            table
 
-    div(ng-show="view==2")
-        table
+                tr
+                    td(translate="game_over_first_time_visited")
+                    td {{game.visited.length}}
+                tr
+                    td(translate="game_over_total_visited")
+                    td {{stats.placesTotal}}
+                tr
+                    td(translate="game_over_total_visited_time")
+                    td {{stats.wordTestTime}}
 
-            tr
-                td(translate="game_over_first_time_visited")
-                td {{game.visited.length}}
-            tr
-                td(translate="game_over_total_visited")
-                td {{stats.placesTotal}}
-            tr
-                td(translate="game_over_total_visited_time")
-                td {{stats.wordTestTime}}
+                tr
+                    td(translate="game_over_total")
+                    td {{citiesTotal}}
 
-            tr
-                td(translate="game_over_total")
-                td {{citiesTotal}}
+        div(ng-show="view==3")
+            table
+                tr
+                    td(translate="game_over_travelers_total")
+                    td {{travelersTotal}}
+                tr
+                    td(translate="game_over_words_total")
+                    td {{wordsTotal}}
+                tr
+                    td(translate="game_over_cities_total")
+                    td {{citiesTotal}}
 
-    div(ng-show="view==3")
-        table
-            tr
-                td(translate="game_over_travelers_total")
-                td {{travelersTotal}}
-            tr
-                td(translate="game_over_words_total")
-                td {{wordsTotal}}
-            tr
-                td(translate="game_over_cities_total")
-                td {{citiesTotal}}
+                tr
+                    td(translate="game_over_total")
+                    td {{TOTAL}}
 
-            tr
-                td(translate="game_over_total")
-                td {{TOTAL}}
-
-div.text-center.bottom-panel
-    button(ng-click="startNewGame()",translate="btn_start").btn.btn-primary
+    div.text-center.bottom-panel
+        button(ng-click="startNewGame()",translate="btn_start").btn.btn-primary

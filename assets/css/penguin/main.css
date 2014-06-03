@@ -15,9 +15,9 @@
     opacity: 0.9;
     padding:0px;
 
-    -moz-border-radius: 26px;
-    -webkit-border-radius:26px;
-    border-radius: 26px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius:8px;
+    border-radius: 8px;
     border-width: 30px;
     border-style: solid;
     border-color: #207cca; /* Old browsers */
@@ -59,12 +59,13 @@
 }
 
 #langs {
-    margin-bottom: 15px;
+    margin-bottom: 60px;
 
 }
 
 #like {
-    margin-top: 15px;
+    margin-top: 140px;
+    margin-bottom: 25px;
 }
 
 .panel-dark {

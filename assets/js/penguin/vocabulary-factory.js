@@ -23,7 +23,7 @@
                     native = 'cs';
                 }
 
-                requestGET($http, '/words/get/'+lesson+'/'+learn+'/'+native+'?fields=link,word%20as%20w&deleted=false&type=api',function(data){
+                requestGET($http, '/words/get/'+lesson+'/'+learn+'/'+native+'?fields=link,word%20as%20w&nd=false&type=api',function(data){
                     words[lesson] = data.words;
                     wordsIds[lesson] = {};
                     words[lesson].forEach(function(word){
