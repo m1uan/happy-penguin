@@ -497,8 +497,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             //showIntroduction();
             //startVocabularyTest();
             //showIntroduction();
-            //showConclusion();
-            showQuestion();
+            showConclusion();
+            //showQuestion();
         } else {
             // **** DONT CHANGE HERE ****
             showIntroduction();
@@ -884,27 +884,18 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
     $scope.facebook = function(){
-        FB.ui(
-            {
-                method: 'feed',
-                name: $translate.instant('fb_name'),
-                caption: $translate.instant('fb_caption'),
-                description: $translate.instant('fb_share_base'),
-                link: 'www.happy-penguin.eu',
-                picture: 'www.happy-penguin.eu/assets/img/penguin/penguin_3.png'
-            },
-            function(response) {
-                if (response && response.post_id) {
-                    //alert('Post was published.');
-                } else {
-                    //alert('Post was not published.');
-                }
-            }
-        );
+        var descData =  {
+            name:$scope.place.name,
+            walk:$scope.score.walk,
+            swim:$scope.score.swim,
+            fly : $scope.score.fly};
+
+
+        facebook($translate, 'fb_share_score', descData);
     }
 }
 
-function GameOverCtrl($scope, worldFactory, $location){
+function GameOverCtrl($scope, worldFactory, $location, $translate){
     var stats = worldFactory.getStats();
     $scope.game = worldFactory.game();
     $scope.view = 3;
@@ -925,6 +916,10 @@ function GameOverCtrl($scope, worldFactory, $location){
 
     $scope.startNewGame = function(){
         $location.path('/intro/1');
+    }
+
+    $scope.facebook = function(){
+        facebook($translate, 'fb_share_finish', {num: stats.placesTotal, score:$scope.TOTAL});
     }
 
     var mixdata = {
@@ -958,4 +953,29 @@ function GameOverCtrl($scope, worldFactory, $location){
 
 
 
+}
+
+
+function facebook($translate, descCode, descData){
+    descData = descData || {};
+
+    var desc = $translate.instant(descCode, descData);
+    console.log('facebook:'+descCode, desc, descData);
+    FB.ui(
+        {
+            method: 'feed',
+            name: $translate.instant('fb_name'),
+            caption: $translate.instant('fb_caption'),
+            description: desc,
+            link: 'www.happy-penguin.eu',
+            picture: 'www.happy-penguin.eu/assets/img/penguin/penguin_3.png'
+        },
+        function(response) {
+            if (response && response.post_id) {
+                //alert('Post was published.');
+            } else {
+                //alert('Post was not published.');
+            }
+        }
+    );
 }
