@@ -119,6 +119,27 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
         ExchangeDialog().expToTravelers();
 
     }
+
+
+    $scope.like = function(){
+        FB.ui(
+            {
+                method: 'feed',
+                name: $translate.instant('fb_name'),
+                caption: $translate.instant('fb_caption'),
+                description: $translate.instant('fb_share_base'),
+                link: 'www.happy-penguin.eu',
+                picture: 'www.happy-penguin.eu/assets/img/penguin/penguin_3.png'
+            },
+            function(response) {
+                if (response && response.post_id) {
+                    //alert('Post was published.');
+                } else {
+                    //alert('Post was not published.');
+                }
+            }
+        );
+    }
 }
 
 function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate) {
@@ -866,21 +887,17 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         FB.ui(
             {
                 method: 'feed',
-                name: 'The Facebook SDK for Javascript',
-                caption: 'Bringing Facebook to the desktop and mobile web',
-                description: (
-                    'A small JavaScript library that allows you to harness ' +
-                        'the power of Facebook, bringing the user\'s identity, ' +
-                        'social graph and distribution power to your site.'
-                    ),
-                link: 'www.voc4u.com/penguin/1',
-                picture: 'http://www.fbrell.com/public/f8.jpg'
+                name: $translate.instant('fb_name'),
+                caption: $translate.instant('fb_caption'),
+                description: $translate.instant('fb_share_base'),
+                link: 'www.happy-penguin.eu',
+                picture: 'www.happy-penguin.eu/assets/img/penguin/penguin_3.png'
             },
             function(response) {
                 if (response && response.post_id) {
-                    alert('Post was published.');
+                    //alert('Post was published.');
                 } else {
-                    alert('Post was not published.');
+                    //alert('Post was not published.');
                 }
             }
         );
