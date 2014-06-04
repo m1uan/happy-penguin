@@ -114,10 +114,11 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 
     $scope.changeLang = function(lang){
         if($translate.use() != lang){
-            $translate.use(lang, function(){
-                var text = $translate.instant('native_lang_changed', {lang:lang});
-                alertify.success(text);
+            $translate.use(lang).then(function(data){
+                var translation = $translate.instant('native_lang_changed', {lang:lang});
+                alertify.success(translation);
             });
+
 
 
         }
