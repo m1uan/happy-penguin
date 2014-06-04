@@ -21,8 +21,12 @@ html(ng-app="pinguin")
             div#body
                 div#langs.panel-dark
                     span(ng-repeat="lang in langs",ng-click="changeLang(lang.lang)").translation
+                        span(ng-hide="lang.lang==currentLang").lang-pointer-space
+                        img(src="/assets/img/penguin/lang_arrow.gif",ng-show="lang.lang==currentLang").lang-pointer.lang-pointer-left
                         img(src="/assets/img/flags/flag_{{lang.lang}}.png").translate_flag
-                        span.media-heading {{lang.lang}}
+                        span.lang-name {{lang.lang}}
+                        span(ng-hide="lang.lang==currentLang").lang-pointer-space
+                        img(src="/assets/img/penguin/lang_arrow.gif",ng-show="lang.lang==currentLang").lang-pointer
 
 
                 div(ng-view).column-center.main-view

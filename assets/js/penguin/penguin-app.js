@@ -82,6 +82,7 @@ function ExchangeDialog(){
 }
 function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate) {
 
+    $scope.currentLang = $translate.use();
     $scope.langs = [];
     penguinFactory.getLangs('en', function(langs){
 
@@ -99,19 +100,25 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 //    }
 
 
-    if(mygame){
-        $translate.use(mygame.native);
+    if(mygame && mygame.native){
+        var native = mygame.native;
+        $translate.use(native);
         $location.path('/world');
+        $scope.currentLang = native;
     } else {
         $location.path('/intro/1');
     }
+
+
 
 
     $scope.changeLang = function(lang){
         if($translate.use() != lang){
             $translate.use(lang);
             alertify.success('lang changed to : ' + lang);
+
         }
+        $scope.currentLang = lang;
         track("lang", lang);
     }
 
@@ -124,6 +131,9 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
     $scope.like = function(){
         facebook($translate, 'fb_share_base');
     }
+
+
+
 }
 
 function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate) {
@@ -154,8 +164,15 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
 
 
     $scope.startGame = function(lang){
-        alertify.error('jorney:' + lang + ' native:' + $translate.use());
-        worldFactory.setup(lang,  $translate.use());
+        var native = $translate.use();
+
+        if(lang == native){
+            alertify.alert($translate.instant('not_same_language', {lang: lang}));
+            return;
+        }
+
+        alertify.error('jorney:' + lang + ' native:' + native);
+        worldFactory.setup(lang,  native);
         worldFactory.createNewGame();
         $location.path('/world');
         track("Start game", {jorney:lang, native: $translate.use()});
