@@ -11,6 +11,11 @@ html(ng-app="pinguin")
 
         meta(name="viewport",content="width=device-width, initial-scale=1.0")
     body(ng-controller="PinguinCtrl as main")
+        a(href="http://www.voc4u.com",target="_blank",ng-click="voc4ulink()").voc4u-screen
+            img(src="/assets/img/penguin/voc4u.png", alt="Voc4u best android vocabulary trainer")
+            p vocabulary
+            p and technology
+            p stoled from Voc4u
         div
             #h1
                 -if(debugPenguin)
@@ -18,6 +23,7 @@ html(ng-app="pinguin")
                 -else
                     h1 * Happy penguin *
                 i.text-center www.happy-penguin.eu
+
             div#body
                 div#langs.panel-dark
                     span(ng-repeat="lang in langs",ng-click="changeLang(lang.lang)").translation

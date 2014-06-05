@@ -47,6 +47,13 @@
     font-weight: bold;
 }
 
+#h1 h1 {
+    margin:0px;
+    padding:0px;
+    font-weight: bold;
+    font-size: 68px;
+}
+
 
 .translate_flag {
     width:25px;
@@ -283,4 +290,29 @@ button next
 
 
 
+}
+.voc4u-screen, .voc4u-screen:visited {
+    position: absolute;
+    right:20px;
+    top:30px;
+    width:210px;
+    float:right;
+    font-weight: bolder;
+    font-size:15px;
+    text-align: right;
+    color:white;
+}
+
+.voc4u-screen:hover {
+    color:lightcyan;
+}
+
+.voc4u-screen p {
+    margin:0px;
+}
+
+.voc4u-screen  img{
+    float:left;
+    height: 75px;
+    margin:-10px;
 }

@@ -110,7 +110,9 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
     }
 
 
-
+    $scope.voc4ulink = function(){
+        track('voc4u-link');
+    }
 
     $scope.changeLang = function(lang){
         if($translate.use() != lang){
