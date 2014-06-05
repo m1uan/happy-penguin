@@ -244,3 +244,43 @@ button next
    font-weight: bold;
 }
 
+.loaidng {
+
+    width:300px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top:200px;
+    /* because the loader is white */
+    background-color: white;
+    padding:3px;
+
+}
+.loaidng-border {
+    border-style: solid;
+    border-color: darkgrey;
+    border-width: 1px;
+    padding:40px;
+}
+
+
+.loaidng img {
+    float:left;
+    margin-right: 10px;
+
+}
+.loaidng-span {
+
+    font-weight: bolder;
+    color:darkblue;
+}
+
+.loaidng-i {
+    margin-top:0px;
+    font-size : 10px;
+}
+
+.loaidng-content {
+
+
+
+}

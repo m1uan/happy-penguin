@@ -1,7 +1,12 @@
 link(rel='stylesheet', href='/assets/css/penguin/wordtest.css')
 
+div(ng-show="wordsLoading").loaidng
+    div.loaidng-border
+        img(src="/assets/img/loading64.gif")
+        div(translate="please_wait").loaidng-span Loading please wait ...
+        div(translate="loading_could_be_long").loaidng-i first load could be long
 
-div(ng-show="part==0").wordtest
+div(ng-show="part==0&&!wordsLoading").wordtest
     h2(translate="place_welcome",translate-values="{name:place.name}")
     div(translate="place_info_help").alert.alert-info
     div#introduction {{place.info}}
@@ -9,7 +14,7 @@ div(ng-show="part==0").wordtest
     div.text-center
         button(ng-click="visit()",translate="explore").btn.btn-primary#btn_explore Explore
 
-div(ng-show="part==1").wordtest
+div(ng-show="part==1&&!wordsLoading").wordtest
     h2 time left {{timer}}
 
     //canvas#conection-canvas
@@ -28,7 +33,7 @@ div(ng-show="part==1").wordtest
                     span(id="testbtn_1_{{$index}}",ng-click="select(1,w, $event)").btn.btn-default.btn-word {{w.word}}
                 span {{w.link}}
 
-div(ng-show="part==3").wordtest
+div(ng-show="part==3&&!wordsLoading").wordtest
     h2(translate="place_question_title")
     h3 {{questionText}}
     div(ng-hide="user_answered").input-group
@@ -48,7 +53,7 @@ div(ng-show="part==3").wordtest
         div.center-text
             span(ng-click="conclusion()").btn.btn-primary conculsion
 
-div(ng-show="part==4").wordtest
+div(ng-show="part==4&&!wordsLoading").wordtest
     h2 Score
     table
         tr

@@ -197,6 +197,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
     var element = $('#world-main');
     var map = null;
     var places;
+    $scope.mapLoading = true;
     //console.log(element);
 //    element.mousemove(function(evt) {
 //        var x = evt.pageX - element.offset().left;
@@ -257,6 +258,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
     }
 
     function updatePlaces(places){
+
             places.forEach(function(place){
 
                 var placeid = 'placeid_'+place.id;
@@ -289,12 +291,14 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
     }
 
     function setupMap(){
+        $scope.mapLoading = true;
         worldFactory.loadPlaces(function(iplaces,placesIds){
             places = iplaces;
             updatePlaces(places);
             worldFactory.setupPlacesDistancesAndExp();
             testEndGame();
             showPenguin();
+            $scope.mapLoading = false;
         });
     }
 
@@ -493,22 +497,24 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     $scope.part = 0;
 
+    $scope.wordsLoading = true;
     worldFactory.loadPlace(placeid, function(place){
         $scope.place = place;
         //startVocabularyTest();
         //showIntroduction();
         //showConclusion();
         if(DEBUG_PENGUIN){
-            //showIntroduction();
+            showIntroduction();
             //startVocabularyTest();
             //showIntroduction();
-            showConclusion();
+            //showConclusion();
             //showQuestion();
         } else {
             // **** DONT CHANGE HERE ****
             showIntroduction();
             // **************************
         }
+        $scope.wordsLoading = false;
 
     });
 
@@ -616,17 +622,19 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
     function startVocabularyTest(){
-        loadOrNext();
+        loadOrNext(function(){
+            lastAnswer = moment();
+            $interval(function(){
+                $scope.timer -= 1;
+                worldFactory.getStats().wordTestTime+=1;
+                if($scope.timer == 0){
+                    showQuestion();
+                }
 
-        lastAnswer = moment();
-        $interval(function(){
-            $scope.timer -= 1;
-            worldFactory.getStats().wordTestTime+=1;
-            if($scope.timer == 0){
-                showQuestion();
-            }
+            }, 1000, GAME_TIME);
+        });
 
-        }, 1000, GAME_TIME);
+
     }
 
 
@@ -651,13 +659,20 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
 
-    function loadOrNext(){
+    function loadOrNext(cb){
+        $scope.wordsLoading = true;
         // get words from game setting - not for current user switch :-)
         vocabularyFactory.getVocabularyRandomSet(worldFactory.getLearn(), worldFactory.getNative(), function(words){
             $scope.correct = 0;
             $scope.words = words;
             console.log(words.word1)
             updateButtons();
+
+            if(cb){
+                cb();
+            }
+
+            $scope.wordsLoading = false;
 
         });
     }
@@ -764,8 +779,10 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         updateButtons();
 
         if(status == BUTTON_STATUS_CORRECT && $scope.correct == $scope.words.word1.length){
-            loadOrNext();
-            showRandomBackground();
+            loadOrNext(function(){
+                showRandomBackground();
+            });
+
         }
     }
 
