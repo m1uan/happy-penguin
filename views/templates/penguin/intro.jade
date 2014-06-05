@@ -47,14 +47,14 @@ div(ng-show="page==5").intro-page
     h2(translate="choice_your_jorney") choice_your_jorney
     div#lang_table
         table.table.table-hover
-           tr(ng-repeat="lang in langs",ng-click="startGame(lang.lang)")
+           tr(ng-repeat="lang in langs",ng-click="startGame(lang.lang)").jorney-line
                 td
                     img(src="/assets/img/flags/flag_{{lang.lang}}.png")
                 td
                     div {{lang.translate}}
-                td
+                td.hide
                     div {{lang.cities}}
-                td
+                td.hide
                     div {{lang.questions}}
     div.intro-navigate-button-area
         a(href="#/intro/{{pagePrev}}",translate="button_prev").btn.btn-lg.btn-default {{pagePrev}}

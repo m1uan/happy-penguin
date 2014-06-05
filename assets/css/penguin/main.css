@@ -144,6 +144,12 @@ button next
     overflow: hidden;
 }
 
+.intro-page h2 {
+    margin:8px;
+    font-size: 36px;
+    font-weight: bolder;
+}
+
 #intro_globe{
     width:400px;
     height: 400px;
@@ -315,4 +321,12 @@ button next
     float:left;
     height: 75px;
     margin:-10px;
+}
+
+.jorney-line {
+    font-size:60px;
+}
+
+.jorney-line:hover {
+    cursor:pointer;
 }
