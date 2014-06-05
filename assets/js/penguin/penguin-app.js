@@ -720,7 +720,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         if(name){
             $scope.fastAnswerScore[name-1] += 1;
-            var ins = $translate.instant('correct_fast_' + name);
+            var ins = $translate.instant('correct_fast' + {fast:name});
             alertify.success(ins);
         }
 
