@@ -311,6 +311,7 @@ button next
 
 .voc4u-screen:hover {
     color:lightcyan;
+    text-decoration: none;
 }
 
 .voc4u-screen p {
