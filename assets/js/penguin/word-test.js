@@ -111,7 +111,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     function showConclusion(){
         var game = worldFactory.game();
         $scope.part = 4;
-        $scope.score.walk = Math.round(($scope.correctTotal)/8);
+        $scope.score.walk = Math.round(($scope.correctTotal)/4);
         $scope.score.swim = Math.round(
             $scope.correctInRowScore[0]/3
                 +  $scope.correctInRowScore[1]/2
@@ -120,9 +120,9 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
                 +  $scope.correctInRowScore[4]*5.5);
 
         $scope.score.fly = Math.round(
-            $scope.fastAnswerScore[0] / 4
-                + $scope.fastAnswerScore[1] /3
-                + $scope.fastAnswerScore[2] /2);
+            $scope.fastAnswerScore[0] / 6
+                + $scope.fastAnswerScore[1] /5
+                + $scope.fastAnswerScore[2] /4);
 
         $scope.score.exp = Math.round(Math.floor($scope.user_answered/2) * 2 + $scope.first_time_visit);
 
