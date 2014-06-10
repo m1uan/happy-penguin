@@ -52,7 +52,6 @@
     margin:4px;
     margin-right:8px;
     font-weight: bold;
-
 }
 
 #penguin,#penguin2 {
@@ -64,4 +63,9 @@
     margin-top:2px;
     margin-bottom:2px;
     width:25px;
+}
+
+#btn_place_visit {
+    margin-top:20px;
+    width:100%;
 }

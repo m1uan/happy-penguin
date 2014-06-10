@@ -59,6 +59,7 @@ div(ng-click="showExchange()")#game_resources
     img(src="/assets/img/penguin/ic_exp.png").resource_icon
     span#game_resources_exp {{exp}}
 
+
 div.hide
     div#place_popover
         div
@@ -89,7 +90,8 @@ div.hide
                         span distance:
                         span#place_popover_distance 0.5
 
-
+            div.text-center
+                span(translate="btn_place_visit")#btn_place_visit.btn.btn-success
             div.hide
                 img(src="http://localhost:8080/assets/img/orig/place/1399024444677-21306-1qw7b9t.jpg",height="10px")
 

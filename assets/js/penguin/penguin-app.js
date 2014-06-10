@@ -248,6 +248,8 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
     }
 
+
+
     self.generateInfo = function(place){
         var place_popover = $('#place_popover');
         place_popover.find('#place_popover_posx').text(place.posx);
@@ -257,6 +259,25 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
         place_popover.find('#place_popover_swim').text(place.swim);
         place_popover.find('#place_popover_walk').text(place.walk);
         return place_popover.html();
+    }
+
+    /**
+     * hide all popovers in city
+     * @param places
+     * @param except - don't hide popover with this ID
+     */
+    function hideAllPlacePopovers(places, except){
+        places.forEach(function(place){
+
+            var placeid = 'placeid_'+place.id;
+            if(placeid != except){
+                var item = $('#'+placeid);
+
+                if(item.length){
+                    item.popover('hide');
+                }
+            }
+        });
     }
 
     function updatePlaces(places){
@@ -271,10 +292,17 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
                     item.appendTo(element);
                     item.click(function(){
-                        moveToPlace(place);
+
+                        $(document).off("click").on("click", "#btn_place_visit", function() {
+                            moveToPlace(place);
+                            hideAllPlacePopovers(places);
+                        });
+
+                        hideAllPlacePopovers(places, placeid);
+                        item.popover('show');
                     });
 
-                    item.popover({trigger:'hover',html:true,title:place.name,content:function(){
+                    item.popover({trigger:'manual',html:true,title:place.name,content:function(){
                         return self.generateInfo(place);
                     }});
                 }
@@ -383,6 +411,10 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
             updatePlaces(places);
             showPenguin();
 
+            // is here because the popover is apear in click on city
+            // but if the map is zooom or moved the popover still pointing
+            // in wrong position, to place where the place/city was before
+            hideAllPlacePopovers(places);
         }
     }
 
