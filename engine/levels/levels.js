@@ -85,6 +85,33 @@ module.exports = {
         updateTextField(pg, {id:dataContainer.id, text: dataContainer.name}, 'name', cb);
     },updateinfo: function(pg, dataContainer, cb){
         updateTextField(pg, {id:dataContainer.id, text: dataContainer.info}, 'info', cb);
+    },deleteinfo: function(pg, dataContainer, cb){
+        var watter = [];
+
+        watter.push(function(icb){
+            var SQL = 'SELECT info FROM pinguin.place_t WHERE id='+dataContainer.id;
+            pg.query(SQL, icb);
+        });
+
+        watter.push(function(info, icb){
+            var SQL = 'UPDATE pinguin.place_t SET info=null WHERE id='+dataContainer.id + ' RETURNING info';
+            pg.query(SQL, function(err, data){
+                // very probably wasn't before error so
+                // info.rows[0] must have a data
+                var infoData = {
+                    link: info.rows[0].info
+                };
+                icb(err, infoData);
+            });
+        });
+
+        watter.push(function(infoData, icb){
+            translate.delete(pg, infoData, icb);
+        });
+
+        async.waterfall(watter, function(err, data){
+            cb(err, {info:null});
+        });
     },get: function(pg, dataContainer, cb){
         if(!dataContainer.id){
             cb('missing id!');

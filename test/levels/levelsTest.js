@@ -166,6 +166,42 @@ describe.only('levels', function(){
             });
         });
 
+        it('delete info', function(cb){
+            var dataContainerCreate = {
+                name : 'place_empty_info',
+                code: 'cz',
+                posx: 0.15,
+                posy: 0.15
+            };
+
+
+            // create for update
+            levels.create(pgClient, dataContainerCreate, function(err, crated){
+
+                var dataContainer = {
+                    id : crated.id,
+                    name : 'place_6',
+                    info : 'krasne-misto' + String(Date.now())
+                };
+
+                levels.updateinfo(pgClient,dataContainer, function(err, updated){
+                    assert(!err);
+
+                    //updated.should.have.property('name');
+                    //updated.name.should.be.equal(dataContainer.name);
+
+                    levels.deleteinfo(pgClient,dataContainer, function(err2, updated2){
+                        assert(!err2);
+
+                        updated2.should.have.property('info');
+                        updated2.info.should.be.equal(dataContainer.info);
+                        cb();
+                    });
+                });
+
+            });
+        });
+
         it('get', function(cb){
             var dataContainerCreate = {
                 name : 'wonderful_place',

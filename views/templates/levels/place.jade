@@ -11,7 +11,8 @@ div#uploader
         p travel information about place/spot
         textarea(ng-model="info",rows="5",cols="150")
 
-        span(ng-click="update()").btn.btn-warning update
+        span(ng-click="update()").btn.btn-warning update text
+        span(ng-click="deleteInfo()").btn.btn-danger remove text
 
         hr
         div(ng-repeat="question in questions")#questions

@@ -63,6 +63,18 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
         });
     }
 
+    $scope.deleteInfo = function(){
+        var updateData = {
+            id : self.id
+        }
+
+        console.log('deleteInfo',updateData);
+        requestPOST($http, 'deleteinfo/', updateData, function(response, status){
+            console.log(response);
+            $scope.info = (response.info? response.info : '');
+        });
+    }
+
     $scope.delete = function(){
         alertify.confirm('are you sure about remove whole place? with images',function(e){
             if(!e){

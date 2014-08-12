@@ -227,6 +227,19 @@ module.exports = {
         levelEngine.delete(pgClient, dataContainer, function(err, deleted){
             response(request, err, deleted);
         });
+    },deleteinfo_post: function(request){
+        if(!request.payload.id){
+            response(request,'id of place missing');
+            return;
+        }
+
+        var dataContainer = {
+            id :request.payload.id
+        }
+
+        levelEngine.deleteinfo(pgClient, dataContainer, function(err, deleted){
+            response(request, err, deleted);
+        });
     }
 
 }
