@@ -304,6 +304,23 @@ describe.only('levels', function(){
                 cb();
             });
         });
+
+
+        it('list unkonw lang',function(cb){
+            var dataFields = {
+                fields: ['id','name','posx','posy'],
+                lang : '11'
+            }
+
+            levels.list(pgClient, dataFields, function(err,data){
+                should.not.exists(err);
+                should.exist(data);
+                data.should.be.a.Array;
+                data.length.should.be.above(1);
+                data[0].name.should.be.String;
+                cb();
+            });
+        });
     });
     describe('question', function(){
 
@@ -493,7 +510,7 @@ describe.only('levels', function(){
 
     });
 
-    describe.only('langs', function(){
+    describe('langs', function(){
         it('with fr', function(cb){
             var lang = require('../../engine/translates/langs.js')
             var series = [];

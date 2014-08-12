@@ -400,7 +400,7 @@ module.exports = {
 
         var indexOfName = fields.indexOf('name');
         if(indexOfName > -1){
-            fields[indexOfName] = 'ttn.data as name';
+            fields[indexOfName] = "COALESCE(ttn.data,(SELECT tte.data FROM translates.translate_t tte WHERE tte.link=pp.name AND tte.lang='en')) as name";
         }
 
         var SQL = SL.SqlLib('pinguin.place_t pp', fields);
