@@ -200,7 +200,8 @@ module.exports = {
 
         var data = request.params.params.split('/');
         var dataContainer = {
-            lang: data[0]
+            lang: data[0],
+            langNative : data[1]
         };
 
 

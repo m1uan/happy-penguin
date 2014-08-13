@@ -327,8 +327,9 @@ describe.only('levels', function(){
 
         it('list',function(cb){
             var dataFields = {
-                fields: ['id','name','posx','posy'],
-                lang : 'en'
+                fields: ['id','name','posx','posy','size'],
+                lang : 'en',
+                langNative : 'cz'
             }
 
             levels.list(pgClient, dataFields, function(err,data){
