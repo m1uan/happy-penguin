@@ -154,8 +154,8 @@ module.exports = {
         };
 
         image.storeImgFromData(pgClient, request.payload.link, dataInfo, function(err, imageData){
-                response(request, err, imageData);
-
+            // after upload image try registred like preview
+            imageSetupPreviewAndResponse(request, err, imageData, request.payload.link, pgClient);
         },dataExtra);
 
     },saveimgurl_post : function(request){
@@ -174,7 +174,8 @@ module.exports = {
         var userId = request.user.id;
 
         imageEngine.storeUrl(pgClient, request.payload.link, updateImg.url, function(err, data){
-            request.reply(err || data);
+            // after upload image try registred like preview
+            imageSetupPreviewAndResponse(request, err, data, request.payload.link, pgClient);
         }, dataExtra);
     },idelete_post: function(request){
         if(!request.payload.place_id){
@@ -265,4 +266,18 @@ function superResponse(request){
     return function(err, data){
         response(request, err, data);
     }
+}
+
+
+function imageSetupPreviewAndResponse(request, err, data, place_id, pg){
+    if(err){
+       response(request, err, data) ;
+    } else {
+        levelEngine.checkAndSetupPreview(pg, {preview_iid:data.imageId,place_id:place_id}, function(err, dataImage){
+            response(request, err, data);
+        });
+    }
+
+
+
 }

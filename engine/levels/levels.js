@@ -412,14 +412,19 @@ module.exports = {
         SQL.whereAnd('pinguin.image_t.place_id='+ dataContainer.place_id);
         SQL.select(pg, cb);
     },ipreview:function(pg, dataContainer, cb){
-        var SQL = SL.SqlLib('pinguin.place_t');
-        SQL.whereAnd('id=' + dataContainer.place_id);
+        ipreview_add(pg, dataContainer,cb);
+    },checkAndSetupPreview: function(pg, dataContainer, cb){
+        var SQL = SL.SqlLib('pinguin.place_t', ['1']);
 
-
-        var ud = {};
-        ud['preview_iid'] = dataContainer.preview_iid;
-        SQL.update(pg, ud, function(err, updated){
-            cb(err, {preview_idd:dataContainer.preview_iid});
+        SQL.whereAnd('pinguin.place_t.preview_iid='+ dataContainer.preview_iid);
+        SQL.select(pg, function(err,data){
+            if(err || data.length > 0){
+                // place already have a image for preview
+                cb(err, data);
+            } else {
+                // place have not any image for preview -> setup it
+                ipreview_add(pg, dataContainer, cb);
+            }
         });
     },idelete: function(pg, dataContainer, cb){
         idelete(pg, dataContainer, cb);
@@ -822,4 +827,16 @@ function idelete(pg, dataContainer, cb){
 
 
     async.waterfall(watter, cb);
+}
+
+function ipreview_add(pg, dataContainer, cb){
+    var SQL = SL.SqlLib('pinguin.place_t');
+    SQL.whereAnd('id=' + dataContainer.place_id);
+
+
+    var ud = {};
+    ud['preview_iid'] = dataContainer.preview_iid;
+    SQL.update(pg, ud, function(err, updated){
+        cb(err, {preview_idd:dataContainer.preview_iid});
+    });
 }

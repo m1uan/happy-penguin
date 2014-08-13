@@ -35,6 +35,7 @@ describe.only('levels', function(){
             }
 
             sqlMake(pgClient, [
+                "UPDATE pinguin.place_t SET preview_iid = null;",
                 "DELETE FROM pinguin.image_t;",
                 "DELETE FROM pinguin.question_t;",
                 "DELETE FROM pinguin.place_t;",
@@ -685,6 +686,31 @@ describe.only('levels', function(){
                 }
 
                 levels.ipreview(pgClient, dataContainer, function(err, preview){
+
+                    var getDataContainer = {
+                        place_id : created[0].id,
+                        fields : ['*']
+                    }
+
+                    // createPlaceWithImage create 3 images
+                    // after delete one should be still there 2two
+                    levels.get(pgClient, getDataContainer, function(err, geted){
+                        geted.length.should.be.equal(2);
+                        cb();
+                    });
+                });
+            })
+
+        });
+
+        it('preview picture', function(cb){
+            createPlaceWithImage('place_159_checkAndSetupPreview3', function(err, iid, created){
+                var dataContainer = {
+                    place_id : created[0].id,
+                    preview_iid : iid[2].imageId
+                }
+
+                levels.checkAndSetupPreview(pgClient, dataContainer, function(err, preview){
 
                     var getDataContainer = {
                         place_id : created[0].id,
