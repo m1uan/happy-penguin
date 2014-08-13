@@ -242,6 +242,25 @@ module.exports = {
         levelEngine.deleteinfo(pgClient, dataContainer, function(err, deleted){
             response(request, err, deleted);
         });
+    },imagepreview_post: function(request){
+        if(!request.payload.preview_iid){
+            response(request,'preview_iid of image missing');
+            return;
+        }
+
+        if(!request.payload.place_id){
+            response(request,'place_id of place');
+            return;
+        }
+
+        var dataContainer = {
+            preview_iid :request.payload.preview_iid,
+            place_id :request.payload.place_id
+        }
+
+        levelEngine.ipreview(pgClient, dataContainer, function(err, deleted){
+            response(request, err, deleted);
+        });
     }
 
 }

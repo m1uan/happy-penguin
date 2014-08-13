@@ -106,7 +106,7 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
     }
 
 
-    var url ='get/'+self.id+'?fields=id,name,info,posx,posy&qfields=qid,question,answers&ifields=iid,image';
+    var url ='get/'+self.id+'?fields=id,name,info,posx,posy,preview_iid&qfields=qid,question,answers&ifields=iid,image';
 
     requestGET($http, url, function(response, status){
         console.log(response);
@@ -122,6 +122,7 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
         $scope.posy = response.posy;
         $scope.questions = response.questions;
         $scope.images = response.images;
+        $scope.preview_iid = response.preview_iid;
     }
 
 
@@ -188,6 +189,21 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
             });
         });
     }
+
+    $scope.onPrimaryImage = function(image, index){
+        var dataConteiner = {
+            preview_iid: image.iid,
+            place_id: self.id
+        };
+
+            requestPOST($http, 'imagepreview/',dataConteiner, function(response, status){
+                console.log(index, response);
+                $scope.preview_iid = response.preview_iid;
+                alertify.error('Image set to primary ' + response.preview_iid);
+            });
+    }
+
+
 
     function uploadImageSuccess(imageData){
         var image = {

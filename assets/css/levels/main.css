@@ -2,7 +2,7 @@
     position:relative;
 
     margin-top:-170px;
-    margin-left:0px;
+    margin-left:-30px;
 }
 
 .btn-image-primary {
@@ -16,9 +16,18 @@
     width:300px;
 }
 
+.image-place-preview-select {
+    background-color: green;
+}
+
+.image-frame-padding {
+    padding:10px;
+    cursor: pointer;
+}
+
 .image-frame{
     background-color:black;
-    padding:10px;
+
 }
 
 #uploader {

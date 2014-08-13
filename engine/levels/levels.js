@@ -858,6 +858,6 @@ function ipreview_add(pg, dataContainer, cb){
     var ud = {};
     ud['preview_iid'] = dataContainer.preview_iid;
     SQL.update(pg, ud, function(err, updated){
-        cb(err, {preview_idd:dataContainer.preview_iid});
+        cb(err, {preview_iid:dataContainer.preview_iid});
     });
 }
