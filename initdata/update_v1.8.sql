@@ -20,6 +20,10 @@ LANGUAGE plpgsql;
 
 ALTER FUNCTION pinguin.place_size(entry_id INT, entry_lang_learn CHAR(2), entry_lang_native CHAR(2)) OWNER TO uservoc4u;
 
+ALTER TABLE pinguin.question_t DROP COLUMN type;
+ALTER TABLE pinguin.question_t ADD COLUMN type SMALLINT NOT NULL DEFAULT 0;
+
+
 SELECT pinguin.place_size(2,'cz','en');
 SELECT pinguin.place_size(2,'cz','11');
 SELECT pinguin.place_size(4,'cz','en');
