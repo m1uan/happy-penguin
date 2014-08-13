@@ -35,6 +35,7 @@ div#uploader
     div.row
         div(ng-repeat="image in images").image-frame.col-md-3
             img(src="/assets/img/orig/{{image.image}}").image-place-preview
+            button(ng-click="onPrimaryImage(image, $index)").btn.btn-primary.btn-image-primary o
             button(ng-click="onDeleteImage(image, $index)").btn.btn-danger.btn-image-delete x
     div.clear
     button(ng-click="delete()").btn.btn-danger !DELETE!

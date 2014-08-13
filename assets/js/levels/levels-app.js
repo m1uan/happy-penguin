@@ -64,14 +64,21 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
     }
 
     $scope.deleteInfo = function(){
-        var updateData = {
-            id : self.id
-        }
 
-        console.log('deleteInfo',updateData);
-        requestPOST($http, 'deleteinfo/', updateData, function(response, status){
-            console.log(response);
-            $scope.info = (response.info? response.info : '');
+        alertify.confirm('are you sure about remove text in all translations?',function(e){
+            if(!e){
+                return;
+            }
+
+            var updateData = {
+                id : self.id
+            }
+
+            console.log('deleteInfo',updateData);
+            requestPOST($http, 'deleteinfo/', updateData, function(response, status){
+                console.log(response);
+                $scope.info = (response.info? response.info : '');
+            });
         });
     }
 

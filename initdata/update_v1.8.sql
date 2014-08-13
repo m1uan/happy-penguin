@@ -20,9 +20,13 @@ LANGUAGE plpgsql;
 
 ALTER FUNCTION pinguin.place_size(entry_id INT, entry_lang_learn CHAR(2), entry_lang_native CHAR(2)) OWNER TO uservoc4u;
 
-ALTER TABLE pinguin.question_t DROP COLUMN type;
+ALTER TABLE pinguin.question_t DROP COLUMN IF EXISTS type;
 ALTER TABLE pinguin.question_t ADD COLUMN type SMALLINT NOT NULL DEFAULT 0;
 
+
+ALTER TABLE pinguin.place_t DROP COLUMN IF EXISTS preview_iid;
+ALTER TABLE pinguin.place_t ADD COLUMN preview_iid INT;
+ALTER TABLE pinguin.place_t ADD FOREIGN KEY (preview_iid) REFERENCES pinguin.image_t (iid);
 
 SELECT pinguin.place_size(2,'cz','en');
 SELECT pinguin.place_size(2,'cz','11');

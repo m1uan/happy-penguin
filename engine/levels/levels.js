@@ -411,6 +411,16 @@ module.exports = {
 
         SQL.whereAnd('pinguin.image_t.place_id='+ dataContainer.place_id);
         SQL.select(pg, cb);
+    },ipreview:function(pg, dataContainer, cb){
+        var SQL = SL.SqlLib('pinguin.place_t');
+        SQL.whereAnd('id=' + dataContainer.place_id);
+
+
+        var ud = {};
+        ud['preview_iid'] = dataContainer.preview_iid;
+        SQL.update(pg, ud, function(err, updated){
+            cb(err, {preview_idd:dataContainer.preview_iid});
+        });
     },idelete: function(pg, dataContainer, cb){
         idelete(pg, dataContainer, cb);
     }, list : function(pg, dataContainer, cb){

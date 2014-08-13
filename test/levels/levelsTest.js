@@ -677,6 +677,31 @@ describe.only('levels', function(){
 
         });
 
+        it('preview picture', function(cb){
+            createPlaceWithImage('place_159_preview1', function(err, iid, created){
+                var dataContainer = {
+                    place_id : created[0].id,
+                    preview_iid : iid[2].imageId
+                }
+
+                levels.ipreview(pgClient, dataContainer, function(err, preview){
+
+                    var getDataContainer = {
+                        place_id : created[0].id,
+                        fields : ['*']
+                    }
+
+                    // createPlaceWithImage create 3 images
+                    // after delete one should be still there 2two
+                    levels.get(pgClient, getDataContainer, function(err, geted){
+                        geted.length.should.be.equal(2);
+                        cb();
+                    });
+                });
+            })
+
+        });
+
         it('delete all', function(cb){
 
             createPlaceWithImage('place_158', function(err, iid, created){
