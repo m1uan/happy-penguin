@@ -405,13 +405,11 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     $scope.answer = function(skip){
 
-
-
-        if(!$scope.user_answer){
-            return ;
-        }
-
         if(!skip){
+            if(!$scope.user_answer){
+                return ;
+            }
+
             // have to be 2 or 1
             // because 0 - mean the user didn't answer yet
             // any other mean show the area with naswered text
