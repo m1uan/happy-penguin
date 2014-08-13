@@ -290,6 +290,9 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
                 if(!item.length){
                     var item = $('<div id="'+placeid+'" data-toggle="tooltip" data-placement="left" title="'+place.name+'">' + place.id + '</div>').addClass('place');
 
+                    item.addClass('placesize' + place.size);
+
+
                     item.appendTo(element);
                     item.click(function(){
 

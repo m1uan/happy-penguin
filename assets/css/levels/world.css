@@ -12,21 +12,44 @@
 
 .place, .place_step_1 {
     position:absolute;
-    width:24px;
-    height:24px;
+
     color:white;
     font-size: 7px;
     font-weight: bold;
     padding:2px;
-    background-color:yellow;
-    -moz-border-radius: 12px;
-    -webkit-border-radius:12px;
-    border-radius: 12px;
     border-width: 3px;
     border-style: solid;
     border-color: #101010;
+    cursor:pointer;
     /*background-image: url('/assets/img/penguin/place_red.png');
     background-size: 100%;*/
+}
+
+.placesize1 {
+    background-color:#ffd500;
+    width:14px;
+    height:14px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius:7px;
+    border-radius: 7px;
+}
+
+.placesize2 {
+    background-color:orange;
+    width:22px;
+    height:22px;
+    -moz-border-radius: 11px;
+    -webkit-border-radius:11px;
+    border-radius: 11px;
+}
+
+.placesize3 {
+    background-color:orangered;
+    width:30px;
+    height:30px;
+    -moz-border-radius: 15px;
+    -webkit-border-radius:15px;
+    border-radius: 15px;
 }
 
 .place_step_1 {
