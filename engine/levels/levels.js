@@ -445,9 +445,17 @@ module.exports = {
             langNative = dataContainer.langNative;
         }
 
+        var SQL = SL.SqlLib('pinguin.place_t pp', fields);
+
         var indexOfName = fields.indexOf('name');
         if(indexOfName > -1){
             fields[indexOfName] = "COALESCE(ttn.data,(SELECT tte.data FROM translates.translate_t tte WHERE tte.link=pp.name AND tte.lang='en')) as name";
+        }
+
+        var indexOfName = fields.indexOf('preview');
+        if(indexOfName > -1){
+            fields[indexOfName] = "pit.image as preview";
+            SQL.join('pinguin.image_t as pit','pit.iid=pp.preview_iid');
         }
 
         var indexOfSize = fields.indexOf('size');
@@ -455,7 +463,7 @@ module.exports = {
             fields[indexOfSize] = "pinguin.place_size(id,'"+lang+"','"+langNative+"') as size";
         }
 
-        var SQL = SL.SqlLib('pinguin.place_t pp', fields);
+
         if(indexOfName > -1){
             SQL.join('translates.translate_t as ttn','ttn.link=pp.name AND ttn.lang=\''+lang+'\'');
         }

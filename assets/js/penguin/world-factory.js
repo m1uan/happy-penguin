@@ -113,7 +113,7 @@
             if(placesInWorld && placesInWorldIds){
                 cb(placesInWorld, placesInWorldIds);
             } else {
-                var url ='list/'+self.game.learn+'/'+self.game.native+'/?fields=id,name,posx,posy,size';
+                var url ='list/'+self.game.learn+'/'+self.game.native+'/?fields=id,name,posx,posy,size,preview';
                 requestGET($http, url, function(response, status){
                     placesInWorld = response;
                     placesInWorldIds = {};
