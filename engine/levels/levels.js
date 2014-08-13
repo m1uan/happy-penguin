@@ -778,6 +778,26 @@ function idelete(pg, dataContainer, cb){
     var watter = [];
     var parallel = [];
 
+    // remove preview
+    series.push(function(icb){
+        var SQL = SL.SqlLib('pinguin.place_t');
+
+        // if is not specified the imageid (iid) , so going to remove all images from place
+        //          -> remove from this place preview image
+        // in other case if is removed just specified image
+        //          -> remove this image from any places like preview
+        if(!dataContainer.iid){
+            SQL.whereAnd('id='+dataContainer.place_id);
+        } else {
+            SQL.whereAnd('preview_iid='+dataContainer.iid);
+        }
+        var ud = {
+            'preview_iid' : null
+        };
+        SQL.update(pg, ud, icb);
+    });
+
+    // delete image
     series.push(function(icb){
         var SQL = SL.SqlLib('pinguin.image_t', ['iid','image']);
         SQL.whereAnd('pinguin.image_t.place_id='+dataContainer.place_id);
@@ -803,7 +823,8 @@ function idelete(pg, dataContainer, cb){
     watter.push(function(i, icb){
         var iids = [];
         // add to parallel every selected question
-        i[0].forEach(function(image){
+        // have to be i[1] because first is comming from remove preview
+        i[1].forEach(function(image){
             parallel.push(function(icb2){
 
 
