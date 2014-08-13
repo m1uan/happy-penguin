@@ -54,14 +54,15 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         //showIntroduction();
         //showConclusion();
         if(DEBUG_PENGUIN){
-            showIntroduction();
+            showIntroductionOrStartVocabularyTest();
+            //showIntroduction();
             //startVocabularyTest();
             //showIntroduction();
             //showConclusion();
             //showQuestion();
         } else {
             // **** DONT CHANGE HERE ****
-            showIntroduction();
+            showIntroductionOrStartVocabularyTest();
             // **************************
         }
         $scope.wordsLoading = false;
@@ -100,6 +101,16 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         }
 
         showRandomBackground();
+    }
+
+    function showIntroductionOrStartVocabularyTest(){
+        // some places have not introduction (info) text
+        // go straight way to vocabulary test
+        if($scope.place.info){
+            showIntroduction();
+        } else {
+            $scope.visit()
+        }
     }
 
     function showIntroduction(){
