@@ -89,6 +89,26 @@
 }
 
 #btn_place_visit {
-    margin-top:20px;
+    margin-top:5px;
     width:100%;
+}
+
+.popover-title-with-resources {
+    margin-right: 8px;
+    font-weight: bolder;
+}
+
+.popover-title-resources-info {
+    margin-left:4px;
+    margin-right:2px;
+    padding-top:2px;
+}
+.popover-title {
+    margin-top:4px;
+}
+
+.popover-title-resources-info-left {
+    position: absolute;
+    right:11px;
+    top:9px;
 }

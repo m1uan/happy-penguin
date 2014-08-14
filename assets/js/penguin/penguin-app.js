@@ -261,6 +261,21 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
         return place_popover.html();
     }
 
+    self.generateTitle = function(place){
+        var title = '<span class="popover-title-with-resources">' + place.name + '</span>'
+
+            + '<span class="popover-title-resources-info-left"><span class="popover-title-resources-info">' + place.walk + 'x</span>'
+            + '<img src="/assets/img/penguin/ic_walk.png" class="resource_icon"/>'
+
+            + '<span class="popover-title-resources-info">' + place.swim + 'x</span>'
+            + '<img src="/assets/img/penguin/ic_swim.png" class="resource_icon"/>'
+
+            + '<span class="popover-title-resources-info">' + place.fly + 'x</span>'
+            + '<img src="/assets/img/penguin/ic_fly.png" class="resource_icon"/></span>';
+
+        return title;
+    }
+
     /**
      * hide all popovers in city
      * @param places
@@ -288,7 +303,8 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
                 var item = $('#'+placeid);
 
                 if(!item.length){
-                    var item = $('<div id="'+placeid+'" data-toggle="tooltip" data-placement="left" title="'+place.name+'">' + place.id + '</div>').addClass('place');
+
+                    var item = $('<div id="'+placeid+'" data-toggle="tooltip" data-placement="left" >' + place.id + '</div>').addClass('place');
 
                     item.addClass('placesize' + place.size);
 
@@ -305,9 +321,10 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
                         item.popover('show');
                     });
 
-                    item.popover({trigger:'manual',html:true,title:place.name,content:function(){
+
+                    item.popover({trigger:'manual',html:true,title:function(){ return self.generateTitle(place)},content:function(){
                         return self.generateInfo(place);
-                    }});
+                    },template:'<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-title"></div><div class="popover-content"></div></div>'});
                 }
 
                 var pos = map.latLngToPoint(place.posx, place.posy);

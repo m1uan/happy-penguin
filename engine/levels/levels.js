@@ -450,11 +450,12 @@ module.exports = {
         var indexOfName = fields.indexOf('name');
         if(indexOfName > -1){
             fields[indexOfName] = "COALESCE(ttn.data,(SELECT tte.data FROM translates.translate_t tte WHERE tte.link=pp.name AND tte.lang='en')) as name";
+            SQL.join('translates.translate_t as ttn','ttn.link=pp.name AND ttn.lang=\''+lang+'\'');
         }
 
-        var indexOfName = fields.indexOf('preview');
-        if(indexOfName > -1){
-            fields[indexOfName] = "pit.image as preview";
+        var indexOfPreview = fields.indexOf('preview');
+        if(indexOfPreview > -1){
+            fields[indexOfPreview] = "pit.image as preview";
             SQL.join('pinguin.image_t as pit','pit.iid=pp.preview_iid');
         }
 
@@ -463,10 +464,6 @@ module.exports = {
             fields[indexOfSize] = "pinguin.place_size(id,'"+lang+"','"+langNative+"') as size";
         }
 
-
-        if(indexOfName > -1){
-            SQL.join('translates.translate_t as ttn','ttn.link=pp.name AND ttn.lang=\''+lang+'\'');
-        }
         SQL.select(pg, cb);
     }, langsAndCities : function(pg, lang, cb){
         var langEngine = require(process.cwd() + '/engine/translates/langs.js');
