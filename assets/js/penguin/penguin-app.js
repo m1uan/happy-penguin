@@ -258,6 +258,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
         place_popover.find('#place_popover_fly').text(place.fly);
         place_popover.find('#place_popover_swim').text(place.swim);
         place_popover.find('#place_popover_walk').text(place.walk);
+        place_popover.find('#place_popover_image').attr('src','/assets/img/orig/' + place.preview);
         return place_popover.html();
     }
 
