@@ -63,9 +63,9 @@
             return rw;
         }
 
-        function getVocabularyRandomSet(learn, native, cb){
-            getWords(CURRENT_WORDS, learn, native,  function(w,i){
-                var s1 = getNextWords(CURRENT_WORDS);
+        function getVocabularyRandomSet(lesson, learn, native, cb){
+            getWords(lesson, learn, native,  function(w,i){
+                var s1 = getNextWords(lesson);
 
                 var ret = {};
                 ret.word1 = [];

@@ -85,7 +85,8 @@
             }
 
             // step in levels
-            var scores = [75,175,300,450,625,850,1075,1500]
+            var scores = [75,175,300,450,625,850,1075,1400,1750,2000]
+            var lessons = [1001,1002,1003,1004,1005,2001,2002,2003,2004,2005,2006,2007,2008]
 
             var levelInfo = {
                 level : 1,
@@ -98,6 +99,7 @@
                 if(score > self.game.stats.correct){
                     levelInfo.nextLevelExp = score;
                     levelInfo.level = idx + 1;
+                    levelInfo.lesson = lessons[idx];
                     return true;
                 } else {
                     levelInfo.baseLevelExp = score;
@@ -271,6 +273,7 @@
             ,getLearn : getLearn
             ,getNative : getNative
             ,getStats : function(){ return _game().stats; }
+            ,calcLevelInfo : _calcLevelInfo
             };
 
     });

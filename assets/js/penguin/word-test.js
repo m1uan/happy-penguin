@@ -50,6 +50,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.wordsLoading = true;
     worldFactory.loadPlace(placeid, function(place){
         $scope.place = place;
+
+        $scope.levelInfo = worldFactory.calcLevelInfo();
         //startVocabularyTest();
         //showIntroduction();
         //showConclusion();
@@ -223,7 +225,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     function loadOrNext(cb){
         $scope.wordsLoading = true;
         // get words from game setting - not for current user switch :-)
-        vocabularyFactory.getVocabularyRandomSet(worldFactory.getLearn(), worldFactory.getNative(), function(words){
+        vocabularyFactory.getVocabularyRandomSet($scope.levelInfo.lesson, worldFactory.getLearn(), worldFactory.getNative(), function(words){
             $scope.correct = 0;
             $scope.words = words;
             console.log(words.word1)
