@@ -213,6 +213,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
     //element.click(onClick);
 
 
+    $('.progress .progress-bar').progressbar();
 
 
 
@@ -349,10 +350,21 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
             worldFactory.setupPlacesDistancesAndExp();
             testEndGame();
             showPenguin();
+            preloadPreviews(places);
             $scope.mapLoading = false;
         });
     }
 
+
+    function preloadPreviews(places){
+        places.forEach(function(place){
+            if(place.preview){
+                var img=new Image();
+                img.src='/assets/img/orig/' + place.preview;
+            }
+
+        });
+    }
 
     function showPenguin(){
         var currPlace = worldFactory.getCurrentPlace();

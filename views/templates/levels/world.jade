@@ -58,6 +58,11 @@ div(ng-click="showExchange()")#game_resources
     span#game_resources_fly {{fly}}
     img(src="/assets/img/penguin/ic_exp.png").resource_icon
     span#game_resources_exp {{exp}}
+div#score-bar
+    span {{levelInfo.levelExp}} / {{level.levelExpNext}}
+
+div.progress
+    div(role="progressbar",data-transitiongoal="75").progress-bar
 
 
 div.hide

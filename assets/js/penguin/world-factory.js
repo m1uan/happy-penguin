@@ -72,9 +72,39 @@
             scope.swim = self.game.swim;
             scope.exp = self.game.exp;
 
+            scope.levelInfo = _calcLevelInfo();
             _store();
 
             return true;
+        }
+
+
+        function _calcLevelInfo(){
+            if(!self.game){
+                _game();
+            }
+
+            // step in levels
+            var scores = [75,175,300,450,625,850,1075,1500]
+
+            var levelInfo = {
+                level : 1,
+                levelExp : self.game.stats.correct,
+                baseLevelExp : 0,
+                nextLevelExp : 0
+            }
+
+            scores.some(function(score, idx){
+                if(score > self.game.stats.correct){
+                    levelInfo.nextLevelExp = score;
+                    return true;
+                } else {
+                    levelInfo.baseLevelExp = score;
+                    levelInfo.level = idx + 1;
+                }
+            })
+
+            return levelInfo;
         }
 
         function _place(place){
@@ -99,6 +129,7 @@
             self.game.swim += score.swim;
             self.game.walk += score.walk;
             self.game.exp += score.exp;
+
             // maybe useles
             self.game.lastScore = score;
             _store();

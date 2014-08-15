@@ -244,15 +244,19 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         if($scope.correctInRow > 50){
             $scope.correctInRowScore[4] += 1;
+            $scope.correctInRowScore[3] -= 1;
             tell='50';
         } else if($scope.correctInRow == 30){
             $scope.correctInRowScore[3] += 1;
+            $scope.correctInRowScore[2] -= 1;
             tell = '30';
         } else if($scope.correctInRow == 15){
             $scope.correctInRowScore[2] += 1;
+            $scope.correctInRowScore[1] -= 1;
             tell = '15';
         } else if($scope.correctInRow == 10){
             $scope.correctInRowScore[1] += 1;
+            $scope.correctInRowScore[0] -= 1;
             tell = '10';
         } else if($scope.correctInRow == 5){
             $scope.correctInRowScore[0] += 1;
