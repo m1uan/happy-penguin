@@ -115,10 +115,25 @@
     top:9px;
 }
 
-#score-bar {
-    positon:absolute;
-    background-color: darkred;
+#score-bar-1 {
+   position:relative;
+    top:-70px;
+    background-color: #000000;
     color:white;
-    width:100px;
-    height:500px;
+    padding:4px;
+    margin-left:20px;
+    margin-right:20px;
+}
+
+#score-bar-reduce-size{
+    margin-top: 2px;
+    margin-bottom: -18px;
+}
+
+.six-sec-ease-in-out {
+    -webkit-transition: width 6s ease-in-out;
+    -moz-transition: width 6s ease-in-out;
+    -ms-transition: width 6s ease-in-out;
+    -o-transition: width 6s ease-in-out;
+    transition: width 6s ease-in-out;
 }

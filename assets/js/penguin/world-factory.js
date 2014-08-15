@@ -97,10 +97,10 @@
             scores.some(function(score, idx){
                 if(score > self.game.stats.correct){
                     levelInfo.nextLevelExp = score;
+                    levelInfo.level = idx + 1;
                     return true;
                 } else {
                     levelInfo.baseLevelExp = score;
-                    levelInfo.level = idx + 1;
                 }
             })
 

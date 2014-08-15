@@ -213,11 +213,17 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
     //element.click(onClick);
 
 
-    $('.progress .progress-bar').progressbar();
 
 
 
     worldFactory.update($scope);
+
+    $('#score-progress-bar')
+        .attr('aria-valuemin', $scope.levelInfo.baseLevelExp)
+        .attr('aria-valuemax', $scope.levelInfo.nextLevelExp)
+        .attr('data-transitiongoal', $scope.levelInfo.levelExp);
+
+    $('.progress .progress-bar').progressbar({use_percentage: false,display_text: 'center'});
 
 
     $scope.showExchange = function(){
