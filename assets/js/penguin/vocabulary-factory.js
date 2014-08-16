@@ -1,4 +1,5 @@
 (function() {
+    // TODO: clear storage for case will be new game
     /* Start angularLocalStorage */
     'use strict';
     var vocabularyFactory = angular.module('milan.vocabulary.factory', ['penguin.LocalStorageService']);
@@ -6,16 +7,54 @@
     vocabularyFactory.factory('vocabularyFactory', function($http, localStorageService) {
         var words = [];
         var usedWords = [];
-        var wordsIds = {};
+        // set null for detect if is loadet from storage or not
+        var wordsIds = null;
         var loadedLessons = [];
         var MAX_IN_SET = 8;
         var CURRENT_WORDS = 1001;
 
+        var LOCALSTORAGE_WORDS = 'pinguin.vocabulary.words';
+        var LOCALSTOREGE_USED_WORDS = 'pinguin.vocabulary.used-words';
+        var LOCALSTOREGE_LOADED_LESSONS = 'pinguin.vocabulary.loaded-lessons';
+
+        function restoreFactory(cb){
+            // if is wodsIds not null it is mean
+            // the wordls was loaded from storage
+            if(!wordsIds) {
+                // remove all
+//                localStorageService.set(LOCALSTORAGE_WORDS, null);
+//                localStorageService.set(LOCALSTOREGE_USED_WORDS, null);
+//                localStorageService.set(LOCALSTOREGE_LOADED_LESSONS, null);
+                words = localStorageService.get(LOCALSTORAGE_WORDS) || [];
+                usedWords = localStorageService.get(LOCALSTOREGE_USED_WORDS) || [];
+                loadedLessons = localStorageService.get(LOCALSTOREGE_LOADED_LESSONS) || [];
+
+                wordsIds = {}
+                // part of words is in words
+                words.forEach(function(word, idx){
+                    wordsIds[word.link] = word;
+                });
+                // part of words is in usedWords
+                usedWords.forEach(function(word, idx){
+                    wordsIds[word.link] = word;
+                });
+            }
+        }
+
+        function storeFactory(){
+            localStorageService.set(LOCALSTORAGE_WORDS, words);
+            localStorageService.set(LOCALSTOREGE_USED_WORDS, usedWords);
+            localStorageService.set(LOCALSTOREGE_LOADED_LESSONS, loadedLessons);
+        }
 
         function getWords(lesson, learn, native, cb){
+            // restore factory to let know is any lesson loaded
+            restoreFactory();
+
             if(loadedLessons.indexOf(lesson) != -1){
                 cb(words, wordsIds);
             } else {
+
                 if(learn == 'cz'){
                     learn = 'cs';
                 }
@@ -34,6 +73,9 @@
 
                     // add to list for control if this lesson already downloaded
                     loadedLessons.push(lesson);
+
+                    // store to storage for let know lesson is loaded
+                    storeFactory();
 
                     /* old version
                     words[lesson] = data.words;
@@ -67,7 +109,13 @@
 
                 rw.push(w);
                 usedWords.push(w);
+
+
             } while(rw.length < MAX_IN_SET)
+
+            // store to storage for let know
+            // usedWord, and words are changed
+            storeFactory();
 
             return rw;
         }
