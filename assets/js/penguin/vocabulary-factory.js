@@ -6,14 +6,15 @@
     vocabularyFactory.factory('vocabularyFactory', function($http, localStorageService) {
         var words = [];
         var usedWords = [];
-        var wordsIds = [];
+        var wordsIds = {};
+        var loadedLessons = [];
         var MAX_IN_SET = 8;
         var CURRENT_WORDS = 1001;
 
 
         function getWords(lesson, learn, native, cb){
-            if(words[lesson]){
-                cb(words[lesson], wordsIds[lesson]);
+            if(loadedLessons.indexOf(lesson) != -1){
+                cb(words, wordsIds);
             } else {
                 if(learn == 'cz'){
                     learn = 'cs';
@@ -26,13 +27,22 @@
                 // >>> not deleted : 1 - show all (not deleted and unaproved)
                 // >>>             0 - NOT show deleted files
                 requestGET($http, '/words/get/'+lesson+'/'+learn+'/'+native+'?fields=link,word%20as%20w&nd=0&type=api',function(data){
+                    data.words.forEach(function(word, idx){
+                        words.unshift(word);
+                        wordsIds[word.link] = word;
+                    });
+
+                    // add to list for control if this lesson already downloaded
+                    loadedLessons.push(lesson);
+
+                    /* old version
                     words[lesson] = data.words;
                     wordsIds[lesson] = {};
                     words[lesson].forEach(function(word){
                         wordsIds[lesson][word.link] = word;
-                    });
+                    }); */
 
-                    cb(words[lesson], wordsIds[lesson]);
+                    cb(words, wordsIds);
                 });
             }
         }
@@ -41,23 +51,22 @@
             var rw = [];
 
             // set first time
-            if(!usedWords[lesson]){
-                usedWords[lesson] = [];
+            if(!usedWords){
+                usedWords = [];
             }
 
             do{
-                var w = words[lesson].shift();
+                var w = words.shift();
 
                 // words empty lets use usedWords again
-                // TODO: implement load next lang
                 if(!w){
-                    w = usedWords[lesson].shift();
-                    words[lesson] = usedWords[lesson];
-                    usedWords[lesson] = [];
+                    w = usedWords.shift();
+                    words = usedWords;
+                    usedWords = [];
                 }
 
                 rw.push(w);
-                usedWords[lesson].push(w);
+                usedWords.push(w);
             } while(rw.length < MAX_IN_SET)
 
             return rw;
