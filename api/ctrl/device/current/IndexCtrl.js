@@ -137,12 +137,20 @@ module.exports = {
             if(err){
                 request.reply(err);
             } else {
-                var result = {};
-                result.scores = JSON.parse(data[0].scores_json);
+                var response = {};
+                response.scores = JSON.parse(data[0].scores_json);
                 if(request.query.score){
-                    result.position = getPossiblePosition(data[0].scores_json, request.query.score)
+                    response.position = getPossiblePosition(data[0].scores_json, request.query.score)
                 }
-                request.reply(result);
+
+                var api = request.query.api;
+
+                if(api && api == 'penguin'){
+                    request.reply({response:response});
+                } else {
+                    request.reply(response);
+                }
+
             }
         }
 

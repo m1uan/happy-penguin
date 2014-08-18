@@ -21,6 +21,17 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','m
             templateUrl: '/templates/penguin/gameover',
             controller: GameOverCtrl
         });
+
+        $routeProvider.when('/train', {
+            templateUrl: '/templates/penguin/train',
+            controller: TrainCtrl
+        });
+
+        $routeProvider.when('/halloffame', {
+            templateUrl: '/templates/penguin/halloffame',
+            controller: HallOfFameCtrl
+        });
+
         $routeProvider.when('/404', {
             templateUrl: '/templates/penguin/404'
         });
@@ -520,8 +531,20 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
 }
 
+function HallOfFameCtrl($scope, worldFactory, $http, $translate){
 
+    var game = worldFactory.game();
+    var stats = worldFactory.getStats();
+    worldFactory.update($scope);
+    var url = 'scores/0/' + game.learn + '/0?api=penguin&score=' + $scope.levelInfo.levelExp;
 
+    requestGET($http, url, function(response, status){
+        $scope.scores = response.scores;
+        console.log(response, status);
+    });
+}
+
+function TrainCtrl($scope, worldFactory, $location, $translate){}
 
 function GameOverCtrl($scope, worldFactory, $location, $translate){
     var stats = worldFactory.getStats();

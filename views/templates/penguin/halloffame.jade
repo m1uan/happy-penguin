@@ -1,0 +1,21 @@
+link(rel='stylesheet', href='/assets/css/penguin/halloffame.css')
+h2(translate="halloffame_title")
+div.halloffame
+    div.scores
+        table.table.table-striped
+            thead
+                tr
+                    th #
+                    th name
+                    th score
+            tbody
+                tr(ng-repeat="score in scores")
+                    td {{$index+1}}
+                    td {{score.name}}
+                    td {{score.score}}
+
+    div.text-center.bottom-panel
+        button(ng-click="backToMap()",translate="btn_back_map").btn.btn-primary
+        button(ng-click="facebook()").btn.btn-xs.btn-primary
+            img(src="/assets/img/penguin/facebook_like_icon_thumb.gif").like-xs
+            span.like-text-xs finish me

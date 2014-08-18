@@ -28,6 +28,10 @@ function func(){
             },langs_get : {
                 auth:false,
                 params : '{params*}'
+            },scores_get : {
+                params : '{params*}'
+            },scoreadd_post : {
+                params : '{params*}'
             }
         }
     }
@@ -48,6 +52,16 @@ function func(){
         levelEngine.langsAndCities(pg, data[0], superResponse(request));
     }
 
+
+    self.scores_get = function(request){
+        var device = require('../device/current/IndexCtrl.js');
+        device.scores_get(request);
+    }
+
+    self.scoreadd_post = function(request){
+        var device = require('../device/current/IndexCtrl.js');
+        device.scoreadd_post(request);
+    }
 
     return self;
 

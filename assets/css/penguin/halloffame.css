@@ -1,0 +1,36 @@
+.halloffame{
+    position: relative;
+    height:100%;
+
+}
+
+
+table {
+    width:100%;
+    margin-top:10px;
+}
+
+
+.bottom-panel {
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    height: 60px;
+    padding:8px;
+    background-color: #313031;
+    opacity: 0.95;
+}
+
+.bottom-panel button {
+    font-weight: bold;
+}
+
+.main-view {
+
+    background-color: white;
+}
+
+.scores {
+    height:420px;
+    overflow-y: scroll;
+}
