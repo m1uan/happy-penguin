@@ -534,6 +534,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 function HallOfFameCtrl($scope, worldFactory, $http, localStorageService,$location,$translate){
 
     var SCORE_NAME_LOCALSTORAGE = 'last-score-name';
+    var SCORE_LEVEL_EXP_LOCALSTORAGE = 'last-score-value';
 
     $scope.game = worldFactory.game();
     var stats = worldFactory.getStats();
@@ -541,12 +542,13 @@ function HallOfFameCtrl($scope, worldFactory, $http, localStorageService,$locati
 
 
     $scope.name = localStorageService.get(SCORE_NAME_LOCALSTORAGE) || '';
+    $scope.last_levelExp = localStorageService.get(SCORE_LEVEL_EXP_LOCALSTORAGE) || 0;
 
 
     var levelExp = $scope.levelInfo.levelExp;
 
     // debug
-    levelExp = 501;
+    //levelExp = 2000;
     var mixdata = {
         correctTotal:stats.correct,
         wrongTotal:stats.wrong,
@@ -580,24 +582,47 @@ function HallOfFameCtrl($scope, worldFactory, $http, localStorageService,$locati
     var url = 'scores/0/' + $scope.game.learn + '/0?api=penguin&score=' + levelExp;
 
     requestGET($http, url, function(response, status){
-        //$scope.scores = response.scores;
-        $scope.position = response.position;
+        // must be last level exp diferent to score
+        // othervise user can update his score every time
+        // when he visit page with scores (and remove the oldier record)
+        if($scope.last_levelExp != levelExp){
+            $scope.position = response.position;
+        }
+
 
 
         $scope.scores = [];
+        var newScoreRow = {
+            score: levelExp,
+            name : null,
+            showinput : true
+        };
         response.scores.forEach(function(score, idx){
+            // if is position of score show edit box
+
             if(idx==$scope.position){
-                $scope.scores.push({
-                    score: levelExp,
-                    name : null,
-                    showinput : true
-                });
+                $scope.scores.push(newScoreRow);
             }
 
             $scope.scores.push(score);
         });
 
+        // add to end of sets
+        if($scope.position == $scope.scores.length){
+            $scope.scores.push(newScoreRow);
+        }
 
+        // scroll down just if is something on the bottom
+        if($scope.position){
+            window.setTimeout(function(){
+                var m = $('#table-with-scores');
+                var top1 = m.find('tr').eq($scope.position).position().top;
+                m.scrollTop(top1);
+            },600);
+        }
+
+
+        //$('#input-for-name-in-table-scores').top;
         console.log(response, status);
     });
 
@@ -621,6 +646,7 @@ function HallOfFameCtrl($scope, worldFactory, $http, localStorageService,$locati
 
         var url = 'scoreadd/0/' + $scope.game.learn + '/0?api=penguin';
         localStorageService.set(SCORE_NAME_LOCALSTORAGE, name);
+        localStorageService.set(SCORE_LEVEL_EXP_LOCALSTORAGE, levelExp);
         mixdata.scoreName = name;
 
         track("halloffame_signin", mixdata);

@@ -29,8 +29,10 @@ function func(){
                 auth:false,
                 params : '{params*}'
             },scores_get : {
+                auth:false,
                 params : '{params*}'
             },scoreadd_post : {
+                auth:false,
                 params : '{params*}'
             }
         }

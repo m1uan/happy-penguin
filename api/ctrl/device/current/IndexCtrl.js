@@ -302,10 +302,7 @@ function addHeightScoreIntoScores(scores_json, heightScore, userName){
         scores_json.forEach(function(score,idx){
 
 
-            if(scores.length <= scores_json.length && idx != outOfDatePos ){
-                // no add last
-                scores.push(score);
-            }
+            // position : #1000
 
             if(idx == pos){
                 scores.push({
@@ -313,6 +310,14 @@ function addHeightScoreIntoScores(scores_json, heightScore, userName){
                     name : userName,
                     time : new Date().getTime()
                 });
+            }
+
+            // fist new hight score
+            // example with used to scores 501 and 401 and new score is 451 ->
+            // if will be on postion #1000 -> new score 451 will be behind 401
+            if(scores.length <= scores_json.length && idx != outOfDatePos ){
+                // no add last
+                scores.push(score);
             }
         })
     } else {

@@ -1,7 +1,7 @@
 link(rel='stylesheet', href='/assets/css/penguin/halloffame.css')
 h2(translate="halloffame_title")
 div.halloffame
-    div.scores
+    div.scores#table-with-scores
         table.table.table-striped
             thead
                 tr
@@ -13,7 +13,7 @@ div.halloffame
                     td {{$index+1}}
                     td(ng-hide="score.showinput") {{score.name}}
                     td(ng-show="score.showinput")
-                        input(ng-model="name",ng-model-options="{getterSetter: true}")
+                        input(ng-model="name",ng-model-options="{getterSetter: true}")#input-for-name-in-table-scores
                         button(translate="btn_save",ng-click="save(name)").btn-sm.btn-primary save
                     td {{score.score}}
                     td
