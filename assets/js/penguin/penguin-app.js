@@ -1,5 +1,5 @@
 "use strict";
-
+var SHOW_EXPERIENCE_POPUP = 'show-experience-popup';
 var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','milan.penguin.factory','milan.world.factory','milan.vocabulary.factory','pascalprecht.translate'],
     function($routeProvider, $locationProvider, $translateProvider) {
         $routeProvider.when('/intro/:page', {
@@ -210,6 +210,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
     var element = $('#world-main');
     var map = null;
     var places;
+
     $scope.mapLoading = true;
     //console.log(element);
 //    element.mousemove(function(evt) {
@@ -236,7 +237,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
     $('.progress .progress-bar').progressbar({use_percentage: false,display_text: 'center'});
 
-
+    showExperiencePopup();
     $scope.showExchange = function(){
 
 
@@ -312,6 +313,8 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
                 }
             }
         });
+
+
     }
 
     function updatePlaces(places){
@@ -331,19 +334,18 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
                     item.appendTo(element);
                     item.click(function(){
 
-                        $(document).off("click").on("click", "#btn_place_visit", function() {
-                            moveToPlace(place);
-                            hideAllPlacePopovers(places);
-                        });
-
-                        hideAllPlacePopovers(places, placeid);
-                        item.popover('show');
+                        showPopupOfPlace(places, place.id);
                     });
+
+
 
 
                     item.popover({trigger:'manual',html:true,title:function(){ return self.generateTitle(place)},content:function(){
                         return self.generateInfo(place);
                     },template:'<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-title"></div><div class="popover-content"></div></div>'});
+
+
+
                 }
 
                 var pos = map.latLngToPoint(place.posx, place.posy);
@@ -357,6 +359,19 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
             });
 
+
+    }
+
+    function showPopupOfPlace(places, id){
+        var placeid = 'placeid_' + id;
+
+        $(document).off("click").on("click", "#btn_place_visit", function() {
+            moveToPlace(place);
+            hideAllPlacePopovers(places);
+        });
+
+        hideAllPlacePopovers(places, placeid);
+        $('#' +placeid).popover('show');
     }
 
     function setupMap(){
@@ -472,6 +487,18 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
     }
 
+    function showExperiencePopup(){
+        // look if user already visit experience page
+        var hide = localStorageService.get(SHOW_EXPERIENCE_POPUP);
+
+        if($scope.levelInfo.levelExp > 0 && !hide){
+            var element = $('#exp_link');
+            var title = $translate.instant('experience-title');
+            var content = $translate.instant('experience-content');
+            element.popover({delay: { show: 3500, hide: 100 }, trigger:'manual', title:title,content:content});
+            element.popover('show');
+        }
+    }
 
 
     jQuery(function(){
@@ -544,6 +571,9 @@ function HallOfFameCtrl($scope, worldFactory, $http, localStorageService,$locati
     $scope.name = localStorageService.get(SCORE_NAME_LOCALSTORAGE) || '';
     $scope.last_levelExp = localStorageService.get(SCORE_LEVEL_EXP_LOCALSTORAGE) || 0;
 
+
+    // the user visited page with score, don't show more
+    localStorageService.set(SHOW_EXPERIENCE_POPUP, 1);
 
     var levelExp = $scope.levelInfo.levelExp;
 

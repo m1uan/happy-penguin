@@ -119,11 +119,18 @@
    position:relative;
     top:-70px;
     background-color: #000000;
-    color:white;
+    color:black;
     padding:4px;
     margin-left:20px;
     margin-right:20px;
 }
+
+#score-bar-1 a span, #score-bar-1 a:visited span {
+    font-weight: bold;
+    color:white;
+}
+
+
 
 #score-bar-reduce-size{
     margin-top: 2px;
