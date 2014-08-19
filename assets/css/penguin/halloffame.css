@@ -34,3 +34,14 @@ table {
     height:420px;
     overflow-y: scroll;
 }
+
+.score-penguin, .score-penguin-small{
+    width: 35px;
+    float:left;
+    margin-left:-12px;
+}
+
+.score-penguin-small {
+    width:20px;
+    margin-left:-8px;
+}

@@ -189,6 +189,7 @@ module.exports = {
         }
 
         function parseScores(request, err, data){
+            var api = request.query.api;
             console.log(err ? err : data);
 
             console.log('scoreadd_post:', data[0].scores_json);
@@ -197,7 +198,11 @@ module.exports = {
                 if(err) {
                     request.reply({err: err});
                 } else {
-                    request.reply({scores: scoresNew});
+                    if(api && api == 'penguin'){
+                        request.reply({response:{scores:scoresNew}});
+                    } else {
+                        request.reply({scores:scoresNew});
+                    }
                 }
 
             });

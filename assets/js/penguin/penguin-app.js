@@ -531,17 +531,105 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
 }
 
-function HallOfFameCtrl($scope, worldFactory, $http, $translate){
+function HallOfFameCtrl($scope, worldFactory, $http, localStorageService,$location,$translate){
 
-    var game = worldFactory.game();
+    var SCORE_NAME_LOCALSTORAGE = 'last-score-name';
+
+    $scope.game = worldFactory.game();
     var stats = worldFactory.getStats();
     worldFactory.update($scope);
-    var url = 'scores/0/' + game.learn + '/0?api=penguin&score=' + $scope.levelInfo.levelExp;
+
+
+    $scope.name = localStorageService.get(SCORE_NAME_LOCALSTORAGE) || '';
+
+
+    var levelExp = $scope.levelInfo.levelExp;
+
+    // debug
+    levelExp = 501;
+    var mixdata = {
+        correctTotal:stats.correct,
+        wrongTotal:stats.wrong,
+        wordsTotal:$scope.wordsTotal,
+        TOTAL:$scope.TOTAL,
+        travelersTotal: $scope.travelersTotal,
+        citiesTotal : $scope.citiesTotal,
+        'placesTotal': stats.placesTotal,
+        'placesUniq' : $scope.game.visited.length,
+        placeId : $scope.game.placeId,
+        lang: $scope.game.lang,
+        learn: $scope.game.learn,
+        'correctInRowScore[0]' : stats.correctInRowScore[0],
+        'correctInRowScore[1]' : stats.correctInRowScore[1],
+        'correctInRowScore[2]' : stats.correctInRowScore[2],
+        'correctInRowScore[3]' : stats.correctInRowScore[3],
+        'correctInRowScore[4]' : stats.correctInRowScore[4],
+        'fastAnswerScore[0]' : stats.fastAnswerScore[0],
+        'fastAnswerScore[1]' : stats.fastAnswerScore[1],
+        'fastAnswerScore[2]' : stats.fastAnswerScore[2],
+        'walkTotal' : stats.walkTotal,
+        'swimTotal' : stats.swimTotal,
+        'flyTotal' : stats.flyTotal,
+        'expTotal' : stats.expTotal,
+        'wordTestTime' : stats.wordTestTime,
+        'levelExp' : levelExp
+    }
+
+    track("halloffame", mixdata);
+
+    var url = 'scores/0/' + $scope.game.learn + '/0?api=penguin&score=' + levelExp;
 
     requestGET($http, url, function(response, status){
-        $scope.scores = response.scores;
+        //$scope.scores = response.scores;
+        $scope.position = response.position;
+
+
+        $scope.scores = [];
+        response.scores.forEach(function(score, idx){
+            if(idx==$scope.position){
+                $scope.scores.push({
+                    score: levelExp,
+                    name : null,
+                    showinput : true
+                });
+            }
+
+            $scope.scores.push(score);
+        });
+
+
         console.log(response, status);
     });
+
+    $scope.backToMap = function(){
+        $location.path('/world');
+    }
+
+    $scope.facebook = function(){
+        facebook($translate, 'fb_share_halloffame', {num: stats.placesTotal, score:$scope.levelInfo.levelExp});
+    }
+
+    $scope.save = function(name){
+
+        // it is going from parameter name
+        // because $scope.name wasn't refesh from input
+
+        if(!name || name == ''){
+            alertify.error($translate.instant('score-name-empty'));
+            return;
+        }
+
+        var url = 'scoreadd/0/' + $scope.game.learn + '/0?api=penguin';
+        localStorageService.set(SCORE_NAME_LOCALSTORAGE, name);
+        mixdata.scoreName = name;
+
+        track("halloffame_signin", mixdata);
+
+        requestPOST($http, url, {score:{score:levelExp,name:name}}, function(response, status){
+            $scope.scores = response.scores;
+            $scope.position = null;
+        });
+    }
 }
 
 function TrainCtrl($scope, worldFactory, $location, $translate){}

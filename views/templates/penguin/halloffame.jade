@@ -11,11 +11,22 @@ div.halloffame
             tbody
                 tr(ng-repeat="score in scores")
                     td {{$index+1}}
-                    td {{score.name}}
+                    td(ng-hide="score.showinput") {{score.name}}
+                    td(ng-show="score.showinput")
+                        input(ng-model="name",ng-model-options="{getterSetter: true}")
+                        button(translate="btn_save",ng-click="save(name)").btn-sm.btn-primary save
                     td {{score.score}}
+                    td
+                        img(src="assets/img/penguin/penguin_3.png",ng-show="score.score>=3000").score-penguin
+                        img(src="assets/img/penguin/penguin_3.png",ng-show="score.score>=2000").score-penguin
+                        //img(src="assets/img/penguin/penguin_3.png",ng-show="score.score>=1500").score-penguin
+                        img(src="assets/img/penguin/penguin_3.png",ng-show="score.score>=1000").score-penguin
+                        img(src="assets/img/penguin/penguin_3.png",ng-show="score.score>=600&&score.score<1000").score-penguin-small
+                        img(src="assets/img/penguin/penguin_3.png",ng-show="score.score>=300&&score.score<1000").score-penguin-small
+                        img(src="assets/img/penguin/penguin_3.png",ng-show="score.score>=175&&score.score<1000").score-penguin-small
 
     div.text-center.bottom-panel
         button(ng-click="backToMap()",translate="btn_back_map").btn.btn-primary
         button(ng-click="facebook()").btn.btn-xs.btn-primary
             img(src="/assets/img/penguin/facebook_like_icon_thumb.gif").like-xs
-            span.like-text-xs finish me
+            span.like-text-xs like me
