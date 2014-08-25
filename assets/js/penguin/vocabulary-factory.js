@@ -239,12 +239,12 @@
             // setup word which is first time
             // used for test words
             if(!word.weight1 || !word.weight2){
-                // the fist set up is 100 because if the user
+                // the fist set up is 5 because if the user
                 // choice "5" the word get weight 1
                 // and in getTrainWords will be fist words
                 // which user dosn't know than new words
-                word.weight1 = 100;
-                word.weight2 = 100;
+                word.weight1 = 5;
+                word.weight2 = 5;
             }
 
             // make desision which side of word have to be test
@@ -335,12 +335,20 @@
 
         }
 
+        /**
+         * NOTE: is not call restoreFactory() so could return false
+         * @returns {boolean}
+         */
+        function isPossibleTrain(){
+            return usedWords.length >= 28;
+        }
 
 
         return {
             getVocabularyRandomSet:getVocabularyRandomSet,
             getTrainWords : getTrainWords,
-            trainNext : trainNext
+            trainNext : trainNext,
+            isPossibleTrain : isPossibleTrain
            };
     });
 }).call(this);

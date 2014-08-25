@@ -1,5 +1,6 @@
 "use strict";
 var SHOW_EXPERIENCE_POPUP = 'show-experience-popup';
+var SHOW_TRAIN_POPUP = 'show-train-popup';
 var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','milan.penguin.factory','milan.world.factory','milan.vocabulary.factory','pascalprecht.translate'],
     function($routeProvider, $locationProvider, $translateProvider) {
         $routeProvider.when('/intro/:page', {
@@ -205,7 +206,7 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
 
 }
 
-function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, $translate) {
+function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, $translate, vocabularyFactory) {
     var self = this;
     var element = $('#world-main');
     var map = null;
@@ -238,6 +239,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
     $('.progress .progress-bar').progressbar({use_percentage: false,display_text: 'center'});
 
     showExperiencePopup();
+    showTrainPopup();
     $scope.showExchange = function(){
 
 
@@ -488,13 +490,29 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
     }
 
     function showExperiencePopup(){
-        // look if user already visit experience page
-        var hide = localStorageService.get(SHOW_EXPERIENCE_POPUP);
+        if($scope.levelInfo.levelExp > 0){
+            showPopup('experience', SHOW_EXPERIENCE_POPUP);
+        }
 
-        if($scope.levelInfo.levelExp > 0 && !hide){
-            var element = $('#exp_link');
-            var title = $translate.instant('experience-title');
-            var content = $translate.instant('experience-content');
+    }
+
+    function showTrainPopup(){
+        // NOTE: it will not work after refresh browser
+        // but when the user will come from visit city should works
+        if(vocabularyFactory.isPossibleTrain()){
+            showPopup('train', SHOW_TRAIN_POPUP);
+        }
+
+    }
+
+    function showPopup(key, storageKey){
+        // look if user already visit experience page
+        var hide = localStorageService.get(storageKey);
+
+        if(!hide){
+            var element = $('#'+key+'_link');
+            var title = $translate.instant(key + '-title');
+            var content = $translate.instant(key + '-content');
             element.popover({delay: { show: 3500, hide: 100 }, trigger:'manual', title:title,content:content});
             element.popover('show');
         }
@@ -690,10 +708,25 @@ function HallOfFameCtrl($scope, worldFactory, $http, localStorageService,$locati
 
 }
 
-function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactory){
+function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactory, localStorageService){
 
 
     var trainWords = vocabularyFactory.getTrainWords();
+
+    // isPossibleTrain have to be call after getTrainWords()
+    // where is call restoreFactory from storage
+    // otherwise after refresh browser the isPossibleTrain could return false!
+    if(!vocabularyFactory.isPossibleTrain()){
+        // is not enought words for practising
+        // show alert message
+        $location.path('/world');
+        var noEnoughtWords = $translate.instant('train-no-enought-words');
+        alertify.alert(noEnoughtWords);
+    } else {
+        // the user visited page with score, don't show more
+        localStorageService.set(SHOW_TRAIN_POPUP, 1);
+    }
+
 
     $scope.maxInList = trainWords.length;
     $scope.current = 1;
@@ -701,15 +734,30 @@ function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactor
     $scope.lastList = [];
 
 
+    track("train", {maxInList: $scope.maxInList});
+
     $scope.nextWord = function(know){
+        track("train-next", {
+            know:know
+            /*maxInList: $scope.maxInList,
+            current: $scope.current,
+            word_id: $scope.testWord.id*/
+        });
+
         // have to be before test word will be changed
         // othervise the user desision will be in next comming word
         vocabularyFactory.trainNext($scope.testWord, know);
+
         // changed test word
         $scope.lastList.unshift($scope.testWord);
         $scope.testWord = trainWords.splice(0, 1)[0];
         $scope.current += 1;
 
+        if($scope.maxInList == $scope.current){
+            track("train-all", {
+                maxInList: $scope.maxInList
+            });
+        }
     }
 
     $scope.backToMap = function(){

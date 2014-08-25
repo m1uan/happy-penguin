@@ -2,7 +2,8 @@ link(rel='stylesheet', href='/assets/css/penguin/train.css')
 div.top-panel.text-center
     b(ng-show="testWord.testSide==0") {{testWord.word.w1}}
     b(ng-show="testWord.testSide==1") {{testWord.word.w2}}
-    span {{testWord.word.weight1}} / {{testWord.word.weight2}}
+    -if(debugPenguin)
+        span {{testWord.word.weight1}} / {{testWord.word.weight2}}
 div.train
     div.last-list
         table.table
@@ -10,7 +11,8 @@ div.train
                 tr(ng-repeat="tw in lastList")
                     td {{tw.word.w1}}
                     td {{tw.word.w2}}
-                    td {{tw.word.weight1}}/{{tw.word.weight2}}
+                    -if(debugPenguin)
+                        td {{tw.word.weight1}}/{{tw.word.weight2}}
     div.text-center.bottom-panel
         div(ng-show="maxInList>current").btn-group
             button(ng-click="nextWord(1)",translate="btn_next_1").btn.btn-success

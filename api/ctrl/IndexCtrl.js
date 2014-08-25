@@ -31,8 +31,8 @@ module.exports = {
     },templates_get : function (request){
         console.log('index view', request.params) ;
         var template = request.params.params;
-
-        request.reply.view('templates/' + template + '.jade', request.user ? {userId:request.user.id, admin:request.user.admin == 1} : null);
+        var configLocal = require(process.cwd() + '/config/local.js');
+        request.reply.view('templates/' + template + '.jade', request.user ? {userId:request.user.id, admin:request.user.admin == 1,debugPenguin:configLocal.debugPenguin} : null);
     }
     ,index_get : function (request){
         var configLocal = require(process.cwd() + '/config/local.js');
