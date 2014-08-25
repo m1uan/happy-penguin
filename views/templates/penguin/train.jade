@@ -1,0 +1,14 @@
+link(rel='stylesheet', href='/assets/css/penguin/train.css')
+h2(translate="train_title")
+div.train
+    div ahoj
+    div(ng-repeat="tw in trainWords")
+        span {{tw.testSide}}
+        span {{tw.word.w1}}
+        span {{tw.word.w2}}
+    div.text-center.bottom-panel
+        div.btn-group
+            button(ng-click="backToMap()",translate="btn_im_sure").btn.btn-success
+            button(ng-click="backToMap()",translate="btn_i_know").btn.btn-warning
+            button(ng-click="backToMap()",translate="btn_i_dont_know").btn.btn-warning
+        button(ng-click="backToMap()",translate="btn_back_map").btn.btn-primary

@@ -688,7 +688,12 @@ function HallOfFameCtrl($scope, worldFactory, $http, localStorageService,$locati
     }
 }
 
-function TrainCtrl($scope, worldFactory, $location, $translate){}
+function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactory){
+
+
+    $scope.trainWords = vocabularyFactory.getTrainWords();
+
+}
 
 function GameOverCtrl($scope, worldFactory, $location, $translate){
     var stats = worldFactory.getStats();

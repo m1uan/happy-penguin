@@ -67,7 +67,8 @@ div
 div#score-bar-1
     div.container.container-fluid
         div.col-md-2
-            b Level {{levelInfo.level}}
+            a(href="#/train",data-placement="top",data-toggle="popover")#train_link
+                span Level {{levelInfo.level}}
         div.col-md-8#score-bar-reduce-size
             div.progress
                 div(role="progressbar",data-transitiongoal="75").progress-bar.progress-bar-success#score-progress-bar
