@@ -491,7 +491,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
     function showExperiencePopup(){
         if($scope.levelInfo.levelExp > 0){
-            showPopup('experience', SHOW_EXPERIENCE_POPUP);
+            showPopup('experience', $translate, SHOW_EXPERIENCE_POPUP, localStorageService, $translate);
         }
 
     }
@@ -500,23 +500,12 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
         // NOTE: it will not work after refresh browser
         // but when the user will come from visit city should works
         if(vocabularyFactory.isPossibleTrain()){
-            showPopup('train', SHOW_TRAIN_POPUP);
+            showPopup('train', $translate, SHOW_TRAIN_POPUP, localStorageService);
         }
 
     }
 
-    function showPopup(key, storageKey){
-        // look if user already visit experience page
-        var hide = localStorageService.get(storageKey);
 
-        if(!hide){
-            var element = $('#'+key+'_link');
-            var title = $translate.instant(key + '-title');
-            var content = $translate.instant(key + '-content');
-            element.popover({delay: { show: 3500, hide: 100 }, trigger:'manual', title:title,content:content});
-            element.popover('show');
-        }
-    }
 
 
     jQuery(function(){
@@ -725,6 +714,7 @@ function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactor
     } else {
         // the user visited page with score, don't show more
         localStorageService.set(SHOW_TRAIN_POPUP, 1);
+        showPopup('train-test-word', $translate);
     }
 
 
@@ -743,6 +733,8 @@ function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactor
             current: $scope.current,
             word_id: $scope.testWord.id*/
         });
+
+        hidePopup('train-test-word');
 
         // have to be before test word will be changed
         // othervise the user desision will be in next comming word
@@ -850,4 +842,27 @@ function facebook($translate, descCode, descData){
             }
         }
     );
+}
+
+function showPopup(key, translate, storageKey, storageService){
+
+    // look if user already visit experience page
+    var hide = false;
+    if(storageKey && storageService){
+        hide =  storageService.get(storageKey);
+    }
+
+
+    if(!hide){
+        var element = $('#'+key+'_link');
+        var title = translate.instant(key + '-title');
+        var content = translate.instant(key + '-content');
+        element.popover({delay: { show: 3500, hide: 100 }, trigger:'manual', title:title,content:content});
+        element.popover('show');
+    }
+}
+
+function hidePopup(key){
+    var element = $('#'+key+'_link');
+    element.popover('hide');
 }
