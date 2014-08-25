@@ -691,7 +691,21 @@ function HallOfFameCtrl($scope, worldFactory, $http, localStorageService,$locati
 function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactory){
 
 
-    $scope.trainWords = vocabularyFactory.getTrainWords();
+    var trainWords = vocabularyFactory.getTrainWords();
+
+    $scope.maxInList = trainWords.length;
+    $scope.current = 1;
+    $scope.testWord = trainWords.splice(0, 1)[0];
+    $scope.lastList = [];
+
+
+    $scope.nextWord = function(know){
+
+        $scope.lastList.unshift($scope.testWord);
+        $scope.testWord = trainWords.splice(0, 1)[0];
+        $scope.current += 1;
+        vocabularyFactory.trainNext($scope.testWord, know);
+    }
 
 }
 

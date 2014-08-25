@@ -13,6 +13,8 @@
         var MAX_IN_SET = 8;
         var CURRENT_WORDS = 1001;
 
+        var MAX_INT = 9007199254740992;
+
         var LOCALSTORAGE_WORDS = 'pinguin.vocabulary.words';
         var LOCALSTOREGE_USED_WORDS = 'pinguin.vocabulary.used-words';
         var LOCALSTOREGE_LOADED_LESSONS = 'pinguin.vocabulary.loaded-lessons';
@@ -204,8 +206,8 @@
         }
 
         function getTrainWords(){
-            var MAX_INT = 9007199254740992;
-            var learningWords = [];
+
+            var trainWords = [];
 
             // if user didn't visit any place
             // -- refresh page and go straight to train --
@@ -214,13 +216,13 @@
 
             usedWords.some(function(word, idx){
                 //if(word.weight1 < MAX_INT || word.weight2 < MAX_INT){
-                    var learnWord = generateTrainWordFromWord(word);
-                    learningWords.push(learnWord);
-                    return learningWords.length == 48;
+                    var trainWord = generateTrainWordFromWord(word);
+                    trainWords.push(trainWord);
+                    return trainWords.length == 48;
                 //}
             })
 
-            learningWords.sort(function(w1,w2){
+            trainWords.sort(function(w1,w2){
                 // detect which weight from which word is taken
                 // if is weightX is not defined setup to 0
                 var ww1 = (w1.testSide == 0 ? w1.weight1 : w1.weigth2) || 0;
@@ -230,7 +232,7 @@
                 return ww1 - ww2;
             });
 
-            return learningWords;
+            return trainWords;
         }
 
         function generateTrainWordFromWord(word){
@@ -244,11 +246,75 @@
             }
         }
 
+        function trainNext(trainWord, know){
+            var word = trainWord.word;
+            var newWeight = 0;
+
+            if(trainWord.testSide == 0){
+                newWeight = word.weight1 || 0;
+            } else {
+                newWeight = word.weight2 || 0;
+            }
+
+            // count new weight
+            if(know == 1){
+                newWeight = MAX_INT;
+            } else if(know == 3){
+                newWeight += 1;
+            } else {
+                newWeight = 0;
+            }
+
+            if(trainWord.testSide == 0){
+                word.weight1 = newWeight;
+                // user before choice "know for sure"
+                // but now from second side he doesn't know so well
+                // reset prev side also for show to him atleast one time more
+                if(word.weight2 == MAX_INT){
+                    word.weight2 -= 1;
+                }
+            } else {
+                word.weight2 = newWeight;
+                // user before choice "know for sure"
+                // but now from second side he doesn't know so well
+                // reset prev side also for show to him atleast one time more
+                if(word.weight1 == MAX_INT){
+                    word.weight1 -= 1;
+                }
+            }
+
+            // remove from usedWords if have both side
+            // MAX_INT -> thats mean user click "know for sure"
+            // on both sides and he know word well
+            // and we don't want present to him this word again
+            // and meake him boring
+            if(word.weight1 == MAX_INT && word.weight2 == MAX_INT){
+                var position = -1;
+                usedWords.some(function(usedWord,idx){
+                    position = idx;
+                    return word.id == usedWord.id;
+                })
+
+                // removed from usedWord because "usedWords"
+                // are used for generate train word list
+                if(position){
+                    usedWords.splice(position,1);
+                }
+            }
+
+
+
+            // store factory for any case
+            storeFactory();
+
+        }
+
 
 
         return {
             getVocabularyRandomSet:getVocabularyRandomSet,
-            getTrainWords : getTrainWords
+            getTrainWords : getTrainWords,
+            trainNext : trainNext
            };
     });
 }).call(this);
