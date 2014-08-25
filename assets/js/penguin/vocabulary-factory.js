@@ -225,8 +225,8 @@
             trainWords.sort(function(w1,w2){
                 // detect which weight from which word is taken
                 // if is weightX is not defined setup to 0
-                var ww1 = (w1.testSide == 0 ? w1.weight1 : w1.weigth2) || 0;
-                var ww2 = (w2.testSide == 0 ? w2.weight1 : w2.weigth2) || 0;
+                var ww1 = (w1.testSide == 0 ? w1.word.weight1 : w1.word.weight2);
+                var ww2 = (w2.testSide == 0 ? w2.word.weight1 : w2.word.weight2);
 
                 // sort ascending (http://www.w3schools.com/jsref/jsref_sort.asp)
                 return ww1 - ww2;
@@ -236,10 +236,28 @@
         }
 
         function generateTrainWordFromWord(word){
+            // setup word which is first time
+            // used for test words
+            if(!word.weight1 || !word.weight2){
+                word.weight1 = 1;
+                word.weight2 = 1;
+            }
+
             // make desision which side of word have to be test
             // if weight1 is less than weight2 -> means user is more sure with weight2
             // so test him from weight1 or opposite
-            var testSide = word.weight1 < word.weight2 ? 0 : 1;
+            var testSide;
+            if(word.weight1 == word.weight2){
+                // random side for words which they have same waight
+                // basicaly words what have not presented user yet
+                testSide = Math.round(Math.random() *100) >= 50 ? 0 : 1;
+            } else if(word.weight1 < word.weight2){
+                // test with w1
+                testSide = 0;
+            } else {
+                //test with w2
+                testSide = 1;
+            }
             return {
                 word : word,
                 testSide : testSide
@@ -248,12 +266,12 @@
 
         function trainNext(trainWord, know){
             var word = trainWord.word;
-            var newWeight = 0;
+            var newWeight = 1;
 
             if(trainWord.testSide == 0){
-                newWeight = word.weight1 || 0;
+                newWeight = word.weight1;
             } else {
-                newWeight = word.weight2 || 0;
+                newWeight = word.weight2;
             }
 
             // count new weight
@@ -262,7 +280,9 @@
             } else if(know == 3){
                 newWeight += 1;
             } else {
-                newWeight = 0;
+                // must be "1" because "0" will let setup word
+                // in function generateTrainWordFromWord
+                newWeight = 1;
             }
 
             if(trainWord.testSide == 0){
@@ -270,17 +290,17 @@
                 // user before choice "know for sure"
                 // but now from second side he doesn't know so well
                 // reset prev side also for show to him atleast one time more
-                if(word.weight2 == MAX_INT){
-                    word.weight2 -= 1;
-                }
+//                if(word.weight2 == MAX_INT){
+//                    word.weight2 -= 1;
+//                }
             } else {
                 word.weight2 = newWeight;
                 // user before choice "know for sure"
                 // but now from second side he doesn't know so well
                 // reset prev side also for show to him atleast one time more
-                if(word.weight1 == MAX_INT){
-                    word.weight1 -= 1;
-                }
+//                if(word.weight1 == MAX_INT){
+//                    word.weight1 -= 1;
+//                }
             }
 
             // remove from usedWords if have both side
@@ -288,16 +308,18 @@
             // on both sides and he know word well
             // and we don't want present to him this word again
             // and meake him boring
-            if(word.weight1 == MAX_INT && word.weight2 == MAX_INT){
+            var a1 = word.weight1 >= MAX_INT;
+            var a2 = word.weight2 >= MAX_INT;
+            if(a1 && a2){
                 var position = -1;
-                usedWords.some(function(usedWord,idx){
+                var found = usedWords.some(function(usedWord,idx){
                     position = idx;
                     return word.id == usedWord.id;
-                })
+                });
 
                 // removed from usedWord because "usedWords"
                 // are used for generate train word list
-                if(position){
+                if(found){
                     usedWords.splice(position,1);
                 }
             }

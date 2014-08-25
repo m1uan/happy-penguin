@@ -21,6 +21,16 @@ table {
     opacity: 0.95;
 }
 
+.top-panel {
+    color:white;
+    width: 100%;
+    height: 60px;
+    padding:8px;
+    background-color: #313031;
+    opacity: 0.95;
+    font-size: 24px;
+}
+
 .bottom-panel button {
     font-weight: bold;
 }
@@ -31,7 +41,7 @@ table {
 }
 
 .last-list {
-    height:420px;
+    height:450px;
     overflow-y: scroll;
 }
 
@@ -44,4 +54,12 @@ table {
 .score-penguin-small {
     width:20px;
     margin-left:-8px;
+}
+
+.display-progress {
+    color:white;
+    font-weight: bold;
+    font-size: 20px;
+    margin:10px;
+
 }

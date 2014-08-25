@@ -334,7 +334,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
                     item.appendTo(element);
                     item.click(function(){
 
-                        showPopupOfPlace(places, place.id);
+                        showPopupOfPlace(places, place);
                     });
 
 
@@ -362,8 +362,8 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
     }
 
-    function showPopupOfPlace(places, id){
-        var placeid = 'placeid_' + id;
+    function showPopupOfPlace(places, place){
+        var placeid = 'placeid_' + place.id;
 
         $(document).off("click").on("click", "#btn_place_visit", function() {
             moveToPlace(place);
@@ -686,6 +686,8 @@ function HallOfFameCtrl($scope, worldFactory, $http, localStorageService,$locati
             $scope.position = null;
         });
     }
+
+
 }
 
 function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactory){
@@ -700,11 +702,18 @@ function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactor
 
 
     $scope.nextWord = function(know){
-
+        // have to be before test word will be changed
+        // othervise the user desision will be in next comming word
+        vocabularyFactory.trainNext($scope.testWord, know);
+        // changed test word
         $scope.lastList.unshift($scope.testWord);
         $scope.testWord = trainWords.splice(0, 1)[0];
         $scope.current += 1;
-        vocabularyFactory.trainNext($scope.testWord, know);
+
+    }
+
+    $scope.backToMap = function(){
+        $location.path('/world');
     }
 
 }

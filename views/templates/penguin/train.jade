@@ -1,16 +1,21 @@
 link(rel='stylesheet', href='/assets/css/penguin/train.css')
-h2
-    span {{testWord.word.w1}}
-    span {{maxInList}}/{{current}}
-div.train.last-list
-    table.table
-        tbody
-            tr(ng-repeat="tw in lastList")
-                td {{tw.word.w1}}
-                td {{tw.word.w2}}
+div.top-panel.text-center
+    b(ng-show="testWord.testSide==0") {{testWord.word.w1}}
+    b(ng-show="testWord.testSide==1") {{testWord.word.w2}}
+    span {{testWord.word.weight1}} / {{testWord.word.weight2}}
+div.train
+    div.last-list
+        table.table
+            tbody
+                tr(ng-repeat="tw in lastList")
+                    td {{tw.word.w1}}
+                    td {{tw.word.w2}}
+                    td {{tw.word.weight1}}/{{tw.word.weight2}}
     div.text-center.bottom-panel
-        div.btn-group
+        div(ng-show="maxInList>current").btn-group
             button(ng-click="nextWord(1)",translate="btn_next_1").btn.btn-success
             button(ng-click="nextWord(3)",translate="btn_next_3").btn.btn-warning
-            button(ng-click="nextWord(5)",translate="btn_next_5").btn.btn-warning
-        button(ng-click="backToMap()",translate="btn_back_map").btn.btn-primary
+            button(ng-click="nextWord(5)",translate="btn_next_5").btn.btn-danger
+            span.display-progress {{current}}/{{maxInList}}
+        // show back button when all words are answered
+        button(ng-click="backToMap()",translate="btn_back_map",ng-hide="maxInList>current").btn.btn-primary
