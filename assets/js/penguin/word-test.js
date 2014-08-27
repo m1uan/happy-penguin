@@ -127,6 +127,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     function showConclusion(){
         var game = worldFactory.game();
+
+
         $scope.part = 4;
         $scope.score.walk = Math.round(($scope.correctTotal)/4);
         $scope.correctCoins = Math.round(($scope.correctTotal)/4);
@@ -204,6 +206,12 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         }
 
         track("conclusion", mixdata);
+
+        // without timeout is pointed somewhere else than on the button
+        window.setTimeout(function(){
+            showPopup('score-fb', $translate);
+        },1500 );
+
     }
 
     function startVocabularyTest(){
