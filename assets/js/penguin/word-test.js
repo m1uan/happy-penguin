@@ -12,10 +12,12 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     $scope.correctInRow = 0;
     if(DEBUG_PENGUIN){
-        GAME_TIME = 20;
-        $scope.correctTotal = 30;
+        GAME_TIME = 40;
+        $scope.correctTotal = 0;
         $scope.correctInRowScore = [1,1,1,1,1];
         $scope.fastAnswerScore = [1,1,1];
+        //$scope.correctInRowScore = [0,0,0,0,0];
+        //$scope.fastAnswerScore = [0,0,0];
     } else {
         $scope.correctTotal = 0;
         $scope.correctInRowScore = [0,0,0,0,0];
@@ -56,11 +58,11 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         //showIntroduction();
         //showConclusion();
         if(DEBUG_PENGUIN){
-            showIntroductionOrStartVocabularyTest();
+            //showIntroductionOrStartVocabularyTest();
             //showIntroduction();
             //startVocabularyTest();
             //showIntroduction();
-            //showConclusion();
+            showConclusion();
             //showQuestion();
         } else {
             // **** DONT CHANGE HERE ****
@@ -125,19 +127,35 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         var game = worldFactory.game();
         $scope.part = 4;
         $scope.score.walk = Math.round(($scope.correctTotal)/4);
-        $scope.score.swim = Math.round(
+        $scope.correctCoins = Math.round(($scope.correctTotal)/4);
+
+        $scope.correctInRowCoins = [0,0,0,0,0];
+        $scope.correctInRowCoins[0] = Math.floor($scope.correctInRowScore[0] / 2);
+        $scope.correctInRowCoins[1] = Math.round($scope.correctInRowScore[1]);
+        $scope.correctInRowCoins[2] = Math.floor($scope.correctInRowScore[2]*3);
+        $scope.correctInRowCoins[3] = Math.floor($scope.correctInRowScore[3]*7);
+        $scope.correctInRowCoins[4] = Math.round($scope.correctInRowScore[4]*15);
+        /*$scope.score.swim = Math.round(
             $scope.correctInRowScore[0]/3
                 +  $scope.correctInRowScore[1]/2
                 +  $scope.correctInRowScore[2]
                 +  $scope.correctInRowScore[3]*2.5
-                +  $scope.correctInRowScore[4]*5.5);
+                +  $scope.correctInRowScore[4]*5.5);*/
 
-        $scope.score.fly = Math.round(
+        $scope.fastAnswerCoins = [0,0,0];
+        $scope.fastAnswerCoins[0] = Math.floor($scope.fastAnswerScore[0] / 2);
+        $scope.fastAnswerCoins[1] = Math.round($scope.fastAnswerScore[1]);
+        $scope.fastAnswerCoins[2] = Math.floor($scope.fastAnswerScore[2]*3);
+
+        /*$scope.score.fly = Math.round(
             $scope.fastAnswerScore[0] / 6
                 + $scope.fastAnswerScore[1] /5
-                + $scope.fastAnswerScore[2] /4);
+                + $scope.fastAnswerScore[2] /4);*/
 
-        $scope.score.exp = Math.round(Math.floor($scope.user_answered/2) * 2 + $scope.first_time_visit);
+        $scope.score.exp = Math.round(Math.floor($scope.user_answered) * 2 + $scope.first_time_visit);
+
+        $scope.totalCoins = $scope.correctCoins;
+
 
         var stats = worldFactory.getStats();
         stats.correct += $scope.correctTotal;
@@ -146,14 +164,19 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         stats.swimTotal += $scope.score.swim;
         stats.flyTotal += $scope.score.fly;
         stats.expTotal += $scope.score.exp;
+        stats.coinTotal += $scope.score.coin;
         stats.user_answered += Math.floor($scope.user_answered/2);
 
         $scope.correctInRowScore.forEach(function(cirs, idx){
             stats.correctInRowScore[idx] += cirs;
+            //stats.correctInRowCoins[idx] += $scope.correctInRowCoins[idx];
+            $scope.totalCoins += $scope.correctInRowCoins[idx];
         });
 
         $scope.fastAnswerScore.forEach(function(fas, idx){
             stats.fastAnswerScore[idx] += fas;
+            //stats.fastAnswerCoins[idx] += $scope.fastAnswerCoins[idx];
+            $scope.totalCoins += $scope.fastAnswerCoins[idx];
         });
 
         var mixdata = {
@@ -167,10 +190,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             'fastAnswerScore[0]' : $scope.fastAnswerScore[0],
             'fastAnswerScore[1]' : $scope.fastAnswerScore[1],
             'fastAnswerScore[2]' : $scope.fastAnswerScore[2],
-            'score.walk' : $scope.score.walk,
-            'score.swim' : $scope.score.swim,
-            'score.fly' : $scope.score.fly,
-            'score.exp' : $scope.score.exp,
+            'coins' : $scope.totalCoins,
             'wordTestTime' : stats.wordTestTime,
             travelersTotal: $scope.travelersTotal,
             citiesTotal : $scope.citiesTotal,

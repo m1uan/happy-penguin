@@ -37,6 +37,8 @@
                     wrong : 0,
                     correctInRowScore : [0,0,0,0,0],
                     fastAnswerScore : [0,0,0],
+                    correctInRowCoins : [0,0,0,0,0],
+                    fastAnswerCoins : [0,0,0],
                     questionsAnswer : 0,
                     walkTotal : 0,
                     swimTotal :0,
@@ -180,7 +182,7 @@
                 var yd = gamePlace.posy - place.posy;
                 var distance = Math.sqrt((xd*xd)+(yd*yd));
                 place.superDistance = Math.round(distance);
-
+                place.coin = place.superDistance;
                 place.fly = Math.floor(place.superDistance / 9);
                 place.swim = Math.floor((place.superDistance - (place.fly*6)) / 3);
                 place.walk = (place.superDistance - (place.fly*5) - (place.swim*2));

@@ -1,5 +1,6 @@
 .wordtest {
     padding:10px;
+
 }
 
 
@@ -34,7 +35,12 @@ td {
 }
 
 td:first-child{
-    width:95%;
+    width:5%;
+}
+
+td:last-child{
+    width:5%;
+    text-align: right;
 }
 
 td i {
@@ -46,17 +52,35 @@ td b {
     color:darkblue;
 }
 
-tr:first-child{
+/*tr:first-child{
     border-bottom-color: white;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}*/
+.separe-table {
+    margin: 4px;
+    border-bottom-color: black;
     border-bottom-width: 1px;
     border-bottom-style: solid;
 }
 
 table {
     width:100%;
-    margin-bottom:10px;
+    padding:10px;
+
 }
 
 h2 {
     text-align: center;
+}
+
+.wordtest-score {
+    position: relative;
+    height:100%;
+}
+
+.bottom-panel {
+    bottom: 0px;
+}
+.wordtest-score h2 {
 }
