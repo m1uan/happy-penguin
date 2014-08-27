@@ -158,7 +158,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         $scope.score.exp = Math.round(Math.floor($scope.user_answered) * 2 + $scope.first_time_visit);
 
-        $scope.totalCoins = $scope.correctCoins + $scope.facebookExtra;
+        $scope.score.totalCoins = $scope.correctCoins + $scope.facebookExtra;
 
 
         var stats = worldFactory.getStats();
@@ -174,13 +174,13 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         $scope.correctInRowScore.forEach(function(cirs, idx){
             stats.correctInRowScore[idx] += cirs;
             //stats.correctInRowCoins[idx] += $scope.correctInRowCoins[idx];
-            $scope.totalCoins += $scope.correctInRowCoins[idx];
+            $scope.score.totalCoins += $scope.correctInRowCoins[idx];
         });
 
         $scope.fastAnswerScore.forEach(function(fas, idx){
             stats.fastAnswerScore[idx] += fas;
             //stats.fastAnswerCoins[idx] += $scope.fastAnswerCoins[idx];
-            $scope.totalCoins += $scope.fastAnswerCoins[idx];
+            $scope.score.totalCoins += $scope.fastAnswerCoins[idx];
         });
 
         var mixdata = {
@@ -507,7 +507,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
 
         facebook($translate, 'fb_share_score', descData, function(){
-            $scope.facebookExtra = 10;
+            $scope.facebookExtra = 25;
             showConclusion();
         });
     }

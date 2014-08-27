@@ -293,7 +293,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
             //+ '<span class="popover-title-resources-info">' + place.swim + 'x</span>'
             //+ '<img src="/assets/img/penguin/ic_swim.png" class="resource_icon"/>'
 
-            + '<span class="popover-title-resources-info">' + place.coin + 'x</span>'
+            + '<span class="popover-title-resources-info">' + place.coins + 'x</span>'
             + '<img src="/assets/img/penguin/ic_fly.png" class="resource_icon"/></span>'
             + '</span>';
 
@@ -431,17 +431,11 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
 
     function moveToPlace(place){
-        $location.path('/wordstest/'+place.id);
-        var what = '';
-        if(worldFactory.game().fly < place.fly){
-            what = $translate.instant('fly');
-            $('#game_resources_fly').css({color:'red'});
-        } else if(worldFactory.game().swim < place.swim){
-            what = $translate.instant('swim');
-            $('#game_resources_swim').css({color:'red'});
-        } else if(worldFactory.game().walk < place.walk){
-            $('#game_resources_walk').css({color:'red'});
+        if(worldFactory.game().coins < place.coins){
+            $('#game_resources_golds').css({color:'red'});
+            alertify.error($translate.instant('not_enought', {have:worldFactory.game().coins, need: place.coins}));
         } else {
+            $location.path('/wordstest/'+place.id);
             $scope.$apply(function(){
 
 
@@ -456,10 +450,6 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
             })
             track("Place", {placeId: place.id});
-        }
-
-        if(what){
-            alertify.error($translate.instant('not_enought', {have:worldFactory.game().walk, need: place.walk, what: what}));
         }
     }
 

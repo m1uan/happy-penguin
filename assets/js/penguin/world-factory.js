@@ -4,7 +4,7 @@
     var penguinGame = angular.module('milan.world.factory', ['penguin.LocalStorageService']);
 
     penguinGame.factory('worldFactory', function($http, localStorageService) {
-        var BASE = DEBUG_PENGUIN ? 300 : 3;
+        var BASE = DEBUG_PENGUIN ? 100 : 10;
         var self = this;
         self.game = null;
 
@@ -23,10 +23,7 @@
 
         function _createNewGame(){
             self.game = {
-                walk :BASE,
-                swim :BASE,
-                fly : BASE,
-                exp : BASE,
+                coins: BASE,
                 learn:learn,
                 native: native,
                 placeId : 1,
@@ -69,10 +66,11 @@
                 _game();
             }
 
-            scope.fly = self.game.fly;
-            scope.walk = self.game.walk;
-            scope.swim = self.game.swim;
-            scope.exp = self.game.exp;
+            scope.coins = self.game.coins;
+//            scope.fly = self.game.fly;
+//            scope.walk = self.game.walk;
+//            scope.swim = self.game.swim;
+//            scope.exp = self.game.exp;
 
             scope.levelInfo = _calcLevelInfo();
             _store();
@@ -112,11 +110,11 @@
         }
 
         function _place(place){
-            self.game.fly -= place.fly;
-            self.game.swim -= place.swim;
-            self.game.walk -= place.walk;
+            self.game.coins -= place.coins;
+//            self.game.fly -= place.fly;
+//            self.game.swim -= place.swim;
+//            self.game.walk -= place.walk;
 
-            // TODO : dont add when already in list
             if(self.game.visited.indexOf(self.game.placeId) == -1){
                 self.game.visited.push(self.game.placeId);
             }
@@ -129,10 +127,7 @@
         }
 
         function _addScore(score){
-            self.game.fly += score.fly;
-            self.game.swim += score.swim;
-            self.game.walk += score.walk;
-            self.game.exp += score.exp;
+            self.game.coins += score.totalCoins;
 
             // maybe useles
             self.game.lastScore = score;
@@ -182,10 +177,10 @@
                 var yd = gamePlace.posy - place.posy;
                 var distance = Math.sqrt((xd*xd)+(yd*yd));
                 place.superDistance = Math.round(distance);
-                place.coin = place.superDistance;
-                place.fly = Math.floor(place.superDistance / 9);
-                place.swim = Math.floor((place.superDistance - (place.fly*6)) / 3);
-                place.walk = (place.superDistance - (place.fly*5) - (place.swim*2));
+                place.coins = place.superDistance;
+                //place.fly = Math.floor(place.superDistance / 9);
+                //place.swim = Math.floor((place.superDistance - (place.fly*6)) / 3);
+                //place.walk = (place.superDistance - (place.fly*5) - (place.swim*2));
             });
 
         }
@@ -193,11 +188,7 @@
 
         function testEndGame(){
             var canPlay = placesInWorld.some(function(place){
-                if(place.id != self.game.placeId &&  place.fly <= self.game.fly && place.swim <= self.game.swim && place.walk <= self.game.walk){
-                    return true;
-                } else {
-                    return false;
-                }
+                return(place.id != self.game.placeId &&  place.coins <= self.game.coins);
             });
 
             return canPlay;
