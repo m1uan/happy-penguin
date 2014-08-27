@@ -821,7 +821,7 @@ function GameOverCtrl($scope, worldFactory, $location, $translate){
 }
 
 
-function facebook($translate, descCode, descData){
+function facebook($translate, descCode, descData, callbackSuccess){
     track(descCode);
     descData = descData || {};
 
@@ -839,6 +839,10 @@ function facebook($translate, descCode, descData){
         function(response) {
             if (response && response.post_id) {
                 track(descCode + '_published');
+                if(callbackSuccess){
+                    callbackSuccess();
+                }
+
             } else {
                 track(descCode + '_notp');
             }

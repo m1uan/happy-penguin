@@ -10,6 +10,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.correct = 100;
     $scope.user_answer = '';
 
+    $scope.facebookExtra = 0;
+
     $scope.correctInRow = 0;
     if(DEBUG_PENGUIN){
         GAME_TIME = 40;
@@ -58,11 +60,11 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         //showIntroduction();
         //showConclusion();
         if(DEBUG_PENGUIN){
-            //showIntroductionOrStartVocabularyTest();
+            showIntroductionOrStartVocabularyTest();
             //showIntroduction();
             //startVocabularyTest();
             //showIntroduction();
-            showConclusion();
+            //showConclusion();
             //showQuestion();
         } else {
             // **** DONT CHANGE HERE ****
@@ -143,9 +145,9 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
                 +  $scope.correctInRowScore[4]*5.5);*/
 
         $scope.fastAnswerCoins = [0,0,0];
-        $scope.fastAnswerCoins[0] = Math.floor($scope.fastAnswerScore[0] / 2);
+        $scope.fastAnswerCoins[0] = Math.floor($scope.fastAnswerScore[0] *3);
         $scope.fastAnswerCoins[1] = Math.round($scope.fastAnswerScore[1]);
-        $scope.fastAnswerCoins[2] = Math.floor($scope.fastAnswerScore[2]*3);
+        $scope.fastAnswerCoins[2] = Math.floor($scope.fastAnswerScore[2] /3);
 
         /*$scope.score.fly = Math.round(
             $scope.fastAnswerScore[0] / 6
@@ -154,7 +156,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         $scope.score.exp = Math.round(Math.floor($scope.user_answered) * 2 + $scope.first_time_visit);
 
-        $scope.totalCoins = $scope.correctCoins;
+        $scope.totalCoins = $scope.correctCoins + $scope.facebookExtra;
 
 
         var stats = worldFactory.getStats();
@@ -296,16 +298,16 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         var diff = time - lastAnswer;
         var name = 0;
         if(diff < 1500){
-            name = 3;
+            name = 1;
         }else if(diff < 2000){
             name = 2;
         } else if(diff < 2500){
-            name = 1;
+            name = 3;
         }
 
         if(name){
             $scope.fastAnswerScore[name-1] += 1;
-            var ins = $translate.instant('correct_fast' + {fast:name});
+            var ins = $translate.instant('correct_fast', {fast:name});
             alertify.success(ins);
         }
 
@@ -493,11 +495,12 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.facebook = function(){
         var descData =  {
             name:$scope.place.name,
-            walk:$scope.score.walk,
-            swim:$scope.score.swim,
-            fly : $scope.score.fly};
+            coins : $scope.totalCoins};
 
 
-        facebook($translate, 'fb_share_score', descData);
+        facebook($translate, 'fb_share_score', descData, function(){
+            $scope.facebookExtra = 10;
+            showConclusion();
+        });
     }
 }

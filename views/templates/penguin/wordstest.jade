@@ -135,10 +135,15 @@ div(ng-show="part==4").wordtest-score
                 td(translate="score_num_of_correct_answers")
                 //td {{user_answered}}
                 td {{user_answered}}
+            tr
+                td
+                td(translate="score_social_share")
+                //td {{user_answered}}
+                td {{facebookExtra}}
     table
         tr
             td
-                img(src="/assets/img/penguin/ic_walk.png").intro_resource_icon
+                img(src="/assets/img/penguin/ic_coins.png").intro_resource_icon
             td
             td
                 b {{totalCoins}}
