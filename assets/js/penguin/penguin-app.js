@@ -229,6 +229,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
 
 
+
     worldFactory.update($scope);
 
     $('#score-progress-bar')
@@ -238,8 +239,10 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
     $('.progress .progress-bar').progressbar({use_percentage: false,display_text: 'center'});
 
+    showGoldPopup();
     showExperiencePopup();
     showTrainPopup();
+
     $scope.showExchange = function(){
 
 
@@ -294,7 +297,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
             //+ '<img src="/assets/img/penguin/ic_swim.png" class="resource_icon"/>'
 
             + '<span class="popover-title-resources-info">' + place.coins + 'x</span>'
-            + '<img src="/assets/img/penguin/ic_fly.png" class="resource_icon"/></span>'
+            + '<img src="/assets/img/penguin/ic_golds.png" class="resource_icon"/></span>'
             + '</span>';
 
         return title;
@@ -317,7 +320,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
                 }
             }
         });
-
+        $('#game_resources').popover('hide');
 
     }
 
@@ -481,6 +484,52 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
     }
 
+    function showGoldPopup(){
+        // timeout because without that the popup is initialize before is DOM ready
+        // TODO: have to be a better way
+        window.setTimeout(function(){
+            var element = $('#game_resources');
+            var title = $translate.instant('golds');
+            var content = $translate.instant('golds-potup-content');
+            element.popover({title:title,content:content, trigger:'click'});
+
+            // don't do rest if are already visited some places
+            // the user already know how the game works
+            if(!worldFactory.game() || !worldFactory.game().visited || worldFactory.game().visited.length > 0){
+                return;
+            }
+
+            // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            //    only for user who visit page first time
+            //element.popover('show');
+
+
+            element.on('show.bs.popover', function () {
+                //hideAllPlacePopovers(places);
+            })
+
+            // jQuery too much recursion
+            // when is call showPopupOfPlace is also hideAllPlacePopovers what also call
+            // hidden.bs.popover -> so for disable recursion disable that
+            var show = false;
+            //element.on('hidden.bs.popover', function () {
+                if(!show){
+                    show = true;
+                    places.some(function(place){
+                        // find prague and show pottup
+                        if(place.id == 2){
+                            showPopupOfPlace(places, place);
+                            return true;
+                        }
+
+                    });
+                }
+
+            //});
+
+        },5000);
+    }
+
     function showExperiencePopup(){
         if($scope.levelInfo.levelExp > 0){
             showPopup('experience', $translate, SHOW_EXPERIENCE_POPUP, localStorageService, $translate);
@@ -494,7 +543,6 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
         if(vocabularyFactory.isPossibleTrain()){
             showPopup('train', $translate, SHOW_TRAIN_POPUP, localStorageService);
         }
-
     }
 
 
