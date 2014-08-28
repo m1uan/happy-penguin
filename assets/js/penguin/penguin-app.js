@@ -794,6 +794,7 @@ function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactor
 
     $scope.backToMap = function(){
         $location.path('/world');
+        worldFactory.addScore({totalCoins:10});
     }
 
 }

@@ -218,7 +218,7 @@
                 //if(word.weight1 < MAX_INT || word.weight2 < MAX_INT){
                     var trainWord = generateTrainWordFromWord(word);
                     trainWords.push(trainWord);
-                    return trainWords.length == 48;
+                    return trainWords.length == 28;
                 //}
             })
 
