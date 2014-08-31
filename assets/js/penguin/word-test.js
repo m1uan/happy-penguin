@@ -158,7 +158,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         $scope.score.exp = Math.round(Math.floor($scope.user_answered) * 2 + $scope.first_time_visit);
 
-        $scope.score.totalCoins = $scope.correctCoins + $scope.facebookExtra;
+        $scope.score.totalCoins = $scope.correctCoins + $scope.facebookExtra + $scope.user_answered * 2 + $scope.first_time_visit;
 
 
         var stats = worldFactory.getStats();
@@ -506,9 +506,14 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             coins : $scope.totalCoins};
 
 
-        facebook($translate, 'fb_share_score', descData, function(){
-            $scope.facebookExtra = 25;
-            showConclusion();
+        facebook($translate, 'fb_share_score', descData, function(e){
+            $scope.apply(function(){
+                $scope.facebookExtra = 25;
+                showConclusion();
+            })
+            var infostr = $translate.instant('score_fb_share_info', {golds: $scope.facebookExtra});
+            alertify.success(infostr);
+
         });
     }
 }
