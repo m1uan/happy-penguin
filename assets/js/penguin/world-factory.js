@@ -203,7 +203,7 @@
                 return ;
             }
 
-            var url ='get/'+placeid+'/'+self.game.learn+'/'+self.game.native+'/?fields=id,name,info&qfields=qid,question,answers&ifields=iid,image';
+            var url ='get/'+placeid+'/'+self.game.learn+'/'+self.game.native+'/?fields=id,name,info&qfields=qid,question,answers,type&ifields=iid,image';
             requestGET($http, url, function(response, status){
 
                 placesForVocabularyTest[placeid] = response;

@@ -38,6 +38,8 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
     var self = {};
     self.id = $routeParams.id;
 
+    $scope.add_question_type = 0;
+
     dragImage($('#uploader'), $('#uploader'), $('#uploader'), self.id, {UPLOAD_URL:'uploadimg/',UPLOADURL_URL:'saveimgurl/', callback : function(err, data){
         if(err){
             alert(err.responseText);
@@ -106,7 +108,7 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
     }
 
 
-    var url ='get/'+self.id+'?fields=id,name,info,posx,posy,preview_iid&qfields=qid,question,answers&ifields=iid,image';
+    var url ='get/'+self.id+'?fields=id,name,info,posx,posy,preview_iid&qfields=qid,question,answers,type&ifields=iid,image';
 
     requestGET($http, url, function(response, status){
         console.log(response);
@@ -130,11 +132,13 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
         var dataConteiner = {
             place_id: self.id,
             question: $scope.add_question,
-            answers: $scope.add_answers}
+            answers: $scope.add_answers,
+            type: $scope.add_question_type}
         requestPOST($http, 'qadd/',dataConteiner, function(response, status){
             console.log(response);
             $scope.add_question = '';
             $scope.add_answers = '';
+            $scope.add_question_type = 0;
             $scope.questions.push(response);
         });
     }
@@ -143,12 +147,14 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
         var dataConteiner = {
             qid: question.qid,
             question: question.question,
-            answers: question.answers};
+            answers: question.answers,
+            type: question.type};
 
         requestPOST($http, 'qupdate/',dataConteiner, function(response, status){
             console.log(response);
             question.question = response.question;
             question.answers = response.answers;
+            question.type = response.type;
         });
     }
 

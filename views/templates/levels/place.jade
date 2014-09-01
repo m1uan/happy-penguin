@@ -15,15 +15,25 @@ div#uploader
         span(ng-click="deleteInfo()").btn.btn-danger remove text
 
         hr
-        div(ng-repeat="question in questions")#questions
-            input(ng-model="question.question")
-            input(ng-model="question.answers")
+        div(ng-repeat="question in questions").input-group#questions
+            input(ng-model="question.question").input-sm
+            input(ng-model="question.answers").input-sm
+            select(ng-model="question.type").input-sm
+                option(value="0") Translate
+                option(value="1") Question
+                option(value="2") Answer
+
+
             button(ng-click="qUpdate(question)").btn.btn-danger update
             button(ng-click="qDelete(question, $index)").btn.btn-danger delete
 
         p add questions
-        input(ng-model="add_question")
-        input(ng-model="add_answers")
+        input(ng-model="add_question").input-sm
+        input(ng-model="add_answers").input-sm
+        select(ng-model="add_question_type").input-sm
+            option(value="0",selected="selected") Translate
+            option(value="1") Question
+            option(value="2") Answer
         button(ng-click="qAdd()").btn.btn-primary add
 
 

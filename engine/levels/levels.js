@@ -227,6 +227,11 @@ module.exports = {
         }
 
 
+        if(!dataContainer.type){
+            dataContainer.type = 0;
+        }
+
+
         var parallel = [];
         var watter = [];
 
@@ -257,9 +262,9 @@ module.exports = {
 
         // update question with answer and question
         watter.push(function(qa, icb){
-            var sql = 'INSERT INTO pinguin.question_t (place_id,question,answers) VALUES ($1,$2,$3) RETURNING qid';
+            var sql = 'INSERT INTO pinguin.question_t (place_id,question,answers,type) VALUES ($1,$2,$3,$4) RETURNING qid';
 
-            pg.query(sql, [dataContainer.place_id, qa[0].link, qa[1].link], icb);
+            pg.query(sql, [dataContainer.place_id, qa[0].link, qa[1].link, dataContainer.type], icb);
         });
 
         // select the result
@@ -269,7 +274,8 @@ module.exports = {
                 'place_id',
                 'ttq.data as question',
                 'tta.data as answers',
-                'ttq.link as link_question'
+                'ttq.link as link_question',
+                'pq.type as type'
             ]
 
             var SQL = SL.SqlLib('pinguin.question_t as pq', fields);
@@ -294,6 +300,10 @@ module.exports = {
         if(!dataContainer.answers){
             cb('answers text missing');
             return;
+        }
+
+        if(!dataContainer.type){
+            dataContainer.type = 0;
         }
 
         var watter = [];
@@ -327,6 +337,16 @@ module.exports = {
                 updateDescAndTranslate(pg, answersContainer, icb2)
             });
 
+            parallel.push(function(icb2){
+                var questionContainer = {
+                    type:dataContainer.type
+                };
+
+                var SQL = SL.SqlLib('pinguin.question_t');
+                SQL.whereAnd('qid=' + dataContainer.qid);
+                SQL.update(pg, questionContainer, icb2);
+            });
+
             async.parallel(parallel, icb);
         });
 
@@ -338,7 +358,8 @@ module.exports = {
                 question = {
                     question: updated[0].data,
                     answers: updated[1].data,
-                    qid:dataContainer.qid
+                    qid:dataContainer.qid,
+                    type : dataContainer.type
                 }
             }
 
@@ -380,6 +401,11 @@ module.exports = {
         var indexOfAnswers = fields.indexOf('answers');
         if(indexOfAnswers > -1){
             fields[indexOfAnswers] = 'tta.data as answers';
+        }
+
+        var indexOfType = fields.indexOf('type');
+        if(indexOfType > -1){
+            fields[indexOfType] = 'pq.type as type';
         }
 
         var SQL = SL.SqlLib('pinguin.question_t as pq', fields);
