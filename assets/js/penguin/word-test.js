@@ -27,7 +27,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
 
-
+    var game = worldFactory.game();
 
     $scope.wrong = 0;
     $scope.timer = GAME_TIME;
@@ -60,12 +60,12 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         //showIntroduction();
         //showConclusion();
         if(DEBUG_PENGUIN){
-            showIntroductionOrStartVocabularyTest();
+            //showIntroductionOrStartVocabularyTest();
             //showIntroduction();
             //startVocabularyTest();
             //showIntroduction();
             //showConclusion();
-            //showQuestion();
+            showQuestion();
         } else {
             // **** DONT CHANGE HERE ****
             showIntroductionOrStartVocabularyTest();
@@ -74,6 +74,21 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         $scope.wordsLoading = false;
 
     });
+
+    function loadExamplesForQuestion(type){
+
+        // examples for question
+        requestGET($http, '/admin/translates/get/'+game.learn+'/11/?group=1002&type=api&fields=key,data', function(data){
+            var lookKey = 'example_answer_' + type;
+            data.trans.some(function(trans){
+                if(trans.key == lookKey){
+                    $scope.example = trans.data;
+                    return true;
+                }
+            });
+
+        });
+    }
 
     /**
      * have to be call after place loaded
@@ -96,12 +111,16 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
                 if(answers){
                     $scope.questionText = $scope.place.questions[pos].question;
                     $scope.questionAnswers = answers.split(';');
+                    $scope.questionType = $scope.place.questions[pos].type;
+
                 }
                 // could happend the quesiton is not translanted
                 // like above (because is not translated to player-native-language)
                 // generate random question till you reach the question
                 // with question-text and questionAnswers
             } while(!$scope.questionText || !$scope.questionAnswers);
+
+            loadExamplesForQuestion($scope.questionType);
         } else {
             showConclusion();
         }
@@ -126,7 +145,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
     function showConclusion(){
-        var game = worldFactory.game();
+
 
 
         $scope.part = 4;

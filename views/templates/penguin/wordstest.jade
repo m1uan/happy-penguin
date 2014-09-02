@@ -35,14 +35,30 @@ div(ng-show="part==1&&!wordsLoading").wordtest
 
 div(ng-show="part==3&&!wordsLoading").wordtest
     h2(translate="place_question_title")
-    h3 {{questionText}}
+    div(ng-hide="user_answered").alert.alert-info
+        div
+            p(ng-show="questionType==0",translate="place_question_help")
+            p(ng-show="questionType==1",translate="place_question_help_1")
+            p(ng-show="questionType==2",translate="place_question_help_2")
+
+        blockquote
+            strong(ng-show="questionType==0",translate="place_question_example_0")
+            strong(ng-show="questionType==1",translate="place_question_example_1")
+            strong(ng-show="questionType==2",translate="place_question_example_2")
+        div
+            p(translate="place_question_help_example")
+        blockquote
+            strong {{example}}
+        footer(translate="place_question_could_be_skip")
+
+    div.alert.alert-danger {{questionText}}
     div(ng-hide="user_answered").input-group
         input(ng-model="user_answer").form-control
         span(ng-hide="user_answer.length < 2").input-group-btn
             button(data-ng-disabled="user_answer.length < 2",ng-click="answer(false)",translate="btn_answer").btn.btn-primary
         span(ng-show="user_answer.length < 2").input-group-btn
             button(ng-click="answer(true)",translate="btn_skip").btn.btn-warning
-    div(translate="place_question_help",ng-hide="user_answer").alert.alert-info
+
     div(ng-show="user_answered")
         div(ng-show="user_answered==1")
             p(translate="place_wrong_answer",translate-values="{answer:user_answer}").alert.alert-warning

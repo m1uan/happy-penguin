@@ -89,10 +89,12 @@ module.exports = {
         };
 
         if(data.length > 1){
+            // first is learn language
             dataContainer.lang = data[1];
         }
 
         if(data.length > 2){
+            // second is native language
             dataContainer.qlang = data[2];
         }
 

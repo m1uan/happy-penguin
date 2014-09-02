@@ -375,17 +375,19 @@ module.exports = {
         }
 
         if(!dataContainer.qlang){
-            cb('qlang missing');
+            cb('qlang (native) missing');
             return;
         }
 
         if(!dataContainer.alang){
-            cb('alang missing');
+            cb('alang (learn) missing');
             return;
         }
 
-        var qlang = dataContainer.qlang;
-        var alang = dataContainer.alang;
+        // let alang - answer lang : learn lang
+        var learnLang = dataContainer.alang;
+        // let qlang - question lang : native learn
+        var nativeLang = dataContainer.qlang;
 
 
         var fields = [ 'qid' ];
@@ -396,6 +398,7 @@ module.exports = {
         var indexOfQuestion = fields.indexOf('question');
         if(indexOfQuestion > -1){
             fields[indexOfQuestion] = 'ttq.data as question';
+            //fields.push('ttqn.data as question_native');
         }
 
         var indexOfAnswers = fields.indexOf('answers');
@@ -411,11 +414,17 @@ module.exports = {
         var SQL = SL.SqlLib('pinguin.question_t as pq', fields);
 
         if(indexOfQuestion > -1){
-            SQL.join('translates.translate_t as ttq','ttq.link=pq.question AND ttq.lang=\''+qlang+'\'');
+            // if is type 0 (translate from native to learn)
+            // if is type 2 (answer is in native, you have create a question in learn)
+            // if is type 3 (question is in native but answer have to be in learn)
+
+            SQL.join('translates.translate_t as ttq','ttq.link=pq.question AND ttq.lang=\''+nativeLang+'\'');
+            //SQL.join('translates.translate_t as ttqn','ttqn.link=pq.question AND ttqn.lang=\''+nativeLang+'\'');
         }
 
         if(indexOfAnswers > -1){
-            SQL.join('translates.translate_t as tta','tta.link=pq.answers AND tta.lang=\''+alang+'\'');
+            SQL.join('translates.translate_t as tta','tta.link=pq.answers AND tta.lang=\''+learnLang+'\'');
+            //SQL.join('translates.translate_t as ttan','ttan.link=pq.answers AND ttan.lang=\''+nativeLang+'\'');
         }
         SQL.whereAnd('pq.place_id='+ dataContainer.place_id);
         SQL.select(pg, cb);

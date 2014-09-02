@@ -19,9 +19,10 @@ div#uploader
             input(ng-model="question.question").input-sm
             input(ng-model="question.answers").input-sm
             select(ng-model="question.type").input-sm
-                option(value="0") Translate
-                option(value="1") Question
-                option(value="2") Answer
+                //option(value="0") Translate from learn
+                option(value="0") Translate from native
+                option(value="1") Create questoin based on answer
+                option(value="2") Do answer in learn
 
 
             button(ng-click="qUpdate(question)").btn.btn-danger update
@@ -31,9 +32,9 @@ div#uploader
         input(ng-model="add_question").input-sm
         input(ng-model="add_answers").input-sm
         select(ng-model="add_question_type").input-sm
-            option(value="0",selected="selected") Translate
-            option(value="1") Question
-            option(value="2") Answer
+            option(value="0",selected="selected") Translate from native
+            option(value="1") Create questoin based on answer
+            option(value="2") Do answer in learn
         button(ng-click="qAdd()").btn.btn-primary add
 
 
