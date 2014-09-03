@@ -1,4 +1,6 @@
 link(rel='stylesheet', href='/assets/css/penguin/wordtest.css')
+// for gold resource
+link(rel='stylesheet', href='/assets/css/levels/world.css')
 
 div(ng-show="wordsLoading").loaidng
     div.loaidng-border
@@ -156,13 +158,11 @@ div(ng-show="part==4").wordtest-score
                 td(translate="score_social_share")
                 //td {{user_answered}}
                 td {{facebookExtra}}
-    table
-        tr
-            td
-                img(src="/assets/img/penguin/ic_golds.png").intro_resource_icon
-            td
-            td
-                b {{score.totalCoins}}
+    div.text-center#result_total_gold
+        span.gold_resource#total_gold
+            span {{score.totalCoins}}
+            img(src="/assets/img/penguin/ic_golds.png")
+
     div.bottom-panel
         div.text-center
             button(ng-click="backToMap()",translate="btn_back_map").btn.btn-primary

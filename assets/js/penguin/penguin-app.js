@@ -289,14 +289,14 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
     self.generateTitle = function(place){
         var title = '<span class="popover-title-with-resources">' + place.name + '</span>'
 
-            + '<span class="popover-title-resources-info-left">'
+            + '<span class="popover-title-resources-info-left gold_resource">'
             //+ '<span class="popover-title-resources-info">' + place.walk + 'x</span>'
             //+ '<img src="/assets/img/penguin/ic_walk.png" class="resource_icon"/>'
 
             //+ '<span class="popover-title-resources-info">' + place.swim + 'x</span>'
             //+ '<img src="/assets/img/penguin/ic_swim.png" class="resource_icon"/>'
 
-            + '<span class="popover-title-resources-info">' + place.coins + 'x</span>'
+            + '<span class="popover-title-resources-info">' + place.coins + '</span>'
             + '<img src="/assets/img/penguin/ic_golds.png" class="resource_icon"/></span>'
             + '</span>';
 

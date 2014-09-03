@@ -61,27 +61,32 @@
     border-width: 4px;
 }
 
-#game_resources{
-    position: relative;
-    top:-530px;
-    left:10px;
+.gold_resource {
     color:gold;
-    cursor:pointer;
-    background-color: black;
-    opacity:0.9;
-    padding:5px;
 
+    background-color: black;
     border-color:black;
     -moz-border-radius: 3px;
     -webkit-border-radius:3px;
     border-radius: 3px;
     border-width: 2px;
+    padding:0px 10px 0px 10px;
+
+    opacity:0.9;
+}
+
+#game_resources{
+    position: relative;
+    top:-530px;
+    left:10px;
+
+    cursor:pointer;
+    padding:7px;
+
 }
 
 #game_resources span {
-
-    margin:4px;
-    margin-right:8px;
+    margin: 0px 0px 0px 10px;
     font-weight: bold;
 }
 
@@ -93,8 +98,14 @@
 .resource_icon {
     margin-top:2px;
     margin-bottom:2px;
-    width:25px;
+    width:24px;
 }
+
+.resource_gold_icon {
+    margin:5px;
+    width:28px;
+}
+
 
 #btn_place_visit {
     margin-top:5px;
@@ -110,8 +121,9 @@
 
 .popover-title-resources-info {
     margin-left:4px;
-    margin-right:2px;
+    margin-right:5px;
     padding-top:2px;
+    font-weight: bold;
 }
 .popover-title {
     margin-top:4px;
