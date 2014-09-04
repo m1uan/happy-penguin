@@ -60,12 +60,12 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         //showIntroduction();
         //showConclusion();
         if(DEBUG_PENGUIN){
-            //showIntroductionOrStartVocabularyTest();
+            showIntroductionOrStartVocabularyTest();
             //showIntroduction();
             //startVocabularyTest();
             //showIntroduction();
             //showConclusion();
-            showQuestion();
+            //showQuestion();
         } else {
             // **** DONT CHANGE HERE ****
             showIntroductionOrStartVocabularyTest();

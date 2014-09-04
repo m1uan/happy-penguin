@@ -11,7 +11,7 @@
 
     height:600px;
 
-    background-color: #ddd;
+    background-color: #eafbff;
     opacity: 0.9;
     padding:0px;
 
@@ -146,7 +146,7 @@ button next
 
 .intro-page h2 {
     margin:8px;
-    font-size: 36px;
+    font-size: 22px;
     font-weight: bolder;
 }
 
@@ -162,7 +162,7 @@ button next
 
 #intro_2 {
     background-image: url('/assets/img/penguin/intro_distances.jpg');
-    background-size: 100%;
+    background-size: 100% 100%;
 }
 
 #intro_page_4 {
@@ -180,7 +180,7 @@ button next
 }
 
 #intro_1_test ,#intro_2_head, #intro_2_test , #intro_experience_info_1, #intro_experience_info_2, #intro_experience_info_3{
-    padding:4px;
+    padding:16px;
     background-color: black;
     opacity: 0.85;
     position: absolute;
@@ -216,6 +216,7 @@ button next
 .intro_resource_icon{
     width: 30px;
     height: 30px;
+    margin-right: 5px;
 
 }
 

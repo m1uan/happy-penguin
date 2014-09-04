@@ -79,6 +79,11 @@ h2 {
     height:100%;
 }
 
+.table-wordtest-score {
+    padding-left : 10px;
+    padding-right: 10px;
+}
+
 .bottom-panel {
     bottom: 0px;
 }

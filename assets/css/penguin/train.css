@@ -10,6 +10,13 @@ table {
     margin-top:10px;
 }
 
+td:first-child{
+    width:50%;
+}
+
+td:last-child {
+    text-align: right;
+}
 
 
 
@@ -33,10 +40,11 @@ table {
 
 .main-view {
 
-    background-color: white;
+    background-color: #eafbff;
 }
 
 .last-list {
+    padding:10px;
     height:450px;
     overflow-y: scroll;
 }
