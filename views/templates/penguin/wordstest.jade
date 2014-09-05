@@ -12,8 +12,17 @@ div(ng-show="part==0&&!wordsLoading").content-cell
     div.top-panel
         h2(translate="place_welcome",translate-values="{name:place.name}")
     div.content-body
-        div(translate="place_info_help").alert.alert-info
-        div#introduction {{place.info}}
+        div.alert.alert-info
+            div(translate="place_info_help")
+
+        div#introduction
+            div(ng-bind-html="place.info")
+            div.text-center
+                button.btn.btn-primary {{buttonTranslate}}
+            div
+                hr
+                div(ng-bind-html="place.info_native")
+
 
     div.bottom-panel
         div.text-center

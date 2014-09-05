@@ -1,4 +1,4 @@
-function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval, $location, $translate){
+function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval, $location, $translate, $sce){
 
     var BUTTON_STATUS_NORMAL = 0;
     var BUTTON_STATUS_SELECT = 1;
@@ -75,6 +75,10 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     });
 
+    $scope.a1 = function(v){
+        return $sce.trustAsHtml(v);
+    }
+
     function loadExamplesForQuestion(type){
 
         // examples for question
@@ -140,6 +144,9 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     function showIntroduction(){
         $scope.part = 0;
+        $scope.translate_timer = 30;
+
+
         showRandomBackground();
 
     }

@@ -3,7 +3,7 @@
     'use strict';
     var penguinGame = angular.module('milan.world.factory', ['penguin.LocalStorageService','pascalprecht.translate']);
 
-    penguinGame.factory('worldFactory', function($http, localStorageService,$translate) {
+    penguinGame.factory('worldFactory', function($http, localStorageService, $translate, $sce) {
         var BASE = DEBUG_PENGUIN ? 100 : 10;
         var self = this;
         self.game = null;
@@ -205,6 +205,17 @@
 
             var url ='get/'+placeid+'/'+self.game.learn+'/'+self.game.native+'/?fields=id,name,info,info_native&qfields=qid,question,answers,type&ifields=iid,image';
             requestGET($http, url, function(response, status){
+                if(response.info){
+                    // ng-sanitary for bind as html
+                    // https://docs.angularjs.org/api/ngSanitize/service/$sanitize
+                    response.info = $sce.trustAsHtml(response.info.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                }
+
+                if(response.info_native){
+                    // ng-sanitary for bind as html
+                    // https://docs.angularjs.org/api/ngSanitize/service/$sanitize
+                    response.info_native = $sce.trustAsHtml(response.info_native.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                }
 
                 placesForVocabularyTest[placeid] = response;
                 cb(response);
