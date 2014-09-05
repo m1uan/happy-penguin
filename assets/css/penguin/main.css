@@ -11,6 +11,7 @@
 
     height:600px;
 
+
     background-color: #eafbff;
     opacity: 0.9;
     padding:0px;
@@ -18,9 +19,10 @@
     -moz-border-radius: 8px;
     -webkit-border-radius:8px;
     border-radius: 8px;
-    border-width: 30px;
+    border-width: 10px;
     border-style: solid;
-    border-color: #207cca; /* Old browsers */
+    /*border-color: #207cca;*/ /* Old browsers */
+    border-color:#313031;
 
 
 }
@@ -145,7 +147,7 @@ button next
 
 .intro-page {
     position: relative;
-    height: 550px;
+    height: 580px;
     overflow: hidden;
 }
 
@@ -347,4 +349,30 @@ button next
     padding:8px;
     background-color: #313031;
     opacity: 0.95;
+}
+
+.top-panel {
+    width: 100%;
+    height: 60px;
+    padding:8px;
+    background-color: #313031;
+    opacity: 0.95;
+    bottom:0px;
+}
+
+.top-panel h2, .bottom-panel h2 {
+    text-align: center;
+    color:#ffffff;
+    margin:0px;
+    font-weight: bold;
+}
+
+.content-cell{
+    position: relative;
+    height:100%;
+
+}
+
+.content-body {
+    margin:15px;
 }

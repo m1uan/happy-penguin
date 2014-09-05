@@ -191,6 +191,11 @@ module.exports = {
             fields[indexOfInfo] = 'tti.data as info'
         }
 
+        var indexOfInfoNative = fields.indexOf('info_native');
+        if(indexOfInfoNative> -1){
+            fields[indexOfInfoNative] = 'ttin.data as info_native'
+        }
+
         var SQL = SL.SqlLib('pinguin.place_t as pp', fields);
         SQL.whereAnd('id=' + dataContainer.id);
 
@@ -201,6 +206,10 @@ module.exports = {
 
         if(indexOfInfo> -1){
             SQL.join('translates.translate_t as tti','tti.link=pp.info AND (tti.lang=\''+dataContainer.lang+'\')');
+        }
+
+        if(indexOfInfoNative> -1){
+            SQL.join('translates.translate_t as ttin','ttin.link=pp.info AND (ttin.lang=\''+dataContainer.qlang+'\')');
         }
 
         SQL.select(pg,function(err, place){

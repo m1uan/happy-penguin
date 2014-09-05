@@ -70,8 +70,10 @@ table {
 
 }
 
-h2 {
-    text-align: center;
+#word-test {
+    /* top, right, bottom, left */
+    margin:50px 10px 0px 10px;
+    width: 100%;
 }
 
 .wordtest-score {
@@ -108,3 +110,17 @@ h2 {
 #result_total_gold {
     margin-top : 30px;
 }
+
+#wordtest-timer img{
+    height: 32px;
+    margin-top:-10px;
+}
+
+#wordtest-timer span{
+    margin-left: 8px;
+    margin-bottom:0px;
+    font-size:28px;
+    font-weight: bold;
+    color:#dbf2ea;
+}
+

@@ -8,20 +8,22 @@ div(ng-show="wordsLoading").loaidng
         div(translate="please_wait").loaidng-span Loading please wait ...
         div(translate="loading_could_be_long").loaidng-i first load could be long
 
-div(ng-show="part==0&&!wordsLoading").wordtest
-    h2(translate="place_welcome",translate-values="{name:place.name}")
-    div(translate="place_info_help").alert.alert-info
-    div#introduction {{place.info}}
+div(ng-show="part==0&&!wordsLoading").content-cell
+    div.top-panel
+        h2(translate="place_welcome",translate-values="{name:place.name}")
+    div.content-body
+        div(translate="place_info_help").alert.alert-info
+        div#introduction {{place.info}}
 
-    div.text-center
-        button(ng-click="visit()",translate="explore").btn.btn-primary#btn_explore Explore
+    div.bottom-panel
+        div.text-center
+            button(ng-click="visit()",translate="explore").btn.btn-primary#btn_explore Explore
 
-div(ng-show="part==1&&!wordsLoading").wordtest
-    h2 time left {{timer}}
 
-    //canvas#conection-canvas
-
-    div.row
+div(ng-show="part==1&&!wordsLoading").content-cell
+    div.top-panel
+        h2(translate="place_welcome",translate-values="{name:place.name}")
+    div.row#word-test
         div.col-md-5
             div(ng-repeat="w in words.word1")
                 span.hide {{w.link}}
@@ -34,32 +36,34 @@ div(ng-show="part==1&&!wordsLoading").wordtest
                 span(id="testctn_1_{{$index}}")
                     span(id="testbtn_1_{{$index}}",ng-click="select(1,w, $event)").btn.btn-default.btn-word {{w.word}}
                 span.hide {{w.link}}
+    div.bottom-panel#wordtest-timer
+        div.text-center
+            img(src="assets/img/penguin/ic_countdown.png")
+            span {{timer}}
 
-div(ng-show="part==3&&!wordsLoading").wordtest
-    h2(translate="place_question_title")
-    div(ng-hide="user_answered").alert.alert-info
-        div
-            p(ng-show="questionType==0",translate="place_question_help")
-            p(ng-show="questionType==1",translate="place_question_help_1")
-            p(ng-show="questionType==2",translate="place_question_help_2")
+div(ng-show="part==3&&!wordsLoading").content-cell
+    div.top-panel
+        h2(translate="place_welcome",translate-values="{name:place.name}")
+    div.content-body
+        div(ng-hide="user_answered").alert.alert-info
+            h3(translate="place_question_title")
+            div
+                p(ng-show="questionType==0",translate="place_question_help")
+                p(ng-show="questionType==1",translate="place_question_help_1")
+                p(ng-show="questionType==2",translate="place_question_help_2")
 
-        blockquote
-            strong(ng-show="questionType==0",translate="place_question_example_0")
-            strong(ng-show="questionType==1",translate="place_question_example_1")
-            strong(ng-show="questionType==2",translate="place_question_example_2")
-        div
-            p(translate="place_question_help_example")
-        blockquote
-            strong {{example}}
-        footer(translate="place_question_could_be_skip")
+            blockquote
+                strong(ng-show="questionType==0",translate="place_question_example_0")
+                strong(ng-show="questionType==1",translate="place_question_example_1")
+                strong(ng-show="questionType==2",translate="place_question_example_2")
+            div
+                p(translate="place_question_help_example")
+            blockquote
+                strong {{example}}
+            footer(translate="place_question_could_be_skip")
 
-    div.alert.alert-danger {{questionText}}
-    div(ng-hide="user_answered").input-group
-        input(ng-model="user_answer").form-control
-        span(ng-hide="user_answer.length < 2").input-group-btn
-            button(data-ng-disabled="user_answer.length < 2",ng-click="answer(false)",translate="btn_answer").btn.btn-primary
-        span(ng-show="user_answer.length < 2").input-group-btn
-            button(ng-click="answer(true)",translate="btn_skip").btn.btn-warning
+        div.alert.alert-danger {{questionText}}
+
 
     div(ng-show="user_answered")
         div(ng-show="user_answered==1")
@@ -68,13 +72,26 @@ div(ng-show="part==3&&!wordsLoading").wordtest
             p(ng-repeat="answer in questionAnswers").alert.alert-info {{answer}}
         div(ng-show="user_answered==2").alert.alert-success
             p(translate="place_correct_answer",translate-values="{answer:user_answer}")
-        div.center-text
-            span(ng-click="conclusion()").btn.btn-primary conclusion
 
-div(ng-show="part==4").wordtest-score
-    h2(translate="title-score")
 
-    div.table-wordtest-score
+    div.bottom-panel
+        div(ng-hide="user_answered").input-group
+            input(ng-model="user_answer").form-control
+            span(ng-hide="user_answer.length < 2").input-group-btn
+                button(data-ng-disabled="user_answer.length < 2",ng-click="answer(false)",translate="btn_answer").btn.btn-primary
+            span(ng-show="user_answer.length < 2").input-group-btn
+                button(ng-click="answer(true)",translate="btn_skip").btn.btn-warning
+        div(ng-show="user_answered")
+            div.center-text
+                button(ng-click="conclusion()",translate="btn-conclusion").btn.btn-primary
+
+div(ng-show="part==4").content-cell
+    div.top-panel
+        h2(translate="place_welcome",translate-values="{name:place.name}")
+
+
+    div.content-body
+        h3(translate="title-score")
         div.separe-table
             table
                 tr
