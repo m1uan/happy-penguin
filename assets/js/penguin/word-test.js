@@ -1,9 +1,12 @@
-function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval, $location, $translate, $sce){
+function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval, $location, $translate){
 
     var BUTTON_STATUS_NORMAL = 0;
     var BUTTON_STATUS_SELECT = 1;
     var BUTTON_STATUS_CORRECT = 2;
     var BUTTON_STATUS_WRONG = 3;
+
+
+    var TRANSLATE_TIME_MAX = 30;
 
     var GAME_TIME = 90;
 
@@ -75,9 +78,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     });
 
-    $scope.a1 = function(v){
-        return $sce.trustAsHtml(v);
-    }
+
 
     function loadExamplesForQuestion(type){
 
@@ -144,11 +145,35 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     function showIntroduction(){
         $scope.part = 0;
-        $scope.translate_timer = 30;
+        $scope.translate_timer = TRANSLATE_TIME_MAX;
+        $scope.showTranslate = false;
+        $scope.buttonTranslateBase = $translate.instant('btn-info-translate');
+        generateButtonName();
+        //$scope.buttonTranslate
+        $interval(function(){
 
+            $scope.translate_timer = $scope.translate_timer -1;
+            generateButtonName();
+
+        }, 1000, 30, true);
 
         showRandomBackground();
 
+    }
+
+    function generateButtonName(){
+        $scope.buttonTranslate = $scope.buttonTranslateBase;
+        if($scope.translate_timer != 0){
+            $scope.buttonTranslate = $scope.buttonTranslate + ' (' + $scope.translate_timer + ')';
+        }
+    }
+
+    $scope.btnShowTranslate = function(){
+        if($scope.translate_timer > 0){
+            alertify.error($translate.instant('wait-for-translate-info',{time:$scope.translate_timer}));
+        } else {
+            $scope.showTranslate = true;
+        }
     }
 
     function showConclusion(){

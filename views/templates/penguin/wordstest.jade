@@ -17,11 +17,12 @@ div(ng-show="part==0&&!wordsLoading").content-cell
 
         div#introduction
             div(ng-bind-html="place.info")
-            div.text-center
-                button.btn.btn-primary {{buttonTranslate}}
-            div
-                hr
-                div(ng-bind-html="place.info_native")
+            div(ng-show="place.info_native")
+                div(ng-hide="showTranslate").text-center
+                    button(ng-click="btnShowTranslate()").btn.btn-primary {{buttonTranslate}}
+                div(ng-show="showTranslate")
+                    hr
+                    div(ng-bind-html="place.info_native")
 
 
     div.bottom-panel
