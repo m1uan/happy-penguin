@@ -353,18 +353,22 @@ button next
 
 .top-panel {
     width: 100%;
-    height: 60px;
+    /* height: 60px;*/
     padding:8px;
     background-color: #313031;
     opacity: 0.95;
     bottom:0px;
 }
 
-.top-panel h2, .bottom-panel h2 {
+.top-panel h2, .top-panel h4, .bottom-panel h2 {
     text-align: center;
-    color:#ffffff;
+    color:#dbf2ea;
     margin:0px;
     font-weight: bold;
+}
+
+.top-panel h4 {
+    margin:5px 0px 0px 0px;
 }
 
 .content-cell{

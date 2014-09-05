@@ -54,9 +54,14 @@ div(ng-show="part==1&&!wordsLoading").content-cell
 div(ng-show="part==3&&!wordsLoading").content-cell
     div.top-panel
         h2(translate="place_welcome",translate-values="{name:place.name}")
+        h4(ng-show="questionType==0",translate="place_question_title")
+        h4(ng-show="questionType==1",translate="place_question_title_1")
+        h4(ng-show="questionType==2",translate="place_question_title_2")
     div.content-body
+        div.alert.alert-danger
+            h3 {{questionText}}
         div(ng-hide="user_answered").alert.alert-info
-            h3(translate="place_question_title")
+
             div
                 p(ng-show="questionType==0",translate="place_question_help")
                 p(ng-show="questionType==1",translate="place_question_help_1")
@@ -72,36 +77,35 @@ div(ng-show="part==3&&!wordsLoading").content-cell
                 strong {{example}}
             footer(translate="place_question_could_be_skip")
 
-        div.alert.alert-danger {{questionText}}
 
 
-    div(ng-show="user_answered")
-        div(ng-show="user_answered==1")
-            p(translate="place_wrong_answer",translate-values="{answer:user_answer}").alert.alert-warning
-            h3(translate="place_possible_answers")
-            p(ng-repeat="answer in questionAnswers").alert.alert-info {{answer}}
-        div(ng-show="user_answered==2").alert.alert-success
-            p(translate="place_correct_answer",translate-values="{answer:user_answer}")
+
+        div(ng-show="user_answered")
+            div(ng-show="user_answered==1")
+                p(translate="place_wrong_answer",translate-values="{answer:user_answer}").alert.alert-warning
+                h3(translate="place_possible_answers")
+                p(ng-repeat="answer in questionAnswers").alert.alert-info {{answer}}
+            div(ng-show="user_answered==2").alert.alert-success
+                p(translate="place_correct_answer",translate-values="{answer:user_answer}")
 
 
     div.bottom-panel
-        div(ng-hide="user_answered").input-group
+        div(ng-hide="user_answered").input-group#place-score-answer
             input(ng-model="user_answer").form-control
             span(ng-hide="user_answer.length < 2").input-group-btn
                 button(data-ng-disabled="user_answer.length < 2",ng-click="answer(false)",translate="btn_answer").btn.btn-primary
             span(ng-show="user_answer.length < 2").input-group-btn
                 button(ng-click="answer(true)",translate="btn_skip").btn.btn-warning
         div(ng-show="user_answered")
-            div.center-text
+            div.text-center
                 button(ng-click="conclusion()",translate="btn-conclusion").btn.btn-primary
 
 div(ng-show="part==4").content-cell
     div.top-panel
         h2(translate="place_welcome",translate-values="{name:place.name}")
-
+        h4(translate="title-score")
 
     div.content-body
-        h3(translate="title-score")
         div.separe-table
             table
                 tr
