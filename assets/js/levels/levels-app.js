@@ -1,4 +1,4 @@
-var app = angular.module('voc4u', ['ngRoute','ngSanitize'],
+var app = angular.module('voc4u', ['ngRoute'],
     function($routeProvider, $locationProvider) {
 
         $routeProvider.when('/world', {

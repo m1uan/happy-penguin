@@ -1,55 +1,50 @@
+link(rel='stylesheet', href='/assets/css/penguin/intro.css')
+div#intro-page
+    div.top-panel
+        h2(ng-show="page==1", translate="intro_what_i_need")
+        h2(ng-show="page==2", translate="intro_head_2")
+        h2(ng-show="page==3", translate="intro_head_3")
+        h2(ng-show="page==4", translate="intro_head_4")
+        h2(ng-show="page==5", translate="intro_head_5")
+        h2(ng-show="page==6", translate="intro_head_6")
+        h2(ng-show="page==7", translate="choice_your_jorney")
+
+    div.content-cell#intro-content-cell
+        div(ng-show="page<7")
+
+            div.intro_item#intro_distances_place
+                img(src="/assets/img/penguin/intro_distances_place.jpg")
+            div#intro_text
+                div(ng-show="page==1")
+                    img(src="/assets/img/penguin/ic_golds.png").intro_resource_icon
+                    span(translate="intro_you_need_resources")
+                div(ng-show="page==2",translate="intro_text_2")
+                div(ng-show="page==3",translate="intro_text_3")
+                div(ng-show="page==4",translate="intro_text_4")
+                div(ng-show="page==5",translate="intro_text_5")
+                div(ng-show="page==6",translate="intro_text_6")
+            div.intro_item.intro_place_info#intro_place_info_2
+            div.intro_item.intro_place_info#intro_place_info_3
+            div.intro_item.intro_place_info#intro_place_info_4
+            div.intro_item.intro_place_info#intro_place_info_5
+            div.intro_item.intro_place_info#intro_place_info_6
 
 
 
-div(ng-show="page==1").intro-page#intro_1
-    h2(translate="intro_whats_going_on")#intro_1_head
-    img(src="/assets/img/penguin/penguin_3.png")#intro_1_penguin
-    div(translate="pinguin_intro")#intro_1_test
+        div(ng-show="page==7").intro-page
+            div#lang_table
+                table.table.table-hover
+                   tr(ng-repeat="lang in langs",ng-click="startGame(lang.lang)").jorney-line
+                        td
+                            img(src="/assets/img/flags/flag_{{lang.lang}}.png")
+                        td
+                            div {{lang.translate}}
+                        td.hide
+                            div {{lang.cities}}
+                        td.hide
+                            div {{lang.questions}}
 
-    div.intro-navigate-button-area
-        a(href="#/intro/{{pageNext}}",translate="button_next").btn.btn-lg.btn-success
-
-div(ng-show="page==2").intro-page#intro_2
-    div#intro_2_test
-        h2(translate="intro_what_i_need")
-        div
-            img(src="/assets/img/penguin/ic_golds.png").intro_resource_icon
-            span(translate="intro_you_need_resources")
-
-    div.intro-navigate-button-area.btn-group-lg
-        a(href="#/intro/{{pagePrev}}",translate="button_prev").btn.btn-lg.btn-default prev {{pagePrev}}
-        a(href="#/intro/{{pageNext}}",translate="button_next").btn.btn-lg.btn-success
-
-div(ng-show="page==3").intro-page
-    h2(translate="intro_where")
-    img(src="/assets/img/penguin/intro_vocabulary.png")
-    p(translate="intro_vocabulary_info")
-    div.intro-navigate-button-area.btn-group-lg
-        a(href="#/intro/{{pagePrev}}",translate="button_prev").btn.btn-lg.btn-default prev {{pagePrev}}
-        a(href="#/intro/{{pageNext}}",translate="button_next").btn.btn-lg.btn-success
-
-div(ng-show="page==4")#intro_page_4.intro-page
-    h2(translate="intro_experience")
-    div(translate="intro_experience_info_1")#intro_experience_info_1
-    div(translate="intro_experience_info_2")#intro_experience_info_2
-    div(translate="intro_experience_info_3")#intro_experience_info_3
-    div.intro-navigate-button-area.btn-group-lg
-        a(href="#/intro/{{pagePrev}}",translate="button_prev").btn.btn-lg.btn-default
-        a(href="#/intro/{{pageNext}}",translate="button_next").btn.btn-lg.btn-success
-
-div(ng-show="page==5").intro-page
-    h2(translate="choice_your_jorney") choice_your_jorney
-    div#lang_table
-        table.table.table-hover
-           tr(ng-repeat="lang in langs",ng-click="startGame(lang.lang)").jorney-line
-                td
-                    img(src="/assets/img/flags/flag_{{lang.lang}}.png")
-                td
-                    div {{lang.translate}}
-                td.hide
-                    div {{lang.cities}}
-                td.hide
-                    div {{lang.questions}}
-    div.intro-navigate-button-area
-        a(href="#/intro/{{pagePrev}}",translate="button_prev").btn.btn-lg.btn-default {{pagePrev}}
-        a(href="#/intro/{{pagePrev}}").hide
+        div.bottom-panel#intro-bottom-panel
+            div.btn-group-lg
+                a(ng-click="showStagePrev();",translate="button_prev").btn.btn-lg.btn-default prev {{pagePrev}}
+                a(ng-click="showStageNext();",translate="button_next").btn.btn-lg.btn-success

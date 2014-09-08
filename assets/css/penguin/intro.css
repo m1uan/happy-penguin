@@ -1,0 +1,145 @@
+#intro-page {
+    background-image: url('/assets/img/penguin/intro_distances.jpg');
+    background-size: 100% 100%;
+    width:100%;
+    height:100%;
+}
+#intro-content-cell{
+    background:none;
+}
+
+#intro-bottom-panel{
+
+    margin-bottom: -11px;
+}
+/*
+button next
+*/
+.intro-navigate-button-area a:last-child {
+    position: absolute;
+    right :5px;
+    font-weight: bold;
+}
+
+
+
+.intro-page h2 {
+    margin:8px;
+    font-size: 22px;
+    font-weight: bolder;
+}
+
+#intro_globe{
+    width:400px;
+    height: 400px;
+}
+
+#intro_1 {
+    background-image: url('/assets/img/penguin/intro_globe.jpg');
+    background-size: 100%;
+}
+
+#intro_2 {
+
+}
+
+#intro_page_4 {
+    background-image: url('/assets/img/penguin/intro_place_info.jpg');
+    background-size : 100% 100%;
+}
+
+
+
+
+#intro_1_penguin {
+    position: absolute;
+    right:50px;
+    width: 240px;
+}
+
+.intro_place_text, #intro_text ,#intro_2_head, #intro_2_test , #intro_experience_info_1, #intro_experience_info_2, #intro_experience_info_3{
+    padding:16px;
+    background-color: black;
+    opacity: 0.85;
+    position: absolute;
+    left:15px;
+    top: 240px;
+    width: 340px;
+
+    color:white;
+}
+
+.intro_place_text {
+    top:100px;
+    left:15px;
+    width: 290px;
+}
+
+
+#intro_text {
+    left:240px;
+    top: 20px;
+    width: 380px;
+}
+
+.intro_place_info {
+    width: 36px;
+    height: 27px;
+    position: absolute;
+    top:247px;
+    left:400px;
+    overflow: hidden;
+    background-size: 100% 100%;
+    display:none;
+}
+
+#intro_place_info_2 {
+    background-image: url('/assets/img/penguin/intro_place_info_2.jpg');
+}
+
+#intro_place_info_3 {
+    background-image: url('/assets/img/penguin/intro_place_info_3.jpg');
+}
+
+#intro_place_info_4 {
+    background-image: url('/assets/img/penguin/intro_place_info_4.jpg');
+}
+
+#intro_place_info_5 {
+    background-image: url('/assets/img/penguin/intro_place_info_5.jpg');
+}
+
+#intro_place_info_6 {
+    background-image: url('/assets/img/penguin/intro_place_info_6.jpg');
+}
+
+#intro_distances_place {
+    position: absolute;
+    top:115px;
+    left:269px;
+    width: 300px;
+    height: 295px;
+    background-image: url('/assets/img/penguin/intro_distances_place.jpg');
+}
+
+#intro_experience_info_1 {
+    top: 370px;
+}
+
+#intro_experience_info_2 {
+    top: 85px;
+}
+
+#intro_experience_info_3 {
+    top: 400px;
+    left:1000px;
+}
+
+
+
+.intro_resource_icon{
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+
+}

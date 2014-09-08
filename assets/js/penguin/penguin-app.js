@@ -155,12 +155,13 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 }
 
 function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate) {
-    var PAGEMAX = 5;
+    var PAGEMAX = 7;
 
-    $scope.page = parseInt($routeParams.page);
-    if(isNaN($scope.page) || $scope.page < 1 || $scope.page > PAGEMAX){
-        $scope.page = 1;
+    var stage= parseInt($routeParams.page);
+    if(isNaN(stage) || stage < 1 || stage > PAGEMAX){
+        stage = 1;
     }
+    showStage(stage);
 
     $scope.langs = [];
     penguinFactory.getLangs($translate.use(), function(langs){
@@ -169,9 +170,41 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
     });
 
 
+    function showStage(stage){
+        console.log(stage);
+        $scope.page = stage;
+        $scope.pageNext = $scope.page + 1;
+        $scope.pagePrev = $scope.page - 1;
 
-    $scope.pageNext = $scope.page + 1;
-    $scope.pagePrev = $scope.page - 1;
+
+        $('.intro_item').hide();
+        if(stage==1){
+            $('#intro_distances_place').fadeIn(500);
+        } else if(stage>1){
+            var intro_place = '#intro_place_info_' + stage;
+            $(intro_place).fadeIn(500);
+            move(intro_place)
+                //.set('width',360).set('height',270)
+                .scale(10)
+//                .rotate(1080)
+                .duration(1200)
+                 .end();
+        }
+    }
+
+    $scope.showStageNext = function(){
+        showStage($scope.pageNext);
+
+    }
+
+    $scope.showStagePrev = function(){
+        showStage($scope.pagePrev);
+
+    }
+/*
+
+*/
+
 
     if( $scope.pageNext > PAGEMAX) {
         $scope.pageNext = false;
@@ -333,7 +366,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
                 if(!item.length){
 
-                    var item = $('<div id="'+placeid+'" data-toggle="tooltip" data-placement="left" >' + place.id + '</div>').addClass('place');
+                    var item = $('<div id="'+placeid+'" data-toggle="tooltip" data-placement="left" >' + '</div>').addClass('place');
 
                     item.addClass('placesize' + place.size);
 
