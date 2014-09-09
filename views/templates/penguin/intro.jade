@@ -8,13 +8,12 @@ div#intro-page
         h2(ng-show="page==5", translate="intro_head_5")
         h2(ng-show="page==6", translate="intro_head_6")
         h2(ng-show="page==7", translate="choice_your_jorney")
-        h3(ng-show="page==7", translate="choice_your_jorney_start_game")
     div.content-cell#intro-content-cell
         div
 
             div.intro_item#intro_distances_place
                 img(src="/assets/img/penguin/intro_distances_place.jpg")
-            div(ng-show="page<7")#intro_text
+            div(ng-show="page<8")#intro_text
                 div(ng-show="page==1")
                     img(src="/assets/img/penguin/ic_golds.png").intro_resource_icon
                     span(translate="intro_you_need_resources")
@@ -23,6 +22,7 @@ div#intro-page
                 div(ng-show="page==4",translate="intro_text_4")
                 div(ng-show="page==5",translate="intro_text_5")
                 div(ng-show="page==6",translate="intro_text_6")
+                div(ng-show="page==7",translate="choice_your_jorney_start_game")
             div.intro_item.intro_place_info#intro_place_info_2
             div.intro_item.intro_place_info#intro_place_info_3
             div.intro_item.intro_place_info#intro_place_info_4
