@@ -8,13 +8,13 @@ div#intro-page
         h2(ng-show="page==5", translate="intro_head_5")
         h2(ng-show="page==6", translate="intro_head_6")
         h2(ng-show="page==7", translate="choice_your_jorney")
-
+        h3(ng-show="page==7", translate="choice_your_jorney_start_game")
     div.content-cell#intro-content-cell
-        div(ng-show="page<7")
+        div
 
             div.intro_item#intro_distances_place
                 img(src="/assets/img/penguin/intro_distances_place.jpg")
-            div#intro_text
+            div(ng-show="page<7")#intro_text
                 div(ng-show="page==1")
                     img(src="/assets/img/penguin/ic_golds.png").intro_resource_icon
                     span(translate="intro_you_need_resources")
@@ -28,23 +28,24 @@ div#intro-page
             div.intro_item.intro_place_info#intro_place_info_4
             div.intro_item.intro_place_info#intro_place_info_5
             div.intro_item.intro_place_info#intro_place_info_6
-
-
-
-        div(ng-show="page==7").intro-page
-            div#lang_table
+            div(ng-show="page==7")#lang_table
                 table.table.table-hover
-                   tr(ng-repeat="lang in langs",ng-click="startGame(lang.lang)").jorney-line
-                        td
-                            img(src="/assets/img/flags/flag_{{lang.lang}}.png")
+                    tr(ng-repeat="lang in langs",ng-click="startGame(lang.lang)").jorney-line
                         td
                             div {{lang.translate}}
-                        td.hide
+                        td
+                            img(src="/assets/img/flags/flag_{{lang.lang}}.png")
+
+                    -if(debugPenguin)
+                        td
                             div {{lang.cities}}
-                        td.hide
+                        td
                             div {{lang.questions}}
 
-        div.bottom-panel#intro-bottom-panel
+
+
+
+        div.bottom-panel#intro-bottom-panel.text-center
             div.btn-group-lg
-                a(ng-click="showStagePrev();",translate="button_prev").btn.btn-lg.btn-default prev {{pagePrev}}
-                a(ng-click="showStageNext();",translate="button_next").btn.btn-lg.btn-success
+                button(ng-click="showStagePrev();",translate="button_prev",ng-show="page>1").btn.btn-lg.btn-default prev {{pagePrev}}
+                button(ng-click="showStageNext();",translate="button_next",ng-show="page<7").btn.btn-lg.btn-success

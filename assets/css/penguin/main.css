@@ -119,12 +119,7 @@
     padding:3px;
 }
 
-#lang_table {
-   padding:4px;
-   background-color: white;
-   height:420px;
-   overflow-y: auto;
-}
+
 
 
 
@@ -233,13 +228,9 @@
     margin:-10px;
 }
 
-.jorney-line {
-    font-size:60px;
-}
 
-.jorney-line:hover {
-    cursor:pointer;
-}
+
+
 
 
 .bottom-panel {

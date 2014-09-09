@@ -21,6 +21,43 @@ button next
     font-weight: bold;
 }
 
+#lang_table {
+    position: relative;
+    padding:4px;
+    top: 140px;
+    left: 200px;
+    width:400px;
+    height:240px;
+    background-color: #dbf2ea;
+    opacity: 0.95;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    -moz-border-radius: 4px;
+    -webkit-border-radius:4px;
+    border-radius: 4px;
+    border-width: 3px;
+    border-style: solid;
+    /*border-color: #207cca;*/ /* Old browsers */
+    border-color:#313031;
+}
+
+.jorney-line {
+    font-size:20px;
+}
+
+.jorney-line td:last-child {
+    width: 50%;
+    text-align: right;
+
+}
+
+.jorney-line:hover {
+    cursor:pointer;
+}
+
+.jorney-line img {
+    width: 30px;
+}
 
 
 .intro-page h2 {
