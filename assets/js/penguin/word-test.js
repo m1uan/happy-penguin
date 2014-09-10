@@ -293,7 +293,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         }
 
 
-        //$('#body').css("background-image", "url("+img+")");
+        $('#body').css("background-image", "url("+img+")");
     }
 
 
