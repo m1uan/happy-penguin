@@ -222,23 +222,41 @@ module.exports = {
         }
 
         var indexOfData = fields.indexOf("data");
+        if(indexOfData > -1){
+            if(data.second){
+                fields[indexOfData] = 'COALESCE(tt.data,tt2.data) as data';
+            } else {
+                // simple way without merge data
+                fields[indexOfData] = 'tt.data as data';
+            }
+
+
+        }
         var indexOfKey = fields.indexOf("key");
 
 
         var sql = new SL.SqlLib('translates.link_t', fields);
         if(indexOfData > -1 || indexOfKey > -1){
 
-            var join = 'translates.translate_t.link=translates.link_t.link AND (translates.translate_t.lang=\''+data.lang +'\'';
+            var join = 'tt.link=translates.link_t.link AND (tt.lang=\''+data.lang +'\')';
+
+
+            // !!!! with OR doesn't work sometime could put priority second
+            // even the primar lang is present (example with new intro)
+            // the czech translation is missing , even is present
 
             // for selecting and the language is not there use second lang
             // in most cases will be en because is base
+            //if(data.second){
+            //    join += ' OR translates.translate_t.lang=\''+data.second +'\'';
+            // }
+
+
+            sql.join('translates.translate_t tt',join);
             if(data.second){
-                join += ' OR translates.translate_t.lang=\''+data.second +'\'';
+                var join2 = 'tt2.link=translates.link_t.link AND (tt2.lang=\''+data.second +'\')';
+                sql.join('translates.translate_t tt2',join2);
             }
-
-            join += ')';
-
-            sql.join('translates.translate_t',join);
         }
 
 
