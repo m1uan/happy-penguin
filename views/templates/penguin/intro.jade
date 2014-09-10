@@ -1,7 +1,7 @@
 link(rel='stylesheet', href='/assets/css/penguin/intro.css')
 div#intro-page
     div.top-panel
-        h2(ng-show="page==1", translate="intro_what_i_need")
+        h2(ng-show="page==1", translate="intro_head_1")
         h2(ng-show="page==2", translate="intro_head_2")
         h2(ng-show="page==3", translate="intro_head_3")
         h2(ng-show="page==4", translate="intro_head_4")
@@ -16,7 +16,7 @@ div#intro-page
             div(ng-show="page<8")#intro_text
                 div(ng-show="page==1")
                     img(src="/assets/img/penguin/penguin_3.png").intro_resource_icon
-                    span(translate="intro_you_need_resources")
+                    span(translate="intro_text_1")
                 div(ng-show="page==2",translate="intro_text_2")
                 div(ng-show="page==3",translate="intro_text_3")
                 div(ng-show="page==4",translate="intro_text_4")
@@ -26,7 +26,7 @@ div#intro-page
                 div(ng-show="page==6",translate="intro_text_6")
                 div(ng-show="page==7")
                     img(src="/assets/img/penguin/penguin_3.png").intro_resource_icon
-                    span(translate="intro_choice_your_jorney_start_game")
+                    span(translate="into_text_7")
             div.intro_item.intro_place_info#intro_place_info_2
             div.intro_item.intro_place_info#intro_place_info_3
             div.intro_item.intro_place_info#intro_place_info_4
