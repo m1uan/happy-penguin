@@ -155,7 +155,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 }
 
 function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate) {
-    var PAGEMAX = 7;
+    var PAGEMAX = 8;
 
     var stage= parseInt($routeParams.page);
     if(isNaN(stage) || stage < 1 || stage > PAGEMAX){
@@ -180,7 +180,7 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
         $('.intro_item').hide();
         if(stage==1){
             $('#intro_distances_place').fadeIn(500);
-        } else if(stage>1){
+        } else if(stage>1 && stage<7){
             var intro_place = '#intro_place_info_' + stage;
             $(intro_place).fadeIn(500);
             move(intro_place)
@@ -189,11 +189,17 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
 //                .rotate(1080)
                 .duration(1200)
                  .end();
+        } else if(stage==7){
+            var intro_place = '#lang_table';
+            $(intro_place).fadeIn(500);
         }
     }
 
     $scope.showStageNext = function(){
-        showStage($scope.pageNext);
+        if($scope.pageNext < PAGEMAX){
+            showStage($scope.pageNext);
+        }
+
 
     }
 

@@ -180,3 +180,24 @@ button next
     margin-right: 5px;
 
 }
+
+#page-indicator {
+    margin: 5px 0px 0px 0px;
+    color:#dbf2ea;
+    font-weight: bold;
+}
+
+#move-table {
+    width: 100%;
+
+}
+
+#move-table td:first-child {
+    width: 20%;
+    text-align: left;
+}
+
+#move-table td:last-child {
+    width: 20%;
+    text-align: right;
+}
