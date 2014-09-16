@@ -268,6 +268,8 @@ module.exports = {
         // for normal purpose
         if(data.lastUpdateFirst){
             sql.addOrderBy('link_t.changed DESC');
+        } else if(data.byLinkId){
+            sql.addOrderBy('link_t.link');
         }
 
         if(!isNaN(data.group)){

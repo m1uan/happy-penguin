@@ -94,6 +94,7 @@ module.exports = {
             fields = ['key','data'];
         }else if(type == 'csv') {
             fields = ['link','data'];
+            dataContainer.byLinkId = true;
         }else if(request.query.fields){
             fields = request.query.fields.split(',') ;
         }
