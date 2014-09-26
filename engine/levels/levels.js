@@ -652,12 +652,31 @@ module.exports = (function(){
 
     /**
      *
-     * @param {pgClient
+     * @param {Object} pgClient postgesql object to manage data in DB
      * @param {Object} dataContainer
      * @param {Number} dataContainer.type type of new info (City,Story,Joke,...)
+     * @param {String} dataContainer.name name of new info (Prague,Zlin,Melbourne,...)
      * @param {Level~cb} cb callback
      */
-    self.createInfo = function(pgClient, dataContainer, cb){
+    self.createInfo = function(pg, dataContainer, cb){
+        if(!dataContainer.name || dataContainer.type == undefined){
+            cb("dataContainer.name or dataContainer.type missing");
+        }
+        var translateData = {
+            group : LEVEL_GROUP,
+            desc : dataContainer.name
+        }
+        translate.addtranslate(pg, translateData, function(err, addlang){
+            if(err){
+                cb(err);
+                return;
+            }
+
+            var sql = 'INSERT INTO pinguin.place_info_t (type,name) VALUES ($1,$2) RETURNING pi';
+            pg.query(sql, [dataContainer.type, addlang.link], function(e1,d2){
+                cb(e1, d2.rows ? d2.rows[0] : null);
+            });
+        })
 
     }
 

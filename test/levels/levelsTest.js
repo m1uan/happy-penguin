@@ -764,9 +764,14 @@ describe('levels', function(){
     describe('info', function(){
 
         it('create', function(cb){
-            var dataContainer = {}
+            var dataContainer = {
+                name: "Prague",
+                type: 1
+            }
 
             levels.createInfo(pgClient, dataContainer, function(err, preview){
+                preview.should.have.a.property.pi;
+                preview.pi.should.be.a.number;
                 cb();
             });
 
