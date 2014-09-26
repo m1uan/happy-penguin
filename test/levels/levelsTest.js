@@ -761,7 +761,7 @@ describe('levels', function(){
 
         });
     });
-    describe.only('info', function(){
+    describe('info', function(){
 
         it('create', function(cb){
             var dataContainer = {}

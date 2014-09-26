@@ -6,10 +6,13 @@ var LocalStrategy = require('passport-local').Strategy,
 var LEVEL_GROUP = 1000;
 var QUESTION_GROUP = 1001;
 
-module.exports = {
-    initialize : function(server, Passport) {
+module.exports = (function(){
+    var self = {};
+    self.initialize = function(server, Passport) {
 
-    },create: function(pg, dataContainer, cb){
+    }
+
+    self.create = function(pg, dataContainer, cb){
         if(!dataContainer.posx || !dataContainer.posy || !dataContainer.name || !dataContainer.code){
             cb('missing position posx, posy, name or/and code');
         }
@@ -45,7 +48,9 @@ module.exports = {
 
 
         async.waterfall(cascade, cb);
-    },updatepos : function(pg, dataContainer, cb){
+    }
+
+    self.updatepos = function(pg, dataContainer, cb){
         if(!dataContainer.id ){
             cb('missing id');
             return;
@@ -81,11 +86,17 @@ module.exports = {
         } else {
             cb('nothing to update (just posx, posy could be updated)!');
         }
-    },updatename: function(pg, dataContainer, cb){
+    }
+
+    self.updatename = function(pg, dataContainer, cb){
         updateTextField(pg, {id:dataContainer.id, text: dataContainer.name}, 'name', cb);
-    },updateinfo: function(pg, dataContainer, cb){
+    }
+
+    self.updateinfo = function(pg, dataContainer, cb){
         updateTextField(pg, {id:dataContainer.id, text: dataContainer.info}, 'info', cb);
-    },deleteinfo: function(pg, dataContainer, cb){
+    }
+
+    self.deleteinfo = function(pg, dataContainer, cb){
         var watter = [];
 
         watter.push(function(icb){
@@ -112,7 +123,9 @@ module.exports = {
         async.waterfall(watter, function(err, data){
             cb(err, {info:null});
         });
-    },get: function(pg, dataContainer, cb){
+    }
+
+    self.get = function(pg, dataContainer, cb){
         if(!dataContainer.id){
             cb('missing id!');
             return;
@@ -173,7 +186,9 @@ module.exports = {
             cb(err,out);
         });
 
-    },placeget: function(pg, dataContainer, cb){
+    }
+
+    self.placeget = function(pg, dataContainer, cb){
         var fields = dataContainer.fields;
 
         if(!fields){
@@ -219,7 +234,9 @@ module.exports = {
 
             cb(err, place);
         })
-    },qadd : function(pg, dataContainer, cb){
+    }
+
+    self.qadd = function(pg, dataContainer, cb){
         if(!dataContainer.place_id){
             cb('place_id missing "place_t.id"');
             return;
@@ -295,7 +312,9 @@ module.exports = {
         });
 
         async.waterfall(watter, function(err, data){cb(err, data[0])});
-    },qupdate : function(pg, dataContainer, cb){
+    }
+
+    self.qupdate = function(pg, dataContainer, cb){
         if(!dataContainer.qid){
             cb('qid missing');
             return;
@@ -374,9 +393,13 @@ module.exports = {
 
             cb(err, question);
         });
-    },qdelete : function(pg, dataContainer, cb){
+    }
+
+    self.qdelete = function(pg, dataContainer, cb){
         qdelete(pg, dataContainer, cb);
-    },qget: function(pg, dataContainer, cb){
+    }
+
+    self.qget = function(pg, dataContainer, cb){
 
         if(!dataContainer.place_id){
             cb('place_id missing');
@@ -437,7 +460,9 @@ module.exports = {
         }
         SQL.whereAnd('pq.place_id='+ dataContainer.place_id);
         SQL.select(pg, cb);
-    },iget: function(pg, dataContainer, cb){
+    }
+
+    self.iget = function(pg, dataContainer, cb){
 
         if(!dataContainer.place_id){
             cb('place_id missing');
@@ -455,9 +480,13 @@ module.exports = {
 
         SQL.whereAnd('pinguin.image_t.place_id='+ dataContainer.place_id);
         SQL.select(pg, cb);
-    },ipreview:function(pg, dataContainer, cb){
+    }
+
+    self.ipreview = function(pg, dataContainer, cb){
         ipreview_add(pg, dataContainer,cb);
-    },checkAndSetupPreview: function(pg, dataContainer, cb){
+    }
+
+    self.checkAndSetupPreview = function(pg, dataContainer, cb){
         var SQL = SL.SqlLib('pinguin.place_t', ['1']);
 
         SQL.whereAnd('pinguin.place_t.preview_iid='+ dataContainer.preview_iid);
@@ -470,9 +499,13 @@ module.exports = {
                 ipreview_add(pg, dataContainer, cb);
             }
         });
-    },idelete: function(pg, dataContainer, cb){
+    }
+
+    self.idelete = function(pg, dataContainer, cb){
         idelete(pg, dataContainer, cb);
-    }, list : function(pg, dataContainer, cb){
+    }
+
+    self.list = function(pg, dataContainer, cb){
 
         var fields = 'id'
         if(dataContainer.fields){
@@ -509,7 +542,9 @@ module.exports = {
         }
 
         SQL.select(pg, cb);
-    }, langsAndCities : function(pg, lang, cb){
+    }
+
+    self.langsAndCities = function(pg, lang, cb){
         var langEngine = require(process.cwd() + '/engine/translates/langs.js');
 
         var dataContainer = {
@@ -554,7 +589,9 @@ module.exports = {
                 cb(err, langData);
             });
         });
-    },delete : function(pg, dataContainer, cb){
+    }
+
+    self.delete = function(pg, dataContainer, cb){
         if(!dataContainer.place_id){
             cb('place_id missing');
             return;
@@ -612,7 +649,28 @@ module.exports = {
 
         async.waterfall(watter, cb);
     }
-}
+
+    /**
+     *
+     * @param {pgClient
+     * @param {Object} dataContainer
+     * @param {Number} dataContainer.type type of new info (City,Story,Joke,...)
+     * @param {Level~cb} cb callback
+     */
+    self.createInfo = function(pgClient, dataContainer, cb){
+
+    }
+
+    /**
+     * Callback used in level
+     * @callback Level~cb
+     * @param {Object} err
+     * @param {Object} success if is null, not success othervise object
+     */
+
+
+    return self;
+})();
 
 function updateTextField(pg, dataContainer, type, cb){
     if(!dataContainer.id){
