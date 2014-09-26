@@ -16,7 +16,7 @@ var sqlMake = require('../../lib/helps/helps.js').sqlMake;
 var inDir = '/tmp/tes3x/';
 var inDirLang = inDir + 'lang/';
 var inDirImg = inDir + 'img/';
-describe.only('levels', function(){
+describe('levels', function(){
 
     before(function(cb){
         var dbuser = config.DB_USER_TEST;
@@ -36,6 +36,7 @@ describe.only('levels', function(){
 
             sqlMake(pgClient, [
                 "UPDATE pinguin.place_t SET preview_iid = null;",
+                "DELETE FROM pinguin.place_info_t;",
                 "DELETE FROM pinguin.image_t;",
                 "DELETE FROM pinguin.question_t;",
                 "DELETE FROM pinguin.place_t;",
@@ -760,7 +761,54 @@ describe.only('levels', function(){
 
         });
     });
+    describe.only('info', function(){
 
+        it('create', function(cb){
+            var dataContainer = {}
+
+            levels.createInfo(pgClient, dataContainer, function(err, preview){
+                cb();
+            });
+
+        });
+
+        it('update', function(cb){
+            var dataContainer = {}
+
+            levels.updateInfo(pgClient, dataContainer, function(err, preview){
+                cb();
+            });
+
+        });
+
+        it('delete', function(cb){
+            var dataContainer = {}
+
+            levels.deleteInfo(pgClient, dataContainer, function(err, preview){
+                cb();
+            });
+
+        });
+
+        it('list', function(cb){
+            var dataContainer = {}
+
+            levels.listInfo(pgClient, dataContainer, function(err, preview){
+                cb();
+            });
+
+        });
+
+        it('get', function(cb){
+            var dataContainer = {}
+
+            levels.getInfo(pgClient, dataContainer, function(err, preview){
+                cb();
+            });
+
+        });
+
+    });
     describe('request', function(){
 
         it('get - levels', function(cb){

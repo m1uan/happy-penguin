@@ -17,7 +17,7 @@ INSERT INTO pinguin.place_info_type_t (name) VALUES
 
 CREATE TABLE pinguin.place_info_t (
     pi SERIAL NOT NULL,
-    name INTEGER NOT NULL,
+    name INTEGER DEFAULT NULL,
    "info" INTEGER DEFAULT NULL,
    "type" INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY (name) REFERENCES translates.link_t (link),
