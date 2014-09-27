@@ -857,6 +857,85 @@ module.exports = (function(){
     }
 
     /**
+     * get place info
+     * @param pgClient
+     * @param dataContainer {Object}
+     * @param dataContainer.pi {Number} id of info should be loaded
+     * @param cb {Level~cb} callback function
+     */
+    self.getInfo = function(pgClient, dataContainer, cb){
+        if(!dataContainer.pi ){
+            cb('missing dataContainer.pi')
+            return;
+        }
+
+        var watter = [];
+        var parallel = [];
+        var serial = [];
+
+        watter.push(function(icb){
+            var SQL = new SL.SqlLib('pinguin.place_info_t',['name','info','type']);
+            SQL.whereAnd('pi=' + dataContainer.pi);
+            SQL.select(pgClient, icb);
+        });
+
+        watter.push(function(selected, icb){
+            if(!selected || selected.length < 1){
+                icb('info with pi (id) :' + dataContainer.pi + ' not found!');
+                return;
+            }
+
+            var selectInfo = selected[0];
+
+            parallel.push(function(icb2){
+                var SQL = new SL.SqlLib('translates.translate_t',['data','lang']);
+                SQL.whereAnd('link=' + selectInfo.name);
+                SQL.select(pgClient, icb2);
+            })
+
+            parallel.push(function(icb2){
+                var SQL = new SL.SqlLib('translates.translate_t',['data','lang']);
+                SQL.whereAnd('link=' + selectInfo.info);
+                SQL.select(pgClient, icb2);
+            })
+
+
+            async.parallel(parallel, function(err, translates){
+                var namesAndInfos = {};
+
+                if(!err){
+                    var names = translates[0];
+                    var infos = translates[1];
+
+                    names.forEach(function(name){
+                        namesAndInfos[name.lang] = {
+                            name : name.data
+                        };
+                    })
+
+                    infos.forEach(function(info){
+                        // maybe the object wasnt created in names
+                        // created it just with info
+                        if(!namesAndInfos[info.lang]){
+                            namesAndInfos[info.lang] = {
+                                info : info.data
+                            };
+                        } else {
+                            namesAndInfos[info.lang].info = info.data;
+                        }
+
+                    })
+                }
+
+                selectInfo.transates = namesAndInfos;
+                icb(err, selectInfo);
+            });
+        });
+
+        async.waterfall(watter, cb);
+    }
+
+    /**
      * Callback used in level
      * @callback Level~cb
      * @param {Object} err

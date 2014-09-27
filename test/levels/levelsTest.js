@@ -828,9 +828,30 @@ describe('levels', function(){
         it('get', function(cb){
             var dataContainer = {}
 
-            levels.getInfo(pgClient, dataContainer, function(err, preview){
-                cb();
+            var dataContainerCreate = {
+                name: "Prague",
+                type: 1
+            }
+
+            levels.createInfo(pgClient, dataContainerCreate, function(err, createdInfo){
+
+                var dataContainer = {
+                    pi : createdInfo.pi,
+                    type: 2,
+                    translates : {
+                        'en' : {name: 'Prague', info: 'Prague is capital city'},
+                        'cz' : {name: 'Praha', info: 'Praha je hlavni mesto'}
+                    }
+                }
+
+                levels.updateInfo(pgClient, dataContainer, function(err, updatedInfo){
+
+                    levels.getInfo(pgClient, dataContainer, function(err, preview){
+                        cb();
+                    });
+                });
             });
+
 
         });
 
