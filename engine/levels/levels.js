@@ -797,6 +797,57 @@ module.exports = (function(){
 
     }
 
+    self.deleteInfo = function(pgClient, dataContainer, cb){
+        if(!dataContainer.pi ){
+            cb('missing dataContainer.pi')
+            return;
+        }
+
+        var watter = [];
+        var parallel = [];
+        var serial = [];
+
+        watter.push(function(icb){
+            var SQL = new SL.SqlLib('pinguin.place_info_t',['name','info']);
+            SQL.whereAnd('pi=' + dataContainer.pi);
+            SQL.select(pgClient, icb);
+        });
+
+        watter.push(function(selected, icb){
+            if(!selected || selected.length < 1){
+                icb('info with pi (id) :' + dataContainer.pi + ' not found!');
+                return;
+            }
+
+            var selectedInfo = selected[0];
+
+            // first remove info after remove translations
+            // because otherwise the translation could not be deleted
+            // with live relation to place_info_t
+            serial.push(function(icb2){
+                var sql = 'DELETE FROM pinguin.place_info_t WHERE pi=' +dataContainer.pi;
+                pgClient.query(sql, icb2);
+            });
+
+            serial.push(function(icb2){
+
+                parallel.push(function(icb3){
+                    translate.delete(pgClient, {link: selectedInfo.name}, icb3);
+                })
+
+                parallel.push(function(icb3){
+                    translate.delete(pgClient, {link: selectedInfo.info}, icb3);
+                })
+
+                async.parallel(parallel, icb2);
+            });
+
+            async.series(serial, icb);
+
+        });
+
+        async.waterfall(watter, cb);
+    }
 
     /**
      * Callback used in level

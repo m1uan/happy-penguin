@@ -802,10 +802,16 @@ describe('levels', function(){
         });
 
         it('delete', function(cb){
-            var dataContainer = {}
+            var dataContainerCreate = {
+                name: "Prague",
+                type: 1
+            }
 
-            levels.deleteInfo(pgClient, dataContainer, function(err, preview){
-                cb();
+            levels.createInfo(pgClient, dataContainerCreate, function(err, createdInfo){
+
+                levels.deleteInfo(pgClient, createdInfo, function(err, preview){
+                    cb();
+                });
             });
 
         });
