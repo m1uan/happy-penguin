@@ -797,6 +797,13 @@ module.exports = (function(){
 
     }
 
+    /**
+     * delete place info
+     * @param pgClient
+     * @param dataContainer {Object}
+     * @param dataContainer.pi {Number} id of delete info
+     * @param cb {Level~cb} callback function
+     */
     self.deleteInfo = function(pgClient, dataContainer, cb){
         if(!dataContainer.pi ){
             cb('missing dataContainer.pi')
