@@ -662,23 +662,141 @@ module.exports = (function(){
         if(!dataContainer.name || dataContainer.type == undefined){
             cb("dataContainer.name or dataContainer.type missing");
         }
-        var translateData = {
-            group : LEVEL_GROUP,
-            desc : dataContainer.name
-        }
-        translate.addtranslate(pg, translateData, function(err, addlang){
-            if(err){
+
+        var parallel = [];
+        var createList = [dataContainer.type];
+
+
+        parallel.push(function(icb){
+            var translateNameData = {
+                group : LEVEL_GROUP,
+                desc : dataContainer.name
+            }
+
+            translate.addtranslate(pg, translateNameData, icb);
+        });
+
+        parallel.push(function(icb){
+            var translateNameData = {
+                group : LEVEL_GROUP,
+                desc : 'info:' + dataContainer.name
+            }
+
+            translate.addtranslate(pg, translateNameData, icb);
+        });
+
+        async.parallel(parallel, function (err, data){
+            if(err) {
                 cb(err);
                 return;
             }
 
-            var sql = 'INSERT INTO pinguin.place_info_t (type,name) VALUES ($1,$2) RETURNING pi';
-            pg.query(sql, [dataContainer.type, addlang.link], function(e1,d2){
+            var sql = 'INSERT INTO pinguin.place_info_t (type,name,info) VALUES ($1,$2,$3) RETURNING pi';
+            pg.query(sql, [dataContainer.type, data[0].link, data[1].link], function(e1,d2){
                 cb(e1, d2.rows ? d2.rows[0] : null);
             });
-        })
+        });
+
+
 
     }
+
+    /**
+     * update info in more langs
+     * @param pgClient
+     * @param dataContainer {Object} update info data
+     * @param dataContainer.pi {Number} id of info
+     * @param dataContainer.type {Number} type of place info
+     * @param dataContainer.transates {Object}
+     *           { 'en' : { name : 'Prague', text : 'Capital city'}, 'cz' : {name :.... }
+     * @param cb {Level~cb} callback function
+     */
+    self.updateInfo = function(pgClient, dataContainer, cb){
+        if(!dataContainer.pi || !dataContainer.translates || typeof(dataContainer.translates) !== 'object'){
+            cb('missing dataContainer.pi or dataContainer.translates')
+            return;
+        }
+
+
+
+        var watter = [];
+        var parallel = [];
+
+        watter.push(function(icb){
+            var SQL = new SL.SqlLib('pinguin.place_info_t',['name','info']);
+            SQL.whereAnd('pi=' + dataContainer.pi);
+            SQL.select(pgClient, icb);
+        });
+
+        watter.push(function(selected, icb){
+            if(!selected || selected.length < 1){
+                icb('info with pi (id) :' + dataContainer.pi + ' not found!');
+                return;
+            }
+
+            var selectedInfo = selected[0];
+            // scan languages in translates
+            // update (translate) name and info
+            // if is en language update also description of that
+            for (var lang in dataContainer.translates) {
+                parallel.push(function(icb2){
+                    var transData = {
+                        link : selectedInfo.name,
+                        data : dataContainer.translates[lang].name,
+                        lang : lang
+                    }
+                    translate.translate(pgClient, transData, icb2) ;
+                });
+
+                parallel.push(function(icb2){
+                    var transData = {
+                        link : selectedInfo.info,
+                        data : dataContainer.translates[lang].info,
+                        lang : lang
+                    }
+                    translate.translate(pgClient, transData, icb2) ;
+                });
+
+                // if eng update desc for keep desc updated with english version
+                if(lang == 'en'){
+                    parallel.push(function(icb2){
+                        var transData = {
+                            link : selectedInfo.name,
+                            desc : dataContainer.translates[lang].name
+                        }
+                        translate.updatedesc(pgClient, transData, icb2) ;
+                    });
+
+                    parallel.push(function(icb2){
+                        var transData = {
+                            link : selectedInfo.info,
+                            desc : dataContainer.translates[lang].info
+                        }
+                        translate.updatedesc(pgClient, transData, icb2) ;
+                    });
+                }
+            }
+
+            // update type if nesesary
+            if(dataContainer.type){
+                watter.push(function(icb2){
+                    var SQL = SL.SqlLib('pinguin.place_info_t');
+                    SQL.whereAnd('pi=' + dataContainer.pi);
+
+                    var ud = {};
+                    ud['type'] = dataContainer.type;
+                    SQL.update(pgClient, ud, icb2);
+                });
+            }
+
+            async.parallel(parallel, icb);
+
+        });
+
+        async.waterfall(watter, cb);
+
+    }
+
 
     /**
      * Callback used in level
@@ -686,6 +804,8 @@ module.exports = (function(){
      * @param {Object} err
      * @param {Object} success if is null, not success othervise object
      */
+
+
 
 
     return self;
