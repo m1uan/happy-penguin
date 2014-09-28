@@ -940,6 +940,30 @@ module.exports = (function(){
         async.waterfall(watter, cb);
     }
 
+    self.listInfo = function(pgClient, fields, cb){
+        var indexOfName = fields.indexOf('name');
+        if(indexOfName > -1){
+            fields[indexOfName] = 'tl.desc as name';
+        }
+
+        var indexOfTypeName = fields.indexOf('type');
+        if(indexOfTypeName > -1){
+            fields[indexOfTypeName] = 'pt.name as type';
+        }
+
+        var SQL = new SL.SqlLib('pinguin.place_info_t',fields);
+
+        if(indexOfName > -1){
+            SQL.join('translates.link_t as tl','tl.link=name');
+        }
+
+        if(indexOfTypeName > -1){
+            SQL.join('pinguin.place_info_type_t as pt','pt.pit=type');
+        }
+
+        SQL.select(pgClient, cb);
+    }
+
     /**
      * Callback used in level
      * @callback Level~cb

@@ -817,9 +817,13 @@ describe('levels', function(){
         });
 
         it('list', function(cb){
-            var dataContainer = {}
 
-            levels.listInfo(pgClient, dataContainer, function(err, preview){
+            levels.listInfo(pgClient, ['pi', 'name', 'type'], function(err, infos){
+                infos.should.be.a.array;
+                infos.length.should.be.above(1);
+                infos[0].should.have.a.property('pi');
+                infos[0].should.have.a.property('name');
+                infos[0].should.have.a.property('type');
                 cb();
             });
 
