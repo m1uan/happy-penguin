@@ -839,14 +839,30 @@ describe('levels', function(){
                     pi : createdInfo.pi,
                     type: 2,
                     translates : {
-                        'en' : {name: 'Prague', info: 'Prague is capital city'},
+                        'en' : {name: 'Prague1', info: 'Prague is capital city'},
                         'cz' : {name: 'Praha', info: 'Praha je hlavni mesto'}
                     }
                 }
 
                 levels.updateInfo(pgClient, dataContainer, function(err, updatedInfo){
 
-                    levels.getInfo(pgClient, dataContainer, function(err, preview){
+                    levels.getInfo(pgClient, dataContainer, function(err, info){
+                        info.should.be.a.object;
+                        info.should.have.a.property.type;
+                        info.should.have.a.property.info;
+                        info.should.have.a.property.name;
+                        info.should.have.a.property.translates;
+                        info.translates.should.be.a.object;
+                        info.translates['cz'].should.be.a.object;
+                        info.translates['en'].should.be.a.object;
+                        info.translates['en'].should.have.a.property.name;
+                        info.translates['en'].should.have.a.property.info;
+                        info.translates['cz'].should.have.a.property.name;
+                        info.translates['cz'].should.have.a.property.info;
+                        info.translates['en'].name.should.be.equal('Prague1');
+                        info.translates['en'].info.should.be.equal('Prague is capital city');
+                        info.translates['cz'].name.should.be.equal('Praha');
+                        info.translates['cz'].info.should.be.equal('Praha je hlavni mesto');
                         cb();
                     });
                 });

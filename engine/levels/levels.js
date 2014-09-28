@@ -739,41 +739,16 @@ module.exports = (function(){
             // update (translate) name and info
             // if is en language update also description of that
             for (var lang in dataContainer.translates) {
-                parallel.push(function(icb2){
-                    var transData = {
-                        link : selectedInfo.name,
-                        data : dataContainer.translates[lang].name,
-                        lang : lang
-                    }
-                    translate.translate(pgClient, transData, icb2) ;
-                });
-
-                parallel.push(function(icb2){
-                    var transData = {
-                        link : selectedInfo.info,
-                        data : dataContainer.translates[lang].info,
-                        lang : lang
-                    }
-                    translate.translate(pgClient, transData, icb2) ;
-                });
+                // can't be like parallel.push(function(icb2){ ... }
+                // because otherwise will taken just last lang
+                // example if in list is 'en', 'es', 'cz' it will just use last 'cz'
+                parallel.push(__generateUpdateTranslation(lang, 'name'));
+                parallel.push(__generateUpdateTranslation(lang, 'info'));
 
                 // if eng update desc for keep desc updated with english version
                 if(lang == 'en'){
-                    parallel.push(function(icb2){
-                        var transData = {
-                            link : selectedInfo.name,
-                            desc : dataContainer.translates[lang].name
-                        }
-                        translate.updatedesc(pgClient, transData, icb2) ;
-                    });
-
-                    parallel.push(function(icb2){
-                        var transData = {
-                            link : selectedInfo.info,
-                            desc : dataContainer.translates[lang].info
-                        }
-                        translate.updatedesc(pgClient, transData, icb2) ;
-                    });
+                    parallel.push(__generateUpdateDesc(lang, 'name'));
+                    parallel.push(__generateUpdateDesc(lang, 'info'));
                 }
             }
 
@@ -791,9 +766,39 @@ module.exports = (function(){
 
             async.parallel(parallel, icb);
 
+            /**
+             *  generate function here for access to selectedInfo
+              */
+            function __generateUpdateTranslation(lang, type){
+                var transData = {
+                    link : selectedInfo[type],
+                    data : dataContainer.translates[lang][type],
+                    lang : lang
+                }
+
+                return function(icb2){
+                   translate.translate(pgClient, transData, icb2) ;
+                }
+            }
+
+            /**
+             *  generate function here for access to selectedInfo
+             */
+            function __generateUpdateDesc(lang, type){
+                var transData = {
+                    link : selectedInfo[type],
+                    desc : dataContainer.translates[lang][type]
+                }
+
+                return function(icb2){
+                    translate.updatedesc(pgClient, transData, icb2) ;
+                }
+            }
         });
 
         async.waterfall(watter, cb);
+
+
 
     }
 
@@ -927,7 +932,7 @@ module.exports = (function(){
                     })
                 }
 
-                selectInfo.transates = namesAndInfos;
+                selectInfo.translates = namesAndInfos;
                 icb(err, selectInfo);
             });
         });
