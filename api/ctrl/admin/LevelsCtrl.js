@@ -282,7 +282,20 @@ module.exports = (function(){
 
 
 
+    self.infos_get = function(request){
+        var fields = ['pi']
+        if(request.query.fields){
+            fields = request.query.fields.split(',') ;
+        }
 
+        levelEngine.listInfo(pgClient, fields, function(err, list){
+            response(request, err, list);
+        })
+    }
+
+    self.createinfo_post = function(request){
+
+    }
 
 
     return self;
