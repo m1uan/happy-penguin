@@ -1,21 +1,25 @@
 var levelEngine = require(process.cwd() + '/engine/levels/levels.js')
     ,async = require('async');
 var Passport = null;
-var Travelelogue = null;
-var pgClient = null;
 
-module.exports = {
+
+module.exports = (function(){
+
+    var Travelelogue = null;
+    var pgClient = null;
+    var self = {};
+
     /**
      *
      * @param server
      * @param Hapi
      */
-    $init : function(server, Hapi){
+    self.$init = function(server, Hapi){
         Travelelogue = server.plugins.travelogue;
         pgClient = server.pgClient;
     }
     // get Hapi Config
-    ,$getConfig : function(){
+    self.$getConfig = function(){
         return {
             auth:'passport',
             get_get : {
@@ -26,14 +30,15 @@ module.exports = {
                 params : '{params*}'
             }
         }
-    },
-    create_post: function(request){
+    }
+    self.create_post= function(request){
         var dataContainer = request.payload;
 
         levelEngine.create(pgClient,dataContainer, function(err, created){
             response(request, err, created);
         });
-    },update_post: function(request){
+    }
+    self.update_post= function(request){
         var dataContainer = request.payload;
 
         var ret = function(err, created){
@@ -81,8 +86,8 @@ module.exports = {
             response(request, 'update can be just posx,posy,name,info...');
         }
 
-    },
-    get_get: function(request){
+    }
+    self.get_get= function(request){
         var data = request.params.params.split('/');
         var dataContainer = {
             id: data[0]
@@ -114,19 +119,23 @@ module.exports = {
         levelEngine.get(pgClient, dataContainer, function(err, getData){
             response(request, err, getData);
         });
-    },qadd_post : function(request){
+    }
+    self.qadd_post = function(request){
         levelEngine.qadd(pgClient, request.payload, function(err, data){
             response(request, err, data);
         });
-    },qupdate_post : function(request){
+    }
+    self.qupdate_post = function(request){
         levelEngine.qupdate(pgClient, request.payload, function(err, data){
             response(request, err, data);
         });
-    },qdelete_post : function(request){
+    }
+    self.qdelete_post = function(request){
         levelEngine.qdelete(pgClient, request.payload, function(err, data){
             response(request, err, data);
         });
-    },uploadimg_post : function (request){
+    }
+    self.uploadimg_post = function (request){
         var image = require(process.cwd() + '/engine/image.js');
 
         console.log('payload', request.payload.link);
@@ -160,7 +169,8 @@ module.exports = {
             imageSetupPreviewAndResponse(request, err, imageData, request.payload.link, pgClient);
         },dataExtra);
 
-    },saveimgurl_post : function(request){
+    }
+    self.saveimgurl_post = function(request){
         console.log(request.payload);
         var imageEngine = require(process.cwd() + '/engine/image.js');
         var updateImg = request.payload;
@@ -179,7 +189,8 @@ module.exports = {
             // after upload image try registred like preview
             imageSetupPreviewAndResponse(request, err, data, request.payload.link, pgClient);
         }, dataExtra);
-    },idelete_post: function(request){
+    }
+    self.idelete_post = function(request){
         if(!request.payload.place_id){
             response(request,'place_id missing');
             return;
@@ -198,7 +209,8 @@ module.exports = {
         levelEngine.idelete(pgClient, dataContainer, function(err, deleted){
             response(request, err, deleted);
         });
-    },list_get: function(request){
+    }
+    self.list_get= function(request){
 
 
         var data = request.params.params.split('/');
@@ -218,7 +230,8 @@ module.exports = {
         }
 
         levelEngine.list(pgClient, dataContainer, superResponse(request));
-    },delete_post: function(request){
+    }
+    self.delete_post= function(request){
         if(!request.payload.place_id){
             response(request,'place_id missing');
             return;
@@ -231,7 +244,8 @@ module.exports = {
         levelEngine.delete(pgClient, dataContainer, function(err, deleted){
             response(request, err, deleted);
         });
-    },deleteinfo_post: function(request){
+    }
+    self.deleteinfo_post= function(request){
         if(!request.payload.id){
             response(request,'id of place missing');
             return;
@@ -244,7 +258,8 @@ module.exports = {
         levelEngine.deleteinfo(pgClient, dataContainer, function(err, deleted){
             response(request, err, deleted);
         });
-    },imagepreview_post: function(request){
+    }
+    self.imagepreview_post= function(request){
         if(!request.payload.preview_iid){
             response(request,'preview_iid of image missing');
             return;
@@ -265,7 +280,14 @@ module.exports = {
         });
     }
 
-}
+
+
+
+
+
+    return self;
+
+})();
 
 
 
