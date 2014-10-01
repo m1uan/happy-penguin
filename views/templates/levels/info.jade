@@ -1,2 +1,14 @@
 
-h2 info ID
+h2 info {{info.pi}}
+    span(ng-repeat="lang in langs")
+        a(ng-click="changeLang(lang.lang)") {{lang.lang}}
+        span |
+
+
+input(ng-model="info.translates[current].name")
+br
+textarea(ng-model="info.translates[current].info")
+
+div.input-group
+    select(ng-model="info.type", ng-options="c.pit as c.name for c in types",required).input
+    button.btn.btn-primary.input update

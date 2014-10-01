@@ -376,7 +376,7 @@ function PlacesCtrl($scope, $http) {
 
 function InfosCtrl($scope, $routeParams, $http, $timeout, $window) {
 
-    $scope.newinfo = {};
+    $scope.newinfo = {type:1};
 
     updateInfos();
 
@@ -411,5 +411,40 @@ function InfosCtrl($scope, $routeParams, $http, $timeout, $window) {
 
 
 function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
+    $scope.info = {pi : $routeParams.id};
+    $scope.current = 'en';
+
+    requestGET($http, '/admin/translates/langs/?fields=name,translate,lang', function(response, status){
+        $scope.langs=response.langs;
+
+        requestGET($http, 'infotypes/?fields=pit,name', function(response, status){
+            console.log(response);
+            $scope.types = response;
+            updateInfo();
+        });
+    });
+
+
+
+    function updateInfo(){
+        requestGET($http, 'info/?pi='+$scope.info.pi+'&timestamp=' + new Date().getTime(), function(response, status){
+            console.log(response);
+            $scope.info = response;
+
+            $scope.langs.forEach(function(lang){
+                if(!$scope.info.translates[lang.lang]){
+                    $scope.info.translates[lang.lang] = {name: '', info : ''}
+                }
+            })
+
+        });
+    }
+
+
+
+    $scope.changeLang = function(lang){
+        $scope.current = lang;
+    }
+
 
 }

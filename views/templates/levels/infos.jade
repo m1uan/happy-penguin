@@ -2,7 +2,8 @@ h2 infos
 
 table.table
     tr(ng-repeat="info in infos")
-        td {{info.pi}}
+        td
+            a(href="#/info/{{info.pi}}") # {{info.pi}}
         td {{info.name}}
         td {{info.type}}
 

@@ -281,6 +281,16 @@ module.exports = (function(){
     }
 
 
+    self.info_get = function(request){
+        if(!request.query){
+            response(request,'missing id of info');
+            return;
+        }
+
+        levelEngine.getInfo(pgClient, request.query, function(err, list){
+            response(request, err, list);
+        })
+    }
 
     self.infos_get = function(request){
         var fields = ['pi']
