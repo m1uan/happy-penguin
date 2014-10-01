@@ -940,6 +940,12 @@ module.exports = (function(){
         async.waterfall(watter, cb);
     }
 
+    /**
+     * get list of infos
+     * @param pgClient
+     * @param fields {Array}
+     * @param cb
+     */
     self.listInfo = function(pgClient, fields, cb){
         var indexOfName = fields.indexOf('name');
         if(indexOfName > -1){
@@ -963,6 +969,18 @@ module.exports = (function(){
 
         SQL.select(pgClient, cb);
     }
+
+
+    /**
+     * get list of types for info
+     * @param pgClient
+     * @param fields {Array}
+     * @param cb
+     */
+    self.listInfoTypes = function(pgClient, fields, cb){
+        var SQL = new SL.SqlLib('pinguin.place_info_type_t',fields);
+        SQL.select(pgClient, cb);
+    };
 
     /**
      * Callback used in level

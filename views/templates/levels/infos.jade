@@ -1,0 +1,16 @@
+h2 infos
+
+table.table
+    tr(ng-repeat="info in infos")
+        td {{info.pi}}
+        td {{info.name}}
+        td {{info.type}}
+
+
+
+h2 create
+div.input-group
+input(ng-model="newinfo.name").input
+select(ng-model="newinfo.type", ng-options="c.pit as c.name for c in types",required).input
+
+button(ng-click="add()").input.btn.btn-primary add

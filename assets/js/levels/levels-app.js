@@ -16,6 +16,16 @@ var app = angular.module('voc4u', ['ngRoute'],
             controller: PlaceCtrl
         });
 
+        $routeProvider.when('/infos', {
+            templateUrl: '/templates/levels/infos',
+            controller: InfosCtrl
+        });
+
+        $routeProvider.when('/info/:id', {
+            templateUrl: '/templates/levels/info',
+            controller: InfoCtrl
+        });
+
         $routeProvider.otherwise( {
             redirectTo: '/world'
         });
@@ -362,4 +372,44 @@ function PlacesCtrl($scope, $http) {
         console.log(response);
         $scope.places = response;
     });
+}
+
+function InfosCtrl($scope, $routeParams, $http, $timeout, $window) {
+
+    $scope.newinfo = {};
+
+    updateInfos();
+
+    requestGET($http, 'infotypes/?fields=pit,name', function(response, status){
+        console.log(response);
+        $scope.types = response;
+
+    });
+
+
+
+    function updateInfos(){
+        requestGET($http, 'infos/?fields=pi,name,type&timestamp=' + new Date().getTime(), function(response, status){
+            $scope.infos = response;
+
+        })
+    };
+
+
+    $scope.add = function(){
+        if(!$scope.newinfo.name || !$scope.newinfo.type) {
+            alertify.error('name or type is not selected');
+            return ;
+        }
+        requestPOST($http, 'infocreate/', $scope.newinfo, function(response, status){
+            $scope.newinfo = {};
+            updateInfos();
+        });
+    }
+
+}
+
+
+function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
+
 }

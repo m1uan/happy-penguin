@@ -293,8 +293,32 @@ module.exports = (function(){
         })
     }
 
-    self.createinfo_post = function(request){
+    self.infotypes_get = function(request){
+        var fields = ['pit']
+        if(request.query.fields){
+            fields = request.query.fields.split(',') ;
+        }
 
+        levelEngine.listInfoTypes(pgClient, fields, function(err, list){
+            response(request, err, list);
+        })
+    }
+
+    self.infocreate_post = function(request){
+
+        if(!request.payload.name){
+            response(request,'missing name of new info');
+            return;
+        }
+
+        if(!request.payload.type){
+            response(request,'missing type of new info');
+            return;
+        }
+
+        levelEngine.createInfo(pgClient, request.payload, function(err, list){
+            response(request, err, list);
+        })
     }
 
 
