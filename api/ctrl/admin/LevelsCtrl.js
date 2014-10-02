@@ -281,6 +281,12 @@ module.exports = (function(){
     }
 
 
+    self.info_post = function(request) {
+        levelEngine.updateInfo(pgClient, request.payload, function(err, list){
+            response(request, err, list);
+        })
+    }
+
     self.info_get = function(request){
         if(!request.query){
             response(request,'missing id of info');

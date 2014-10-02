@@ -841,7 +841,7 @@ describe('levels', function(){
 
                 var dataContainer = {
                     pi : createdInfo.pi,
-                    type: 2,
+                    type: 3,
                     translates : {
                         'en' : {name: 'Prague1', info: 'Prague is capital city'},
                         'cz' : {name: 'Praha', info: 'Praha je hlavni mesto'}
@@ -853,6 +853,7 @@ describe('levels', function(){
                     levels.getInfo(pgClient, dataContainer, function(err, info){
                         info.should.be.a.object;
                         info.should.have.a.property.type;
+                        info.type.should.be.equal(3);
                         info.should.have.a.property.info;
                         info.should.have.a.property.name;
                         info.should.have.a.property.translates;

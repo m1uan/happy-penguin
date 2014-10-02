@@ -446,5 +446,11 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
         $scope.current = lang;
     }
 
+    $scope.update = function(){
+        requestPOST($http, 'info/', $scope.info, function(response, status){
+            updateInfo();
+        });
+    }
+
 
 }

@@ -754,7 +754,7 @@ module.exports = (function(){
 
             // update type if nesesary
             if(dataContainer.type){
-                watter.push(function(icb2){
+                parallel.push(function(icb2){
                     var SQL = SL.SqlLib('pinguin.place_info_t');
                     SQL.whereAnd('pi=' + dataContainer.pi);
 
@@ -879,7 +879,7 @@ module.exports = (function(){
         var serial = [];
 
         watter.push(function(icb){
-            var SQL = new SL.SqlLib('pinguin.place_info_t',['name','info','type']);
+            var SQL = new SL.SqlLib('pinguin.place_info_t',['pi','name','info','type']);
             SQL.whereAnd('pi=' + dataContainer.pi);
             SQL.select(pgClient, icb);
         });
