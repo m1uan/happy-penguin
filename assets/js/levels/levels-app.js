@@ -238,6 +238,7 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
 function WorldCtrl($scope, $location, $http) {
     var element = $('#world-main');
     var map = null;
+    var self = {};
     //console.log(element);
 //    element.mousemove(function(evt) {
 //        var x = evt.pageX - element.offset().left;
@@ -250,6 +251,21 @@ function WorldCtrl($scope, $location, $http) {
 
     //element.click(onClick);
 
+
+    requestGET($http, 'infotypes/?fields=pit,name', function(response, status){
+        console.log(response);
+        self.types = response;
+        updateInfos();
+    });
+
+
+
+    function updateInfos(){
+        requestGET($http, 'infos/?fields=pi,name,type&timestamp=' + new Date().getTime(), function(response, status){
+            self.infos = response;
+
+        })
+    };
 
     function update(){
         var url ='list/en/?fields=id,name,posx,posy';
@@ -273,10 +289,27 @@ function WorldCtrl($scope, $location, $http) {
 
 
     function createPoint(portX, portY, code){
-        alertify.prompt('portX:'+portX+ ' - protY:'+portY + ' - code:' + code, function(e, placeName){
+        var text = '<div>portX:'+portX+ ' - protY:'+portY + ' - code:' + code +'<div>'
+            + '<div><input id="crate-point-name" ><select id="crate-point-type">';
+        self.types.forEach(function(type){
+           text += '<option  value="'+type.pit+'">' + type.name +'</option>';
+        });
+
+        text += '</select></div><i>if is name empty will be created by info</i>';
+        text += '<div><select id="crate-point-info">';
+        self.infos.forEach(function(info){
+            text += '<option value="'+info.pi+'">' + info.name +' ('+info.type+')</option>';
+        });
+        text += '</select></div>';
+
+        alertify.confirm(text, function(e, placeName){
             if(e){
+                // if is name empty, it will create by info
+                var name = $('#crate-point-name').val();
+                var type = $('#crate-point-type').val();
+                var info = $('#crate-point-info').val();
                 var url = 'create/';
-                requestPOST($http, url, {posx:portX, posy:portY, name:placeName, 'code': code}, function(response, status){
+                requestPOST($http, url, {posx:portX, posy:portY, 'name':name, 'type': type, 'info': info, 'code': code}, function(response, status){
                     console.log(response)
 
                     update();
