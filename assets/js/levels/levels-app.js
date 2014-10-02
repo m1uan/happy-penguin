@@ -292,13 +292,13 @@ function WorldCtrl($scope, $location, $http) {
         var text = '<div>portX:'+portX+ ' - protY:'+portY + ' - code:' + code +'<div>'
             + '<div><input id="crate-point-name" ><select id="crate-point-type">';
         self.types.forEach(function(type){
-           text += '<option  value="'+type.pit+'">' + type.name +'</option>';
+           text += '<option  value="'+type.pit+'">[' + type.name +']</option>';
         });
 
         text += '</select></div><i>if is name empty will be created by info</i>';
         text += '<div><select id="crate-point-info">';
         self.infos.forEach(function(info){
-            text += '<option value="'+info.pi+'">' + info.name +' ('+info.type+')</option>';
+            text += '<option value="'+info.pi+'">' + info.name +' ['+info.type+']</option>';
         });
         text += '</select></div>';
 
