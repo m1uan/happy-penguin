@@ -399,7 +399,7 @@ function WorldCtrl($scope, $location, $http) {
 
 
 function PlacesCtrl($scope, $http) {
-    var url ='list/en/?fields=id,name,posx,posy';
+    var url ='list/en/?fields=id,name,type,posx,posy';
 
     requestGET($http, url, function(response, status){
         console.log(response);

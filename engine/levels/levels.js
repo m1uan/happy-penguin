@@ -549,11 +549,18 @@ module.exports = (function(){
         }
 
         var SQL = SL.SqlLib('pinguin.place_t pp', fields);
+        SQL.join('pinguin.place_info_t pi','pp.place_info=pi.pi');
 
         var indexOfName = fields.indexOf('name');
         if(indexOfName > -1){
-            fields[indexOfName] = "COALESCE(ttn.data,(SELECT tte.data FROM translates.translate_t tte WHERE tte.link=pp.name AND tte.lang='en')) as name";
-            SQL.join('translates.translate_t as ttn','ttn.link=pp.name AND ttn.lang=\''+lang+'\'');
+            fields[indexOfName] = "COALESCE(ttn.data,(SELECT tte.data FROM translates.translate_t tte WHERE tte.link=pi.name AND tte.lang='en')) as name";
+            SQL.join('translates.translate_t as ttn','ttn.link=pi.name AND ttn.lang=\''+lang+'\'');
+        }
+
+        var indexOfType = fields.indexOf('type');
+        if(indexOfType > -1) {
+            fields[indexOfType] = 'pt.name as type';
+            SQL.join('pinguin.place_info_type_t as pt','pt.pit=pi.type');
         }
 
         var indexOfPreview = fields.indexOf('preview');
