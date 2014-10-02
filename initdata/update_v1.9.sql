@@ -1,5 +1,6 @@
-DROP TABLE IF EXISTS pinguin.place_info_type_t;
 DROP TABLE IF EXISTS pinguin.place_info_t;
+DROP TABLE IF EXISTS pinguin.place_info_type_t;
+ALTER TABLE pinguin.place_t DROP COLUMN IF EXISTS place_info;
 
 CREATE TABLE pinguin.place_info_type_t (
     pit SERIAL NOT NULL,
@@ -24,4 +25,8 @@ CREATE TABLE pinguin.place_info_t (
     FOREIGN KEY (info) REFERENCES translates.link_t (link),
     FOREIGN KEY (type) REFERENCES pinguin.place_info_type_t (pit),
     PRIMARY KEY (pi)
-)
+);
+
+ALTER TABLE pinguin.place_t ADD COLUMN place_info INTEGER;
+ALTER TABLE pinguin.place_t ADD FOREIGN KEY (place_info) REFERENCES pinguin.place_info_t (pi);
+ALTER TABLE pinguin.place_t ALTER COLUMN name DROP NOT NULL;

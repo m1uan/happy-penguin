@@ -68,9 +68,10 @@ describe('levels', function(){
 
 
 
-        it('create', function(cb){
+        it('create with name', function(cb){
             var dataContainer = {
                 name : 'place',
+                type: 1,
                 posx: 0.5,
                 posy: 0.5,
                 code: 'CZ'
@@ -89,6 +90,42 @@ describe('levels', function(){
                 data.name.should.be.equal(dataContainer.name);
                 cb();
             });
+
+
+
+
+        });
+
+        it('create with info', function(cb){
+            var dataInfo = {
+                name : 'place1',
+                type : 3
+            }
+
+            levels.createInfo(pgClient, dataInfo, function(err, newInfo){
+                var dataContainer = {
+                    info : newInfo.pi,
+                    posx: 0.5,
+                    posy: 0.5,
+                    code: 'CZ'
+                };
+
+
+                levels.create(pgClient,dataContainer, function(err, data){
+                    assert(!err);
+
+                    data.should.have.property('id');
+                    data.should.have.property('name');
+                    data.should.have.property('posx');
+                    data.should.have.property('posy');
+                    data.posx.should.be.equal(dataContainer.posx);
+                    data.posy.should.be.equal(dataContainer.posy);
+                    data.name.should.be.equal(dataInfo.name);
+                    cb();
+                });
+            })
+
+
 
 
 

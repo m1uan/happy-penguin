@@ -13,33 +13,59 @@ module.exports = (function(){
     }
 
     self.create = function(pg, dataContainer, cb){
-        if(!dataContainer.posx || !dataContainer.posy || !dataContainer.name || !dataContainer.code){
-            cb('missing position posx, posy, name or/and code');
+        if(!dataContainer.posx || !dataContainer.posy || !dataContainer.code){
+            cb('missing position posx, posy or/and code');
         }
 
         var cascade = [];
 
-        // create translation for place
-        cascade.push(function(icb){
-            var add = {
-                key : '_city_' + dataContainer.name,
-                desc: dataContainer.name,
-                lang:'en',
-                group:LEVEL_GROUP
+        // two different ways to create place
+        // #1 create from type and name
+        // #2 create based on already created info
+        if(dataContainer.name){
+
+            // if type is not set, setup to city
+            if(!dataContainer.type) {
+                dataContainer.type = 1;
             }
-            translate.addtranslate(pg, add, icb);
-        });
+
+            // create info for place
+            cascade.push(function(icb){
+                var add = {
+                    name : dataContainer.name,
+                    type : dataContainer.type
+                }
+                self.createInfo(pg, add, function(err,data){
+                    icb(err, {info: data.pi, name: dataContainer.name, type: dataContainer.type});
+                });
+            });
+        } else if(dataContainer.info){
+            // create info for place
+            cascade.push(function(icb){
+                var SQL = new SL.SqlLib('pinguin.place_info_t',['pi as info','tl.desc as name','type']);
+                SQL.join('translates.link_t as tl', 'tl.link=pinguin.place_info_t.name');
+                SQL.whereAnd('pi='+dataContainer.info);
+                SQL.select(pg, function(err, oldInfo){
+                    icb(err, oldInfo[0]);
+                });
+            });
+        } else {
+            cb('not set name or id of info for create a new place');
+            return;
+        }
+
 
         // create new place
-        cascade.push(function(addtranslate, icb){
-            var sql = 'INSERT INTO pinguin.place_t (posx,posy,name,code) VALUES ($1,$2,$3,$4) RETURNING id,posx,posy,code';
+        cascade.push(function(addinfo, icb){
+            var sql = 'INSERT INTO pinguin.place_t (posx,posy,place_info,code) VALUES ($1,$2,$3,$4) RETURNING id,posx,posy,code';
 
 
-            pg.query(sql, [dataContainer.posx,dataContainer.posy, addtranslate.link, dataContainer.code], function(err, place){
+            pg.query(sql, [dataContainer.posx,dataContainer.posy, addinfo.info, dataContainer.code], function(err, place){
                 if(place && place.rows){
                     place = place.rows[0];
-                    place.namelink = addtranslate.link;
-                    place.name = addtranslate.desc;
+                    //place.namelink = addtranslate.link;
+                    place.name = addinfo.name;
+                    place.type = addinfo.type;
                 }
 
                 icb(err,place);
