@@ -1,11 +1,11 @@
 link(rel='stylesheet', href='/assets/css/levels/world.css')
 div#uploader
-    div spot
-        p positions x and y
-        input(ng-model="posx")
-        input(ng-model="posy")
+    p positions x and y
+    input(ng-model="posx")
+    input(ng-model="posy")
+    select(ng-change="changePlaceInfo()",ng-changed="changePlaceInfo()",ng-model="place_info", ng-options="c.pi as c.text for c in infos",required).input
+    a(href="#/info/{{place_info}}") edit place info
     div
-        select(ng-model="place_info", ng-options="c.pi as c.text for c in infos",required).input
         p english name of place/spot
         input(ng-model="name",size="50",maxlength="70")
 

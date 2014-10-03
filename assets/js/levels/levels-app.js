@@ -59,13 +59,29 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
         }
     }});
 
+    $scope.changePlaceInfo= function(){
+        console.log('placeChange');
+        if($scope.info || $scope.name){
+            alertify.confirm('There are old info and name, are you sure with remove it', function(e){
+                if(e){
+                    $scope.update();
+                    alertify.success('ok');
+
+                } else {
+                    $scope.place_info = 1;
+                }
+            });
+        } else {
+            $scope.update();
+        }
+    }
+
     $scope.update = function(){
         var updateData = {
             id : self.id,
             posx : $scope.posx,
             posy : $scope.posy,
-            name : $scope.name,
-            info : $scope.info
+            place_info : $scope.place_info
         }
 
         console.log('updateData',updateData);

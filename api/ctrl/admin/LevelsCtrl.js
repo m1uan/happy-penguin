@@ -54,17 +54,23 @@ module.exports = (function(){
 
         }
 
-        if(dataContainer.name){
-            updated.push(function(icb){
-                levelEngine.updatename(pgClient,dataContainer, icb);
-            });
-        }
-
-        if(dataContainer.info){
+        if(dataContainer.place_info){
             updated.push(function(icb){
                 levelEngine.updateinfo(pgClient,dataContainer, icb);
             });
         }
+        // all included in place_info
+        /*if(dataContainer.name){
+            updated.push(function(icb){
+                levelEngine.updatename(pgClient,dataContainer, icb);
+            });
+        }*/
+
+        /*if(dataContainer.info){
+            updated.push(function(icb){
+                levelEngine.updateinfo(pgClient,dataContainer, icb);
+            });
+        }*/
 
         // i know strange behave but i have not better idea now...
         if(updated.length>0){
@@ -75,8 +81,9 @@ module.exports = (function(){
                     updatedArray.forEach(function(ud){
                         if(ud.posx) retData.posx = ud.posx;
                         if(ud.posy) retData.posy = ud.posy;
-                        if(ud.name) retData.name = ud.name;
-                        if(ud.info) retData.info = ud.info;
+                        /*if(ud.name) retData.name = ud.name;
+                        if(ud.info) retData.info = ud.info;*/
+                        if(ud.place_info) retData.place_info = ud.place_info;
                         if(ud.id) retData.id = ud.id;
                     })
                 }
