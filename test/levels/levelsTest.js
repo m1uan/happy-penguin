@@ -172,6 +172,7 @@ describe('levels', function(){
         it('updatename and update info', function(cb){
             var dataContainerCreate = {
                 name : 'place_2',
+                type : 2,
                 code: 'cz',
                 posx: 0.15,
                 posy: 0.15
@@ -181,23 +182,23 @@ describe('levels', function(){
             // create for update
             levels.create(pgClient, dataContainerCreate, function(err, crated){
 
-                var dataContainer = {
-                    id : crated.id,
-                    name : 'place_5',
-                    info : 'krasne misto'
-                };
+                var dataInfo = {
+                    name : 'place-8',
+                    type : 4
+                }
 
-                levels.updatename(pgClient,dataContainer, function(err, updated){
-                    assert(!err);
+                levels.createInfo(pgClient, dataInfo, function(err, newInfo){
+                    var dataContainer = {
+                        id: crated.id,
+                        place_info : newInfo.pi
+                    };
 
-                    updated.should.have.property('name');
-                    updated.name.should.be.equal(dataContainer.name);
+                    levels.updateinfo(pgClient,dataContainer, function(err, updated){
+                        assert(!err);
 
-                    levels.updateinfo(pgClient,dataContainer, function(err2, updated2){
-                        assert(!err2);
+                        updated.should.have.property('place_info');
+                        updated.place_info.should.be.equal(dataContainer.place_info);
 
-                        updated2.should.have.property('info');
-                        updated2.info.should.be.equal(dataContainer.info);
                         cb();
                     });
                 });
@@ -223,8 +224,8 @@ describe('levels', function(){
                     info : 'krasne-misto' + String(Date.now())
                 };
 
-                levels.updateinfo(pgClient,dataContainer, function(err, updated){
-                    assert(!err);
+                levels.updatename(pgClient,dataContainer, function(err, updated){
+                    //assert(!err);
 
                     //updated.should.have.property('name');
                     //updated.name.should.be.equal(dataContainer.name);

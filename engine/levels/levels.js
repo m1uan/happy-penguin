@@ -119,35 +119,80 @@ module.exports = (function(){
     }
 
     self.updateinfo = function(pg, dataContainer, cb){
-        updateTextField(pg, {id:dataContainer.id, text: dataContainer.info}, 'info', cb);
+        var ud = {place_info : dataContainer.place_info};
+        var parallel = []
+        // when is the info update
+        // delete info and name because old places
+        // i mean old places with old system
+        // still have on translates
+        parallel.push(function(icb){
+            self.deleteinfo(pg, dataContainer, icb);
+        });
+
+        parallel.push(function(icb){
+            var SQL = SL.SqlLib('pinguin.place_t');
+            SQL.whereAnd('id=' + dataContainer.id);
+
+            SQL.update(pg, ud, icb);
+        });
+
+        async.parallel(parallel, function(err, data){
+            var SQL = SL.SqlLib('pinguin.place_t',['place_info']);
+            SQL.whereAnd('id=' + dataContainer.id);
+            SQL.select(pg, function(e,d){
+                cb(e, e? null : d[0]);
+            });
+        });
     }
 
     self.deleteinfo = function(pg, dataContainer, cb){
         var watter = [];
 
         watter.push(function(icb){
-            var SQL = 'SELECT info FROM pinguin.place_t WHERE id='+dataContainer.id;
+            var SQL = 'SELECT info,name FROM pinguin.place_t WHERE id='+dataContainer.id;
             pg.query(SQL, icb);
         });
 
         watter.push(function(info, icb){
-            var SQL = 'UPDATE pinguin.place_t SET info=null WHERE id='+dataContainer.id + ' RETURNING info';
+            var SQL = 'UPDATE pinguin.place_t SET info=null,name=null WHERE id='+dataContainer.id + ' RETURNING info,name';
             pg.query(SQL, function(err, data){
                 // very probably wasn't before error so
                 // info.rows[0] must have a data
                 var infoData = {
-                    link: info.rows[0].info
+                    name: info.rows[0].name,
+                    info: info.rows[0].info
                 };
                 icb(err, infoData);
             });
         });
 
         watter.push(function(infoData, icb){
-            translate.delete(pg, infoData, icb);
+            var parallel = [];
+            if(infoData.name){
+                parallel.push(function(icb2){
+                    translate.delete(pg, {link: infoData.name}, icb2);
+                });
+            }
+
+            if(infoData.info){
+                parallel.push(function(icb2){
+                    translate.delete(pg, {link: infoData.info}, icb2);
+                });
+            }
+
+            // in new scenario (name and info) null
+            // just still in old place structure they have a content
+            if(parallel.length) {
+                async.parallel(parallel, icb);
+            } else {
+                icb(null, infoData);
+            }
+
+
         });
 
         async.waterfall(watter, function(err, data){
-            cb(err, {info:null});
+            cb(err, {info:null,name:null});
         });
     }
 

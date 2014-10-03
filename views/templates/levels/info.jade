@@ -5,9 +5,9 @@ h2 info {{info.pi}}
         span |
 
 
-input(ng-model="info.translates[current].name")
+input(ng-model="info.translates[current].name",size="50",maxlength="70")
 br
-textarea(ng-model="info.translates[current].info")
+textarea(ng-model="info.translates[current].info",rows="10",cols="150")
 
 div.input-group
     select(ng-model="info.type", ng-options="c.pit as c.name for c in types",required).input

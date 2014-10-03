@@ -118,18 +118,33 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
     }
 
 
-    var url ='get/'+self.id+'?fields=id,name,info,posx,posy,preview_iid&qfields=qid,question,answers,type&ifields=iid,image';
+    var url ='get/'+self.id+'?fields=id,name,info,place_info,posx,posy,preview_iid&qfields=qid,question,answers,type&ifields=iid,image';
 
     requestGET($http, url, function(response, status){
         console.log(response);
         fillScopeFromResponse(response);
-
+        updateInfos();
     });
 
 
+
+
+    function updateInfos(){
+        requestGET($http, 'infos/?fields=pi,name,type&timestamp=' + new Date().getTime(), function(response, status){
+            $scope.infos = response;
+
+            $scope.infos.forEach(function(info){
+                info.text = info.name + ' [' + info.type + ']';
+            })
+
+        })
+    };
+
     function fillScopeFromResponse(response){
-        $scope.info = (response.info? response.info : '');
+        //$scope.info = (response.info? response.info : '');
+        $scope.place_info = response.place_info;
         $scope.name = response.name;
+        $scope.info = response.info;
         $scope.posx = response.posx;
         $scope.posy = response.posy;
         $scope.questions = response.questions;

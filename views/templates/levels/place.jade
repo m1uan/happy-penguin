@@ -4,7 +4,8 @@ div#uploader
         p positions x and y
         input(ng-model="posx")
         input(ng-model="posy")
-
+    div
+        select(ng-model="place_info", ng-options="c.pi as c.text for c in infos",required).input
         p english name of place/spot
         input(ng-model="name",size="50",maxlength="70")
 
@@ -14,28 +15,29 @@ div#uploader
         span(ng-click="update()").btn.btn-warning update text
         span(ng-click="deleteInfo()").btn.btn-danger remove text
 
-        hr
-        div(ng-repeat="question in questions").input-group#questions
-            input(ng-model="question.question").input-sm
-            input(ng-model="question.answers").input-sm
-            select(ng-model="question.type").input-sm
-                //option(value="0") Translate from learn
-                option(value="0") Translate from native
+        div.hide
+            hr
+            div(ng-repeat="question in questions").input-group#questions
+                input(ng-model="question.question").input-sm
+                input(ng-model="question.answers").input-sm
+                select(ng-model="question.type").input-sm
+                    //option(value="0") Translate from learn
+                    option(value="0") Translate from native
+                    option(value="1") Create questoin based on answer
+                    option(value="2") Do answer in learn
+
+
+                button(ng-click="qUpdate(question)").btn.btn-danger update
+                button(ng-click="qDelete(question, $index)").btn.btn-danger delete
+
+            p add questions
+            input(ng-model="add_question").input-sm
+            input(ng-model="add_answers").input-sm
+            select(ng-model="add_question_type").input-sm
+                option(value="0",selected="selected") Translate from native
                 option(value="1") Create questoin based on answer
                 option(value="2") Do answer in learn
-
-
-            button(ng-click="qUpdate(question)").btn.btn-danger update
-            button(ng-click="qDelete(question, $index)").btn.btn-danger delete
-
-        p add questions
-        input(ng-model="add_question").input-sm
-        input(ng-model="add_answers").input-sm
-        select(ng-model="add_question_type").input-sm
-            option(value="0",selected="selected") Translate from native
-            option(value="1") Create questoin based on answer
-            option(value="2") Do answer in learn
-        button(ng-click="qAdd()").btn.btn-primary add
+            button(ng-click="qAdd()").btn.btn-primary add
 
 
         div
