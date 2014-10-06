@@ -5,15 +5,16 @@ var wordsEngine = require(process.cwd() + '/engine/words.js')
 
 var pgClient = null;
 
-module.exports = {
+module.exports = (function(){
 
+    var self = {};
     // init
-    $init : function(server, Hapi){
+    self.$init = function(server, Hapi){
         pgClient = server.pgClient;
 
-    },
+    }
     // get Hapi Config
-    $getConfig : function(){
+    self.$getConfig = function(){
         return {
             auth : 'passport'
             ,params : '{params*}'
@@ -25,10 +26,13 @@ module.exports = {
                 params : '{params*}'
             }
         }
-    },
-    test_get : function(request){
+    }
+
+    self.test_get = function(request){
       request.reply('heelo');
-    },get_get : function (request){
+    }
+
+    self.get_get = function (request){
         var langs = request.params.params.split('/');
         var lesson = langs.shift();
         console.log('---------------------------------------------');
@@ -56,8 +60,9 @@ module.exports = {
 
         },deleted);
 
-    },
-    ivana_get : function (request){
+    }
+
+    self.ivana_get = function (request){
         var langs = request.params.params.split('/');
         var lesson = langs.shift();
         var word = new wordsEngine.WORDS(pgClient, lesson);
@@ -96,9 +101,9 @@ module.exports = {
 
             request.reply(xls).type('text/plain');
         });
-    },
+    }
 
-    lesson_get : function (request){
+    self.lesson_get = function (request){
 
         //console.log(request.getParam('l2'));
         //  http://localhost:8080/words/lesson/2/de/cs
@@ -118,8 +123,9 @@ module.exports = {
             error.reformat();
             request.reply(error);
         }
-    },
-    update_post : function(request){
+    }
+
+    self.update_post = function(request){
         console.log(request.payload);
 
         var updateUser = request.payload;
@@ -127,8 +133,9 @@ module.exports = {
         wordsEngine.updateWord(pgClient, updateUser, request.user.id, function(err, data){
            request.reply(err || data);
         } );
-    },
-    saveimgurl_post : function(request){
+    }
+
+    self.saveimgurl_post = function(request){
         console.log(request.payload);
         var imageEngine = require(process.cwd() + '/engine/image.js');
         var updateImg = request.payload;
@@ -138,23 +145,26 @@ module.exports = {
         imageEngine.saveFromUrl(pgClient, userId, updateImg.link, updateImg.url, function(err, data){
             request.reply(err || data);
         } );
-    },
-    deleteimg_post: function(request){
+    }
+
+    self.deleteimg_post = function(request){
         var link = require(process.cwd() + '/engine/link.js');
 
         var updateImg = request.payload;
         link.deleteImageAndGet(pgClient, request.user.id, updateImg.link, function(err, data){
             request.reply(err || data);
         });
-    },updatelink_post: function(request){
+    }
+
+    self.updatelink_post = function(request){
         var updateLink = request.payload;
         Link.updateAndGet(pgClient, request.user.id, updateLink, function(err, data){
             request.reply(err || data);
         });
-    },
+    }
     // http://stackoverflow.com/questions/18994881/convert-base64-image-to-raw-binary-with-node-js
     // http://stackoverflow.com/questions/9622901/how-to-upload-a-file-using-jquery-ajax-and-formdata
-    uploadimg_post: function(request){
+    self.uploadimg_post = function(request){
         var image = require(process.cwd() + '/engine/image.js');
         var linkEngine = require(process.cwd() + '/engine/link.js');
 
@@ -216,8 +226,9 @@ module.exports = {
 
 
 
-    },
-    duplicity_post : function (request){
+    }
+
+    self.duplicity_post = function (request){
 
         console.log('duplicity_post********', request.payload);
         //  http://localhost:8080/words/duplicity/de/cs
@@ -246,8 +257,9 @@ module.exports = {
                 ' or missing Array links in payload');
         }
 
-    },
-    deletelink_post: function (request){
+    }
+
+    self.deletelink_post = function (request){
         var linksEngine = require(process.cwd() + '/engine/link.js');
 
         linksEngine.deleteLink(pgClient, request.payload.links, request.user.id, function(err, data){
@@ -259,8 +271,9 @@ module.exports = {
 
         });
 
-    },
-    addword_post: function (request){
+    }
+
+    self.addword_post = function (request){
         wordsEngine.addWord(pgClient, request.payload.word, request.user.id, function(err, data){
             if(err) {
                 err_response(request, err);
@@ -269,6 +282,26 @@ module.exports = {
             }
 
         });
+    }
+
+    self.search_get = function(request){
+        if(request.params.params && request.params.params.length > 0){
+            var dataContainer = {lang : request.params.params.split('/')[0]}
+
+            if(request.query.fields){
+                dataContainer.fields = request.query.fields.split(',') ;
+            }
+
+            if(request.query.word){
+                dataContainer.word = request.query.word;
+            }
+            wordsEngine.search(pgClient, dataContainer, function(err, retData){
+                response(request, err, retData);
+
+            });
+        } else {
+            response(request, 'lang missing');
+        }
     }
 
 
@@ -289,7 +322,9 @@ module.exports = {
 //      }
 //    }
 
-}
+
+    return self;
+})();
 
 function err_response(request, err){
     var error = Hapi.error.badRequest(err);

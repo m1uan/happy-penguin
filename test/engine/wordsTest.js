@@ -565,6 +565,19 @@ describe('getWords', function(){
 
     });
 
+    describe('search', function(){
+        it('"extension"', function (cb){
+           words.search(pgClient, {word:'extension', lang:'en', fields :['lesson as s','lid', 'desc', 'word']}, function(err, data){
+               data.should.be.a.array;
+               data[0].should.have.a.property('desc');
+               data[0].should.have.a.property('lid');
+               data[0].should.have.a.property('s');
+               data[0].should.have.a.property('word');
+               cb();
+           })
+        });
+    })
+
     describe('request', function(){
 
         it('get normal', function(cb){

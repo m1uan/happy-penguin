@@ -725,6 +725,66 @@ module.exports.addWord = function(pg, addWord, userId, cb){
 
 }
 
+module.exports.search = function(pg, search, cb){
+    if(!search.lang){
+        cb('lang missing');
+        return;
+    }
+
+    if(!search.word) {
+        cb('word missing');
+        cb();
+    }
+
+    if(!search.fields){
+        search.fields = ['lid']
+    }
+
+    var indexOfWord = search.fields.indexOf('word');
+    if(indexOfWord > -1){
+        search.fields[indexOfWord] = 'word1.word as word'
+    }
+
+    var indexOfDesc = search.fields.indexOf('desc');
+    if(indexOfDesc > -1){
+        search.fields[indexOfDesc] = 'link.description as desc'
+    }
+
+
+    var sql = new SQL.SqlLib('link', search.fields);
+    sql.join('word as word1', 'word1.link = link.lid');
+    sql.whereAnd('link.del < 1');
+    sql.whereAnd('word1.lang =\''+search.lang+'\'');
+    sql.whereAnd('word1.version =0');
+    sql.whereAnd("(lower(word1.word) SIMILAR TO '(% )?("+search.word+")')");
+    sql.select(pg, cb);
+
+    /*var sql = 'SELECT link.lesson as s, link.lid,'
+        +'link.description as d,'
+        + ' (word1.word) as w1, word2.word as w2'
+        + ' FROM link'
+        + ' JOIN word as word1 ON word1.link = link.lid'
+        + ' JOIN word as word2 ON word2.link = link.lid'
+        + ' WHERE'
+        + ' link.del < 1'
+        + ' AND word1.lang = $1'
+        + ' AND word2.lang = $2'
+        + ' AND word1.version=0'
+        + ' AND word2.version=0'
+
+        + ' AND '
+        + '('
+        + '(lower(word1.word) SIMILAR TO'
+        + " '(% )?("+search.w1+")')"
+
+
+        + 'OR (lower(word1.word) SIMILAR TO'
+        + " '(% )?("+search.w2+")')"
+        + ')'
+
+        + ' LIMIT 6)';*/
+}
+
 /***
  * crete new word on link, if exist both sides -> just update them
  * @param pg
