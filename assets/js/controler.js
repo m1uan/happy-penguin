@@ -30,7 +30,7 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
                         // duplicity loading
                         tw.duplicity = false; // HAVE TO BE false
                         if(duplicityService){
-                            duplicityService.checkDuplicity(tw);
+                            //duplicityService.checkDuplicity(tw);
                         }
                         $scope.undeleteWords++;
 
@@ -63,7 +63,7 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
                 $scope.loading = false;
 
                 if(duplicityService){
-                    duplicityService.loadDuplicityTimer();
+                    //duplicityService.loadDuplicityTimer();
                 }
 
                 if(callback){
