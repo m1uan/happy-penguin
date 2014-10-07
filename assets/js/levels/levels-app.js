@@ -477,7 +477,7 @@ function InfosCtrl($scope, $routeParams, $http, $timeout, $window) {
 function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
     $scope.info = {pi : $routeParams.id};
     $scope.current = 'en';
-    $scope.translateText = '';
+    $scope.separatedWords = {};
 
 
     var words = {};
@@ -513,7 +513,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
 
     function updateWords(lang, suppresTextArea){
         splitBlocks('en');
-        showLine('en', suppresTextArea);
+        showWordsInLineOfWords('en', suppresTextArea);
     }
 
     function createWordAndLink(sentence, w){
@@ -589,7 +589,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
     }
 
 
-    function showLine(lang, suppressTextArea){
+    function showWordsInLineOfWords(lang, suppressTextArea){
         // line in editor
         var editLine = ''
         // line in list of words
@@ -627,7 +627,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
 
         });
 
-        // if you edit text area, ng-change call showLine
+        // if you edit text area, ng-change call showWordsInLineOfWords
         // for update line in #lineofwords
         // but if you set scope translates, you lost write focus
         if(!suppressTextArea){
@@ -653,7 +653,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
     function selectWord(el, word, lang){
         word.link = 1;
         $scope.$apply(function(){
-            showLine(lang);
+            showWordsInLineOfWords(lang);
             $('.inner-words').removeClass('inner-words-selected');
             $('#inner-word-' + word.id).addClass('inner-words-selected');
         })
@@ -677,8 +677,17 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
         wordsCheck('en');
     }
 
+    var setTimeOutForUpdate = null;
     $scope.infoChange = function(lang){
-        updateWords(lang, true);
+        if(setTimeOutForUpdate) {
+            return;
+        }
+        // dont update word every change, it is enought one time per 2s
+        setTimeOutForUpdate = setTimeout(function(){
+            setTimeOutForUpdate = null;
+            updateWords(lang, true);
+        }, 2000)
+
     }
 
 
