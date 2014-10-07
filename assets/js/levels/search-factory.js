@@ -59,7 +59,7 @@
                 wordString = wordString.substring(1);
 
                 var fixlang = lang != 'cz' ? lang : 'cs';
-                requestGET($http, '/words/search/'+fixlang+'/?fields=lid,desc&words='+wordString, function(response, status){
+                requestGET($http, '/words/search/'+fixlang+'/?fields=lid,desc,word&words='+wordString, function(response, status){
                     console.log(response);
 
                     response.forEach(function(foundedWords, idx){

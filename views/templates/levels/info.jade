@@ -20,12 +20,22 @@ div#lineofwords
 
 div.clearfix
 table.table.table-responsive
+    tr
+        td
+        td
+            div.input-group
+                input(ng-model="selectedWord.simple").input
+                button(ng-click="checkSelectedWord()").input check
+
+
     tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss)")
         td # {{poss.lid}}
         td {{poss.desc}}
+        td {{poss.word}}
     tr(ng-click="selectWordPossibility(selectedWord,null)")
         td # 1
         td [remove]
+        td
 
 div.clearfix
 

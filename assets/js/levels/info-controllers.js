@@ -109,7 +109,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
         // remove special characters
         // like simple word for search
-        var simple = word.replace(/[^a-zA-Z ]/g, "")
+        var simple = word.replace(/[^a-zA-Zěščřžýáíúůñ ]/g, "")
 
 
         return {
@@ -272,6 +272,12 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
 
         showWordsInLineOfWords($scope.current);
+    }
+
+    $scope.checkSelectedWord = function(){
+        searchFactory.search($scope.current, [$scope.selectedWord], function(){
+
+        });
     }
 
 
