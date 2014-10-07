@@ -560,16 +560,17 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
         // will contain reference to sentence
         var sentences = block.split('.')
 
-        // 'ahoj.'.split('.') separe string to ['ahoj','.']
-        // but we are not care about the dot, because we add
-        // automaticaly on end of forEach
-        // othervise will be there two dots
-        sentences.pop();
 
         sentences.forEach(function(sentence){
-            splitWords(lang, sentence);
-            // determine end of sentence
-            words[lang].push({type:1});
+            // supress empty sentences
+            // 'ahoj. '.split('.') separe string to ['ahoj',' ']
+            // and in 2nd index the splitWords method will operate with ' '
+            // that will not add any words but will add word with type 1
+            // thats dot and with this behavior will have two dots on end
+            if(sentence.trim()){
+                splitWords(lang, sentence);
+                words[lang].push({type:1});
+            }
         });
     }
 
