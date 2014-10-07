@@ -63,7 +63,7 @@
                     response.forEach(function(linkedWord, idx){
                         var wl = downloadListLinks[idx];
 
-                        __links[wl[0].link] = linkedWord;
+                        __links[lang][wl[0].link] = linkedWord;
                         wl.forEach(function(word){
                             __setupWord(linkedWord, word);
                         })
@@ -78,8 +78,17 @@
 
         }
 
+        function __update(lang, word){
+            if(!__links[lang]) {
+                __links[lang] = {};
+            }
+
+            __links[lang][word.link] = word;
+        }
+
         return {
-            get: __get
+            get: __get,
+            update : __update
         };
     });
 }).call(this);

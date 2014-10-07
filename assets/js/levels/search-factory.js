@@ -3,9 +3,9 @@
  */
 (function() {
     'use strict';
-    var amod = angular.module('milan.levels.search.factory',['ngRoute']);
+    var amod = angular.module('milan.levels.search.factory',['ngRoute', 'milan.levels.links.factory']);
 
-    amod.factory('searchFactory', function($http) {
+    amod.factory('searchFactory', function($http, linksFactory) {
         var self = {};
         var __foundWords = {}
 
@@ -62,11 +62,17 @@
                 requestGET($http, '/words/search/'+fixlang+'/?fields=lid,desc&words='+wordString, function(response, status){
                     console.log(response);
 
-                    response.forEach(function(foundedWord, idx){
+                    response.forEach(function(foundedWords, idx){
                         var wl = workListLinearForSearch[idx];
-                        __foundWords[wl[0].simple] = foundedWord;
+                        __foundWords[wl[0].simple] = foundedWords;
                         wl.forEach(function(word){
-                            __setupFoundedWord(foundedWord, word);
+                            __setupFoundedWord(foundedWords, word);
+                        })
+
+                        // update links factory for next load
+                        // foundedWords have more links
+                        foundedWords.forEach(function(fw){
+                            linksFactory.update(lang, fw);
                         })
                     });
 
