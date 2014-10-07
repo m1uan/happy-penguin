@@ -477,6 +477,8 @@ function InfosCtrl($scope, $routeParams, $http, $timeout, $window) {
 function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
     $scope.info = {pi : $routeParams.id};
     $scope.current = 'en';
+    $scope.translateText = '';
+
 
     var words = {};
     var helpIndex = 0;
@@ -509,9 +511,36 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
         });
     }
 
-    function updateWords(){
+    function updateWords(lang, suppresTextArea){
         splitBlocks('en');
-        showLine('en');
+        showLine('en', suppresTextArea);
+    }
+
+    function createWordAndLink(sentence, w){
+        // identify link basicaly hello[1]
+        var wordAndLink = w.split('[');
+        var word = wordAndLink[0];
+        var link = 0;
+
+        // link is number with ] '1]'
+        if(wordAndLink.length > 1){
+            var linkText = wordAndLink[1].split(']')[0];
+            link = parseInt(linkText);
+        }
+
+        // remove special characters
+        // like simple word for search
+        var simple = word.replace(/[^a-zA-Z ]/g, "")
+
+
+        return {
+            link: link,
+            type: 3,
+            simple : simple,
+            word : word,
+            sentence : sentence,
+            id : helpIndex ++
+        }
     }
 
     function splitWords(lang, sentence){
@@ -522,24 +551,20 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
                 return;
             }
 
-            // remove special characters
-            // like simple word for search
-            var simple = w.replace(/[^a-zA-Z ]/g, "")
-
-            words[lang].push({
-                type: 3,
-                simple : simple,
-                word : w,
-                sentence : sentence,
-                id : helpIndex ++
-            })
+            words[lang].push(createWordAndLink(sentence, w));
         })
     }
 
     function splitSentences(lang, block){
         // sentence first because each word
         // will contain reference to sentence
-        var sentences = block.split('.');
+        var sentences = block.split('.')
+
+        // 'ahoj.'.split('.') separe string to ['ahoj','.']
+        // but we are not care about the dot, because we add
+        // automaticaly on end of forEach
+        // othervise will be there two dots
+        sentences.pop();
 
         sentences.forEach(function(sentence){
             splitWords(lang, sentence);
@@ -563,40 +588,76 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
     }
 
 
-    function showLine(lang){
+    function showLine(lang, suppressTextArea){
+        // line in editor
+        var editLine = ''
+        // line in list of words
         var lineOfWords = $('#lineofwords');
-        var lineOfWordsTR = $('#lineofwords tr');
+        lineOfWords.empty();
+
         words[lang].forEach(function(word){
             if(word.type == 0){
+                editLine += '\n\n';
                 lineOfWords.append('<div class="clearfix"></div><br/><br/>');
             } else if(word.type == 1) {
+                editLine += '.';
                 lineOfWords.append('<div class="inner-words">.</div>');
             } else {
                 //lineOfWords.append('<span> </span>');
                 var qword = $('<span class="inner-words" id="inner-word-'+word.id+'"></span>');
 
                 qword.append('<div>&nbsp;'+word.word+'</div>')
-                qword.append('<div class="connect-words" id="connect-word-'+word.id+'">&nbsp;</div>');
-                qword.on('click', function(el){selectWord(el, word)});
+
+                if(word.link){
+                    qword.append('<div class="connect-words" id="connect-word-'+word.id+'">ahoj</div>');
+                } else {
+                    qword.append('<div class="connect-words" id="connect-word-'+word.id+'">&nbsp;</div>');
+                }
+
+                qword.on('click', function(el){selectWord(el, word, lang)});
                 qword.appendTo(lineOfWords);
+                editLine += ' ' + word.word;
+                if(word.link){
+                    editLine += '[' + word.link + ']';
+                }
 
             }
 
 
         });
 
-        /*lineOfWords.on('scroll',function(){
-            // each word have 500px;
-            var actual = Math.round(lineOfWords.scrollLeft() / 500);
-            console.log(actual, words[lang][actual]);
-            //console.log(lineOfWords.scrollLeft());
-        });*/
+        // if you edit text area, ng-change call showLine
+        // for update line in #lineofwords
+        // but if you set scope translates, you lost write focus
+        if(!suppressTextArea){
+            $scope.info.translates[lang].info = editLine;
+        }
+
     }
 
-    function selectWord(el, word){
-        $('.inner-words').removeClass('inner-words-selected');
-        $('#inner-word-' + word.id).addClass('inner-words-selected');
-        $('#connect-word-' + word.id).text('ahoj');
+    function wordsCheck(lang){
+        var wordList = '';
+        words[lang].forEach(function(word){
+            wordList += ',' + word.simple;
+
+        });
+
+        wordList = wordList.substring(1);
+
+        requestGET($http, '/words/search/'+lang+'/?fields=word,desc,lid&words='+wordList, function(response, status){
+            console.log(response);
+        });
+    }
+
+    function selectWord(el, word, lang){
+        word.link = 1;
+        $scope.$apply(function(){
+            showLine(lang);
+            $('.inner-words').removeClass('inner-words-selected');
+            $('#inner-word-' + word.id).addClass('inner-words-selected');
+        })
+
+        //$('#connect-word-' + word.id).text('ahoj');
         console.log(el, word.word);
     }
 
@@ -609,6 +670,14 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
         requestPOST($http, 'info/', $scope.info, function(response, status){
             updateInfo();
         });
+    }
+
+    $scope.check = function(){
+        wordsCheck('en');
+    }
+
+    $scope.infoChange = function(lang){
+        updateWords(lang, true);
     }
 
 

@@ -13,7 +13,7 @@ div.container-fluid
     div.row
         div.col-lg-6
             input(ng-model="info.translates[current].name",size="50",maxlength="70")
-            textarea(ng-model="info.translates[current].info",rows="15",cols="170")
+            textarea(ng-change="infoChange(current)",ng-model="info.translates[current].info",rows="15",cols="170")
         div.col-lg-6
             div#texts
 div#lineofwords
@@ -23,4 +23,5 @@ div.clearfix
 
 div.input-group
     select(ng-model="info.type", ng-options="c.pit as c.name for c in types",required).input
+    button(ng-click="check()").btn.btn-primary.input check
     button(ng-click="update()").btn.btn-primary.input update
