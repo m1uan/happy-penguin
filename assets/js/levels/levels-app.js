@@ -478,6 +478,9 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
     $scope.info = {pi : $routeParams.id};
     $scope.current = 'en';
 
+    var words = {};
+    var helpIndex = 0;
+
     requestGET($http, '/admin/translates/langs/?fields=name,translate,lang', function(response, status){
         $scope.langs=response.langs;
 
@@ -501,9 +504,101 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
                 }
             })
 
+            updateWords();
+
         });
     }
 
+    function updateWords(){
+        splitBlocks('en');
+        showLine('en');
+    }
+
+    function splitWords(lang, sentence){
+        var aw = sentence.split(' ');
+        aw.forEach(function(w){
+            // sometime is word like ' '
+            if(w == '' || w == '.'){
+                return;
+            }
+
+            // remove special characters
+            // like simple word for search
+            var simple = w.replace(/[^a-zA-Z ]/g, "")
+
+            words[lang].push({
+                type: 3,
+                simple : simple,
+                word : w,
+                sentence : sentence,
+                id : helpIndex ++
+            })
+        })
+    }
+
+    function splitSentences(lang, block){
+        // sentence first because each word
+        // will contain reference to sentence
+        var sentences = block.split('.');
+
+        sentences.forEach(function(sentence){
+            splitWords(lang, sentence);
+            // determine end of sentence
+            words[lang].push({type:1});
+        });
+    }
+
+    function splitBlocks(lang){
+        // first detect blogs for determine end of block
+        var blocks = $scope.info.translates[lang].info.split('\n\n');
+        words[lang] = [];
+        helpIndex = 0;
+
+
+        blocks.forEach(function(block){
+            splitSentences(lang, block);
+            // determine end of block
+            words[lang].push({type:0});
+        })
+    }
+
+
+    function showLine(lang){
+        var lineOfWords = $('#lineofwords');
+        var lineOfWordsTR = $('#lineofwords tr');
+        words[lang].forEach(function(word){
+            if(word.type == 0){
+                lineOfWords.append('<div class="clearfix"></div><br/><br/>');
+            } else if(word.type == 1) {
+                lineOfWords.append('<div class="inner-words">.</div>');
+            } else {
+                //lineOfWords.append('<span> </span>');
+                var qword = $('<span class="inner-words" id="inner-word-'+word.id+'"></span>');
+
+                qword.append('<div>&nbsp;'+word.word+'</div>')
+                qword.append('<div class="connect-words" id="connect-word-'+word.id+'">&nbsp;</div>');
+                qword.on('click', function(el){selectWord(el, word)});
+                qword.appendTo(lineOfWords);
+
+            }
+
+
+        });
+
+        /*lineOfWords.on('scroll',function(){
+            // each word have 500px;
+            var actual = Math.round(lineOfWords.scrollLeft() / 500);
+            console.log(actual, words[lang][actual]);
+            //console.log(lineOfWords.scrollLeft());
+        });*/
+    }
+
+    function selectWord(el, word){
+        $('.inner-words').removeClass('inner-words-selected');
+        $('#inner-word-' + word.id).addClass('inner-words-selected');
+        $('#connect-word-' + word.id).text('ahoj');
+        console.log(el, word.word);
+    }
 
 
     $scope.changeLang = function(lang){

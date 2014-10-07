@@ -731,8 +731,8 @@ module.exports.search = function(pg, search, cb){
         return;
     }
 
-    if(!search.word) {
-        cb('word missing');
+    if(!search.words || !search.words.length) {
+        cb('word missing or is not array');
         cb();
     }
 
@@ -750,14 +750,27 @@ module.exports.search = function(pg, search, cb){
         search.fields[indexOfDesc] = 'link.description as desc'
     }
 
+    var parallel = [];
 
-    var sql = new SQL.SqlLib('link', search.fields);
-    sql.join('word as word1', 'word1.link = link.lid');
-    sql.whereAnd('link.del < 1');
-    sql.whereAnd('word1.lang =\''+search.lang+'\'');
-    sql.whereAnd('word1.version =0');
-    sql.whereAnd("(lower(word1.word) SIMILAR TO '(% )?("+search.word+")')");
-    sql.select(pg, cb);
+    search.words.forEach(function(word){
+        parallel.push(function(icb){
+            return searchWord(icb, word);
+        })
+    });
+
+    async.parallel(parallel, cb);
+
+
+    function searchWord(icb, word){
+        var sql = new SQL.SqlLib('link', search.fields);
+        sql.join('word as word1', 'word1.link = link.lid');
+        sql.whereAnd('link.del < 1');
+        sql.whereAnd('word1.lang =\''+search.lang+'\'');
+        sql.whereAnd('word1.version =0');
+        sql.whereAnd("(lower(word1.word) SIMILAR TO '(% )?("+word+")')");
+        sql.select(pg, icb);
+    }
+
 
     /*var sql = 'SELECT link.lesson as s, link.lid,'
         +'link.description as d,'

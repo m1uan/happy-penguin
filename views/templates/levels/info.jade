@@ -1,3 +1,5 @@
+link(rel='stylesheet', href='/assets/css/levels/info.css')
+script(src="/assets/js/libs/jquery.appear.js")
 
 h2 info {{info.pi}}
     span(ng-repeat="lang in langs")
@@ -5,9 +7,19 @@ h2 info {{info.pi}}
         span |
 
 
-input(ng-model="info.translates[current].name",size="50",maxlength="70")
-br
-textarea(ng-model="info.translates[current].info",rows="10",cols="150")
+
+
+div.container-fluid
+    div.row
+        div.col-lg-6
+            input(ng-model="info.translates[current].name",size="50",maxlength="70")
+            textarea(ng-model="info.translates[current].info",rows="15",cols="170")
+        div.col-lg-6
+            div#texts
+div#lineofwords
+
+
+div.clearfix
 
 div.input-group
     select(ng-model="info.type", ng-options="c.pit as c.name for c in types",required).input

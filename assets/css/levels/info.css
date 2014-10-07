@@ -1,0 +1,42 @@
+#texts {
+    background-color: blue;
+}
+
+#c1 {
+
+}
+
+#lineofwords {
+    height: 200px;
+    overflow-y: scroll;
+}
+
+.inner-words {
+    cursor:pointer;
+    text-align: center;
+    float:left;
+    margin:0px;
+    padding:0px;
+    font-size:24px;
+}
+
+.inner-words-selected, .inner-words-selected span {
+    font-weight: bold;
+    /*border-width: 5px;
+    border-style: double;
+    border-color: black;*/
+    padding:0px;
+}
+
+.words-block-end {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background-color: blue;
+}
+
+.connect-words {
+    font-size:14px;
+    font-style: italic;
+}
+

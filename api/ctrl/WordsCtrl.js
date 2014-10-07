@@ -292,8 +292,8 @@ module.exports = (function(){
                 dataContainer.fields = request.query.fields.split(',') ;
             }
 
-            if(request.query.word){
-                dataContainer.word = request.query.word;
+            if(request.query.words){
+                dataContainer.words = request.query.words.split(',');
             }
             wordsEngine.search(pgClient, dataContainer, function(err, retData){
                 response(request, err, retData);
