@@ -12,7 +12,7 @@ html(ng-app="voc4u")
         meta(name="viewport",content="width=device-width, initial-scale=1.0")
     body(ng-controller="MainCtrl as main")
         div#body
-            h1 welcome in levels
+            p -= levels =-
             div(ng-view)
 
 
@@ -32,7 +32,9 @@ html(ng-app="voc4u")
         var ROUTE = '/admin/levels/';
 
     script(src="/assets/js/simple-request.js")
+    script(src="/assets/js/levels/search-factory.js")
+    script(src="/assets/js/levels/links-factory.js")
+    script(src="/assets/js/levels/info-controllers.js")
     script(src="/assets/js/levels/levels-app.js")
-
 
     //script(src="assets/js/angular-file-upload.min.js")
