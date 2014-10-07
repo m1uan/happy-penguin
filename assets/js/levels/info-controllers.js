@@ -258,12 +258,18 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     $scope.selectWordPossibility = function(word, poss){
         console.log(word, poss);
-        word.link = poss.lid;
+        if(poss){
+            word.link = poss.lid;
 
-        // show line take first word in possible
-        // to show in underline word
-        // move selected word to first position
-        wordMoveSelectedUp(word, poss);
+            // show line take first word in possible
+            // to show in underline word
+            // move selected word to first position
+            wordMoveSelectedUp(word, poss);
+        } else {
+            // remove
+            word.link = null;
+        }
+
 
         showWordsInLineOfWords($scope.current);
     }

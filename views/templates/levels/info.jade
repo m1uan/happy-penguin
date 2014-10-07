@@ -23,6 +23,9 @@ table.table.table-responsive
     tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss)")
         td # {{poss.lid}}
         td {{poss.desc}}
+    tr(ng-click="selectWordPossibility(selectedWord,null)")
+        td # 1
+        td [remove]
 
 div.clearfix
 
