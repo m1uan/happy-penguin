@@ -3,7 +3,7 @@
  */
 (function() {
     'use strict';
-    var penguinGame = angular.module('milan.levels.factory',['ngRoute']);
+    var penguinGame = angular.module('milan.levels.links.factory',['ngRoute']);
 
     penguinGame.factory('linksFactory', function($http) {
 

@@ -6,16 +6,9 @@
 
 }).call(this);
 
-function PlacesCtrl($scope, $http) {
-    var url ='list/en/?fields=id,name,type,posx,posy';
 
-    requestGET($http, url, function(response, status){
-        console.log(response);
-        $scope.places = response;
-    });
-}
 
-function InfosCtrl($scope, $routeParams, $http, linksFactory, searchFactory) {
+function InfosCtrl($scope, $routeParams, $http) {
 
     $scope.newinfo = {type:1};
 
@@ -51,7 +44,7 @@ function InfosCtrl($scope, $routeParams, $http, linksFactory, searchFactory) {
 }
 
 
-function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
+function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, searchFactory) {
     $scope.info = {pi : $routeParams.id};
     $scope.current = 'en';
     $scope.separatedWords = {};
@@ -220,20 +213,11 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window) {
         var wordList = '';
 
         // group words
-        searchFactory.getLangs(function(langs){
-
+        searchFactory.search(lang, words[lang], function(){
+            showWordsInLineOfWords(lang);
         });
 
-        words[lang].forEach(function(word){
-            wordList += ',' + word.simple;
 
-        });
-
-        wordList = wordList.substring(1);
-
-        requestGET($http, '/words/search/'+lang+'/?fields=word,desc,lid&words='+wordList, function(response, status){
-            console.log(response);
-        });
     }
 
     function selectWord(el, word, lang){

@@ -3,10 +3,86 @@
  */
 (function() {
     'use strict';
-    var penguinGame = angular.module('milan.levels.factory',['ngRoute']);
+    var amod = angular.module('milan.levels.search.factory',['ngRoute']);
 
-    penguinGame.factory('searchFactory', function($http) {
+    amod.factory('searchFactory', function($http) {
+        var self = {};
+        var __foundWords = {}
 
-        return {};
+        function __setupFoundedWord(foundWords, word){
+            //resultList.push(__foundWords[word.simple]);
+            // if is not founded the found words is empty or null
+            if(foundWords && foundWords.length > 0){
+                word.link = foundWords[0].lid;
+                word.possible = foundWords;
+            }
+
+        }
+
+        self.__search = function(lang, words, cb){
+            // first search for this language
+            if(!__foundWords[lang]) {
+                __foundWords[lang] = {};
+            }
+
+            var workList = [];
+            var workListLinearForSearch = [];
+            var resultList = [];
+
+            words.forEach(function(word){
+                if(__foundWords[word.simple]){
+                    __setupFoundedWord(__foundWords[word.simple], word);
+                } else {
+                    // the word is not in found list
+                    // if is the same word in list, don't search again
+                    // just add link to another word
+                    if(workList[word.simple]){
+                        // add word to worklist
+                        // the word is already in search list
+                        workList[word.simple].push(word)
+                    } else {
+                        workList[word.simple] = [word]
+                        // add workList to searchlist
+                        workListLinearForSearch.push(workList[word.simple]);
+                    }
+
+                }
+
+            });
+
+
+            if(workListLinearForSearch && workListLinearForSearch.length > 0){
+                var wordString = '';
+                workListLinearForSearch.forEach(function(wl){
+                    wordString += ',' + wl[0].simple;
+                });
+                wordString = wordString.substring(1);
+
+                requestGET($http, '/words/search/'+lang+'/?fields=lid,desc&words='+wordString, function(response, status){
+                    console.log(response);
+
+                    response.forEach(function(foundedWord, idx){
+                        var wl = workListLinearForSearch[idx];
+                        __foundWords[wl[0].simple] = foundedWord;
+                        wl.forEach(function(word){
+                            __setupFoundedWord(foundedWord, word);
+                        })
+                    });
+
+
+                    cb();
+                });
+            } else {
+                cb();
+            }
+
+        }
+
+
+
+        return {
+            search : self.__search
+
+        };
     });
 }).call(this);

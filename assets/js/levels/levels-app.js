@@ -1,4 +1,4 @@
-var app = angular.module('voc4u', ['ngRoute','milan.levels.factory'],
+var app = angular.module('voc4u', ['ngRoute','milan.levels.links.factory','milan.levels.search.factory'],
     function($routeProvider, $locationProvider) {
 
         $routeProvider.when('/world', {
@@ -264,6 +264,15 @@ function PlaceCtrl($scope, $routeParams, $http, $timeout, $window) {
         })
         alertify.success('Image upload like ' + imageData.response.imageFile);
     }
+}
+
+function PlacesCtrl($scope, $http) {
+    var url ='list/en/?fields=id,name,type,posx,posy';
+
+    requestGET($http, url, function(response, status){
+        console.log(response);
+        $scope.places = response;
+    });
 }
 
 function WorldCtrl($scope, $location, $http) {
