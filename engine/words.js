@@ -726,14 +726,44 @@ module.exports.addWord = function(pg, addWord, userId, cb){
 }
 
 module.exports.search = function(pg, search, cb){
-    if(!search.lang){
-        cb('lang missing');
-        return;
-    }
-
     if(!search.words || !search.words.length) {
         cb('word missing or is not array');
         cb();
+    }
+
+    searchOrLinks(pg, search, cb);
+}
+
+module.exports.links = function(pg, search, cb){
+    if(!search.links || !search.links.length) {
+        cb('links missing or is not array');
+        cb();
+    }
+
+    searchOrLinks(pg, search, function(err, data){
+        if(err){
+            cb(err);
+            return ;
+        }
+        // data are in format (because search could have for one word more rows)
+        // data[0]
+        //   words[0]
+        // data[1]
+        //    word[0]
+        // from link is not possible - simplify it
+        var ret = [];
+        data.forEach(function(d){
+            ret.push(d[0]);
+        });
+
+        cb(err, ret);
+    });
+}
+
+function searchOrLinks(pg, search, cb){
+    if(!search.lang){
+        cb('lang missing');
+        return;
     }
 
     if(!search.fields){
@@ -752,50 +782,44 @@ module.exports.search = function(pg, search, cb){
 
     var parallel = [];
 
-    search.words.forEach(function(word){
-        parallel.push(function(icb){
-            return searchWord(icb, word);
-        })
-    });
+    // if contain words is standart search function
+    if(search.words){
+        search.words.forEach(function(word){
+            parallel.push(function(icb){
+                return searchWord(icb, word);
+            })
+        });
+    }
+
+    // if contain links is standart get function
+    if(search.links){
+        search.links.forEach(function(link){
+            parallel.push(function(icb){
+                return searchWord(icb, null, link);
+            })
+        });
+    }
+
 
     async.parallel(parallel, cb);
 
 
-    function searchWord(icb, word){
+    function searchWord(icb, word, link){
         var sql = new SQL.SqlLib('link', search.fields);
         sql.join('word as word1', 'word1.link = link.lid');
         sql.whereAnd('link.del < 1');
         sql.whereAnd('word1.lang =\''+search.lang+'\'');
         sql.whereAnd('word1.version =0');
-        sql.whereAnd("(lower(word1.word) SIMILAR TO '(% )?("+word+")')");
+        if(word){
+            sql.whereAnd("(lower(word1.word) SIMILAR TO '(% )?("+word+")')");
+        }
+
+        if(link){
+            sql.whereAnd("lid="+link);
+        }
+
         sql.select(pg, icb);
     }
-
-
-    /*var sql = 'SELECT link.lesson as s, link.lid,'
-        +'link.description as d,'
-        + ' (word1.word) as w1, word2.word as w2'
-        + ' FROM link'
-        + ' JOIN word as word1 ON word1.link = link.lid'
-        + ' JOIN word as word2 ON word2.link = link.lid'
-        + ' WHERE'
-        + ' link.del < 1'
-        + ' AND word1.lang = $1'
-        + ' AND word2.lang = $2'
-        + ' AND word1.version=0'
-        + ' AND word2.version=0'
-
-        + ' AND '
-        + '('
-        + '(lower(word1.word) SIMILAR TO'
-        + " '(% )?("+search.w1+")')"
-
-
-        + 'OR (lower(word1.word) SIMILAR TO'
-        + " '(% )?("+search.w2+")')"
-        + ')'
-
-        + ' LIMIT 6)';*/
 }
 
 /***

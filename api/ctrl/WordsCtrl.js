@@ -5,7 +5,7 @@ var wordsEngine = require(process.cwd() + '/engine/words.js')
 
 var pgClient = null;
 
-module.exports = (function(){
+var wordsCtrl = function(){
 
     var self = {};
     // init
@@ -285,6 +285,14 @@ module.exports = (function(){
     }
 
     self.search_get = function(request){
+        self.__searchOrLinks(request, wordsEngine.search);
+    }
+
+    self.links_get = function(request){
+        self.__searchOrLinks(request, wordsEngine.links);
+    }
+
+    self.__searchOrLinks = function(request, func){
         if(request.params.params && request.params.params.length > 0){
             var dataContainer = {lang : request.params.params.split('/')[0]}
 
@@ -294,10 +302,13 @@ module.exports = (function(){
 
             if(request.query.words){
                 dataContainer.words = request.query.words.split(',');
+            } else {
+                dataContainer.links = request.query.links.split(',');
             }
-            wordsEngine.search(pgClient, dataContainer, function(err, retData){
-                response(request, err, retData);
 
+
+            func(pgClient, dataContainer, function(err, retData){
+                response(request, err, retData);
             });
         } else {
             response(request, 'lang missing');
@@ -324,7 +335,9 @@ module.exports = (function(){
 
 
     return self;
-})();
+};
+
+module.exports = wordsCtrl();
 
 function err_response(request, err){
     var error = Hapi.error.badRequest(err);

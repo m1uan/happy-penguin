@@ -579,6 +579,20 @@ describe('getWords', function(){
         });
     })
 
+    describe('links', function(){
+        it('1045,1046', function (cb){
+            words.links(pgClient, {links:[1045, 1046], lang:'en', fields :['lesson as s','lid', 'desc', 'word']}, function(err, data){
+                data.should.be.a.array;
+                var word1 = data[0];
+                word1.should.have.a.property('desc');
+                word1.should.have.a.property('lid');
+                word1.should.have.a.property('s');
+                word1.should.have.a.property('word');
+                cb();
+            })
+        });
+    })
+
     describe('request', function(){
 
         it('get normal', function(cb){
