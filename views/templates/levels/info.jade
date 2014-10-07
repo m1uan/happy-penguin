@@ -19,6 +19,12 @@ div.container-fluid
 div#lineofwords
 
 div.clearfix
+table.table.table-responsive
+    tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss)")
+        td # {{poss.lid}}
+        td {{poss.desc}}
+
+div.clearfix
 
 div.input-group
     select(ng-model="info.type", ng-options="c.pit as c.name for c in types",required).input

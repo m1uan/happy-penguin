@@ -47,7 +47,9 @@ function InfosCtrl($scope, $routeParams, $http) {
 function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, searchFactory) {
     $scope.info = {pi : $routeParams.id};
     $scope.current = 'en';
-    $scope.separatedWords = {};
+    $scope.possible = [{lid: 1, desc:'ahoj'},
+        {lid: 2, desc: 'hello'}];
+    $scope.selectedWord = {possible: $scope.possible};
 
     var _searchedWords = {};
     var _linkedWords = {};
@@ -225,15 +227,45 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     }
 
     function selectWord(el, word, lang){
-        word.link = 1;
+
         $scope.$apply(function(){
-            showWordsInLineOfWords(lang);
+
+            $scope.selectedWord = word;
+
             $('.inner-words').removeClass('inner-words-selected');
             $('#inner-word-' + word.id).addClass('inner-words-selected');
         })
 
         //$('#connect-word-' + word.id).text('ahoj');
         console.log(el, word.word);
+    }
+
+    function wordMoveSelectedUp(word, poss){
+        var possible = word.possible;
+        possible.some(function(w){
+            if(w.lid == poss.lid){
+                word.possible = [poss];
+                return true;
+            }
+        });
+
+        possible.forEach(function(w){
+            if(w.lid != poss.lid){
+                word.possible.push(w);
+            }
+        });
+    }
+
+    $scope.selectWordPossibility = function(word, poss){
+        console.log(word, poss);
+        word.link = poss.lid;
+
+        // show line take first word in possible
+        // to show in underline word
+        // move selected word to first position
+        wordMoveSelectedUp(word, poss);
+
+        showWordsInLineOfWords($scope.current);
     }
 
 
@@ -264,6 +296,8 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         }, 2000)
 
     }
+
+
 
 
 }
