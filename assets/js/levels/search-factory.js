@@ -58,7 +58,8 @@
                 });
                 wordString = wordString.substring(1);
 
-                requestGET($http, '/words/search/'+lang+'/?fields=lid,desc&words='+wordString, function(response, status){
+                var fixlang = lang != 'cz' ? lang : 'cs';
+                requestGET($http, '/words/search/'+fixlang+'/?fields=lid,desc&words='+wordString, function(response, status){
                     console.log(response);
 
                     response.forEach(function(foundedWord, idx){

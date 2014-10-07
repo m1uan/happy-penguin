@@ -85,8 +85,8 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     }
 
     function updateWords(lang, suppresTextArea){
-        splitBlocks('en');
-        showWordsInLineOfWords('en', suppresTextArea);
+        splitBlocks($scope.current);
+        showWordsInLineOfWords($scope.current, suppresTextArea);
     }
 
     function createWordAndLink(sentence, w){
@@ -235,6 +235,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     $scope.changeLang = function(lang){
         $scope.current = lang;
+        updateWords();
     }
 
     $scope.update = function(){
@@ -244,7 +245,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     }
 
     $scope.check = function(){
-        wordsCheck('en');
+        wordsCheck($scope.current);
     }
 
     var setTimeOutForUpdate = null;
