@@ -85,8 +85,12 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     }
 
     function updateWords(lang, suppresTextArea){
-        splitBlocks($scope.current);
-        showWordsInLineOfWords($scope.current, suppresTextArea);
+        var lang = $scope.current;
+        splitBlocks(lang);
+        linksFactory.get(lang, words[lang], function(){
+            showWordsInLineOfWords(lang, suppresTextArea);
+        });
+
     }
 
     function createWordAndLink(sentence, w){
@@ -182,8 +186,8 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
                 qword.append('<div>&nbsp;'+word.word+'</div>')
 
-                if(word.link){
-                    qword.append('<div class="connect-words" id="connect-word-'+word.id+'">ahoj</div>');
+                if(word.link && word.possible && word.possible[0]){
+                    qword.append('<div class="connect-words" id="connect-word-'+word.id+'">'+word.possible[0].desc+'</div>');
                 } else {
                     qword.append('<div class="connect-words" id="connect-word-'+word.id+'">&nbsp;</div>');
                 }
