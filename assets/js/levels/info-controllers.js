@@ -109,7 +109,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
         // remove special characters
         // like simple word for search
-        var simple = word.replace(/[^a-zA-Zěščřžýáíúůñ ]/g, "")
+        var simple = word.replace(/[^a-zA-Zěščřžýáíúůñé ]/g, "")
 
 
         return {
@@ -274,9 +274,9 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         showWordsInLineOfWords($scope.current);
     }
 
-    $scope.checkSelectedWord = function(){
-        searchFactory.search($scope.current, [$scope.selectedWord], function(){
-
+    $scope.checkSelectedWord = function(lang){
+        searchFactory.search(lang, [$scope.selectedWord], $scope.current, function(count){
+            alertify.success(lang + ' "' + $scope.selectedWord.simple + '" : ' + count);
         });
     }
 

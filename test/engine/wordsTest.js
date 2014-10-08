@@ -577,6 +577,33 @@ describe('getWords', function(){
                cb();
            })
         });
+
+        it('"extension" two lang', function (cb){
+            words.search(pgClient, {words:['extension', 'wife'], lang:'en', lang2:'cs', fields :['lesson as s','lid', 'desc', 'word', 'word2']}, function(err, data){
+                data.should.be.a.array;
+                var word1 = data[0];
+                word1[0].should.have.a.property('desc');
+                word1[0].should.have.a.property('lid');
+                word1[0].should.have.a.property('s');
+                word1[0].should.have.a.property('word');
+                word1[0].should.have.a.property('word2');
+                cb();
+            })
+        });
+
+        it('"extension" two lang with english', function (cb){
+            words.search(pgClient, {words:['extension', 'wife'], lang:'en', lang2:'cs', fields :['lesson as s','lid', 'desc', 'word', 'word2', 'english']}, function(err, data){
+                data.should.be.a.array;
+                var word1 = data[0];
+                word1[0].should.have.a.property('desc');
+                word1[0].should.have.a.property('lid');
+                word1[0].should.have.a.property('s');
+                word1[0].should.have.a.property('word');
+                word1[0].should.have.a.property('word2');
+                word1[0].should.have.a.property('english');
+                cb();
+            })
+        });
     })
 
     describe('links', function(){
@@ -588,6 +615,33 @@ describe('getWords', function(){
                 word1.should.have.a.property('lid');
                 word1.should.have.a.property('s');
                 word1.should.have.a.property('word');
+                cb();
+            })
+        });
+
+        it('1045,1046 - two lang', function (cb){
+            words.links(pgClient, {links:[1045, 1046], lang:'en',lang2:'cs', fields :['lesson as s','lid', 'desc', 'word', 'word2']}, function(err, data){
+                data.should.be.a.array;
+                var word1 = data[0];
+                word1.should.have.a.property('desc');
+                word1.should.have.a.property('lid');
+                word1.should.have.a.property('s');
+                word1.should.have.a.property('word');
+                word1.should.have.a.property('word2');
+                cb();
+            })
+        });
+
+        it('1045,1046 - english and two lang', function (cb){
+            words.links(pgClient, {links:[1045, 1046], lang:'en',lang2:'cs', fields :['lesson as s','lid', 'desc', 'word', 'word2','english']}, function(err, data){
+                data.should.be.a.array;
+                var word1 = data[0];
+                word1.should.have.a.property('desc');
+                word1.should.have.a.property('lid');
+                word1.should.have.a.property('s');
+                word1.should.have.a.property('word');
+                word1.should.have.a.property('word2');
+                word1.should.have.a.property('english');
                 cb();
             })
         });

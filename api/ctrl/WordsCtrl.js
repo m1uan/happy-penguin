@@ -294,7 +294,12 @@ var wordsCtrl = function(){
 
     self.__searchOrLinks = function(request, func){
         if(request.params.params && request.params.params.length > 0){
-            var dataContainer = {lang : request.params.params.split('/')[0]}
+            var langs =  request.params.params.split('/');
+
+            var dataContainer = {lang : langs[0]}
+            if(langs.length > 1){
+                dataContainer.lang2 = langs[1];
+            }
 
             if(request.query.fields){
                 dataContainer.fields = request.query.fields.split(',') ;

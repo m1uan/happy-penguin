@@ -25,13 +25,22 @@ table.table.table-responsive
         td
             div.input-group
                 input(ng-model="selectedWord.simple").input
-                button(ng-click="checkSelectedWord()").input check
+                button(ng-click="checkSelectedWord('en')").input check:en
+        td
+            div.input-group
+                input(ng-model="selectedWord.simple").input
+                button(ng-click="checkSelectedWord(current)").input check:{{current}}
 
 
     tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss)")
         td # {{poss.lid}}
-        td {{poss.desc}}
-        td {{poss.word}}
+        td
+             span {{poss.desc}}
+             br
+             i {{poss.english}}
+        td
+            span(ng-hide="poss.word2") {{poss.word}}
+            span(ng-show="poss.word2") {{poss.word2}}
     tr(ng-click="selectWordPossibility(selectedWord,null)")
         td # 1
         td [remove]

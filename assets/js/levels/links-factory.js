@@ -57,7 +57,7 @@
                 wordString = wordString.substring(1);
 
                 var fixlang = lang != 'cz' ? lang : 'cs';
-                requestGET($http, '/words/links/'+fixlang+'/?fields=lid,desc,word&links='+wordString, function(response, status){
+                requestGET($http, '/words/links/'+fixlang+'/?fields=lid,desc,word,english&links='+wordString, function(response, status){
                     console.log(response);
 
                     response.forEach(function(linkedWord, idx){

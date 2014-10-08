@@ -762,7 +762,7 @@ module.exports.links = function(pg, search, cb){
 
 function searchOrLinks(pg, search, cb){
     if(!search.lang){
-        cb('lang missing');
+        cb('lang is missing');
         return;
     }
 
@@ -773,6 +773,22 @@ function searchOrLinks(pg, search, cb){
     var indexOfWord = search.fields.indexOf('word');
     if(indexOfWord > -1){
         search.fields[indexOfWord] = 'word1.word as word'
+    }
+
+    // if you want the word with two languages
+    var indexOfWord2 = search.fields.indexOf('word2');
+    if(indexOfWord2 > -1){
+        search.fields[indexOfWord2] = 'word2.word as word2'
+        if(!search.lang2){
+            cb('you need field word2 but lang2 is missing');
+            return;
+        }
+    }
+
+    // if you want the word also in eng language
+    var indexOfEngllish = search.fields.indexOf('english');
+    if(indexOfEngllish > -1){
+        search.fields[indexOfEngllish] = 'word3.word as english'
     }
 
     var indexOfDesc = search.fields.indexOf('desc');
@@ -811,11 +827,19 @@ function searchOrLinks(pg, search, cb){
         sql.whereAnd('word1.lang =\''+search.lang+'\'');
         sql.whereAnd('word1.version =0');
         if(word){
-            sql.whereAnd("(lower(word1.word) SIMILAR TO '(% )?("+word+")')");
+            sql.whereAnd("(lower(word1.word) SIMILAR TO '(% )?("+word+")(%)?')");
         }
 
         if(link){
             sql.whereAnd("lid="+link);
+        }
+
+        if(indexOfWord2){
+            sql.join('word as word2', 'word2.link = link.lid AND word2.lang =\''+search.lang2+'\'');
+        }
+
+        if(indexOfEngllish){
+            sql.join('word as word3', 'word3.link = link.lid AND word3.lang =\'en\'');
         }
 
         sql.select(pg, icb);
