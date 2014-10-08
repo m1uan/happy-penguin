@@ -13,7 +13,7 @@ div.container-fluid
     div.row
         div.col-lg-6
             input(ng-model="info.translates[current].name",size="50",maxlength="70")
-            textarea(ng-change="infoChange(current)",ng-model="info.translates[current].info",rows="15",cols="170")
+            textarea(ng-change="infoChange(current)",ng-model="info.translates[current].info",rows="5",cols="170")
         div.col-lg-6
             div#texts
 div#lineofwords
@@ -39,6 +39,8 @@ table.table.table-responsive
              br
              i {{poss.english}}
         td
+            // if you search the current translatio is in word2
+            // if you get links is in word
             span(ng-hide="poss.word2") {{poss.word}}
             span(ng-show="poss.word2") {{poss.word2}}
     tr(ng-click="selectWordPossibility(selectedWord,null)")

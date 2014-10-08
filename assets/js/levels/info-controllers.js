@@ -219,7 +219,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         var wordList = '';
 
         // group words
-        searchFactory.search(lang, words[lang], function(){
+        searchFactory.search(lang, words[lang], $scope.current, function(){
             showWordsInLineOfWords(lang);
         });
 
@@ -277,7 +277,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     $scope.checkSelectedWord = function(lang){
         searchFactory.search(lang, [$scope.selectedWord], $scope.current, function(count){
             alertify.success(lang + ' "' + $scope.selectedWord.simple + '" : ' + count);
-        });
+        }, true);
     }
 
 

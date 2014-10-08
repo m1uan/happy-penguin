@@ -827,7 +827,15 @@ function searchOrLinks(pg, search, cb){
         sql.whereAnd('word1.lang =\''+search.lang+'\'');
         sql.whereAnd('word1.version =0');
         if(word){
-            sql.whereAnd("(lower(word1.word) SIMILAR TO '(% )?("+word+")(%)?')");
+            var searchString;
+
+            if(!search.properly){
+                searchString = "(% )?("+word+")";
+            } else {
+                searchString = "(%)?("+word+")(%)?";
+            }
+
+            sql.whereAnd("(lower(word1.word) SIMILAR TO '"+searchString+"')");
         }
 
         if(link){

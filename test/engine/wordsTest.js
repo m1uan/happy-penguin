@@ -565,6 +565,14 @@ describe('getWords', function(){
 
     });
 
+    describe('usages', function(){
+        it('1045:2,1046:-1', function (cb){
+            words.usage(pgClient, {'1045':2,'1046':-1}, function(err, data){
+                cb();
+            })
+        });
+    });
+
     describe('search', function(){
         it('"extension"', function (cb){
            words.search(pgClient, {words:['extension', 'wife'], lang:'en', fields :['lesson as s','lid', 'desc', 'word']}, function(err, data){
@@ -736,9 +744,7 @@ describe('getWords', function(){
                     foundDeleted.should.be.false;
 
                     if (err) {
-
                         throw err;
-
                     }
                     cb();
                 });

@@ -36,7 +36,7 @@
          * @param reverse {Boolean} read
          * @private
          */
-        self.__search = function(lang, words, lang2, cb){
+        self.__search = function(lang, words, lang2, cb, properly){
 
             // classic if the lang2 is not use
             if(!cb){
@@ -88,7 +88,13 @@
 
                 var fixlang = lang != 'cz' ? lang : 'cs';
                 var fixlang2 = lang2 != 'cz' ? lang2 : 'cs';
-                requestGET($http, '/words/search/'+fixlang+'/'+fixlang2+'/?fields=lid,desc,word,word2,english&words='+wordString, function(response, status){
+                var url = '/words/search/'+fixlang+'/'+fixlang2+'/?fields=lid,desc,word,word2,english&words='+wordString;
+
+                if(properly){
+                    url += '&properly=true';
+                }
+
+                requestGET($http, url, function(response, status){
                     console.log(response);
 
 

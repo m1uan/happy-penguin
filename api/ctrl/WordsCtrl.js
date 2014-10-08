@@ -285,14 +285,14 @@ var wordsCtrl = function(){
     }
 
     self.search_get = function(request){
-        self.__searchOrLinks(request, wordsEngine.search);
+        __searchOrLinks(request, wordsEngine.search);
     }
 
     self.links_get = function(request){
-        self.__searchOrLinks(request, wordsEngine.links);
+        __searchOrLinks(request, wordsEngine.links);
     }
 
-    self.__searchOrLinks = function(request, func){
+    function __searchOrLinks(request, func){
         if(request.params.params && request.params.params.length > 0){
             var langs =  request.params.params.split('/');
 
@@ -309,6 +309,11 @@ var wordsCtrl = function(){
                 dataContainer.words = request.query.words.split(',');
             } else {
                 dataContainer.links = request.query.links.split(',');
+            }
+
+            // search properly
+            if(request.query.properly){
+                dataContainer.properly = true;
             }
 
 
