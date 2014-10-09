@@ -725,6 +725,41 @@ module.exports.addWord = function(pg, addWord, userId, cb){
 
 }
 
+module.exports.usage = function(pg, usages, cb){
+    if(!usages || typeof usages !== 'object'){
+        cb('usage is not a object');
+    }
+
+    var parallel = [];
+
+    for(usage in usages){
+        parallel.push(generateUpdate(usage, usages[usage]));
+    }
+
+
+    function generateUpdate(usage, value){
+        return function(icb){
+            var SQL = new SQL.SqlLib('link');
+            SQL.whereAnd('lid=' + usage);
+            var ud = {usage : 'coalesce(usage,0)+'+value};
+            SQL.update(pg, ud, icb);
+        }
+    }
+
+    async.parallel(parallel, function(err){
+
+        // update all link with negative usage
+        // just for sure
+        var SQL = new SQL.SqlLib('link');
+        SQL.whereAnd('usage<0');
+        var ud = {usage : '0'};
+        SQL.update(pg, ud, cb);
+
+    })
+
+
+}
+
 module.exports.search = function(pg, search, cb){
     if(!search.words || !search.words.length) {
         cb('word missing or is not array');
@@ -825,6 +860,7 @@ function searchOrLinks(pg, search, cb){
         sql.join('word as word1', 'word1.link = link.lid');
         sql.whereAnd('link.del < 1');
         sql.whereAnd('word1.lang =\''+search.lang+'\'');
+        sql.whereAnd('link.version =0');
         sql.whereAnd('word1.version =0');
         if(word){
             var searchString;

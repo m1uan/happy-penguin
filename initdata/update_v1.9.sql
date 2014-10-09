@@ -32,4 +32,4 @@ ALTER TABLE pinguin.place_t ADD COLUMN place_info INTEGER;
 ALTER TABLE pinguin.place_t ADD FOREIGN KEY (place_info) REFERENCES pinguin.place_info_t (pi);
 ALTER TABLE pinguin.place_t ALTER COLUMN name DROP NOT NULL;
 
-ALTER TABLE link ADD COLUMN usage INTEGER DEFAULT 0 NOT NULL;
+ALTER TABLE link ADD COLUMN usage INTEGER DEFAULT 0;
