@@ -737,12 +737,14 @@ module.exports.usage = function(pg, usages, cb){
     }
 
 
-    function generateUpdate(usage, value){
+    function generateUpdate(usage, links){
         return function(icb){
-            var SQL = new SQL.SqlLib('link');
-            SQL.whereAnd('lid=' + usage);
-            var ud = {usage : 'coalesce(usage,0)+'+value};
-            SQL.update(pg, ud, icb);
+            var sql = new SQL.SqlLib('link');
+            sql.whereAnd('lid IN (' + links.join(',') + ')');
+            var cd1 = 'usage=coalesce(usage,0)+'+usage+'';
+            var ud = {};
+            ud[cd1] = null;
+            sql.update(pg, ud, icb);
         }
     }
 
@@ -750,10 +752,10 @@ module.exports.usage = function(pg, usages, cb){
 
         // update all link with negative usage
         // just for sure
-        var SQL = new SQL.SqlLib('link');
-        SQL.whereAnd('usage<0');
-        var ud = {usage : '0'};
-        SQL.update(pg, ud, cb);
+        var sql = new SQL.SqlLib('link');
+        sql.whereAnd('usage<0');
+        var ud = {'usage' : null};
+        sql.update(pg, ud, cb);
 
     })
 
