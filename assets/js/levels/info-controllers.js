@@ -56,6 +56,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
 
     var words = {};
+    var usagesWords = {};
     var helpIndex = 0;
 
     requestGET($http, '/admin/translates/langs/?fields=name,translate,lang', function(response, status){
@@ -64,13 +65,13 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         requestGET($http, 'infotypes/?fields=pit,name', function(response, status){
             console.log(response);
             $scope.types = response;
-            updateInfo();
+            loadInfoIntoInterface();
         });
     });
 
 
 
-    function updateInfo(){
+    function loadInfoIntoInterface(){
         requestGET($http, 'info/?pi='+$scope.info.pi+'&timestamp=' + new Date().getTime(), function(response, status){
             console.log(response);
             $scope.info = response;
@@ -81,14 +82,53 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                 }
             })
 
-            updateWords();
+
+            splitBlocksAndShowInLine();
+            usagesWords = calcUsagesForWordsForAllLangs();
 
         });
     }
 
-    function updateWords(lang, suppresTextArea){
+    /**
+     * need to be updated words for all languages
+     * i mean splitBlock for all languages
+     */
+    function calcUsagesForWordsForAllLangs(){
+        var usages = {};
+        $scope.langs.forEach(function(lang){
+            var usagesLang = {}
+
+            words[lang].forEach(function(w){
+                if(w.link){
+                    if(usages[w.link]){
+                        usagesLang[w.link] += 1;
+                    } else {
+                        usagesLang[w.link] = 1;
+                    }
+
+                }
+            })
+
+            usages[lang] = usagesLang;
+        })
+
+        return usages;
+    }
+
+
+
+    function splitBlocksAndShowInLine(lang, suppresTextArea){
         var lang = $scope.current;
-        splitBlocks(lang);
+
+        // split block for all languages because
+        // in loadInfoIntoInterface is after this function
+        // also call calcUsagesForWords which operate
+        // with splitedBlocks for all languages
+        $scope.langs.forEach(function(langForBlock){
+            splitBlocks(langForBlock);
+        })
+
+
         linksFactory.get(lang, words[lang], function(){
             showWordsInLineOfWords(lang, suppresTextArea);
         });
@@ -283,12 +323,12 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     $scope.changeLang = function(lang){
         $scope.current = lang;
-        updateWords();
+        splitBlocksAndShowInLine();
     }
 
     $scope.update = function(){
         requestPOST($http, 'info/', $scope.info, function(response, status){
-            updateInfo();
+            loadInfoIntoInterface();
         });
     }
 
@@ -304,7 +344,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         // dont update word every change, it is enought one time per 2s
         setTimeOutForUpdate = setTimeout(function(){
             setTimeOutForUpdate = null;
-            updateWords(lang, true);
+            splitBlocksAndShowInLine(lang, true);
         }, 2000)
 
     }
