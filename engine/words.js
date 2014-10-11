@@ -753,7 +753,7 @@ module.exports.usage = function(pg, usages, cb){
         // update all link with negative usage
         // just for sure
         var sql = new SQL.SqlLib('link');
-        sql.whereAnd('usage<0');
+        sql.whereAnd('usage<=0');
         var ud = {'usage' : null};
         sql.update(pg, ud, cb);
 

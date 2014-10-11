@@ -567,21 +567,22 @@ describe('getWords', function(){
 
     describe('usages', function(){
         it('1045:2,1046:-1', function (cb){
-            words.usage(pgClient, {'2':[1045,1047],'-1':[1046]}, function(err, data){
-
+            words.usage(pgClient, {'7':[1045,1047],'1':[1046]}, function(err, data){
+                words.usage(pgClient, {'1':[1045,1047],'-1':[1046]}, function(err, data){
                 pgClient.query('select lid,usage from link where lid in (1045,1046,1047)', function(err, data){
                     var rows = data.rows;
                     rows.forEach(function(row){
                         if(row.lid == 1046){
                             (row.usage == null).should.be.true;
                         } else {
-                            row.usage.should.be.equal(2);
+                            row.usage.should.be.equal(5);
                         }
 
                     })
                    cb();
                 });
-            })
+            });
+            });
         });
     });
 
