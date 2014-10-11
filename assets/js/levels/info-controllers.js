@@ -84,9 +84,35 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
 
             splitBlocksAndShowInLine();
+            // after load is necesary count word usages
+            // because after save(update) will count diference
+            // with loaded count and updated count
             usagesWords = calcUsagesForWordsForAllLangs();
 
         });
+    }
+
+    function update(){
+        requestPOST($http, 'info/', $scope.info, function(response, status){
+
+            updateWordUsages();
+            loadInfoIntoInterface();
+        });
+    }
+
+    function updateWordUsages(){
+        var actualWordCount = calcUsagesForWordsForAllLangs();
+
+        // difference between actualWordCount and usagesWords
+        // example is loadet text 'Hello[101] Milan[103], Hello[101]...
+        // so usagesWords will looks like : {'101' : 2, '103' : 1, ...
+        // in mean while somebody remove reference to
+        for(var awcLink in actualWordCount){
+            if(usagesWords[awcLink]){
+                actualWordCount[awcLink] -= usagesWords[awcLink];
+            }
+        }
+
     }
 
     /**
@@ -96,20 +122,19 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     function calcUsagesForWordsForAllLangs(){
         var usages = {};
         $scope.langs.forEach(function(lang){
-            var usagesLang = {}
+
 
             words[lang].forEach(function(w){
                 if(w.link){
                     if(usages[w.link]){
-                        usagesLang[w.link] += 1;
+                        usages[w.link] += 1;
                     } else {
-                        usagesLang[w.link] = 1;
+                        usages[w.link] = 1;
                     }
 
                 }
             })
 
-            usages[lang] = usagesLang;
         })
 
         return usages;
@@ -327,9 +352,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     }
 
     $scope.update = function(){
-        requestPOST($http, 'info/', $scope.info, function(response, status){
-            loadInfoIntoInterface();
-        });
+        update();
     }
 
     $scope.check = function(){
