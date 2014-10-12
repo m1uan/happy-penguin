@@ -106,10 +106,22 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         // difference between actualWordCount and usagesWords
         // example is loadet text 'Hello[101] Milan[103], Hello[101]...
         // so usagesWords will looks like : {'101' : 2, '103' : 1, ...
-        // in mean while somebody remove reference to
+        // if no-body will change text and update reference = usages should be {'101' : 0, '103' : 0, ...
+        // thats meand no changes with usages
+        // but when somebody change text and update reference like
+        // 'Hello[101] Milan[103], Hi[102]...
+        // usages hold look like {'101' : -1, '102' : 1, ...
+        // thats mean ref 101 decrease and ref 102 increase
         for(var awcLink in actualWordCount){
             if(usagesWords[awcLink]){
                 actualWordCount[awcLink] -= usagesWords[awcLink];
+            }
+        }
+
+        // if someone removed
+        for(var uLink in usagesWords){
+            if(!actualWordCount[uLink]){
+                actualWordCount[uLink] = -usagesWords[awcLink];
             }
         }
 
