@@ -1,4 +1,6 @@
-var app = angular.module('voc4u', ['ngRoute','milan.levels.links.factory','milan.levels.search.factory'],
+
+
+var appLevels = angular.module('appLevels', ['ngRoute','milan.levels.links.factory','milan.levels.search.factory'],
     function($routeProvider, $locationProvider) {
 
         $routeProvider.when('/world', {

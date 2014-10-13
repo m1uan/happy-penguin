@@ -27,6 +27,8 @@ module.exports = {
                 auth : 'passport'
             },import_post : {
                 params : '{params*}'
+            },langs_get:{
+                auth : false
             }
         }
     }, langs_get : function(request){

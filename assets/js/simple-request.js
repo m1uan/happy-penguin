@@ -11,7 +11,9 @@ function request(method, $http, func, data, success, failed){
     if(func.indexOf('/')!=0){
         url = ROUTE + func;
     } else {
-        url = '//' + window.location.host +  func;
+        //url = '//localhost:8080' + func;
+        //url = '//' + window.location.host +  func;
+        //url = func;
     }
 
     console.log(func.indexOf('/'), window.location.host, url);

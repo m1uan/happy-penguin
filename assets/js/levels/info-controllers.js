@@ -59,6 +59,8 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     var usagesWords = {};
     var helpIndex = 0;
 
+
+
     requestGET($http, '/admin/translates/langs/?fields=name,translate,lang', function(response, status){
         $scope.langs=response.langs;
 
