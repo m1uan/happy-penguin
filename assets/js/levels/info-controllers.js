@@ -302,7 +302,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
         // if no difference don't send request
         if(payload){
-            requestPOST($http, 'usages/', payload, function(response, status){
+            requestPOST($http, '/words/usages/', {usages: payload}, function(response, status){
 
             });
         }

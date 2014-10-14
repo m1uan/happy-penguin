@@ -325,13 +325,13 @@ var wordsCtrl = function(){
         }
     }
 
-    self.usage_post = function(request){
+    self.usages_post = function(request){
         if(!request.payload.usages){
             response(request, 'usages is missing')
             return;
         }
 
-        wordsEngine.usage(pcClient, request.payload.usages, function(err,data){
+        wordsEngine.usage(pgClient, request.payload.usages, function(err,data){
             response(request, err, data);
         })
     }

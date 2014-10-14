@@ -755,7 +755,9 @@ module.exports.usage = function(pg, usages, cb){
         var sql = new SQL.SqlLib('link');
         sql.whereAnd('usage<=0');
         var ud = {'usage' : null};
-        sql.update(pg, ud, cb);
+        sql.update(pg, ud, function(e,d){
+            cb(e, {});
+        });
 
     })
 
