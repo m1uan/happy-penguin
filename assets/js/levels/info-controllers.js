@@ -378,7 +378,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         var wordList = '';
 
         // group words
-        searchFactory.search(lang, words[lang], $scope.current, function(){
+        searchFactory.search(lang, blockOperators.words[lang], $scope.current, function(){
             showWordsInLineOfWords(lang);
         });
 
