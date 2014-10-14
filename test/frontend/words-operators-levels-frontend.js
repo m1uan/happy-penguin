@@ -53,11 +53,24 @@ describe('BlockOperators', function() {
         expect(usages).toEqual({'192':2,'90':2, '198': -1});
     });
 
-    it('usages into payload for udateUsages', function(){
+    it('diff usages with 0', function(){
 
-        var payload = wordsOperators.generatePayloadForUpdateUsagesRequest({'192':2,'90':2, '198': -1,'188':1,'12':-1});
+        var usages = wordsOperators.diffWordUsages({'192':3,'90':2},{'192':3,'198': 2});
+        expect(typeof usages).toBe('object');
+        expect(usages).toEqual({'192':0,'90':2, '198': -2});
+    });
+
+    it('usages into payload for updateUsages', function(){
+
+        var payload = wordsOperators.generatePayloadForUpdateUsagesRequest({'192':2,'90':2, '198': -1,'188':1,'12':-1,'19': 0});
         expect(typeof payload).toBe('object');
         expect(payload).toEqual({'2':[90,192],'1':[188], '-1': [12,198]});
+    });
+
+    it('usages into payload for updateUsages - null', function(){
+
+        var payload = wordsOperators.generatePayloadForUpdateUsagesRequest({'192':0,'90':0});
+        expect(payload).toBeNull();
     });
 });
 

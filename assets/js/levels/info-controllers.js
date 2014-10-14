@@ -37,10 +37,10 @@
 
             // if someone removed
             for(var uLink in prevUsages){
-                if(!diffUsages[uLink]){
+                if(diffUsages[uLink] == undefined){
                     // it is minus because before was present
-                    // now is doesn't present so actual is less about...
-                    diffUsages[uLink] = -prevUsages[awcLink];
+                    // now is doesn't present so actual diff is less about prev...
+                    diffUsages[uLink] = -prevUsages[uLink];
                 }
             }
 
@@ -153,14 +153,25 @@
 
 
         self.generatePayloadForUpdateUsagesRequest = function(diffUsages){
-            var payload = {}
+            var payload = null;
             for(var diff in diffUsages){
                 diff = parseInt(diff);
+
                 var d = diffUsages[diff];
-                if(payload[d]){
-                    payload[d].push(diff);
-                } else {
-                    payload[d] = [diff];
+                // 0 means no difference so is not necessary send
+                // to server about do nothing
+                if(d !== 0){
+
+                    // if no any change function return null
+                    if(!payload){
+                        payload = {};
+                    }
+
+                    if(payload[d]){
+                        payload[d].push(diff);
+                    } else {
+                        payload[d] = [diff];
+                    }
                 }
             }
 
@@ -229,6 +240,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
 
     var blockOperators;
+    var usagesWords;
 
 
 
@@ -262,16 +274,39 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
             // because after save(update) will count diference
             // with loaded count and updated count
             usagesWords = blockOperators.calcUsagesForWordsForAllLangs();
-
         });
     }
 
     function update(){
         requestPOST($http, 'info/', $scope.info, function(response, status){
-
-            blockOperators.updateWordUsages();
+            // count diff have to be before loadInfoIntoInterface
+            // because after callback will 'usagesWords' will be actualized
+            updateUsages();
             loadInfoIntoInterface();
         });
+    }
+
+    function updateUsages(){
+        // could happend the user press "update" button
+        // faster then is update background of blocks
+        // cancel the timer and update manualy for current language
+        if(setTimeOutForUpdate){
+            clearTimeout(setTimeOutForUpdate);
+            setTimeOutForUpdate = null;
+            splitBlocksAndShowInLine($scope.current, true);
+        }
+
+        var actUsages = blockOperators.calcUsagesForWordsForAllLangs();
+        var diff = blockOperators.diffWordUsages(actUsages, usagesWords);
+        var payload = blockOperators.generatePayloadForUpdateUsagesRequest(diff);
+
+        // if no difference don't send request
+        if(payload){
+            requestPOST($http, 'usages/', payload, function(response, status){
+
+            });
+        }
+
     }
 
     function splitBlocksAndShowInLine(lang, suppresTextArea){
