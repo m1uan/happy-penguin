@@ -88,7 +88,7 @@
 
                 var fixlang = lang != 'cz' ? lang : 'cs';
                 var fixlang2 = lang2 != 'cz' ? lang2 : 'cs';
-                var url = '/words/search/'+fixlang+'/'+fixlang2+'/?fields=lid,desc,word,word2,english&words='+wordString;
+                var url = '/words/search/'+fixlang+'/'+fixlang2+'/?fields=lid,desc,word,word2,english,usage&words='+wordString;
 
                 if(properly){
                     url += '&properly=true';

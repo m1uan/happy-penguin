@@ -43,6 +43,8 @@ table.table.table-responsive
             // if you get links is in word
             span(ng-hide="poss.word2") {{poss.word}}
             span(ng-show="poss.word2") {{poss.word2}}
+        td
+            span.badge {{poss.usage}}
     tr(ng-click="selectWordPossibility(selectedWord,null)")
         td # 1
         td [remove]
