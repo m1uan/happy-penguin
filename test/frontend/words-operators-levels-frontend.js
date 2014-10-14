@@ -35,5 +35,29 @@ describe('BlockOperators', function() {
 
         //browser().navigateTo('/pages');
     });
+
+
+    it('usages', function(){
+        wordsOperators.splitBlocks(testLangs[0].lang, 'Hello[192] world[90]');
+        wordsOperators.splitBlocks(testLangs[1].lang, 'Ahoj[192] svete');
+        wordsOperators.splitBlocks(testLangs[2].lang, 'Hello[192] world[90]');
+        var usages = wordsOperators.calcUsagesForWordsForAllLangs();
+        expect(typeof usages).toBe('object');
+        expect(usages).toEqual({'192':3,'90':2});
+    });
+
+    it('diff usages', function(){
+
+        var usages = wordsOperators.diffWordUsages({'192':3,'90':2},{'192':1,'198': 1});
+        expect(typeof usages).toBe('object');
+        expect(usages).toEqual({'192':2,'90':2, '198': -1});
+    });
+
+    it('usages into payload for udateUsages', function(){
+
+        var payload = wordsOperators.generatePayloadForUpdateUsagesRequest({'192':2,'90':2, '198': -1,'188':1,'12':-1});
+        expect(typeof payload).toBe('object');
+        expect(payload).toEqual({'2':[90,192],'1':[188], '-1': [12,198]});
+    });
 });
 

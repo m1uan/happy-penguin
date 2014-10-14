@@ -12,8 +12,9 @@
         self.langs = langs;
 
 
-        self.updateWordUsages = function(){
-            var actualWordCount = self.calcUsagesForWordsForAllLangs();
+        self.diffWordUsages = function(actUsages, prevUsages){
+            //var actualWordCount = self.calcUsagesForWordsForAllLangs();
+            var diffUsages = {}
 
             // difference between actualWordCount and usagesWords
             // example is loadet text 'Hello[101] Milan[103], Hello[101]...
@@ -24,18 +25,26 @@
             // 'Hello[101] Milan[103], Hi[102]...
             // usages hold look like {'101' : -1, '102' : 1, ...
             // thats mean ref 101 decrease and ref 102 increase
-            for(var awcLink in actualWordCount){
-                if(self.usagesWords[awcLink]){
-                    actualWordCount[awcLink] -= self.usagesWords[awcLink];
+            for(var awcLink in actUsages){
+                if(prevUsages[awcLink]){
+                    // it was exist before so diff between act a prev
+                    diffUsages[awcLink] = actUsages[awcLink] - prevUsages[awcLink];
+                } else {
+                    // it didn't exist before so actual is also diff
+                    diffUsages[awcLink] = actUsages[awcLink];
                 }
             }
 
             // if someone removed
-            for(var uLink in usagesWords){
-                if(!actualWordCount[uLink]){
-                    actualWordCount[uLink] = -self.usagesWords[awcLink];
+            for(var uLink in prevUsages){
+                if(!diffUsages[uLink]){
+                    // it is minus because before was present
+                    // now is doesn't present so actual is less about...
+                    diffUsages[uLink] = -prevUsages[awcLink];
                 }
             }
+
+            return diffUsages;
 
         }
 
@@ -142,6 +151,21 @@
             })
         }
 
+
+        self.generatePayloadForUpdateUsagesRequest = function(diffUsages){
+            var payload = {}
+            for(var diff in diffUsages){
+                diff = parseInt(diff);
+                var d = diffUsages[diff];
+                if(payload[d]){
+                    payload[d].push(diff);
+                } else {
+                    payload[d] = [diff];
+                }
+            }
+
+            return payload;
+        }
 
         return self;
     }
