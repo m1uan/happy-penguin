@@ -10,11 +10,11 @@ describe('Unit: MainController', function() {
 
             scope         = $rootScope.$new();
 
-        /*var timestamp = 1234;
+        var timestamp = 1234;
         spyOn(Date.prototype, 'getTime').andReturn(timestamp);
 
             $httpBackend  = $injector.get('$httpBackend');
-            $httpBackend.when('GET','//localhost:9876/ahoj/').respond({ahoj:'hello'});
+        /*    $httpBackend.when('GET','//localhost:9876/ahoj/').respond({ahoj:'hello'});
             $httpBackend.when('GET','//localhost:9876/admin/translates/langs/?fields=name,translate,lang').respond({response:{langs:[
                 { id: 1, lang: "Entry 1" },
                 { id: 2, lang: "Entry 2" }
@@ -28,10 +28,11 @@ describe('Unit: MainController', function() {
             { id: 1, name: "Entry 1" },
             { id: 2, name: "Entry 2" }
         ]}});
-        controller    = $controller("InfoCtrl", { $scope: scope, $routeParams : routeParams });
-        $httpBackend.flush();*/
-        controller    = $controller("InfoCtrl", { $scope: scope, $routeParams : routeParams });
+        controller    = $controller("InfoCtrl", { $scope: scope, $routeParams : routeParams }); */
+        //$httpBackend.when('GET').respond({response:{}});//.passThrough();
 
+        controller    = $controller("InfoCtrl", { $scope: scope, $routeParams : routeParams });
+        //$httpBackend.flush();
 
    }));
 
@@ -42,7 +43,18 @@ describe('Unit: MainController', function() {
 
     });
 
-    it('e2e', function(){
+    /*it('e2e', function(){
+
+        var n = new BlockOperators();
+        expect(InfoCtrl).not.toBeUndefined();
+        expect(controller.words).not.toBeUndefined();
+        expect(InfoCtrl.update).toBeDefined();
+
         //browser().navigateTo('/pages');
-    })
-})
+    });
+
+    it('e2332', inject(function(linkFactory){
+        expect(linkFactory).toBeDefined()
+    }))*/
+});
+

@@ -2,7 +2,152 @@
  * Created by miuan on 7/10/14.
  */
 (function() {
-    'use strict';
+
+    function BlockOperators(langs){
+        'use strict';
+        var self = {}
+
+        self.words = {};
+        self.usagesWords = {};
+        self.langs = langs;
+
+
+        self.updateWordUsages = function(){
+            var actualWordCount = self.calcUsagesForWordsForAllLangs();
+
+            // difference between actualWordCount and usagesWords
+            // example is loadet text 'Hello[101] Milan[103], Hello[101]...
+            // so usagesWords will looks like : {'101' : 2, '103' : 1, ...
+            // if no-body will change text and update reference = usages should be {'101' : 0, '103' : 0, ...
+            // thats meand no changes with usages
+            // but when somebody change text and update reference like
+            // 'Hello[101] Milan[103], Hi[102]...
+            // usages hold look like {'101' : -1, '102' : 1, ...
+            // thats mean ref 101 decrease and ref 102 increase
+            for(var awcLink in actualWordCount){
+                if(self.usagesWords[awcLink]){
+                    actualWordCount[awcLink] -= self.usagesWords[awcLink];
+                }
+            }
+
+            // if someone removed
+            for(var uLink in usagesWords){
+                if(!actualWordCount[uLink]){
+                    actualWordCount[uLink] = -self.usagesWords[awcLink];
+                }
+            }
+
+        }
+
+        /**
+         * need to be updated words for all languages
+         * i mean splitBlock for all languages
+         */
+        self.calcUsagesForWordsForAllLangs = function(){
+            var usages = {};
+            self.langs.forEach(function(lang){
+
+
+                self.words[lang.lang].forEach(function(w){
+                    if(w.link){
+                        if(usages[w.link]){
+                            usages[w.link] += 1;
+                        } else {
+                            usages[w.link] = 1;
+                        }
+
+                    }
+                })
+
+            })
+
+            return usages;
+        }
+
+
+
+
+
+        self.createWordAndLink = function(sentence, w){
+            // identify link basicaly hello[1]
+            var wordAndLink = w.split('[');
+            var word = wordAndLink[0];
+            var link = 0;
+
+            // link is number with ] '1]'
+            if(wordAndLink.length > 1){
+                var linkText = wordAndLink[1].split(']')[0];
+                link = parseInt(linkText);
+            }
+
+            // remove special characters
+            // like simple word for search
+            var simple = word.replace(/[^a-zA-Zěščřžýáíúůñé ]/g, "")
+
+
+            return {
+                link: link,
+                type: 0,
+                simple : simple,
+                word : word,
+                sentence : sentence,
+                id : self.helpIndex ++
+            }
+        }
+
+        self.splitWords = function(lang, sentence){
+            var aw = sentence.split(' ');
+            aw.forEach(function(w){
+                // sometime is word like ' '
+                if(w == '' || w == '.'){
+                    return;
+                }
+
+                self.words[lang].push(self.createWordAndLink(sentence, w));
+            })
+        }
+
+        self.splitSentences = function(lang, block){
+            // sentence first because each word
+            // will contain reference to sentence
+            var sentences = block.split('.')
+
+
+            sentences.forEach(function(sentence){
+                // supress empty sentences
+                // 'ahoj. '.split('.') separe string to ['ahoj',' ']
+                // and in 2nd index the splitWords method will operate with ' '
+                // that will not add any words but will add word with type 1
+                // thats dot and with this behavior will have two dots on end
+                if(sentence.trim()){
+                    self.splitWords(lang, sentence);
+                    self.words[lang].push({type:2});
+                }
+            });
+        }
+
+        self.helpIndex = 0;
+
+        self.splitBlocks = function(lang, info){
+            // first detect blogs for determine end of block
+            var blocks = info.split('\n\n');
+            self.words[lang] = [];
+            self.helpIndex = 0;
+
+
+            blocks.forEach(function(block){
+                self.splitSentences(lang, block);
+                // determine end of block
+                self.words[lang].push({type:1});
+            })
+        }
+
+
+        return self;
+    }
+
+    this.BlockOperators = BlockOperators;
+
 
 }).call(this);
 
@@ -44,6 +189,10 @@ function InfosCtrl($scope, $routeParams, $http) {
 }
 
 
+
+
+
+
 function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, searchFactory) {
     $scope.info = {pi : $routeParams.id};
     $scope.current = 'en';
@@ -55,15 +204,13 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     var _linkedWords = {};
 
 
-    var words = {};
-    var usagesWords = {};
-    var helpIndex = 0;
+    var blockOperators;
 
 
 
     requestGET($http, '/admin/translates/langs/?fields=name,translate,lang', function(response, status){
         $scope.langs=response.langs;
-
+        blockOperators = new BlockOperators($scope.langs);
         requestGET($http, 'infotypes/?fields=pit,name', function(response, status){
             console.log(response);
             $scope.types = response;
@@ -85,11 +232,12 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
             })
 
 
+
             splitBlocksAndShowInLine();
             // after load is necesary count word usages
             // because after save(update) will count diference
             // with loaded count and updated count
-            usagesWords = calcUsagesForWordsForAllLangs();
+            usagesWords = blockOperators.calcUsagesForWordsForAllLangs();
 
         });
     }
@@ -97,64 +245,10 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     function update(){
         requestPOST($http, 'info/', $scope.info, function(response, status){
 
-            updateWordUsages();
+            blockOperators.updateWordUsages();
             loadInfoIntoInterface();
         });
     }
-
-    function updateWordUsages(){
-        var actualWordCount = calcUsagesForWordsForAllLangs();
-
-        // difference between actualWordCount and usagesWords
-        // example is loadet text 'Hello[101] Milan[103], Hello[101]...
-        // so usagesWords will looks like : {'101' : 2, '103' : 1, ...
-        // if no-body will change text and update reference = usages should be {'101' : 0, '103' : 0, ...
-        // thats meand no changes with usages
-        // but when somebody change text and update reference like
-        // 'Hello[101] Milan[103], Hi[102]...
-        // usages hold look like {'101' : -1, '102' : 1, ...
-        // thats mean ref 101 decrease and ref 102 increase
-        for(var awcLink in actualWordCount){
-            if(usagesWords[awcLink]){
-                actualWordCount[awcLink] -= usagesWords[awcLink];
-            }
-        }
-
-        // if someone removed
-        for(var uLink in usagesWords){
-            if(!actualWordCount[uLink]){
-                actualWordCount[uLink] = -usagesWords[awcLink];
-            }
-        }
-
-    }
-
-    /**
-     * need to be updated words for all languages
-     * i mean splitBlock for all languages
-     */
-    function calcUsagesForWordsForAllLangs(){
-        var usages = {};
-        $scope.langs.forEach(function(lang){
-
-
-            words[lang].forEach(function(w){
-                if(w.link){
-                    if(usages[w.link]){
-                        usages[w.link] += 1;
-                    } else {
-                        usages[w.link] = 1;
-                    }
-
-                }
-            })
-
-        })
-
-        return usages;
-    }
-
-
 
     function splitBlocksAndShowInLine(lang, suppresTextArea){
         var lang = $scope.current;
@@ -164,88 +258,15 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         // also call calcUsagesForWords which operate
         // with splitedBlocks for all languages
         $scope.langs.forEach(function(langForBlock){
-            splitBlocks(langForBlock);
+            blockOperators.splitBlocks(langForBlock.lang, $scope.info.translates[langForBlock.lang].info);
         })
 
 
-        linksFactory.get(lang, words[lang], function(){
+        linksFactory.get(lang, blockOperators.words[lang], function(){
             showWordsInLineOfWords(lang, suppresTextArea);
         });
 
     }
-
-    function createWordAndLink(sentence, w){
-        // identify link basicaly hello[1]
-        var wordAndLink = w.split('[');
-        var word = wordAndLink[0];
-        var link = 0;
-
-        // link is number with ] '1]'
-        if(wordAndLink.length > 1){
-            var linkText = wordAndLink[1].split(']')[0];
-            link = parseInt(linkText);
-        }
-
-        // remove special characters
-        // like simple word for search
-        var simple = word.replace(/[^a-zA-Zěščřžýáíúůñé ]/g, "")
-
-
-        return {
-            link: link,
-            type: 3,
-            simple : simple,
-            word : word,
-            sentence : sentence,
-            id : helpIndex ++
-        }
-    }
-
-    function splitWords(lang, sentence){
-        var aw = sentence.split(' ');
-        aw.forEach(function(w){
-            // sometime is word like ' '
-            if(w == '' || w == '.'){
-                return;
-            }
-
-            words[lang].push(createWordAndLink(sentence, w));
-        })
-    }
-
-    function splitSentences(lang, block){
-        // sentence first because each word
-        // will contain reference to sentence
-        var sentences = block.split('.')
-
-
-        sentences.forEach(function(sentence){
-            // supress empty sentences
-            // 'ahoj. '.split('.') separe string to ['ahoj',' ']
-            // and in 2nd index the splitWords method will operate with ' '
-            // that will not add any words but will add word with type 1
-            // thats dot and with this behavior will have two dots on end
-            if(sentence.trim()){
-                splitWords(lang, sentence);
-                words[lang].push({type:1});
-            }
-        });
-    }
-
-    function splitBlocks(lang){
-        // first detect blogs for determine end of block
-        var blocks = $scope.info.translates[lang].info.split('\n\n');
-        words[lang] = [];
-        helpIndex = 0;
-
-
-        blocks.forEach(function(block){
-            splitSentences(lang, block);
-            // determine end of block
-            words[lang].push({type:0});
-        })
-    }
-
 
     function showWordsInLineOfWords(lang, suppressTextArea){
         // line in editor
@@ -254,11 +275,11 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         var lineOfWords = $('#lineofwords');
         lineOfWords.empty();
 
-        words[lang].forEach(function(word){
-            if(word.type == 0){
+        blockOperators.words[lang].forEach(function(word){
+            if(word.type == 1){
                 editLine += '\n\n';
                 lineOfWords.append('<div class="clearfix"></div><br/><br/>');
-            } else if(word.type == 1) {
+            } else if(word.type == 2) {
                 editLine += '.';
                 lineOfWords.append('<div class="inner-words">.</div>');
             } else {
