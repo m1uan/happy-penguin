@@ -25,6 +25,8 @@ div.input-group
         input(ng-model="selectedWord.simple").input
         input(type="checkbox",name="search-lang-choice",checked,data-label-text="lang",ng-model="searchWordLang").input
 
+        a(href="//www.slovnik.seznam.cz/{{current}}-cz/word/?q={{selectedWord.simple}}",target="slovnik_seznam").btn.btn-default.input CZ to {{current}}
+        a(href="//www.slovnik.seznam.cz/cz-{{current}}/word/?q={{selectedWord.simple}}",target="slovnik_seznam").btn.btn-default.input {{current}} to CZ
 table.table.table-responsive
 
     tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss)")

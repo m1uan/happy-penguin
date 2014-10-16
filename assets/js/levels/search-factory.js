@@ -44,10 +44,12 @@
                 lang2 = 'en';
             }
 
+            var foundLang = lang + lang2;
+
 
             // first search for this language
-            if(!__foundWords[lang]) {
-                __foundWords[lang] = {};
+            if(!__foundWords[foundLang]) {
+                __foundWords[foundLang] = {};
             }
 
             var workList = [];
@@ -58,8 +60,8 @@
             var resCount = 0;
             words.forEach(function(word){
                 // foundwords contain already searched words
-                if(__foundWords[word.simple]){
-                    resCount += __setupFoundedWord(__foundWords[word.simple], word);
+                if(__foundWords[foundLang][word.simple]){
+                    resCount += __setupFoundedWord(__foundWords[foundLang][word.simple], word);
                 } else {
                     // the word is not in found list
                     // if is the same word in list, don't search again
@@ -101,7 +103,7 @@
 
                     response.forEach(function(foundedWords, idx){
                         var wl = workListLinearForSearch[idx];
-                        __foundWords[wl[0].simple] = foundedWords;
+                        __foundWords[foundLang][wl[0].simple] = foundedWords;
                         wl.forEach(function(word){
                             resCount += __setupFoundedWord(foundedWords, word);
                         })
