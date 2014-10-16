@@ -521,10 +521,29 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         }
     }
 
+    function addWordPossibilty(poss, updated){
+
+        var payload = {
+            "lang":$scope.current,
+            "link": poss.lid,
+            "word": updated,
+            "record":poss.word2 + "|en|" + poss.english}
+        requestPOST($http, '/words/update?type=api', payload, function(response, status){
+            poss.word2 = updated;
+        });
+    }
+
     $scope.editPossibility = function(poss){
         alertify.prompt('Edit possible word', function(e,data){
-             alertify.alert(data);
-        },poss.simple);
+            if(e){
+                if(data){
+                    addWordPossibilty(poss, data);
+                } else {
+                    alertify.alert('Edit field was empty!');
+                }
+            }
+
+        }, poss.word2);
     }
 
     var setTimeOutForUpdate = null;

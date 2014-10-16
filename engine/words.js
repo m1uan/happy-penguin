@@ -881,11 +881,13 @@ function searchOrLinks(pg, search, cb){
         }
 
         if(indexOfWord2){
-            sql.join('word as word2', 'word2.link = link.lid AND word2.lang =\''+search.lang2+'\'');
+            sql.join('word as word2', 'word2.link = link.lid AND word2.lang =\''+search.lang2+'\' AND word2.version=0');
+
         }
 
         if(indexOfEngllish){
             sql.join('word as word3', 'word3.link = link.lid AND word3.lang =\'en\'');
+            sql.whereAnd('word3.version =0');
         }
 
         sql.select(pg, icb);

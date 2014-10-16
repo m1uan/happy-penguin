@@ -86,7 +86,7 @@
                 var minLength = 100;
                 workListLinearForSearch.forEach(function(wl){
                     wordString += ',' + wl[0].simple;
-                    if(minLength > wl[0].simple.length){
+                    if(wl[0].simple && minLength > wl[0].simple.length){
                         minLength =  wl[0].simple.length;
                     }
                 });

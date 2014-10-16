@@ -128,10 +128,18 @@ var wordsCtrl = function(){
     self.update_post = function(request){
         console.log(request.payload);
 
+        var api = request.query.type ? request.query.type=='api' : false;
+
         var updateUser = request.payload;
 
         wordsEngine.updateWord(pgClient, updateUser, request.user.id, function(err, data){
-           request.reply(err || data);
+
+            if(api){
+                response(request, err, data);
+            } else {
+                request.reply(err || data);
+            }
+
         } );
     }
 
