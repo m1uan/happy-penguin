@@ -701,8 +701,6 @@ module.exports.addWord = function(pg, addWord, userId, cb){
                cb('link does not exists!');
            }
            addWordFromLink(pg, addWord, userId, cb);
-
-
        });
    } else {
        var sql = 'INSERT INTO link (lid,lesson,description,usr) VALUES ((SELECT max(lid) + 1 FROM link),$1,$2,$3) RETURNING lid, description';

@@ -235,6 +235,8 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         {lid: 2, desc: 'hello'}];
     $scope.selectedWord = {possible: $scope.possible};
 
+    $scope.searchWordLang = true;
+
     var _searchedWords = {};
     var _linkedWords = {};
 
@@ -433,7 +435,10 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         showWordsInLineOfWords($scope.current);
     }
 
-    $scope.checkSelectedWord = function(lang){
+
+
+    $scope.checkSelectedWord = function(){
+        var lang = $scope.searchWordLang ? 'en' : $scope.current;
         searchFactory.search(lang, [$scope.selectedWord], $scope.current, function(count){
             alertify.success(lang + ' "' + $scope.selectedWord.simple + '" : ' + count);
         }, true);
@@ -442,6 +447,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     $scope.changeLang = function(lang){
         $scope.current = lang;
+        $("[name='search-lang-choice']").bootstrapSwitch('offText',$scope.current);
         splitBlocksAndShowInLine();
     }
 
@@ -466,7 +472,14 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     }
 
-
+    var searchLangSwitch = $("[name='search-lang-choice']");
+    searchLangSwitch.bootstrapSwitch('onText','en');
+    searchLangSwitch.bootstrapSwitch('offText',$scope.current);
+    searchLangSwitch.on('switchChange.bootstrapSwitch',  function (e, data) {
+        console.log(data)
+        $scope.searchWordLang = data;
+        $scope.checkSelectedWord();
+    });
 
 
 }

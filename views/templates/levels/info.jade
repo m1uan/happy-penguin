@@ -19,18 +19,13 @@ div.container-fluid
 div#lineofwords
 
 div.clearfix
-table.table.table-responsive
-    tr
-        td
-        td
-            div.input-group
-                input(ng-model="selectedWord.simple").input
-                button(ng-click="checkSelectedWord('en')").input check:en
-        td
-            div.input-group
-                input(ng-model="selectedWord.simple").input
-                button(ng-click="checkSelectedWord(current)").input check:{{current}}
+div.input-group
+    form(ng-submit="alert('ahoj')")
+        button(ng-click="checkSelectedWord()").btn.input search word
+        input(ng-model="selectedWord.simple").input
+        input(type="checkbox",name="search-lang-choice",checked,data-label-text="lang",ng-model="searchWordLang").input
 
+table.table.table-responsive
 
     tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss)")
         td # {{poss.lid}}
@@ -49,6 +44,17 @@ table.table.table-responsive
         td # 1
         td [remove]
         td
+
+    tr
+        td
+            button(ng-click="addWord()").btn.btn-primary add
+        td
+            div.input-group
+                input(ng-model="selectedWord.english").input
+
+        td
+            div.input-group
+                input(ng-model="selectedWord.simple").input
 
 div.clearfix
 
