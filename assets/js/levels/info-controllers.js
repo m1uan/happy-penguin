@@ -523,8 +523,10 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     function addWordPossibilty(poss, updated){
 
+        var lang = $scope.current == 'cz' ? 'cs' : $scope.current;
+
         var payload = {
-            "lang":$scope.current,
+            "lang": lang,
             "link": poss.lid,
             "word": updated,
             "record":poss.word2 + "|en|" + poss.english}
