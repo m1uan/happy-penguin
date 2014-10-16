@@ -14,6 +14,11 @@
             // for continuity with search where could be
             // for one words more possible
             word.possible = [linedWord];
+
+            // from link comming only one side of word
+            // word is reserved for english part
+            word.word2 = word.word;
+            //word.word = null;
         }
 
         function __get(lang, words, cb){

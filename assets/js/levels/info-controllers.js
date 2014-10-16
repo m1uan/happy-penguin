@@ -235,7 +235,10 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         {lid: 2, desc: 'hello'}];
     $scope.selectedWord = {possible: $scope.possible};
 
+    // search by english or curretnt (true -english)
     $scope.searchWordLang = true;
+    // result of search in czech or current (true - czech)
+    $scope.searchWordLang2 = false;
 
     var _searchedWords = {};
     var _linkedWords = {};
@@ -391,6 +394,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
         $scope.$apply(function(){
 
+            wordsCheck($scope.current);
             $scope.selectedWord = word;
 
             $('.inner-words').removeClass('inner-words-selected');
@@ -438,8 +442,17 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
 
     $scope.checkSelectedWord = function(){
+
+        // if is switch of search word select to search by english
+        // or search by current
         var lang = $scope.searchWordLang ? 'en' : $scope.current;
-        searchFactory.search(lang, [$scope.selectedWord], $scope.current, function(count){
+
+        // result of words - default english
+        // if is current eng set to cz (results in czech)
+        var lang2 = $scope.searchWordLang2 ? 'cz' :  $scope.current;
+
+
+        searchFactory.search(lang, [$scope.selectedWord], lang2, function(count){
             alertify.success(lang + ' "' + $scope.selectedWord.simple + '" : ' + count);
         }, true);
     }
@@ -448,6 +461,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     $scope.changeLang = function(lang){
         $scope.current = lang;
         $("[name='search-lang-choice']").bootstrapSwitch('offText',$scope.current);
+        $("[name='search-lang2-choice']").bootstrapSwitch('offText',$scope.current);
         splitBlocksAndShowInLine();
     }
 
@@ -457,6 +471,60 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     $scope.check = function(){
         wordsCheck($scope.current);
+    }
+
+    function addWordRequest(desc, w1, w2){
+        // l1 always en
+        var l1 = 'en';
+        // if en language is the second word add in cz
+        var l2 = $scope.current == 'en' ? 'cz' : $scope.current;
+        // fix cz to cs because server operate in cs
+        l2 = l2 == 'cz' ? 'cs' : l2;
+
+
+
+        var payload = {"word":
+            {
+                "s":"8001",
+                "w1":w1,
+                "w2":w2,
+                "d":desc,
+                "n1":l1,
+                "n2":l2,
+                "r1":'|'+l2+'|'+w1,
+                "r2":'|'+l1+'|'+w2
+             }
+        }
+        requestPOST($http, '/words/addword', payload, function(response, status){
+            wordsCheck($scope.current);
+        });
+    }
+
+    $scope.addWord = function(){
+        if(!$scope.selectedWord.english || !$scope.selectedWord.simple){
+            alertify.alert('booth fields have to be filled')
+        } else {
+            alertify.prompt('Write description about add word', function(e,data){
+                if(e){
+                   if(!data){
+                       alertify.error('description was empty');
+                   } else {
+                       addWordRequest(data, $scope.selectedWord.english, $scope.selectedWord.simple);
+
+                   }
+                }
+
+            })
+            //addWordRequest
+
+
+        }
+    }
+
+    $scope.editPossibility = function(poss){
+        alertify.prompt('Edit possible word', function(e,data){
+             alertify.alert(data);
+        },poss.simple);
     }
 
     var setTimeOutForUpdate = null;
@@ -478,6 +546,14 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     searchLangSwitch.on('switchChange.bootstrapSwitch',  function (e, data) {
         console.log(data)
         $scope.searchWordLang = data;
+        $scope.checkSelectedWord();
+    });
+
+    var searchLangSwitch = $("[name='search-lang2-choice']");
+    searchLangSwitch.bootstrapSwitch('onText','cz');
+    searchLangSwitch.bootstrapSwitch('offText',$scope.current);
+    searchLangSwitch.on('switchChange.bootstrapSwitch',  function (e, data) {
+        $scope.searchWordLang2 = data;
         $scope.checkSelectedWord();
     });
 

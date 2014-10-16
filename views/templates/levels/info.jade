@@ -23,8 +23,8 @@ div.input-group
     form(ng-submit="alert('ahoj')")
         button(ng-click="checkSelectedWord()").btn.input search word
         input(ng-model="selectedWord.simple").input
-        input(type="checkbox",name="search-lang-choice",checked,data-label-text="lang",ng-model="searchWordLang").input
-
+        input(type="checkbox",name="search-lang-choice",checked,data-label-text="from",ng-model="searchWordLang").input
+        input(type="checkbox",name="search-lang2-choice",checked,data-label-text="to",ng-model="searchWordLang").input
         a(href="//www.slovnik.seznam.cz/{{current}}-cz/word/?q={{selectedWord.simple}}",target="slovnik_seznam").btn.btn-default.input CZ to {{current}}
         a(href="//www.slovnik.seznam.cz/cz-{{current}}/word/?q={{selectedWord.simple}}",target="slovnik_seznam").btn.btn-default.input {{current}} to CZ
 table.table.table-responsive
@@ -38,8 +38,8 @@ table.table.table-responsive
         td
             // if you search the current translatio is in word2
             // if you get links is in word
-            span(ng-hide="poss.word2") {{poss.word}}
-            span(ng-show="poss.word2") {{poss.word2}}
+            span {{poss.word2}}
+            button(ng-click="editPossibility(poss)").btn.btn-sm.btn-success edit
         td
             span.badge {{poss.usage}}
     tr(ng-click="selectWordPossibility(selectedWord,null)")
@@ -47,16 +47,22 @@ table.table.table-responsive
         td [remove]
         td
 
-    tr
+    tr#word-add-row
         td
-            button(ng-click="addWord()").btn.btn-primary add
+            button(ng-click="addWord()").btn.btn-warning add word
         td
             div.input-group
                 input(ng-model="selectedWord.english").input
+                span en
+
 
         td
             div.input-group
                 input(ng-model="selectedWord.simple").input
+                // in english version it will add word in czech
+                span(ng-show="current=='en'") cz
+                span(ng-show="current!='en'") {{current}}
+
 
 div.clearfix
 

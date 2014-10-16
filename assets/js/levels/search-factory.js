@@ -83,8 +83,12 @@
 
             if(workListLinearForSearch && workListLinearForSearch.length > 0){
                 var wordString = '';
+                var minLength = 100;
                 workListLinearForSearch.forEach(function(wl){
                     wordString += ',' + wl[0].simple;
+                    if(minLength > wl[0].simple.length){
+                        minLength =  wl[0].simple.length;
+                    }
                 });
                 wordString = wordString.substring(1);
 
@@ -92,7 +96,9 @@
                 var fixlang2 = lang2 != 'cz' ? lang2 : 'cs';
                 var url = '/words/search/'+fixlang+'/'+fixlang2+'/?fields=lid,desc,word,word2,english,usage&words='+wordString;
 
-                if(properly){
+                // dont look properly for words which
+                // they are very short (lengyh 3 is minimum)
+                if(properly && minLength >= 3){
                     url += '&properly=true';
                 }
 
