@@ -99,7 +99,7 @@
                 type: 0,
                 simple : simple,
                 word : word,
-                sentence : sentence,
+                sentence : self.removeWordLinks(sentence),
                 id : self.helpIndex ++
             }
         }
@@ -176,6 +176,13 @@
             }
 
             return payload;
+        }
+
+        self.removeWordLinks = function(sentenceWithLinks){
+            var patt = new RegExp('\[[0-9]*\]', 'gm');
+            //var res = patt.exec(sentenceWithLinks);
+
+            return sentenceWithLinks.replace(patt, '');
         }
 
         return self;

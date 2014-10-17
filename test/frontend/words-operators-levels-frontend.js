@@ -72,5 +72,14 @@ describe('BlockOperators', function() {
         var payload = wordsOperators.generatePayloadForUpdateUsagesRequest({'192':0,'90':0});
         expect(payload).toBeNull();
     });
+
+    iit('remove bracked from sentences', function(){
+        var removedBracked = wordsOperators.removeWordLinks('Hello[192] world[90]');
+        expect(removedBracked).not.toBeNull();
+        expect(removedBracked).not.toContain('[')
+        expect(removedBracked).not.toContain(']')
+        expect(removedBracked).not.toContain('192')
+        expect(removedBracked).not.toContain('90')
+    });
 });
 
