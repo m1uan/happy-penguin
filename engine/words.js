@@ -890,6 +890,8 @@ function searchOrLinks(pg, search, cb){
             sql.whereAnd('word3.version =0');
         }
 
+        sql.addOrderBy('usage ASC')
+
         sql.select(pg, icb);
     }
 }
