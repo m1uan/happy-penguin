@@ -240,6 +240,8 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     // result of search in czech or current (true - czech)
     $scope.searchWordLang2 = false;
 
+    $scope.show_edit_text = false;
+
     var _searchedWords = {};
     var _linkedWords = {};
 
@@ -394,8 +396,9 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
         $scope.$apply(function(){
 
-            wordsCheck($scope.current);
+
             $scope.selectedWord = word;
+            $scope.checkSelectedWord();
 
             $('.inner-words').removeClass('inner-words-selected');
             $('#inner-word-' + word.id).addClass('inner-words-selected');
@@ -532,6 +535,11 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
             "record":poss.word2 + "|en|" + poss.english}
         requestPOST($http, '/words/update?type=api', payload, function(response, status){
             poss.word2 = updated;
+            // remove from history, if you will change somethink
+            // and try find possible words, it is all cached in factory
+            // remove cache history for actualize by new data with updated word
+            searchFactory.removeFromFoundWords($scope.current, updated);
+            searchFactory.removeFromFoundWords('en',poss.english);
         });
     }
 
@@ -539,6 +547,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         alertify.prompt('Edit possible word', function(e,data){
             if(e){
                 if(data){
+                    searchFactory.removeFromFoundWords($scope.current, data);
                     addWordPossibilty(poss, data);
                 } else {
                     alertify.alert('Edit field was empty!');
@@ -546,6 +555,10 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
             }
 
         }, poss.word2);
+    }
+
+    $scope.showEditText = function(){
+        $scope.show_edit_text = !$scope.show_edit_text;
     }
 
     var setTimeOutForUpdate = null;

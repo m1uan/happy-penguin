@@ -1,7 +1,7 @@
 link(rel='stylesheet', href='/assets/css/levels/info.css')
 script(src="/assets/js/libs/jquery.appear.js")
 
-h2 info {{info.pi}}
+div # {{info.pi}} {{info.translates[current].name}}
     span(ng-repeat="lang in langs")
         a(ng-click="changeLang(lang.lang)") {{lang.lang}}
         span |
@@ -11,11 +11,14 @@ h2 info {{info.pi}}
 
 div.container-fluid
     div.row
-        div.col-lg-6
-            input(ng-model="info.translates[current].name",size="50",maxlength="70")
-            textarea(ng-change="infoChange(current)",ng-model="info.translates[current].info",rows="5",cols="170")
-        div.col-lg-6
-            div#texts
+        div.col-lg-12
+            div.input-group
+                input(ng-model="info.translates[current].name",size="50",maxlength="70").input
+                button(ng-click="showEditText()").btn.btn-default.input show or hide text
+    div.row
+        div(ng-show="show_edit_text").col-lg-5
+            textarea(ng-change="infoChange(current)",ng-model="info.translates[current].info",rows="15",cols="180")
+
 div#lineofwords
 
 div.clearfix
@@ -27,43 +30,49 @@ div.input-group
         input(type="checkbox",name="search-lang2-choice",checked,data-label-text="to",ng-model="searchWordLang").input
         a(href="//www.slovnik.seznam.cz/{{current}}-cz/word/?q={{selectedWord.simple}}",target="slovnik_seznam").btn.btn-default.input CZ to {{current}}
         a(href="//www.slovnik.seznam.cz/cz-{{current}}/word/?q={{selectedWord.simple}}",target="slovnik_seznam").btn.btn-default.input {{current}} to CZ
-table.table.table-responsive
 
-    tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss)")
-        td # {{poss.lid}}
-        td
-             span {{poss.desc}}
-             br
-             i {{poss.english}}
-        td
-            // if you search the current translatio is in word2
-            // if you get links is in word
-            span {{poss.word2}}
-            button(ng-click="editPossibility(poss)").btn.btn-xs.btn-success edit
-        td
-            span.badge {{poss.usage}}
-    tr(ng-click="selectWordPossibility(selectedWord,null)")
-        td # 1
-        td [remove]
-        td
+div.container-fluid
+    div.row
+        div.col-md-6
+            table.table.table-responsive
 
-    tr#word-add-row
-        td
-            button(ng-click="addWord()").btn.btn-warning add word
-        td
-            div.input-group
-                input(ng-model="selectedWord.english").input
-                span en
+                tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss)")
+                    td # {{poss.lid}}
+                    td
+                         span {{poss.desc}}
+                         span.badge {{poss.usage}}
+                         br
+                         i {{poss.english}}
+                    td
+                        // if you search the current translatio is in word2
+                        // if you get links is in word
+                        span {{poss.word2}}
+                        button(ng-click="editPossibility(poss)").btn.btn-xs.btn-success edit
+                    td
 
+                tr(ng-click="selectWordPossibility(selectedWord,null)")
+                    td # 1
+                    td [remove]
+                    td
 
-        td
-            div.input-group
-                input(ng-model="selectedWord.simple").input
-                // in english version it will add word in czech
-                span(ng-show="current=='en'") cz
-                span(ng-show="current!='en'") {{current}}
+                tr#word-add-row
+                    td
+                        button(ng-click="addWord()").btn.btn-warning add word
+                    td
+                        div.input-group
+                            input(ng-model="selectedWord.english").input
+                            span en
 
 
+                    td
+                        div.input-group
+                            input(ng-model="selectedWord.simple").input
+                            // in english version it will add word in czech
+                            span(ng-show="current=='en'") cz
+                            span(ng-show="current!='en'") {{current}}
+
+        div.col-md-6
+            div {{selectedWord.sentence}}
 div.clearfix
 
 div.input-group

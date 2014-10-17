@@ -15,8 +15,38 @@
             //resultList.push(__foundWords[word.simple]);
             // if is not founded the found words is empty or null
             if(foundWords && foundWords.length > 0){
-                word.link = foundWords[0].lid;
-                word.possible = foundWords;
+
+                // when is check button pressed access new lid to link
+                // but in search shoud not be accessed without human know
+                // so if possible doesn't have any data its probably first check
+                // and could be updated link if is some
+                if(!word.possible || word.possible.length < 1){
+                    word.link = foundWords[0].lid;
+                }
+
+
+                // in word could be possible word from prev search or prev check
+                // dont remove it.. and update just by words which they are not included in list
+                // example : let say we have word "man's" and the word is linked with "man"
+                // after search "man's" we get no results... and we will remove "man" from list..
+                if(word.possible && word.possible.length > 0){
+                    // also found words contain something
+                   foundWords.forEach(function(fw){
+                       var contain = word.possible.some(function(poss){
+                            return fw.lid == poss.link;
+                       })
+
+                       if(!contain){
+                           word.possible.push(fw);
+                       }
+                    });
+                } else {
+                    // possible is empty
+                    word.possible = foundWords;
+                }
+
+
+
                 countFoundedWords = foundWords.length;
             } else {
                 word.possible = null;
@@ -58,6 +88,11 @@
 
             // how much words was founded
             var resCount = 0;
+
+
+            // in words list could be some words multiple time
+            // create list just with uniq words or if you find it
+            // in previous founded list, use this data
             words.forEach(function(word){
                 // foundwords contain already searched words
                 if(__foundWords[foundLang][word.simple]){
@@ -81,6 +116,9 @@
             });
 
 
+
+            // all words could be find in previous searched list
+            // test if any words have to by ask server for download data
             if(workListLinearForSearch && workListLinearForSearch.length > 0){
                 var wordString = '';
                 var minLength = 100;
@@ -131,9 +169,15 @@
         }
 
 
+        function __removeFromFoundWords(lang, word){
+            if(__foundWords[lang]){
+                __foundWords[lang][word] = null;
+            }
+        }
 
         return {
-            search : self.__search
+            search : self.__search,
+            removeFromFoundWords : __removeFromFoundWords
 
         };
     });
