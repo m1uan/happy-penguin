@@ -34,7 +34,7 @@ div.input-group
 div.container-fluid
     div.row
         div.col-md-6
-            table.table.table-responsive
+            table#search-words-table.table.table-responsive
 
                 tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss)")
                     td # {{poss.lid}}

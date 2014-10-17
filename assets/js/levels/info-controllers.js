@@ -409,11 +409,16 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
             $('.inner-words').removeClass('inner-words-selected');
             $('#inner-word-' + word.id).addClass('inner-words-selected');
+
+            $('#search-words-table tr').removeClass('search-words-table-select-row');
+            $('#search-words-table tr:first-child').addClass('search-words-table-select-row');
         })
 
         //$('#connect-word-' + word.id).text('ahoj');
         console.log(el, word.word);
     }
+
+    $('#search-words-table tr:first-child').addClass('search-words-table-select-row');
 
     function wordMoveSelectedUp(word, poss){
         var possible = word.possible;
@@ -443,6 +448,8 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         } else {
             // remove
             word.link = null;
+            $('#search-words-table tr').removeClass('search-words-table-select-row');
+
         }
 
 

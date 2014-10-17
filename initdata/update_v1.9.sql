@@ -32,4 +32,11 @@ ALTER TABLE pinguin.place_t ADD COLUMN place_info INTEGER;
 ALTER TABLE pinguin.place_t ADD FOREIGN KEY (place_info) REFERENCES pinguin.place_info_t (pi);
 ALTER TABLE pinguin.place_t ALTER COLUMN name DROP NOT NULL;
 
-ALTER TABLE link ADD COLUMN usage INTEGER DEFAULT 0;
+ALTER TABLE link ADD COLUMN usage INTEGER DEFAULT NULL;
+ALTER TABLE link ADD COLUMN issentence BOOLEAN DEFAULT NULL;
+
+CREATE TABLE link_sentence_t (
+    sentence INTEGER NOT NULL,
+    word INTEGER NOT NULL,
+    PRIMARY KEY (sentence, word)
+);

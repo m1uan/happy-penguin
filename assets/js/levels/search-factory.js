@@ -49,7 +49,11 @@
 
                 countFoundedWords = foundWords.length;
             } else {
-                word.possible = null;
+                // could be not null because, maybe is there a linkded word
+                if(typeof word.possible == 'undefined'){
+                    word.possible = null;
+                }
+
             }
 
             return countFoundedWords;

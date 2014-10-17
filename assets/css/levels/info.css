@@ -43,3 +43,8 @@
 #word-add-row{
     background-color: #add8e6;
 }
+
+.search-words-table-select-row{
+    background-color: pink;
+    font-size: 14px;
+}
