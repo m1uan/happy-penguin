@@ -681,11 +681,19 @@ describe('getWords', function(){
             var userId = 2;
             words.sentenceToLink(pgClient, dataContainer, userId, function(err, data){
 
+                pgClient.query('select issentence from link where lid in ('+data.l+')', function(err, sdata){
+                    var sentence = sdata.rows[0];
+                    sentence.issentence.should.be.true;
+                    pgClient.query('select word,sentence from link_sentence_t where sentence in ('+data.l+')', function(err, sdata2){
+                        var sentenceLink = sdata2.rows[0];
+                        sentenceLink.sentence.should.be.equal(data.l);
+                        sentenceLink.word.should.be.equal(1045);
+                        cb();
+                    });
+                });
 
 
 
-
-                cb();
             })
         });
     });

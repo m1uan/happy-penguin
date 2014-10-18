@@ -939,7 +939,7 @@ module.exports.sentenceToLink = function(pg, dataContainer, userId, cb){
         sql += ' VALUES ($1,$2)';
         var sqlData = [dataContainer.toLink, data.l];
 
-        pg.query(sql, sqlData, function(err, data){
+        pg.query(sql, sqlData, function(err, idata){
             if(err){
                 icb(err);
                 return;
