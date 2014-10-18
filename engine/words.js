@@ -703,7 +703,15 @@ module.exports.addWord = function(pg, addWord, userId, cb){
            addWordFromLink(pg, addWord, userId, cb);
        });
    } else {
-       var sql = 'INSERT INTO link (lid,lesson,description,usr) VALUES ((SELECT max(lid) + 1 FROM link),$1,$2,$3) RETURNING lid, description';
+       var sql = 'INSERT INTO link (lid,lesson,description,usr';
+       if(addWord.sentence){
+           sql+= ',issentence'
+       }
+       sql += ') VALUES ((SELECT max(lid) + 1 FROM link),$1,$2,$3';
+       if(addWord.sentence){
+           sql+= ',TRUE'
+       }
+       sql += ') RETURNING lid, description';
        var sqlData = [addWord.s, addWord.d, userId];
 
        pg.query(sql, sqlData, function(err, linkData){
@@ -894,6 +902,56 @@ function searchOrLinks(pg, search, cb){
 
         sql.select(pg, icb);
     }
+}
+
+
+module.exports.sentenceToLink = function(pg, dataContainer, userId, cb){
+    var watter = [];
+
+
+
+    if(!dataContainer.sentence || !dataContainer.english || !dataContainer.lang || !dataContainer.toLink){
+        cb('dataContainer must contain sentence,english,lang,toLink')
+        return;
+    }
+
+
+    dataContainer.lang = dataContainer.lang == 'cz' ? 'cs' : dataContainer.lang;
+
+    watter.push(function(icb){
+        var word = {
+            n1 : 'en',
+            n2 : dataContainer.lang,
+            w1 : dataContainer.english,
+            w2 : dataContainer.sentence,
+            r1 : 'en|'+dataContainer.sentence,
+            r2 : dataContainer.lang + '|' + dataContainer.sentence,
+            s : 1088,
+            d : dataContainer.english,
+            sentence : true
+        };
+
+        module.exports.addWord(pg, word, userId, icb);
+    });
+
+    watter.push(function(data, icb){
+        var sql = 'INSERT INTO link_sentence_t (word,sentence)';
+        sql += ' VALUES ($1,$2)';
+        var sqlData = [dataContainer.toLink, data.l];
+
+        pg.query(sql, sqlData, function(err, data){
+            if(err){
+                icb(err);
+                return;
+            }
+
+            icb(err, data);
+        })
+    })
+
+
+    async.waterfall(watter, cb)
+
 }
 
 /***

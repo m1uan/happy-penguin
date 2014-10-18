@@ -24,12 +24,13 @@ describe('getWords', function(){
             if(err){
                 return console.info('could not connect to postgres', err);
             }
-            sqlMake(pgClient, ['select create_test_data();'], cb);
+            sqlMake(pgClient, ['select create_test_data();','delete from link_sentence_t'], cb);
         });
     });
 
     after(function(cb){
-       sqlMake(pgClient, ['select remove_test_data();'], function(){
+       sqlMake(pgClient, ['select remove_test_data();'
+           ], function(){
            pgClient.end();
            cb();
            console.info('db connection close');
@@ -667,6 +668,27 @@ describe('getWords', function(){
             })
         });
     })
+
+    describe('sentence', function(){
+        it.only('add', function (cb){
+            var dataContainer = {
+                english:'hello word',
+                sentence:'ahoj svete',
+                lang:'cz',
+                toLink:1045
+            };
+
+            var userId = 2;
+            words.sentenceToLink(pgClient, dataContainer, userId, function(err, data){
+
+
+
+
+
+                cb();
+            })
+        });
+    });
 
     describe('request', function(){
 
