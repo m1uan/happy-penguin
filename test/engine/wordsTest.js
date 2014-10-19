@@ -679,7 +679,7 @@ describe('getWords', function(){
             };
 
             var userId = 2;
-            words.sentenceToLink(pgClient, dataContainer, userId, function(err, data){
+            words.sentenceCreate(pgClient, dataContainer, userId, function(err, data){
 
                 pgClient.query('select issentence from link where lid in ('+data.l+')', function(err, sdata){
                     var sentence = sdata.rows[0];
@@ -694,6 +694,28 @@ describe('getWords', function(){
 
 
 
+            })
+        });
+
+
+        it.only('update english,', function (cb){
+            var dataContainer = {
+                english:'hello word',
+                sentence:'ahoj svete',
+                lang:'cz',
+
+                toLink:1045
+            };
+
+            var userId = 2;
+            words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
+                dataContainer.link = createData.l;
+                dataContainer.english = 'hello word 3'
+                dataContainer.sentence = 'boueno word'
+                dataContainer.lang = 'es'
+                words.sentenceUpdate(pgClient, dataContainer, userId, function(err, data){
+                    cb();
+                })
             })
         });
     });

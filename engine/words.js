@@ -905,7 +905,7 @@ function searchOrLinks(pg, search, cb){
 }
 
 
-module.exports.sentenceToLink = function(pg, dataContainer, userId, cb){
+module.exports.sentenceCrate = function(pg, dataContainer, userId, cb){
     var watter = [];
 
 
@@ -951,6 +951,67 @@ module.exports.sentenceToLink = function(pg, dataContainer, userId, cb){
 
 
     async.waterfall(watter, cb)
+
+}
+
+
+module.exports.sentenceCrate = function(pg, dataContainer, userId, cb){
+    var parallel = [];
+
+    if(dataContainer.lang && dataContainer.sentence){
+        parallel.push(function(icb){
+
+            // record should have previous word
+            var updateWord = {
+                word : dataContainer.sentence
+                ,lang : dataContainer.lang
+                ,link : dataContainer.link
+                ,record : /* TODO: previous word  */ dataContainer.sentence + '|'+dataContainer.lang+'|'
+            };
+
+            module.exports.updateWord(pg, updateWord,icb);
+        });
+    }
+
+    if(dataContainer.english){
+        parallel.push(function(icb){
+
+            // record should have previous word
+            var updateWord = {
+                word : dataContainer.english
+                ,lang : 'en'
+                ,link : dataContainer.link
+                ,record : /* TODO: previous word  */ dataContainer.english + '|en|'
+            };
+
+            module.exports.updateWord(pg, updateWord,icb);
+        });
+
+        parallel.push(function(icb){
+            var linkData = {
+                lid : dataContainer.link,
+                description: dataContainer.english
+            }
+
+           Link.update(pg, userId, linkData, icb);
+        });
+    }
+
+    if(dataContainer.linkTo && dataContainer.link){
+        parallel.push(function(icb){
+            var SQL = SL.SqlLib('link_sentence_t');
+            SQL.whereAnd('sentence=' + dataContainer.link + ' AND word=' +dataContainer.linkTo);
+            var data = {'sentence':dataContainer.link,word:dataContainer.linkTo};
+            var returning = ['sentence','word'];
+            SQL.upsert(pg,data,returning, icb)
+        });
+    }
+
+    if(parallel && parallel.length){
+        async.parallel(parallel, cb)
+    } else {
+        cb('no params for procesesd, possible params (link && linkTo) or/add (english && link) or/add (sentence && lang && link)')
+    }
 
 }
 
