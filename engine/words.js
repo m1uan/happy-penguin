@@ -1048,6 +1048,45 @@ module.exports.sentenceRemove = function(pg, dataContainer, userId, cb){
     async.waterfall(watter, cb);
 }
 
+module.exports.sentencesGet = function(pg, dataContainer, cb){
+
+    if(!dataContainer.toLinks || !dataContainer.lang){
+        cb('missing toLinks or lang')
+    }
+
+    if(!dataContainer.fields){
+        dataContainer.fields = ['s','e','l']
+    }
+
+    var indexOfSentence = dataContainer.fields.indexOf('s');
+    if(indexOfSentence > -1){
+        dataContainer.fields[indexOfSentence] = 'word.word as s'
+    }
+
+    var indexOfEnglish = dataContainer.fields.indexOf('e');
+    if(indexOfEnglish > -1){
+        dataContainer.fields[indexOfEnglish] = 'wordEng.word as e'
+    }
+
+    var indexOfLink = dataContainer.fields.indexOf('l');
+    if(indexOfLink > -1){
+        dataContainer.fields[indexOfLink] = 'link_sentence_t.word as l'
+    }
+
+    var sql = new SQL.SqlLib('link_sentence_t',dataContainer.fields);
+
+    if(indexOfEnglish > -1){
+        sql.join('word as wordEng', 'link_sentence_t.sentence=wordEng.link AND wordEng.version=0 AND wordEng.lang=\'en\'')
+    }
+
+    if(indexOfSentence > -1){
+        sql.join('word', 'link_sentence_t.sentence=word.link AND word.version=0 AND word.lang=\'' + dataContainer.lang + '\'')
+    }
+
+    sql.whereAnd('link_sentence_t.word in (' + dataContainer.toLinks.join(',') + ')');
+    sql.select(pg, cb);
+}
+
 /***
  * crete new word on link, if exist both sides -> just update them
  * @param pg

@@ -813,7 +813,7 @@ describe('getWords', function(){
 
         });
 
-        it.only('remove link - no sentence no sentence_link should exists', function (cb){
+        it('remove link - no sentence no sentence_link should exists', function (cb){
             var dataContainer = {
                 english:'hello word',
                 sentence:'ahoj svete',
@@ -862,6 +862,64 @@ describe('getWords', function(){
                     });
                 });
             });
+
+            async.series(serial, cb);
+
+        });
+
+
+        it.only('load sentences to links', function (cb){
+            var dataContainer = {
+                english:'hello word',
+                sentence:'ahoj svete',
+                lang:'cz',
+
+                toLink:1045
+            };
+
+            var userId = 2;
+            var serial = [];
+
+
+
+
+            serial.push(function(icb){
+                words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
+                    dataContainer.link = createData.l;
+                    dataContainer.english = 'hello word 3'
+                    dataContainer.sentence = 'boueno mundo 3'
+                    dataContainer.lang = 'es'
+                    dataContainer.toLink = 1046
+                    words.sentenceUpdate(pgClient, dataContainer, userId, function(err, data){
+                        icb();
+                    })
+                });
+            })
+
+
+            serial.push(function(icb){
+                dataContainer.english = 'hello word 4'
+                dataContainer.sentence = 'boueno mundo 4'
+                dataContainer.lang = 'es'
+                dataContainer.toLink = 1047
+                words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
+                    dataContainer.english = 'hello word 5'
+                    dataContainer.sentence = 'boueno mundo 5'
+                    dataContainer.lang = 'es'
+                    dataContainer.toLink = 1048
+                    words.sentenceCreate(pgClient, dataContainer, userId, function(err, data){
+                        icb();
+                    })
+                });
+            })
+
+            serial.push(function(icb){
+               words.sentencesGet(pgClient, {toLinks:[1045,1046,1047],lang:'es'} ,function(err, data){
+
+
+                   icb();
+               })
+            })
 
             async.series(serial, cb);
 
