@@ -670,7 +670,7 @@ describe('getWords', function(){
     })
 
     describe('sentence', function(){
-        it.only('add', function (cb){
+        it('add', function (cb){
             var dataContainer = {
                 english:'hello word',
                 sentence:'ahoj svete',
@@ -698,7 +698,7 @@ describe('getWords', function(){
         });
 
 
-        it.only('update english,', function (cb){
+        it('update english,sentence,linkTo', function (cb){
             var dataContainer = {
                 english:'hello word',
                 sentence:'ahoj svete',
@@ -710,16 +710,7 @@ describe('getWords', function(){
             var userId = 2;
             var serial = [];
 
-            serial.push(function(icb){
-                words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
-                    dataContainer.link = createData.l;
-                    dataContainer.english = 'hello word 3'
-                    dataContainer.sentence = 'boueno mundo'
-                    dataContainer.lang = 'es'
-                    dataContainer.linkTo = 1056
-                    icb();
-                });
-            })
+
 
             serial.push(function(icb){
                 words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
@@ -727,7 +718,7 @@ describe('getWords', function(){
                     dataContainer.english = 'hello word 3'
                     dataContainer.sentence = 'boueno mundo'
                     dataContainer.lang = 'es'
-                    dataContainer.linkTo = 1056
+                    dataContainer.toLink = 1056
                     icb();
                 });
             })
@@ -766,6 +757,109 @@ describe('getWords', function(){
                     }).should.be.true;
 
                     icb();
+                });
+            });
+
+            async.series(serial, cb);
+
+        });
+
+        it('remove link - one link should exists', function (cb){
+            var dataContainer = {
+                english:'hello word',
+                sentence:'ahoj svete',
+                lang:'cz',
+
+                toLink:1045
+            };
+
+            var userId = 2;
+            var serial = [];
+
+
+
+            serial.push(function(icb){
+                words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
+                    dataContainer.link = createData.l;
+                    dataContainer.english = 'hello word 3'
+                    dataContainer.sentence = 'boueno mundo'
+                    dataContainer.lang = 'es'
+                    dataContainer.toLink = 1056
+                    words.sentenceUpdate(pgClient, dataContainer, userId, function(err, data){
+                        icb();
+                    })
+                });
+            })
+
+
+
+            serial.push(function(icb){
+                words.sentenceRemove(pgClient, dataContainer, function(err, data){
+                    icb();
+                })
+            })
+
+            serial.push(function(icb){
+                pgClient.query('select word from word where link in ('+dataContainer.link+') and lang=\'es\' and version=0', function(err, sdata){
+                    var word = sdata.rows.length.should.be.equal(1);
+                    pgClient.query('select word,sentence from link_sentence_t where sentence in ('+dataContainer.link+')', function(err, sdata){
+                        sdata.rows.length.should.be.equal(1);
+                        icb();
+                    });
+                });
+            });
+
+            async.series(serial, cb);
+
+        });
+
+        it.only('remove link - no sentence no sentence_link should exists', function (cb){
+            var dataContainer = {
+                english:'hello word',
+                sentence:'ahoj svete',
+                lang:'cz',
+
+                toLink:1045
+            };
+
+            var userId = 2;
+            var serial = [];
+
+
+
+            serial.push(function(icb){
+                words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
+                    dataContainer.link = createData.l;
+                    dataContainer.english = 'hello word 3'
+                    dataContainer.sentence = 'boueno mundo'
+                    dataContainer.lang = 'es'
+                    dataContainer.toLink = 1046
+                    words.sentenceUpdate(pgClient, dataContainer, userId, function(err, data){
+                        icb();
+                    })
+                });
+            })
+
+
+
+            serial.push(function(icb){
+                words.sentenceRemove(pgClient, dataContainer, userId, function(err, data){
+                    dataContainer.toLink = 1045
+                    words.sentenceRemove(pgClient, dataContainer, userId, function(err, data){
+                        icb();
+                    })
+                })
+            })
+
+            serial.push(function(icb){
+                pgClient.query('select word from link_sentence_t where word in ('+dataContainer.link+')', function(err, sdata){
+                    sdata.rows.length.should.be.equal(0);
+
+                    pgClient.query('select del from link where lid in ('+dataContainer.link+') and version=0', function(err, sdata){
+                        sdata.rows.length.should.be.equal(1);
+                        sdata.rows[0].del.should.be.equal(1)
+                        icb();
+                    });
                 });
             });
 

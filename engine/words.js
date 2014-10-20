@@ -997,11 +997,11 @@ module.exports.sentenceUpdate = function(pg, dataContainer, userId, cb){
         });
     }
 
-    if(dataContainer.linkTo && dataContainer.link){
+    if(dataContainer.toLink && dataContainer.link){
         parallel.push(function(icb){
             var sql = SQL.SqlLib('link_sentence_t');
-            sql.whereAnd('sentence=' + dataContainer.link + ' AND word=' +dataContainer.linkTo);
-            var data = {'sentence':dataContainer.link,word:dataContainer.linkTo};
+            sql.whereAnd('sentence=' + dataContainer.link + ' AND word=' +dataContainer.toLink);
+            var data = {'sentence':dataContainer.link,word:dataContainer.toLink};
             var returning = ['sentence','word'];
             sql.upsert(pg,data,returning, icb)
         });
@@ -1013,6 +1013,39 @@ module.exports.sentenceUpdate = function(pg, dataContainer, userId, cb){
         cb('no params for procesesd, possible params (link && linkTo) or/add (english && link) or/add (sentence && lang && link)')
     }
 
+}
+
+
+module.exports.sentenceRemove = function(pg, dataContainer, userId, cb){
+    var watter = [];
+
+    if(!dataContainer.link || !dataContainer.toLink){
+        cb('link or toLink parameter mising')
+        return ;
+    }
+
+    watter.push(function(icb){
+        pg.query('DELETE FROM link_sentence_t WHERE sentence=$1 and word=$2',[dataContainer.link, dataContainer.toLink], function(err, sdata){
+            icb();
+        });
+    })
+
+    watter.push(function(icb){
+        var sql = new SQL.SqlLib('link_sentence_t',['count(*)']);
+        sql.whereAnd('sentence=' + dataContainer.link);
+        sql.select(pg, icb);
+    });
+
+    watter.push(function(rowcount, icb){
+        if(rowcount[0].count){
+            Link.deleteLink(pg, [dataContainer.link], userId, icb);
+        } else {
+            icb();
+        }
+
+    });
+
+    async.waterfall(watter, cb);
 }
 
 /***
