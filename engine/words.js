@@ -905,7 +905,7 @@ function searchOrLinks(pg, search, cb){
 }
 
 
-module.exports.sentenceCrate = function(pg, dataContainer, userId, cb){
+module.exports.sentenceCreate = function(pg, dataContainer, userId, cb){
     var watter = [];
 
 
@@ -955,7 +955,7 @@ module.exports.sentenceCrate = function(pg, dataContainer, userId, cb){
 }
 
 
-module.exports.sentenceCrate = function(pg, dataContainer, userId, cb){
+module.exports.sentenceUpdate = function(pg, dataContainer, userId, cb){
     var parallel = [];
 
     if(dataContainer.lang && dataContainer.sentence){
@@ -969,7 +969,7 @@ module.exports.sentenceCrate = function(pg, dataContainer, userId, cb){
                 ,record : /* TODO: previous word  */ dataContainer.sentence + '|'+dataContainer.lang+'|'
             };
 
-            module.exports.updateWord(pg, updateWord,icb);
+            module.exports.updateWord(pg, updateWord, userId, icb);
         });
     }
 
@@ -984,7 +984,7 @@ module.exports.sentenceCrate = function(pg, dataContainer, userId, cb){
                 ,record : /* TODO: previous word  */ dataContainer.english + '|en|'
             };
 
-            module.exports.updateWord(pg, updateWord,icb);
+            module.exports.updateWord(pg, updateWord, userId, icb);
         });
 
         parallel.push(function(icb){
@@ -999,11 +999,11 @@ module.exports.sentenceCrate = function(pg, dataContainer, userId, cb){
 
     if(dataContainer.linkTo && dataContainer.link){
         parallel.push(function(icb){
-            var SQL = SL.SqlLib('link_sentence_t');
-            SQL.whereAnd('sentence=' + dataContainer.link + ' AND word=' +dataContainer.linkTo);
+            var sql = SQL.SqlLib('link_sentence_t');
+            sql.whereAnd('sentence=' + dataContainer.link + ' AND word=' +dataContainer.linkTo);
             var data = {'sentence':dataContainer.link,word:dataContainer.linkTo};
             var returning = ['sentence','word'];
-            SQL.upsert(pg,data,returning, icb)
+            sql.upsert(pg,data,returning, icb)
         });
     }
 

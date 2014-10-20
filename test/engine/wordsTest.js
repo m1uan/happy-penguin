@@ -708,15 +708,69 @@ describe('getWords', function(){
             };
 
             var userId = 2;
-            words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
-                dataContainer.link = createData.l;
-                dataContainer.english = 'hello word 3'
-                dataContainer.sentence = 'boueno word'
-                dataContainer.lang = 'es'
+            var serial = [];
+
+            serial.push(function(icb){
+                words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
+                    dataContainer.link = createData.l;
+                    dataContainer.english = 'hello word 3'
+                    dataContainer.sentence = 'boueno mundo'
+                    dataContainer.lang = 'es'
+                    dataContainer.linkTo = 1056
+                    icb();
+                });
+            })
+
+            serial.push(function(icb){
+                words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
+                    dataContainer.link = createData.l;
+                    dataContainer.english = 'hello word 3'
+                    dataContainer.sentence = 'boueno mundo'
+                    dataContainer.lang = 'es'
+                    dataContainer.linkTo = 1056
+                    icb();
+                });
+            })
+
+            serial.push(function(icb){
                 words.sentenceUpdate(pgClient, dataContainer, userId, function(err, data){
-                    cb();
+                    icb();
                 })
             })
+
+            serial.push(function(icb){
+                pgClient.query('select word from word where link in ('+dataContainer.link+') and lang=\'es\' and version=0', function(err, sdata){
+                    var word = sdata.rows[0];
+                    word.word.should.be.equal('boueno mundo');
+
+                    icb();
+                });
+            });
+
+
+
+            serial.push(function(icb){
+                pgClient.query('select word,sentence from link_sentence_t where sentence in ('+dataContainer.link+')', function(err, sdata){
+
+                    sdata.rows.length.should.be.equal(2);
+                    sdata.rows.forEach(function(sl){
+                        sl.sentence.should.be.equal(dataContainer.link);
+                    });
+
+                    sdata.rows.some(function(sl){
+                        return sl.word == 1045;
+                    }).should.be.true;
+
+                    sdata.rows.some(function(sl){
+                        return sl.word == 1056;
+                    }).should.be.true;
+
+                    icb();
+                });
+            });
+
+            async.series(serial, cb);
+
         });
     });
 
