@@ -344,6 +344,41 @@ var wordsCtrl = function(){
         })
     }
 
+    self.screate_post = function(request) {
+        wordsEngine.sentenceCreate(pgClient, request.payload, function(err,data){
+            response(request, err, data);
+        })
+    }
+
+    self.supdate_post = function(request) {
+        wordsEngine.sentenceUpdate(pgClient, request.payload, function(err,data){
+            response(request, err, data);
+        })
+    }
+
+    self.sremove_post = function(request) {
+        wordsEngine.sentenceRemove(pgClient, request.payload, function(err,data){
+            response(request, err, data);
+        })
+    }
+
+    self.sentences_get = function(request) {
+        if(request.params.params && request.params.params.length > 0){
+            var langs =  request.params.params.split('/');
+
+            var dataContainer = {lang : langs[0]}
+            dataContainer.toLinks = request.query.tolinks.split(',');
+
+            wordsEngine.sentencesGet(pgClient, dataContainer, function(err,data){
+                response(request, err, data);
+            })
+        } else {
+            response(request, 'lang or params toLinks missing');
+        }
+
+
+    }
+
 
 //    ,wordsControler : function(){
 //      function getWord(lang1, lang2, cb){
