@@ -1058,33 +1058,103 @@ module.exports.sentencesGet = function(pg, dataContainer, cb){
         dataContainer.fields = ['s','e','l']
     }
 
-    var indexOfSentence = dataContainer.fields.indexOf('s');
-    if(indexOfSentence > -1){
-        dataContainer.fields[indexOfSentence] = 'word.word as s'
+    var watter = []
+    var groupFields = []
+
+
+    // first load all sentences related to word links
+    watter.push(function(icb){
+        var indexOfSentence = dataContainer.fields.indexOf('s');
+        if(indexOfSentence > -1){
+            dataContainer.fields[indexOfSentence] = 'word.word as s'
+            groupFields.push('s');
+        }
+
+        var indexOfEnglish = dataContainer.fields.indexOf('e');
+        if(indexOfEnglish > -1){
+            dataContainer.fields[indexOfEnglish] = 'wordEng.word as e'
+            groupFields.push('e');
+        }
+
+        var indexOfLink = dataContainer.fields.indexOf('l');
+        if(indexOfLink > -1){
+            dataContainer.fields[indexOfLink] = 'link_sentence_t.sentence as l'
+            groupFields.push('l');
+        }
+
+        var sql = new SQL.SqlLib('link_sentence_t',dataContainer.fields);
+
+        if(indexOfEnglish > -1){
+            sql.join('word as wordEng', 'link_sentence_t.sentence=wordEng.link AND wordEng.version=0 AND wordEng.lang=\'en\'')
+        }
+
+        if(indexOfSentence > -1){
+            sql.join('word', 'link_sentence_t.sentence=word.link AND word.version=0 AND word.lang=\'' + dataContainer.lang + '\'')
+        }
+
+        // add uniq link
+        generateUniqueLinks();
+
+        sql.whereAnd('link_sentence_t.word in (' + dataContainer.toLinks.join(',') + ')');
+        sql.addGroupBy(groupFields.join(','));
+        sql.select(pg, icb);
+    })
+
+
+    watter.push(function(data, icb){
+        var parallel = [];
+
+        data.forEach(function(sentence){
+            parallel.push(generateLinkSelector(sentence.l))
+        });
+
+        async.parallel(parallel, function(err, selectData){
+            icb(err, err ? null : {
+                sentences: data,
+                toLinks: selectData
+            });
+        });
+
+    });
+
+    async.waterfall(watter, cb)
+
+
+    function generateLinkSelector(link){
+        return function(icb){
+            var sql = new SQL.SqlLib('link_sentence_t', ['word']);
+            sql.whereAnd('sentence='+link);
+            sql.select(pg, function(err, selectedData){
+                if(err){
+                    icb(err);
+                }
+
+                var simpleData = [];
+                // selected data is array of
+                // selectedData[{word:1045},{word:1046}]
+                // make just simple array
+                // simpleData[1045,1046]
+                selectedData.forEach(function(sel){
+                    simpleData.push(sel.word);
+                })
+                icb(err, simpleData);
+            });
+
+        }
+
     }
 
-    var indexOfEnglish = dataContainer.fields.indexOf('e');
-    if(indexOfEnglish > -1){
-        dataContainer.fields[indexOfEnglish] = 'wordEng.word as e'
+    function generateUniqueLinks(){
+        var toLinks = {}
+        dataContainer.toLinks.forEach(function(link){
+            toLinks[link] = link;
+        });
+
+        dataContainer.toLinks = []
+        for(var link in toLinks){
+            dataContainer.toLinks.push(link);
+        }
     }
-
-    var indexOfLink = dataContainer.fields.indexOf('l');
-    if(indexOfLink > -1){
-        dataContainer.fields[indexOfLink] = 'link_sentence_t.word as l'
-    }
-
-    var sql = new SQL.SqlLib('link_sentence_t',dataContainer.fields);
-
-    if(indexOfEnglish > -1){
-        sql.join('word as wordEng', 'link_sentence_t.sentence=wordEng.link AND wordEng.version=0 AND wordEng.lang=\'en\'')
-    }
-
-    if(indexOfSentence > -1){
-        sql.join('word', 'link_sentence_t.sentence=word.link AND word.version=0 AND word.lang=\'' + dataContainer.lang + '\'')
-    }
-
-    sql.whereAnd('link_sentence_t.word in (' + dataContainer.toLinks.join(',') + ')');
-    sql.select(pg, cb);
 }
 
 /***
