@@ -915,8 +915,12 @@ describe('getWords', function(){
 
             serial.push(function(icb){
                words.sentencesGet(pgClient, {toLinks:[1045,1046,1047],lang:'es'} ,function(err, data){
-
-
+                   data.should.have.a.property('sentences');
+                   data.should.have.a.property('toLinks');
+                   data.toLinks.length.should.be.equal(2)
+                   data.sentences.length.should.be.equal(2)
+                   data.toLinks[0].length.should.be.equal(1);
+                   data.toLinks[1].length.should.be.equal(2);
                    icb();
                })
             })

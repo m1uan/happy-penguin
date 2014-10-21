@@ -1101,6 +1101,7 @@ module.exports.sentencesGet = function(pg, dataContainer, cb){
     })
 
 
+    // load word links to words
     watter.push(function(data, icb){
         var parallel = [];
 
