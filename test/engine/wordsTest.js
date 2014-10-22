@@ -698,6 +698,8 @@ describe('getWords', function(){
         });
 
 
+
+
         it('update english,sentence,linkTo', function (cb){
             var dataContainer = {
                 english:'hello word',
@@ -868,7 +870,7 @@ describe('getWords', function(){
         });
 
 
-        it.only('load sentences to links', function (cb){
+        it('load sentences to links', function (cb){
             var dataContainer = {
                 english:'hello word',
                 sentence:'ahoj svete',

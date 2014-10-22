@@ -345,19 +345,24 @@ var wordsCtrl = function(){
     }
 
     self.screate_post = function(request) {
-        wordsEngine.sentenceCreate(pgClient, request.payload, function(err,data){
+        var userId = request.user.id;
+        wordsEngine.sentenceCreate(pgClient, request.payload, userId, function(err,data){
             response(request, err, data);
         })
     }
 
     self.supdate_post = function(request) {
-        wordsEngine.sentenceUpdate(pgClient, request.payload, function(err,data){
+        var userId = request.user.id;
+
+        wordsEngine.sentenceUpdate(pgClient, request.payload, userId, function(err,data){
             response(request, err, data);
         })
     }
 
     self.sremove_post = function(request) {
-        wordsEngine.sentenceRemove(pgClient, request.payload, function(err,data){
+        var userId = request.user.id;
+
+        wordsEngine.sentenceRemove(pgClient, request.payload, userId, function(err,data){
             response(request, err, data);
         })
     }

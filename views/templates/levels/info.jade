@@ -72,7 +72,18 @@ div.container-fluid
                             span(ng-show="current!='en'") {{current}}
 
         div.col-md-6
-            div {{selectedWord.sentence}}
+            table.table.table-responsive
+                tr(ng-repeat="sen in selectedWord.sentences")
+                    td
+                        div
+                            span {{sen.s}}
+                            span(ng-hide="sen.s") ... {{current}} language version missing ...
+
+                        div
+                            span {{sen.e}}
+                            span(ng-hide="sen.e") ... english version missing ...
+                    td
+                        button(ng-click="sentenceCreate(sen.s, selectedWord.link)").btn.btn-default add
 div.clearfix
 
 div.input-group

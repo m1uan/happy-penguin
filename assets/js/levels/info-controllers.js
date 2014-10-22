@@ -99,7 +99,7 @@
                 type: 0,
                 simple : simple,
                 word : word,
-                sentence : self.removeWordLinks(sentence),
+                sentences : [{s:self.removeWordLinks(sentence)}],
                 id : self.helpIndex ++
             }
         }
@@ -586,6 +586,45 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
             splitBlocksAndShowInLine(lang, true);
         }, 2000)
 
+    }
+
+    $scope.sentenceCreate = function(sentence, toLink){
+        var info1 = 'Sentence in ' + $scope.current;
+        alertify.prompt(info1, function(e, sentence){
+            if(e){
+                if(!sentence){
+                    alertify.alert(info1 + ' : could be not empty!');
+                } else {
+                    // if you are in english lang , select as second language czech
+                    // otherwise the user will add the czech both sentence will be in english
+                    var lang = $scope.current == 'en' ? 'cz' : 'en';
+                    var info2 = '('+sentence+') in ' + lang;
+                    alertify.prompt(info2, function(e2, senEnglish){
+                        if(e2){
+                            if(!senEnglish){
+                                alertify.alert(info2 + ' : can not be empty');
+                            } else {
+                                // code here
+                                var dataContainer = {
+                                    toLink : toLink
+                                }
+
+                                dataContainer.english = $scope.current == 'en' ? sentence : senEnglish;
+                                dataContainer.sentence = $scope.current == 'en' ? senEnglish : sentence;
+                                dataContainer.lang = $scope.current == 'en' ? 'cz' : $scope.current;
+
+                                requestPOST($http, '/words/screate/en/', dataContainer, function(response, status){
+                                    $scope.selectedWord.sentences.push(response);
+                                });
+
+                            }
+                        }
+
+                    });
+                }
+            }
+
+        }, sentence);
     }
 
     var searchLangSwitch = $("[name='search-lang-choice']");

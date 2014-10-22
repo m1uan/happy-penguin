@@ -719,10 +719,12 @@ module.exports.addWord = function(pg, addWord, userId, cb){
            console.log('error:',err, linkData );
            if(err) {
                cb('link does not created!');
+           } else{
+               addWord.l = linkData.rows[0].lid;
+               addWord.d = linkData.rows[0].description;
+               addWordFromLink(pg, addWord, userId, cb);
            }
-           addWord.l = linkData.rows[0].lid;
-           addWord.d = linkData.rows[0].description;
-           addWordFromLink(pg, addWord, userId, cb);
+
        });
    }
 
