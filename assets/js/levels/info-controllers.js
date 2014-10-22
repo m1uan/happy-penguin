@@ -614,7 +614,12 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                                 dataContainer.lang = $scope.current == 'en' ? 'cz' : $scope.current;
 
                                 requestPOST($http, '/words/screate/en/', dataContainer, function(response, status){
-                                    $scope.selectedWord.sentences.push(response);
+                                    var newSentence = {e:response.d};
+                                    newSentence.s = sentence;
+                                    newSentence.l = toLink;
+
+
+                                    $scope.selectedWord.sentences.push(newSentence);
                                 });
 
                             }
