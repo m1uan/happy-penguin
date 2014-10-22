@@ -1054,6 +1054,8 @@ module.exports.sentencesGet = function(pg, dataContainer, cb){
         cb('missing toLinks or lang')
     }
 
+    dataContainer.lang = dataContainer.lang == 'cz' ? 'cs' : dataContainer.lang;
+
     if(!dataContainer.fields){
         dataContainer.fields = ['s','e','l']
     }

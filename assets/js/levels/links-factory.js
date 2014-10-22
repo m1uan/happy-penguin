@@ -8,6 +8,8 @@
     penguinGame.factory('linksFactory', function($http) {
 
         var __links = {};
+        var __sentences = {}
+        var __linkSentence = {}
 
         function __setupWord(linedWord, word){
             // have to be a array of founded words
@@ -83,6 +85,13 @@
 
         }
 
+        function __getSentencesToLink(lang, toLink, cb){
+            requestGET($http, '/words/sentences/'+lang+'/?toLinks='+toLink, function(response, status){
+                console.log(response);
+                cb(response);
+            });
+        }
+
         function __update(lang, word){
             if(!__links[lang]) {
                 __links[lang] = {};
@@ -93,7 +102,8 @@
 
         return {
             get: __get,
-            update : __update
+            update : __update,
+            getSentencesToLink : __getSentencesToLink
         };
     });
 }).call(this);
