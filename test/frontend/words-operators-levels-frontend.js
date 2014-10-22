@@ -73,7 +73,7 @@ describe('BlockOperators', function() {
         expect(payload).toBeNull();
     });
 
-    iit('remove bracked from sentences', function(){
+    it('remove bracked from sentences', function(){
         var removedBracked = wordsOperators.removeWordLinks('Hello[192] world[90]');
         expect(removedBracked).not.toBeNull();
         expect(removedBracked).not.toContain('[')

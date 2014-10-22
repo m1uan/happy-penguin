@@ -1092,10 +1092,13 @@ module.exports.sentencesGet = function(pg, dataContainer, cb){
             sql.join('word', 'link_sentence_t.sentence=word.link AND word.version=0 AND word.lang=\'' + dataContainer.lang + '\'')
         }
 
+        sql.join('link', 'link_sentence_t.sentence=link.lid')
+
         // add uniq link
         generateUniqueLinks();
 
         sql.whereAnd('link_sentence_t.word in (' + dataContainer.toLinks.join(',') + ')');
+        sql.whereAnd('link.del!=1')
         sql.addGroupBy(groupFields.join(','));
         sql.select(pg, icb);
     })
