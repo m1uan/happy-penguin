@@ -9,7 +9,7 @@
 
         var __links = {};
         var __sentences = {}
-        var __linkSentence = {}
+        var __linkSentences = {}
 
         function __setupWord(linedWord, word){
             // have to be a array of founded words
@@ -85,11 +85,51 @@
 
         }
 
+        function __getSentenceToLinkCache(lang, toLink, cb){
+            // init __linkSentences for lang
+            if(!__linkSentences[lang]){
+                __linkSentences[lang] = {}
+            }
+
+            if(!__sentences[lang]){
+                __sentences[lang] = {}
+            }
+
+            var sentenceLink = __linkSentences[lang][toLink];
+
+            if(!sentenceLink){
+                return false;
+            }
+
+
+            var cacheSentence = __sentences[lang];
+            var sentences = [];
+            sentenceLink.forEach(function(senLink){
+                sentences.push(cacheSentence[senLink]);
+            })
+
+            cb(sentences);
+            return true;
+        }
+
         function __getSentencesToLink(lang, toLink, cb){
-            requestGET($http, '/words/sentences/'+lang+'/?toLinks='+toLink, function(response, status){
-                console.log(response);
-                cb(response);
-            });
+
+
+            if(!__getSentenceToLinkCache(lang, toLink, cb)) {
+
+                __linkSentences[lang][toLink] = [];
+                requestGET($http, '/words/sentences/'+lang+'/?toLinks='+toLink, function(response, status){
+                    response.sentences.forEach(function(sen){
+                        __sentences[lang][sen.l] = sen;
+                        __linkSentences[lang][toLink].push(sen.l);
+                    });
+
+                    __getSentenceToLinkCache(lang, toLink, cb);
+                });
+            }
+
+
+
         }
 
         function __update(lang, word){
