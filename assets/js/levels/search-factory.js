@@ -33,7 +33,7 @@
                     // also found words contain something
                    foundWords.forEach(function(fw){
                        var contain = word.possible.some(function(poss){
-                            return fw.lid == poss.link;
+                            return fw.lid == poss.lid;
                        })
 
                        if(!contain){

@@ -405,13 +405,17 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
 
             $scope.selectedWord = word;
-            $scope.checkSelectedWord();
+            //if(!word.possible){
+                $scope.checkSelectedWord();
+            //}
+
+
 
             $('.inner-words').removeClass('inner-words-selected');
             $('#inner-word-' + word.id).addClass('inner-words-selected');
-
+            /*
             $('#search-words-table tr').removeClass('search-words-table-select-row');
-            $('#search-words-table tr:first-child').addClass('search-words-table-select-row');
+            $('#search-words-table tr:first-child').addClass('search-words-table-select-row');*/
         })
 
         //$('#connect-word-' + word.id).text('ahoj');
@@ -588,7 +592,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     }
 
-    $scope.sentenceCreate = function(sentence, toLink){
+    function sentenceCreateAndEdit(sentence, toLink, senEnglish, link){
         var info1 = 'Sentence in ' + $scope.current;
         alertify.prompt(info1, function(e, sentence){
             if(e){
@@ -613,23 +617,29 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                                 dataContainer.sentence = $scope.current == 'en' ? senEnglish : sentence;
                                 dataContainer.lang = $scope.current == 'en' ? 'cz' : $scope.current;
 
-                                requestPOST($http, '/words/screate/en/', dataContainer, function(response, status){
+                                requestPOST($http, '/words/screate/', dataContainer, function(response, status){
                                     var newSentence = {e:response.d};
                                     newSentence.s = sentence;
                                     newSentence.l = toLink;
-
-
                                     $scope.selectedWord.sentences.push(newSentence);
                                 });
 
                             }
                         }
 
-                    });
+                    }, senEnglish);
                 }
             }
 
         }, sentence);
+    }
+
+    $scope.sentenceCreate = function(sentence, toLink){
+        sentenceCreateAndEdit(sentence, toLink)
+    }
+
+    $scope.sentenceEdit = function(sentence, toLink){
+        sentenceCreateAndEdit(sentence.s, toLink, sentence.e, sentence.l)
     }
 
     var searchLangSwitch = $("[name='search-lang-choice']");
