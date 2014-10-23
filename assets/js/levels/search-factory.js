@@ -146,7 +146,12 @@
             // in previous founded list, use this data
             words.forEach(function(word){
                 // foundwords contain already searched words
-                if(__foundWords[foundLang][word.simple]){
+                if(__foundWords[foundLang][word.simple] &&
+                    // if we looking for word it not be taken from cache for sentence
+                    // and oppossite
+                    // if we looking for sentence don't take from cache what is a word
+                    ((!sentence && !__foundWords[foundLang][word.simple].sentence) ||
+                        sentence && __foundWords[foundLang][word.simple].sentence)){
                     resCount += __setupFoundedWordOrSentence(__foundWords[foundLang][word.simple], word, sentence);
                 } else {
                     // the word is not in found list
@@ -204,6 +209,10 @@
                     response.forEach(function(foundedWords, idx){
                         var wl = workListLinearForSearch[idx];
                         __foundWords[foundLang][wl[0].simple] = foundedWords;
+                        // recognize sentence or word,
+                        // otherwise when you will finding a word and than sentence for this word
+                        // you got the same result from cache
+                        __foundWords[foundLang][wl[0].simple].sentence = sentence;
                         wl.forEach(function(word){
                             resCount += __setupFoundedWordOrSentence(foundedWords, word, sentence);
                         })
