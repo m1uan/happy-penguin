@@ -406,6 +406,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         }
 
         var czechReverse = false;
+        var notReversedLang = lang;
         if(lang == 'en'){
             czechReverse = true;
             lang = 'cz';
@@ -414,12 +415,10 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         linksFactory.getSentencesToLink(lang, word.link, function(sentences){
 
 
+
+
             $timeout(function(){
                 word.sentences = [];
-
-                if(sentences.length < 1){
-                    return ;
-                }
 
                 sentences.forEach(function(sen){
                     var included = word.sentences.some(function(s){
@@ -441,10 +440,15 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
                 })
 
+                searchFactory.search(notReversedLang, [word], 'en', function(count){}, true, true);
+
             },0)
 
 
         });
+
+
+
     }
 
     function selectWord(el, word, lang){

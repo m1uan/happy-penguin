@@ -874,11 +874,13 @@ function searchOrLinks(pg, search, cb){
         sql.whereAnd('word1.lang =\''+search.lang+'\'');
         sql.whereAnd('link.version =0');
         sql.whereAnd('word1.version =0');
+
         if(!search.sentenceOnly){
             sql.whereAnd('(link.issentence IS NULL OR link.issentence=false)');
         } else {
             sql.whereAnd('link.issentence=true');
         }
+
         if(word){
             var searchString;
 

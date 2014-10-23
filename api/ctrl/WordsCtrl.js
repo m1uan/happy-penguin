@@ -325,6 +325,12 @@ var wordsCtrl = function(){
             }
 
 
+            // search properly
+            if(request.query.sentenceOnly){
+                dataContainer.sentenceOnly = true;
+            }
+
+
             func(pgClient, dataContainer, function(err, retData){
                 response(request, err, retData);
             });

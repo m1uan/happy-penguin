@@ -9,8 +9,55 @@
         var self = {};
         var __foundWords = {}
 
-        function __setupFoundedWord(foundWords, word){
+        function __setupFoundedSentence(foundWords, word){
             var countFoundedWords = 0;
+
+
+
+            //resultList.push(__foundWords[word.simple]);
+            // if is not founded the found words is empty or null
+            if(foundWords && foundWords.length > 0){
+                // in word could be possible word from prev search or prev check
+                // dont remove it.. and update just by words which they are not included in list
+                // example : let say we have word "man's" and the word is linked with "man"
+                // after search "man's" we get no results... and we will remove "man" from list..
+                if(!word.sentences){
+                    word.sentences = []
+                }
+
+                // also found words contain something
+                foundWords.forEach(function(fw){
+                    var contain = word.sentences.some(function(poss){
+                        return fw.lid == poss.l;
+                    })
+
+                    if(!contain){
+                        word.sentences.push({
+                            l : fw.lid,
+                            s : fw.word,
+                            e : fw.english
+                        });
+                    }
+                });
+
+            } else {
+                // could be not null because, maybe is there a linkded word
+                if(typeof word.sentences == 'undefined'){
+                    word.sentences = null;
+                }
+
+            }
+
+            return countFoundedWords;
+        }
+
+        function __setupFoundedWordOrSentence(foundWords, word, issentence){
+            var countFoundedWords = 0;
+
+            if(issentence){
+                return __setupFoundedSentence(foundWords, word);
+            }
+
 
             //resultList.push(__foundWords[word.simple]);
             // if is not founded the found words is empty or null
@@ -70,7 +117,7 @@
          * @param reverse {Boolean} read
          * @private
          */
-        self.__search = function(lang, words, lang2, cb, properly){
+        self.__search = function(lang, words, lang2, cb, properly, sentence){
 
             // classic if the lang2 is not use
             if(!cb){
@@ -100,7 +147,7 @@
             words.forEach(function(word){
                 // foundwords contain already searched words
                 if(__foundWords[foundLang][word.simple]){
-                    resCount += __setupFoundedWord(__foundWords[foundLang][word.simple], word);
+                    resCount += __setupFoundedWordOrSentence(__foundWords[foundLang][word.simple], word, sentence);
                 } else {
                     // the word is not in found list
                     // if is the same word in list, don't search again
@@ -140,8 +187,13 @@
 
                 // dont look properly for words which
                 // they are very short (lengyh 3 is minimum)
-                if(properly && minLength >= 3){
+                // if sentence have to search word between words...
+                if(sentence || (properly && minLength >= 3)){
                     url += '&properly=true';
+                }
+
+                if(sentence){
+                    url += '&sentenceOnly=true';
                 }
 
                 requestGET($http, url, function(response, status){
@@ -153,7 +205,7 @@
                         var wl = workListLinearForSearch[idx];
                         __foundWords[foundLang][wl[0].simple] = foundedWords;
                         wl.forEach(function(word){
-                            resCount += __setupFoundedWord(foundedWords, word);
+                            resCount += __setupFoundedWordOrSentence(foundedWords, word, sentence);
                         })
 
                         // update links factory for next load
