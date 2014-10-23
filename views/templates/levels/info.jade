@@ -73,6 +73,14 @@ div.container-fluid
 
         div.col-md-6
             table.table.table-responsive
+                tr
+                    td
+                        div
+                            span {{selectedWord.sentence}}
+                        div
+                            span ... english version missing ...
+                    td
+                        button(ng-hide="sen.l || !selectedWord.link",ng-click="sentenceCreate(sen.s, selectedWord.link)").btn.btn-default add
                 tr(ng-repeat="sen in selectedWord.sentences")
                     td
                         div
@@ -83,7 +91,6 @@ div.container-fluid
                             span {{sen.e}}
                             span(ng-hide="sen.e") ... english version missing ...
                     td
-                        button(ng-hide="sen.l || !selectedWord.link",ng-click="sentenceCreate(sen.s, selectedWord.link)").btn.btn-default add
                         button(ng-show="sen.l",ng-click="sentenceEdit(sen, selectedWord.link)").btn.btn-default edit
                         button(ng-show="sen.l",ng-click="sentenceUnlink(sen, selectedWord.link)").btn.btn-default unlink
 div.clearfix

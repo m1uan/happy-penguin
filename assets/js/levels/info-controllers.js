@@ -99,7 +99,8 @@
                 type: 0,
                 simple : simple,
                 word : word,
-                sentences : [{s:self.removeWordLinks(sentence)}],
+                sentence : self.removeWordLinks(sentence),
+                sentences : [],
                 id : self.helpIndex ++
             }
         }
@@ -399,15 +400,61 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     }
 
+    function checkSelectedWordForSentences(lang, word){
+        if(!word.link){
+            return ;
+        }
+
+        var czechReverse = false;
+        if(lang == 'en'){
+            czechReverse = true;
+            lang = 'cz';
+        }
+
+        linksFactory.getSentencesToLink(lang, word.link, function(sentences){
+
+
+            $timeout(function(){
+                word.sentences = [];
+
+                if(sentences.length < 1){
+                    return ;
+                }
+
+                sentences.forEach(function(sen){
+                    var included = word.sentences.some(function(s){
+                        return s.l == sen.l;
+                    });
+
+                    if(!included){
+                        // reversed version - in eng you will got eng for desc and eng for current lang
+                        // in this case is current switch to czech, but in view have to be reverse
+                        // eng with czech for better understanding and also when you will edit,
+                        // the first will be eng version and second will be czech version
+                        // THE SAME IS IN CREATE - first ENG and second CZ
+                        if(czechReverse){
+                            word.sentences.push({l:sen.l,e:sen.s, s:sen.e});
+                        } else {
+                            word.sentences.push(sen);
+                        }
+                    }
+
+                })
+
+            },0)
+
+
+        });
+    }
+
     function selectWord(el, word, lang){
 
-        $scope.$apply(function(){
+        $timeout(function(){
 
 
             $scope.selectedWord = word;
-            //if(!word.possible){
-                $scope.checkSelectedWord();
-            //}
+            $scope.checkSelectedWord();
+
 
 
 
@@ -416,7 +463,9 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
             /*
             $('#search-words-table tr').removeClass('search-words-table-select-row');
             $('#search-words-table tr:first-child').addClass('search-words-table-select-row');*/
-        })
+        }, 0)
+
+
 
         //$('#connect-word-' + word.id).text('ahoj');
         console.log(el, word.word);
@@ -444,6 +493,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         console.log(word, poss);
         if(poss){
             word.link = poss.lid;
+            //word.possibleSentences = [];
 
             // show line take first word in possible
             // to show in underline word
@@ -458,6 +508,8 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
 
         showWordsInLineOfWords($scope.current);
+        // $scope.$apply is called in callback
+        checkSelectedWordForSentences($scope.current, word);
     }
 
 

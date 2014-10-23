@@ -372,7 +372,7 @@ var wordsCtrl = function(){
             var langs =  request.params.params.split('/');
 
             var dataContainer = {lang : langs[0]}
-            dataContainer.toLinks = request.query.tolinks.split(',');
+            dataContainer.toLinks = request.query.toLinks.split(',');
 
             wordsEngine.sentencesGet(pgClient, dataContainer, function(err,data){
                 response(request, err, data);
