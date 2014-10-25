@@ -590,6 +590,9 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
              }
         }
         requestPOST($http, '/words/addword?type=api', payload, function(response, status){
+
+            searchFactory.removeFromFoundWords(w1);
+            searchFactory.removeFromFoundWords(w2);
             wordsCheck($scope.current);
         });
     }

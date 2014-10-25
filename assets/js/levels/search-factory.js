@@ -235,9 +235,9 @@
         }
 
 
-        function __removeFromFoundWords(lang, word){
-            if(__foundWords[lang]){
-                __foundWords[lang][word] = null;
+        function __removeFromFoundWords(word){
+            for(var lang in __foundWords){
+                __foundWords[lang][word] = undefined;
             }
         }
 
