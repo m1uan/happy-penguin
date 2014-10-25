@@ -400,7 +400,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     }
 
-    function checkSelectedWordForSentences(lang, word){
+    function checkSelectedWordForSentences(lang, word, removeCache){
         if(!word.link){
             return ;
         }
@@ -410,6 +410,10 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         if(lang == 'en'){
             czechReverse = true;
             lang = 'cz';
+        }
+
+        if(removeCache) {
+            linksFactory.removeCacheForSentencesToLink(lang, word.link);
         }
 
         linksFactory.getSentencesToLink(lang, word.link, function(sentences){
@@ -694,46 +698,9 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                                         var lang1sentence = response[0];
                                         var lang2sentence = response[1];
 
-                                        var sentenceIndex = -1;
-                                        // find sentence in sentences by link
-                                        $scope.selectedWord.sentences.some(function(sws, idx){
-                                            if(sws.l == dataContainer.link){
-                                                sentenceIndex = idx;
-                                                return true;
-                                            }
-
-
-                                        })
-
-                                        if(sentenceIndex == -1) {
-                                            return;
-                                        }
-
                                         $timeout(function(){
-                                            lang1sentence.some(function(sen){
-                                                if(sentence.version == 0){
-                                                    $scope.selectedWord.sentences[sentenceIndex].s = sen.word;
-                                                    return true;
-                                                }
-                                            })
-
-                                            lang2sentence.some(function(sen){
-                                                if(sentence.version == 0){
-                                                    $scope.selectedWord.sentences[sentenceIndex].e = sen.word;
-                                                    return true;
-                                                }
-                                            })
-
-
+                                            checkSelectedWordForSentences($scope.current, $scope.selectedWord, true);
                                         }, 0)
-
-
-
-
-
-//                                        newSentence.s = sentence;
-//                                        newSentence.l = toLink;
-                                        //$scope.selectedWord.sentences.push(newSentence);
                                     });
                                 } else {
                                     requestPOST($http, '/words/screate/', dataContainer, function(response, status){

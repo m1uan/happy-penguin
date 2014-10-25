@@ -85,6 +85,20 @@
 
         }
 
+        function __removeCacheForSentencesToLink(lang, toLink){
+            // init __linkSentences for lang
+            if(!__linkSentences[lang]){
+                __linkSentences[lang] = {}
+            }
+
+            if(!__sentences[lang]){
+                __sentences[lang] = {}
+            }
+
+            __linkSentences[lang][toLink] = undefined;
+            __sentences[lang][toLink] = undefined;
+        }
+
         function __getSentenceToLinkCache(lang, toLink, cb){
             // init __linkSentences for lang
             if(!__linkSentences[lang]){
@@ -140,10 +154,13 @@
             __links[lang][word.link] = word;
         }
 
+
+
         return {
             get: __get,
             update : __update,
-            getSentencesToLink : __getSentencesToLink
+            getSentencesToLink : __getSentencesToLink,
+            removeCacheForSentencesToLink : __removeCacheForSentencesToLink
         };
     });
 }).call(this);
