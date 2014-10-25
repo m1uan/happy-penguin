@@ -925,7 +925,7 @@ module.exports.sentenceCreate = function(pg, dataContainer, userId, cb){
     }
 
 
-    dataContainer.lang = dataContainer.lang == 'cz' ? 'cs' : dataContainer.lang;
+    //dataContainer.lang = dataContainer.lang == 'cz' ? 'cs' : dataContainer.lang;
 
     watter.push(function(icb){
         var word = {
@@ -1063,7 +1063,7 @@ module.exports.sentencesGet = function(pg, dataContainer, cb){
         cb('missing toLinks or lang')
     }
 
-    dataContainer.lang = dataContainer.lang == 'cz' ? 'cs' : dataContainer.lang;
+    //dataContainer.lang = dataContainer.lang == 'cz' ? 'cs' : dataContainer.lang;
 
     if(!dataContainer.fields){
         dataContainer.fields = ['s','e','l']

@@ -569,8 +569,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         var l1 = 'en';
         // if en language is the second word add in cz
         var l2 = $scope.current == 'en' ? 'cz' : $scope.current;
-        // fix cz to cs because server operate in cs
-        l2 = l2 == 'cz' ? 'cs' : l2;
+
 
 
 
@@ -614,7 +613,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     function addWordPossibilty(poss, updated){
 
-        var lang = $scope.current == 'cz' ? 'cs' : $scope.current;
+        var lang = $scope.current;
 
         var payload = {
             "lang": lang,
@@ -662,7 +661,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     }
 
-    function sentenceCreateAndEdit(sentence, toLink, senEnglish, link){
+    function sentenceCreateAndEdit(sentence, toLink, sentenceContainer){
         var info1 = 'Sentence in ' + $scope.current;
         alertify.prompt(info1, function(e, sentence){
             if(e){
@@ -687,17 +686,71 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                                 dataContainer.sentence = $scope.current == 'en' ? senEnglish : sentence;
                                 dataContainer.lang = $scope.current == 'en' ? 'cz' : $scope.current;
 
-                                requestPOST($http, '/words/screate/', dataContainer, function(response, status){
-                                    var newSentence = {e:response.d};
-                                    newSentence.s = sentence;
-                                    newSentence.l = toLink;
-                                    $scope.selectedWord.sentences.push(newSentence);
-                                });
+                                // create
+                                if(sentenceContainer && sentenceContainer.l){
+                                    dataContainer.link = sentenceContainer.l;
+                                    // update
+                                    requestPOST($http, '/words/supdate/', dataContainer, function(response, status){
+                                        var lang1sentence = response[0];
+                                        var lang2sentence = response[1];
+
+                                        var sentenceIndex = -1;
+                                        // find sentence in sentences by link
+                                        $scope.selectedWord.sentences.some(function(sws, idx){
+                                            if(sws.l == dataContainer.link){
+                                                sentenceIndex = idx;
+                                                return true;
+                                            }
+
+
+                                        })
+
+                                        if(sentenceIndex == -1) {
+                                            return;
+                                        }
+
+                                        $timeout(function(){
+                                            lang1sentence.some(function(sen){
+                                                if(sentence.version == 0){
+                                                    $scope.selectedWord.sentences[sentenceIndex].s = sen.word;
+                                                    return true;
+                                                }
+                                            })
+
+                                            lang2sentence.some(function(sen){
+                                                if(sentence.version == 0){
+                                                    $scope.selectedWord.sentences[sentenceIndex].e = sen.word;
+                                                    return true;
+                                                }
+                                            })
+
+
+                                        }, 0)
+
+
+
+
+
+//                                        newSentence.s = sentence;
+//                                        newSentence.l = toLink;
+                                        //$scope.selectedWord.sentences.push(newSentence);
+                                    });
+                                } else {
+                                    requestPOST($http, '/words/screate/', dataContainer, function(response, status){
+                                        var newSentence = {e:response.d};
+                                        newSentence.s = sentence;
+                                        newSentence.l = toLink;
+                                        $scope.selectedWord.sentences.push(newSentence);
+                                    });
+
+
+                                }
+
 
                             }
                         }
 
-                    }, senEnglish);
+                    }, sentenceContainer.e);
                 }
             }
 
@@ -709,7 +762,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
     }
 
     $scope.sentenceEdit = function(sentence, toLink){
-        sentenceCreateAndEdit(sentence.s, toLink, sentence.e, sentence.l)
+        sentenceCreateAndEdit(sentence.s, toLink, sentence)
     }
 
     var searchLangSwitch = $("[name='search-lang-choice']");

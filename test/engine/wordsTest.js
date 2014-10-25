@@ -719,7 +719,7 @@ describe('getWords', function(){
                     dataContainer.link = createData.l;
                     dataContainer.english = 'hello word 3'
                     dataContainer.sentence = 'boueno mundo'
-                    dataContainer.lang = 'es'
+                    dataContainer.lang = 'cz'
                     dataContainer.toLink = 1056
                     icb();
                 });
@@ -732,7 +732,7 @@ describe('getWords', function(){
             })
 
             serial.push(function(icb){
-                pgClient.query('select word from word where link in ('+dataContainer.link+') and lang=\'es\' and version=0', function(err, sdata){
+                pgClient.query('select word from word where link in ('+dataContainer.link+') and lang=\'cz\' and version=0', function(err, sdata){
                     var word = sdata.rows[0];
                     word.word.should.be.equal('boueno mundo');
 
@@ -870,11 +870,11 @@ describe('getWords', function(){
         });
 
 
-        it('load sentences to links', function (cb){
+        it.only('load sentences to links', function (cb){
             var dataContainer = {
                 english:'hello word',
                 sentence:'ahoj svete',
-                lang:'cz',
+                lang:'es',
 
                 toLink:1045
             };
@@ -888,8 +888,8 @@ describe('getWords', function(){
             serial.push(function(icb){
                 words.sentenceCreate(pgClient, dataContainer, userId, function(err, createData){
                     dataContainer.link = createData.l;
-                    dataContainer.english = 'hello word 3'
-                    dataContainer.sentence = 'boueno mundo 3'
+                    dataContainer.english = 'hello word 1'
+                    dataContainer.sentence = 'boueno mundo 1'
                     dataContainer.lang = 'es'
                     dataContainer.toLink = 1046
                     words.sentenceUpdate(pgClient, dataContainer, userId, function(err, data){

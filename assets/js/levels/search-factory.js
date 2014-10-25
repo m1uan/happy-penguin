@@ -187,8 +187,8 @@
                 });
                 wordString = wordString.substring(1);
 
-                var fixlang = lang != 'cz' ? lang : 'cs';
-                var fixlang2 = lang2 != 'cz' ? lang2 : 'cs';
+                var fixlang = lang;
+                var fixlang2 = lang2;
                 var url = '/words/search/'+fixlang+'/'+fixlang2+'/?fields=lid,desc,word,word2,english,usage&words='+wordString;
 
                 // dont look properly for words which

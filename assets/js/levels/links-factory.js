@@ -63,7 +63,7 @@
                 });
                 wordString = wordString.substring(1);
 
-                var fixlang = lang != 'cz' ? lang : 'cs';
+                var fixlang = lang;
                 requestGET($http, '/words/links/'+fixlang+'/?fields=lid,desc,word,english,usage&links='+wordString, function(response, status){
                     console.log(response);
 
