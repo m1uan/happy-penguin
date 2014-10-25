@@ -419,6 +419,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
             $timeout(function(){
                 word.sentences = [];
+                var wordSentences = [];
 
                 sentences.forEach(function(sen){
                     var included = word.sentences.some(function(s){
@@ -432,15 +433,28 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                         // the first will be eng version and second will be czech version
                         // THE SAME IS IN CREATE - first ENG and second CZ
                         if(czechReverse){
-                            word.sentences.push({l:sen.l,e:sen.s, s:sen.e});
+                            wordSentences.push({l:sen.l,e:sen.s, s:sen.e});
                         } else {
-                            word.sentences.push(sen);
+                            wordSentences.push(sen);
                         }
                     }
 
                 })
 
-                searchFactory.search(notReversedLang, [word], 'en', function(count){}, true, true);
+                searchFactory.search(notReversedLang, [word], czechReverse ? 'cz' : 'en', function(count){
+                    // function serach automaticaly add to the sentences array
+                    // if should be reverse, reverse it
+                    word.sentences.forEach(function(sen){
+                        if(czechReverse){
+                            wordSentences.push({l:sen.l,e:sen.s2, s:sen.e});
+                        } else {
+                            wordSentences.push(sen);
+                        }
+                    })
+                    word.sentences = wordSentences;
+
+
+                }, true, true);
 
             },0)
 
@@ -572,7 +586,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                 "r2":'|'+l1+'|'+w2
              }
         }
-        requestPOST($http, '/words/addword', payload, function(response, status){
+        requestPOST($http, '/words/addword?type=api', payload, function(response, status){
             wordsCheck($scope.current);
         });
     }

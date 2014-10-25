@@ -35,6 +35,7 @@
                         word.sentences.push({
                             l : fw.lid,
                             s : fw.word,
+                            s2 : fw.word2,
                             e : fw.english
                         });
                     }

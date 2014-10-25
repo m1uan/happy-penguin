@@ -282,13 +282,18 @@ var wordsCtrl = function(){
     }
 
     self.addword_post = function (request){
+        var api = request.query.type ? request.query.type=='api' : false;
         wordsEngine.addWord(pgClient, request.payload.word, request.user.id, function(err, data){
-            if(err) {
-                err_response(request, err);
-            } else {
-                request.reply(data);
-            }
 
+            if(api){
+                response(request, err, data);
+            } else {
+                if(err) {
+                    err_response(request, err);
+                } else {
+                    request.reply(data);
+                }
+            }
         });
     }
 
