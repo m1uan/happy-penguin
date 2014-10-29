@@ -90,7 +90,7 @@ div.container-fluid
                             span(ng-hide="sen.e") ... english version missing ...
                     td
                         button(ng-show="sen.l",ng-click="sentenceEdit(sen, selectedWord.link)").btn.btn-default edit
-                        button(ng-show="sen.l",ng-click="sentenceUnlink(sen, selectedWord.link)").btn.btn-default unlink
+                        button(ng-show="sen.l && sen.linked",ng-click="sentenceUnlink(sen, selectedWord.link)").btn.btn-default unlink
 div.clearfix
 
 div.input-group

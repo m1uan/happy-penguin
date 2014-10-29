@@ -426,21 +426,30 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                 var wordSentences = [];
 
                 sentences.forEach(function(sen){
-                    var included = word.sentences.some(function(s){
+                    var included = wordSentences.some(function(s){
                         return s.l == sen.l;
                     });
 
+
+
                     if(!included){
+                        var senTo;
                         // reversed version - in eng you will got eng for desc and eng for current lang
                         // in this case is current switch to czech, but in view have to be reverse
                         // eng with czech for better understanding and also when you will edit,
                         // the first will be eng version and second will be czech version
                         // THE SAME IS IN CREATE - first ENG and second CZ
                         if(czechReverse){
-                            wordSentences.push({l:sen.l,e:sen.s, s:sen.e});
+                            senTo = {l:sen.l,e:sen.s, s:sen.e};
                         } else {
-                            wordSentences.push(sen);
+                            senTo = {l:sen.l,e:sen.e, s:sen.s};
                         }
+
+                        // it is comming from word related (it is not from search)
+                        // so activate button unlink
+                        senTo.linked = true;
+
+                        wordSentences.push(senTo);
                     }
 
                 })
@@ -449,11 +458,18 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                     // function serach automaticaly add to the sentences array
                     // if should be reverse, reverse it
                     word.sentences.forEach(function(sen){
-                        if(czechReverse){
-                            wordSentences.push({l:sen.l,e:sen.s2, s:sen.e});
-                        } else {
-                            wordSentences.push(sen);
+                        var included = wordSentences.some(function(s){
+                            return s.l == sen.l;
+                        });
+
+                        if(!included){
+                            if(czechReverse){
+                                wordSentences.push({l:sen.l,e:sen.s2, s:sen.e});
+                            } else {
+                                wordSentences.push(sen);
+                            }
                         }
+
                     })
                     word.sentences = wordSentences;
 
@@ -705,11 +721,18 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     function sentenceCreateAndEdit(sentence, toLink, sentenceContainer){
         var info1 = 'Sentence in ' + $scope.current;
+        var promptHint2 = sentenceContainer && sentenceContainer.e ? sentenceContainer.e : '';
+
+        if(sentenceContainer && sentenceContainer.l){
+            info1 = '[' +sentenceContainer.l + '] ' + info1;
+        }
+
         alertify.prompt(info1, function(e, sentence){
             if(e){
                 if(!sentence){
                     alertify.alert(info1 + ' : could be not empty!');
                 } else {
+                    $timeout(function(){
                     // if you are in english lang , select as second language czech
                     // otherwise the user will add the czech both sentence will be in english
                     var lang = $scope.current == 'en' ? 'cz' : 'en';
@@ -755,7 +778,10 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                             }
                         }
 
-                    }, sentenceContainer.e);
+                    }, promptHint2);
+
+                    // $timeout
+                    }, 100, false);
                 }
             }
 
