@@ -511,10 +511,22 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         });
     }
 
-    $scope.selectWordPossibility = function(word, poss){
-        console.log(word, poss);
-        if(poss){
+    $scope.clickUnlinkWordPossibility = function(word, poss){
+        // for enable is trigger click on whole row in table
+        // one cell in this row is also with button for unlink
+        // after click on link is also run trigged enable, so
+        // wait to enable process will be done and switch off it :-)
+        $timeout(function(){
+            $scope.selectWordPossibility(word, poss, false);
+        }, 100);
+    }
+
+    $scope.selectWordPossibility = function(word, poss, select){
+        console.log(select);
+
+        if(select){
             word.link = poss.lid;
+            poss.selected = true;
             //word.possibleSentences = [];
 
             // show line take first word in possible
@@ -524,10 +536,8 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         } else {
             // remove
             word.link = null;
-            $('#search-words-table tr').removeClass('search-words-table-select-row');
-
+            poss.selected = undefined;
         }
-
 
         showWordsInLineOfWords($scope.current);
         // $scope.$apply is called in callback

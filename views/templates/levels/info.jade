@@ -36,7 +36,7 @@ div.container-fluid
         div.col-md-6
             table#search-words-table.table.table-responsive
 
-                tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss)")
+                tr(ng-repeat="poss in selectedWord.possible", ng-click="selectWordPossibility(selectedWord,poss, true)")
                     td # {{poss.lid}}
                     td
                          span {{poss.desc}}
@@ -49,12 +49,7 @@ div.container-fluid
                         // if you get links is in word
                         span {{poss.word2}}
                         button(ng-click="editPossibility(poss)").btn.btn-xs.btn-success edit
-                    td
-
-                tr(ng-click="selectWordPossibility(selectedWord,null)")
-                    td # 1
-                    td [remove]
-                    td
+                        button(ng-click="clickUnlinkWordPossibility(selectedWord, poss)",ng-show="poss.selected").btn.btn-xs.btn-danger unlink
 
                 tr#word-add-row
                     td

@@ -17,6 +17,13 @@
             // for one words more possible
             word.possible = [linedWord];
 
+            // if you are click on possible word is set up as selected
+            // and the button unlink will be appear
+            // but if is words loaded from db, selected is not part of their field
+            // is it in text[there_is_selected_link] so is supposed all words
+            // loaded this method, very probably because they was in these bracked
+            word.possible[0].selected = true;
+
             // from link comming only one side of word
             // word is reserved for english part
             word.word2 = word.word;
