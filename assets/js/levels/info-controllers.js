@@ -593,11 +593,28 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
             searchFactory.removeFromFoundWords(w1);
             searchFactory.removeFromFoundWords(w2);
-            wordsCheck($scope.current);
+
+            // reload all possible words with new word
+            // wordsCheck($scope.current);
+            // C: because it doesn't work how expected
+
+            var newPoss = {
+                lid: response.l,
+                desc: response.d,
+                usage: 0,
+                english : w1,
+                word2 : w2
+            }
+
+            if(!$scope.selectedWord.possible){
+                $scope.selectedWord.possible = []
+            }
+
+            $scope.selectedWord.possible.push(newPoss);
         });
     }
 
-    $scope.addWord = function(){
+    $scope.clickAddWord = function(){
         if(!$scope.selectedWord.english || !$scope.selectedWord.simple){
             alertify.alert('booth fields have to be filled')
         } else {
@@ -606,7 +623,15 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                    if(!data){
                        alertify.error('description was empty');
                    } else {
-                       addWordRequest(data, $scope.selectedWord.english, $scope.selectedWord.simple);
+
+                       // if is in english editing is
+                       // in english field actually czech word
+                       if($scope.current == 'en'){
+                           addWordRequest(data, $scope.selectedWord.simple, $scope.selectedWord.english);
+                       } else {
+                           addWordRequest(data, $scope.selectedWord.english, $scope.selectedWord.simple);
+                       }
+
 
                    }
                 }
@@ -733,6 +758,12 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
 
     $scope.sentenceEdit = function(sentence, toLink){
         sentenceCreateAndEdit(sentence.s, toLink, sentence)
+    }
+
+    $scope.clickSwitchInputs = function(){
+        var temp = $scope.selectedWord.english;
+        $scope.selectedWord.english = $scope.selectedWord.simple;
+        $scope.selectedWord.simple = temp;
     }
 
     var searchLangSwitch = $("[name='search-lang-choice']");

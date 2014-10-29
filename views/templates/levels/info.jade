@@ -44,6 +44,7 @@ div.container-fluid
                          br
                          i {{poss.english}}
                     td
+                    td
                         // if you search the current translatio is in word2
                         // if you get links is in word
                         span {{poss.word2}}
@@ -57,19 +58,21 @@ div.container-fluid
 
                 tr#word-add-row
                     td
-                        button(ng-click="addWord()").btn.btn-warning add word
+                        button(ng-click="clickAddWord()").btn.btn-warning add word
                     td
                         div.input-group
                             input(ng-model="selectedWord.english").input
-                            span en
+                            span(ng-show="current=='en'") cz
+                            span(ng-show="current!='en'") en
 
-
+                    td
+                        button(ng-click="clickSwitchInputs()").btn.btn-xs.btn-default <- ->
                     td
                         div.input-group
                             input(ng-model="selectedWord.simple").input
                             // in english version it will add word in czech
-                            span(ng-show="current=='en'") cz
-                            span(ng-show="current!='en'") {{current}}
+                            span {{current}}
+
 
         div.col-md-6
             table.table.table-responsive
