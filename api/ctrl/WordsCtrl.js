@@ -370,7 +370,7 @@ var wordsCtrl = function(){
         })
     }
 
-    self.sremove_post = function(request) {
+    self.sunlink_post = function(request) {
         var userId = request.user.id;
 
         wordsEngine.sentenceRemove(pgClient, request.payload, userId, function(err,data){

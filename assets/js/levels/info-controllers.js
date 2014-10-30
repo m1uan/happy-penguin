@@ -802,6 +802,25 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
         $scope.selectedWord.simple = temp;
     }
 
+    $scope.clickSentenceUnlink = function(sen, link){
+        alertify.confirm('Do you wan realy unlink from this word? ...maybe it will deleted', function(e,data){
+            if(!e){
+                return;
+            }
+
+            var dataContainer = {
+                link : sen.l,
+                toLink : link
+            }
+
+            requestPOST($http, '/words/sunlink/', dataContainer, function(response, status){
+                // hide button for unlink
+                sen.linked = undefined;
+            });
+        })
+
+    }
+
     var searchLangSwitch = $("[name='search-lang-choice']");
     searchLangSwitch.bootstrapSwitch('onText','en');
     searchLangSwitch.bootstrapSwitch('offText',$scope.current);
