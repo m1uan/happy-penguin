@@ -36,6 +36,7 @@ describe('levels', function(){
 
             sqlMake(pgClient, [
                 "UPDATE pinguin.place_t SET preview_iid = null;",
+                "DELETE FROM pinguin.place_info_size_t;",
                 "DELETE FROM pinguin.place_info_t;",
                 "DELETE FROM pinguin.image_t;",
                 "DELETE FROM pinguin.question_t;",

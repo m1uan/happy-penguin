@@ -616,7 +616,8 @@ module.exports = (function(){
 
         var indexOfSize = fields.indexOf('size');
         if(indexOfSize > -1){
-            fields[indexOfSize] = "pinguin.place_size(id,'"+lang+"','"+langNative+"') as size";
+            fields[indexOfSize] = "pis.size as size";
+            SQL.join('pinguin.place_info_size_t as pis','pis.pi=pi.pi AND pis.lang=\''+lang + '\'');
         }
 
         SQL.select(pg, cb);
@@ -828,6 +829,8 @@ module.exports = (function(){
                     parallel.push(__generateUpdateDesc(lang, 'name'));
                     parallel.push(__generateUpdateDesc(lang, 'info'));
                 }
+
+                parallel.push(__updateSize(lang));
             }
 
             // update type if nesesary
@@ -872,6 +875,26 @@ module.exports = (function(){
                     translate.updatedesc(pgClient, transData, icb2) ;
                 }
             }
+
+            /**
+             * generate function for access to selectInfo
+             * @param lang
+             * @returns {Function}
+             * @private
+             */
+            function __updateSize(lang){
+                return function(icb2){
+                    var info = dataContainer.translates[lang].info;
+                    var infoLength = info.split('\n\n').length;
+                    var sql = SL.SqlLib('pinguin.place_info_size_t');
+                    sql.whereAnd('pi=' + dataContainer.pi + ' AND lang=\'' +lang + '\'');
+                    var data = {'size':infoLength,'pi': dataContainer.pi, 'lang': lang};
+                    var returning = ['size'];
+                    sql.upsert(pgClient, data, returning, function(e,d){
+                        icb2(e,d);
+                    })
+                };
+            }
         });
 
         async.waterfall(watter, cb);
@@ -911,7 +934,12 @@ module.exports = (function(){
 
             var selectedInfo = selected[0];
 
-            // first remove info after remove translations
+            serial.push(function(icb2){
+                var sql = 'DELETE FROM pinguin.place_info_size_t WHERE pi=' +dataContainer.pi;
+                pgClient.query(sql, icb2);
+            });
+
+            // second remove info after remove translations
             // because otherwise the translation could not be deleted
             // with live relation to place_info_t
             serial.push(function(icb2){

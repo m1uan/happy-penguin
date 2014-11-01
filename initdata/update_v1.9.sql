@@ -28,6 +28,15 @@ CREATE TABLE pinguin.place_info_t (
     PRIMARY KEY (pi)
 );
 
+CREATE TABLE pinguin.place_info_size_t (
+    pi INTEGER NOT NULL,
+    lang VARCHAR(2) NOT NULL,
+    "size" SMALLINT,
+    FOREIGN KEY (lang) REFERENCES translates.lang_t (lang) ,
+    FOREIGN KEY (pi) REFERENCES pinguin.place_info_t (pi),
+    PRIMARY KEY (pi, lang)
+);
+
 ALTER TABLE pinguin.place_t ADD COLUMN place_info INTEGER;
 ALTER TABLE pinguin.place_t ADD FOREIGN KEY (place_info) REFERENCES pinguin.place_info_t (pi);
 ALTER TABLE pinguin.place_t ALTER COLUMN name DROP NOT NULL;
@@ -40,3 +49,4 @@ CREATE TABLE link_sentence_t (
     word INTEGER NOT NULL,
     PRIMARY KEY (sentence, word)
 );
+
