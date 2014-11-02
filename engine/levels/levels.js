@@ -267,31 +267,28 @@ module.exports = (function(){
         }
 
 
+        var SQL = SL.SqlLib('pinguin.place_t as pp', fields);
+        SQL.whereAnd('id=' + dataContainer.id);
+
+        SQL.join('pinguin.place_info_t pi','pp.place_info=pi.pi');
+
         var indexOfName = fields.indexOf('name');
         if(indexOfName> -1){
-            fields[indexOfName] = 'ttn.data as name'
+            fields[indexOfName] = "COALESCE(ttn.data,(SELECT tte.data FROM translates.translate_t tte WHERE tte.link=pi.name AND tte.lang='en')) as name";
+            SQL.join('translates.translate_t as ttn','ttn.link=pi.name AND ttn.lang=\''+dataContainer.lang+'\' AND ttn.data != \'\'');
+            //fields[indexOfName] = 'ttn.data as name'
+            //SQL.join('translates.translate_t as ttn','ttn.link=pp.name AND (ttn.lang=\''+dataContainer.lang+'\')');
         }
 
         var indexOfInfo = fields.indexOf('info');
         if(indexOfInfo> -1){
             fields[indexOfInfo] = 'tti.data as info'
+            SQL.join('translates.translate_t as tti','tti.link=pi.info AND (tti.lang=\''+dataContainer.lang+'\')');
         }
 
         var indexOfInfoNative = fields.indexOf('info_native');
         if(indexOfInfoNative> -1){
             fields[indexOfInfoNative] = 'ttin.data as info_native'
-        }
-
-        var SQL = SL.SqlLib('pinguin.place_t as pp', fields);
-        SQL.whereAnd('id=' + dataContainer.id);
-
-
-        if(indexOfName> -1){
-            SQL.join('translates.translate_t as ttn','ttn.link=pp.name AND (ttn.lang=\''+dataContainer.lang+'\')');
-        }
-
-        if(indexOfInfo> -1){
-            SQL.join('translates.translate_t as tti','tti.link=pp.info AND (tti.lang=\''+dataContainer.lang+'\')');
         }
 
         if(indexOfInfoNative> -1){
@@ -599,7 +596,7 @@ module.exports = (function(){
         var indexOfName = fields.indexOf('name');
         if(indexOfName > -1){
             fields[indexOfName] = "COALESCE(ttn.data,(SELECT tte.data FROM translates.translate_t tte WHERE tte.link=pi.name AND tte.lang='en')) as name";
-            SQL.join('translates.translate_t as ttn','ttn.link=pi.name AND ttn.lang=\''+lang+'\'');
+            SQL.join('translates.translate_t as ttn','ttn.link=pi.name AND ttn.lang=\''+lang+'\' AND ttn.data != \'\'');
         }
 
         var indexOfType = fields.indexOf('type');
