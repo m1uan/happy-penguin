@@ -142,6 +142,23 @@
         }
 
 
+        function __separeSourceFromName(place){
+            if(place.name){
+                var regExp = /\[(.*)\]/;
+
+                // sources[0]: [www.seznam.cz]
+                // sources[1]: www.seznam.cz
+                var sources = place.name.match(regExp);
+
+
+                if(sources && sources.length == 2){
+                    place.source = sources[1];
+                    place.name = place.name.replace(sources[0], '');
+                }
+
+            }
+        }
+
         function loadPlaces(cb){
             if(placesInWorld && placesInWorldIds){
                 cb(placesInWorld, placesInWorldIds);
@@ -153,6 +170,7 @@
 
 
                     placesInWorld.forEach(function(place){
+                        __separeSourceFromName(place);
                        placesInWorldIds[place.id] = place;
                     });
 
@@ -216,20 +234,7 @@
 
             var url ='get/'+placeid+'/'+self.game.learn+'/'+self.game.native+'/?fields=id,name,info,info_native&qfields=qid,question,answers,type&ifields=iid,image';
             requestGET($http, url, function(response, status){
-                if(response.name){
-                    var regExp = /\[(.*)\]/;
-
-                    // sources[0]: [www.seznam.cz]
-                    // sources[1]: www.seznam.cz
-                    var sources = response.name.match(regExp);
-
-
-                    if(sources && sources.length == 2){
-                        response.source = sources[1];
-                        response.name = response.name.replace(sources[0], '');
-                    }
-
-                }
+                __separeSourceFromName(response);
 
                 if(response.info){
                     // ng-sanitary for bind as html
