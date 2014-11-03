@@ -1,7 +1,7 @@
 "use strict";
 var SHOW_EXPERIENCE_POPUP = 'show-experience-popup';
 var SHOW_TRAIN_POPUP = 'show-train-popup';
-var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','milan.penguin.factory','milan.world.factory','milan.vocabulary.factory','pascalprecht.translate'],
+var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','milan.place.factory','milan.penguin.factory','milan.world.factory','milan.vocabulary.factory','pascalprecht.translate'],
     function($routeProvider, $locationProvider, $translateProvider) {
         $routeProvider.when('/intro/:page', {
             templateUrl: '/templates/penguin/intro',
