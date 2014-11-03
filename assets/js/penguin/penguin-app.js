@@ -33,6 +33,21 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','m
             controller: HallOfFameCtrl
         });
 
+        $routeProvider.when('/place/:placeid', {
+            templateUrl: '/templates/penguin/place',
+            controller: WorldCtrl
+        });
+
+        $routeProvider.when('/place/:placeid/wordtest', {
+            templateUrl: '/templates/penguin/place',
+            controller: WorldCtrl
+        });
+
+        $routeProvider.when('/place/:placeid/info', {
+            templateUrl: '/templates/penguin/place',
+            controller: WorldCtrl
+        });
+
         $routeProvider.when('/404', {
             templateUrl: '/templates/penguin/404'
         });
@@ -465,7 +480,16 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
         }
 
         item.css({top: v.y-30, left: v.x-18});
+        item.on('click', function(){
+            var place = '/place/'+currPlace.id;
 
+            $scope.$apply(function(){
+                $location.path(place);
+            })
+
+
+
+        })
 
 
 
@@ -477,7 +501,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
             $('#game_resources_golds').css({color:'red'});
             alertify.error($translate.instant('not_enought', {have:worldFactory.game().coins, need: place.coins}));
         } else {
-            $location.path('/wordstest/'+place.id);
+            $location.path('/place/'+place.id+'/info');
             $scope.$apply(function(){
 
 

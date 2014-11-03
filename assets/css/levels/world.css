@@ -93,6 +93,7 @@
 #penguin,#penguin2 {
     position:absolute;
     width: 64px;
+    cursor: pointer;
 }
 
 .resource_icon {
