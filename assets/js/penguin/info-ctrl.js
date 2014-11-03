@@ -13,7 +13,7 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
 
 
         worldFactory.loadPlace(placeId, function(plc){
-            place = plc;
+            $scope.place = plc;
             setupInfo();
         })
 
@@ -24,7 +24,7 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
         var patt = new RegExp('\[[0-9]*\]', 'gm');
         var regExp = /\[[1-9]\]/;
 
-        var words = place.info.split(' ');
+        var words = $scope.place.info.split(' ');
         var links = [];
         $scope.words = [];
         words.forEach(function(w){

@@ -1,4 +1,13 @@
-div
+div(ng-show="wordsLoading").loaidng
+    div.loaidng-border
+        img(src="/assets/img/loading64.gif")
+        div(translate="please_wait").loaidng-span Loading please wait ...
+        div(translate="loading_could_be_long").loaidng-i first load could be long
+div(ng-hide="wordsLoading").top-panel
+    h2(translate="place_welcome",translate-values="{name:place.name}")
+    div(ng-show="place.source").text-center
+        a(href="{{place.source}}",target="_blank") {{place.source}}
+div(ng-hide="wordsLoading").content-body
     div(ng-repeat="word in words",ng-class="{'info-words-translatable':word.possible}",ng-click="clickTranslate(word)").info-words
         div {{word.simple}}
         div

@@ -216,6 +216,21 @@
 
             var url ='get/'+placeid+'/'+self.game.learn+'/'+self.game.native+'/?fields=id,name,info,info_native&qfields=qid,question,answers,type&ifields=iid,image';
             requestGET($http, url, function(response, status){
+                if(response.name){
+                    var regExp = /\[(.*)\]/;
+
+                    // sources[0]: [www.seznam.cz]
+                    // sources[1]: www.seznam.cz
+                    var sources = response.name.match(regExp);
+
+
+                    if(sources && sources.length == 2){
+                        response.source = sources[1];
+                        response.name = response.name.replace(sources[0], '');
+                    }
+
+                }
+
                 if(response.info){
                     // ng-sanitary for bind as html
                     // https://docs.angularjs.org/api/ngSanitize/service/$sanitize
