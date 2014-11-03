@@ -4,8 +4,11 @@ function PlaceCtrl($scope, $http, $routeParams, placeFactory,  worldFactory, $lo
     var placeId = $routeParams.placeid;
     var place;
 
+    $scope.wordsLoading = true;
+
     placeFactory.setupPlace(placeId, function(successPlace){
-        place = successPlace;
+        $scope.place = successPlace;
+        $scope.wordsLoading = false;
     });
 
 
