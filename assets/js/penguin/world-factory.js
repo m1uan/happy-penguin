@@ -219,13 +219,13 @@
                 if(response.info){
                     // ng-sanitary for bind as html
                     // https://docs.angularjs.org/api/ngSanitize/service/$sanitize
-                    response.info = $sce.trustAsHtml(response.info.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                    //response.info = $sce.trustAsHtml(response.info.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                 }
 
                 if(response.info_native){
                     // ng-sanitary for bind as html
                     // https://docs.angularjs.org/api/ngSanitize/service/$sanitize
-                    response.info_native = $sce.trustAsHtml(response.info_native.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                    //response.info_native = $sce.trustAsHtml(response.info_native.replace(/(?:\r\n|\r|\n)/g, '<br />'));
                 }
 
                 placesForVocabularyTest[placeid] = response;

@@ -24,6 +24,8 @@ var wordsCtrl = function(){
                 auth : false
             },lesson_get : {
                 params : '{params*}'
+            },links_get : {
+                auth : false
             }
         }
     }

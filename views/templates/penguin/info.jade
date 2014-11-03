@@ -1,0 +1,9 @@
+div
+    div(ng-repeat="word in words",ng-class="{'info-words-translatable':word.possible}",ng-click="clickTranslate(word)").info-words
+        div {{word.simple}}
+        div
+            div(ng-show="word.possible && word.possible[0].word")
+                i(ng-show="word.translated") {{word.possible[0].word}}
+                b(ng-show="!word.translated",translate="translate_please")
+            i(ng-show="!word.possible || !word.possible[0].word") &nbsp
+

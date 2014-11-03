@@ -9,6 +9,8 @@ function PlaceCtrl($scope, $http, $routeParams, placeFactory,  worldFactory, $lo
     placeFactory.setupPlace(placeId, function(successPlace){
         $scope.place = successPlace;
         $scope.wordsLoading = false;
+
+        $('.main-view').css({'background-image':'url(/assets/img/orig/'+successPlace.preview+')'});
     });
 
 

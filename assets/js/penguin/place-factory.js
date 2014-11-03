@@ -12,7 +12,7 @@
         };
 
         function __setupPlaceBackground(){
-            $('.main-view').css({'background-image':'url(/assets/img/orig/'+self.place.preview+')'});
+
         }
 
         function _setupPlace(placeId, cb){

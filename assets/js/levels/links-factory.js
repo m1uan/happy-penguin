@@ -12,6 +12,11 @@
         var __linkSentences = {}
 
         function __setupWord(linedWord, word){
+            if(!linedWord){
+                word.possible = null;
+                return;
+            }
+
             // have to be a array of founded words
             // for continuity with search where could be
             // for one words more possible
