@@ -35,7 +35,7 @@ var app = angular.module('pinguin', ['ngRoute', 'penguin.LocalStorageService','m
 
         $routeProvider.when('/place/:placeid', {
             templateUrl: '/templates/penguin/place',
-            controller: WorldCtrl
+            controller: PlaceCtrl
         });
 
         $routeProvider.when('/place/:placeid/wordtest', {
@@ -497,26 +497,30 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
 
     function moveToPlace(place){
-        if(worldFactory.game().coins < place.coins){
-            $('#game_resources_golds').css({color:'red'});
-            alertify.error($translate.instant('not_enought', {have:worldFactory.game().coins, need: place.coins}));
-        } else {
-            $location.path('/place/'+place.id+'/info');
-            $scope.$apply(function(){
+//        if(worldFactory.game().coins < place.coins){
+//            $('#game_resources_golds').css({color:'red'});
+//            alertify.error($translate.instant('not_enought', {have:worldFactory.game().coins, need: place.coins}));
+//        } else {
+//            $location.path('/place/'+place.id+'/info');
+//            $scope.$apply(function(){
+//
+//
+//                worldFactory.setPlace(place);
+//
+//                showPenguin();
+//                worldFactory.setupPlacesDistancesAndExp();
+//                worldFactory.update($scope);
+//
+//                //testEndGame();
+//                //element.hide();
+//
+//            })
+//            track("Place", {placeId: place.id});
+//        }
 
-
-                worldFactory.setPlace(place);
-
-                showPenguin();
-                worldFactory.setupPlacesDistancesAndExp();
-                worldFactory.update($scope);
-
-                //testEndGame();
-                //element.hide();
-
-            })
-            track("Place", {placeId: place.id});
-        }
+        $scope.$apply(function(){
+            $location.path('/place/'+place.id);
+        })
     }
 
 

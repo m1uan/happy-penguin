@@ -163,6 +163,17 @@
         }
 
 
+        function _isPossibleToMoveWithMessage(place){
+            if(self.game.placeId == place.id ||
+                self.game.coins >= place.coins) {
+                return true;
+            }
+
+            $('#game_resources_golds').css({color:'red'});
+            alertify.error($translate.instant('not_enought', {have:self.game.coins, need: place.coins}));
+            return false;
+        }
+
         function getCurrentPlace(){
             if(placesInWorldIds){
                 return placesInWorldIds[self.game.placeId];
@@ -274,6 +285,7 @@
             ,testEndGame:testEndGame
             ,getCurrentPlace: getCurrentPlace
             ,loadPlace:loadPlace
+            ,isPossibleToMoveWithMessage : _isPossibleToMoveWithMessage
             ,getRandomNumber: getRandomNumber
             ,addScore:_addScore
             ,setup : setup

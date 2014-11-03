@@ -6,7 +6,7 @@
     'use strict';
     var placeGame = angular.module('milan.place.factory', ['penguin.LocalStorageService']);
 
-    placeGame.factory('placeFactory', function($http, localStorageService) {
+    placeGame.factory('placeFactory', function($http, localStorageService, worldFactory) {
         var self = this;
         self.game = null;
 
