@@ -329,3 +329,10 @@
     color:white;
     opacity:0.7;
 }
+
+#info-resources{
+    position: absolute;
+    left:0px;
+    margin:4px;
+    font-weight: bold;
+}

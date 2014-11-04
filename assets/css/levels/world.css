@@ -75,6 +75,10 @@
     opacity:0.9;
 }
 
+.gold_resource b {
+    font-size : 10px;
+}
+
 #game_resources{
     position: relative;
     top:-570px;
@@ -107,6 +111,10 @@
     width:28px;
 }
 
+.resource_gold_icon_small{
+    margin:1px;
+    width:14px;
+}
 
 #btn_place_visit {
     margin-top:5px;

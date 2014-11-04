@@ -1,4 +1,4 @@
-function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory){
+function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory, $translate){
 
     var placeId = $routeParams.placeid;
 
@@ -10,9 +10,15 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
 
 
         worldFactory.loadPlace(placeId, function(plc){
+            var game = worldFactory.game();
+            $scope.game = game;
             $scope.place = plc;
             setupInfo();
+
+
         })
+
+
 
     });
 
@@ -69,6 +75,21 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
 
 
     $scope.clickTranslate = function(word){
+        // word already translated, don't charge more coins
+        if(word.translated){
+            return;
+        }
+
+        // no more coins
+        if($scope.game.coins < 1){
+            var text = $translate.instant('not-enought-coins');
+            alertify.alert(text);
+            return;
+        }
+
+        $scope.game.coins -= 1;
+        worldFactory.store();
+
         word.translated = true;
     }
 }
