@@ -8,11 +8,18 @@ div(ng-hide="wordsLoading").top-panel
     div(ng-show="place.source").text-center
         a(href="{{place.source}}",target="_blank") {{place.source}}
 div(ng-hide="wordsLoading").content-body
-    div(ng-repeat="word in words",ng-class="{'info-words-translatable':word.possible}",ng-click="clickTranslate(word)").info-words
-        div {{word.simple}}
-        div
-            div(ng-show="word.possible && word.possible[0].word")
-                i(ng-show="word.translated") {{word.possible[0].word}}
-                b(ng-show="!word.translated",translate="translate_please")
-            i(ng-show="!word.possible || !word.possible[0].word") &nbsp
-
+    div#introduction
+        div(ng-repeat="block in blocks")
+            div(ng-repeat="word in block",ng-class="{'info-words-translatable':word.possible}",ng-click="clickTranslate(word)").info-words
+                div {{word.simple}}
+                div
+                    div(ng-show="word.possible && word.possible[0].word")
+                        i(ng-show="word.translated") {{word.possible[0].word}}
+                        b(ng-show="!word.translated",translate="translate_please")
+                    i(ng-show="!word.possible || !word.possible[0].word") &nbsp
+            div.clearfix
+            hr
+        div(ng-repeat="secretblock in secret")
+            div(translate="locket_for_next_visit").locked-text-info.text-center
+            div.textshadow {{secretblock}}
+            hr

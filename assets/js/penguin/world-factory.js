@@ -122,6 +122,22 @@
             self.game.placeId = place.id;
 
             self.game.stats.placesTotal += 1;
+
+            // remember how many times you was visited a single place
+            if(!self.game.placesHistory){
+                self.game.placesHistory = {}
+            }
+
+            if(self.game.placesHistory[place.id]){
+                self.game.placesHistory[place.id].countVisit += 1;
+            } else {
+                self.game.placesHistory[place.id] = {
+                    countVisit : 1
+                };
+            }
+
+            place.countVisit = self.game.placesHistory[place.id].countVisit;
+
             _store();
 
         }
@@ -159,8 +175,19 @@
             }
         }
 
+        function __setupPlaceWithLastVisit(place, cb){
+            if(self.game.placesHistory && self.game.placesHistory[place.id]){
+                place.countVisit = self.game.placesHistory[place.id].countVisit;
+            } else {
+                place.countVisit = 0;
+            }
+        }
+
         function loadPlaces(cb){
             if(placesInWorld && placesInWorldIds){
+                placesInWorld.forEach(function(place){
+                    __setupPlaceWithHistory(place);
+                });
                 cb(placesInWorld, placesInWorldIds);
             } else {
                 var url ='list/'+self.game.learn+'/'+self.game.native+'/?fields=id,name,posx,posy,size,preview';
@@ -170,6 +197,8 @@
 
 
                     placesInWorld.forEach(function(place){
+
+                        __setupPlaceWithHistory(place);
                         __separeSourceFromName(place);
                        placesInWorldIds[place.id] = place;
                     });
@@ -226,8 +255,18 @@
             return canPlay;
         }
 
+        function __setupPlaceWithHistory(place){
+            if(self.game.placesHistory && self.game.placesHistory[place.id]){
+                place.history = self.game.placesHistory[place.id];
+            } else {
+                place.hirstory = {};
+            }
+        }
+
+
         function loadPlace(placeid, cb){
             if(placesForVocabularyTest[placeid]){
+                __setupPlaceWithHistory(placesForVocabularyTest[placeid])
                 cb(placesForVocabularyTest[placeid]);
                 return ;
             }
@@ -249,7 +288,8 @@
                 }
 
                 placesForVocabularyTest[placeid] = response;
-                cb(response);
+                __setupPlaceWithHistory(placesForVocabularyTest[placeid]);
+                cb(placesForVocabularyTest[placeid])
             });
         }
 

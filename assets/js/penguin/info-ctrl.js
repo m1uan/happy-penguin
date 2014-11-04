@@ -1,10 +1,7 @@
 function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory){
 
     var placeId = $routeParams.placeid;
-    var place;
 
-
-    var simpleText = 'ahoj[1] jak[2] se[3] mas[4]?';
 
     $scope.wordsLoading = true;
 
@@ -19,31 +16,55 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
 
     });
 
+    var Patt = new RegExp('\[[0-9]*\]', 'gm');
+    var REGEXP = /\[([1-9]*)\]/;
 
     function setupInfo(){
-        var patt = new RegExp('\[[0-9]*\]', 'gm');
-        var regExp = /\[[1-9]\]/;
 
-        var words = $scope.place.info.split(' ');
-        var links = [];
-        $scope.words = [];
-        words.forEach(function(w){
-            var link = w.search(regExp)
+
+        $scope.blocks = [];
+        $scope.secret = [];
+        var blocks = $scope.place.info.split('\n\n');
+        var numProcesedBlock = 0;
+        var historyVisit = $scope.place.history.countVisit;
+        blocks.forEach(function(block, idx){
+            var trimedBlock = block.trim();
+            if(trimedBlock.length < 1){
+                return;
+            }
+
+            if(historyVisit > idx){
+                var words = getWordsFromBlock(trimedBlock);
+                $scope.blocks.push(words);
+            } else {
+                $scope.secret.push(trimedBlock);
+            }
+        });
+
+
+    }
+
+    function getWordsFromBlock(block){
+
+        var words = [];
+        block.split(' ').forEach(function(w){
             var word = {
-                simple : w.replace(patt, ''),
-                link : link
+                simple : w.replace(Patt, '')
             }
 
-            if(link > 0 && links.indexOf(link) == -1){
-                links.push(link);
+            var link = w.match(REGEXP)
+            if(link && link.length == 2){
+                // link[0] = '[1234]'
+                // link[1] = '1234' - take this
+                word.link = link[1];
             }
-
-            $scope.words.push(word)
-
-            linksFactory.get('cz', $scope.words, function(){
-                $scope.wordsLoading = false;
-            });
+            words.push(word)
         })
+
+        linksFactory.get('cz', words, function(){
+            $scope.wordsLoading = false;
+        });
+        return words;
     }
 
 
