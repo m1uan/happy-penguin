@@ -1,9 +1,10 @@
-function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory, $translate){
+function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout){
 
     var placeId = $routeParams.placeid;
 
 
     $scope.wordsLoading = true;
+    $scope.sentences = [{s:'ahoj',s2:'cau'}]
 
     placeFactory.setupPlace(placeId, function(successPlace){
         $scope.place = successPlace;
@@ -76,7 +77,11 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
 
     $scope.clickTranslate = function(word){
         linksFactory.getSentencesToLink(worldFactory.getNative(), word.link, function(sentences){
-            word.sentences = sentences;
+            $timeout(function(){
+                $scope.sentences = sentences;
+            },0)
+
+
         }, worldFactory.getLearn())
 
 

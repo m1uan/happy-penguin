@@ -302,7 +302,7 @@
 
 
 #introduction {
-    height:400px;
+    height:350px;
     overflow-y: auto;
     overflow-x: hidden;
 
@@ -335,4 +335,12 @@
     left:0px;
     margin:4px;
     font-weight: bold;
+}
+
+#info-sentences {
+    height: 100px;
+}
+
+.intro-content {
+    padding: 15px;
 }

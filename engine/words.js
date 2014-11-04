@@ -1066,7 +1066,7 @@ module.exports.sentencesGet = function(pg, dataContainer, cb){
     //dataContainer.lang = dataContainer.lang == 'cz' ? 'cs' : dataContainer.lang;
 
     if(!dataContainer.fields){
-        dataContainer.fields = ['s','e','l']
+        dataContainer.fields = ['s','e','l', 's2']
     }
 
     var watter = []
@@ -1075,10 +1075,19 @@ module.exports.sentencesGet = function(pg, dataContainer, cb){
 
     // first load all sentences related to word links
     watter.push(function(icb){
+        var sql = new SQL.SqlLib('link_sentence_t',dataContainer.fields);
+
         var indexOfSentence = dataContainer.fields.indexOf('s');
         if(indexOfSentence > -1){
             dataContainer.fields[indexOfSentence] = 'word.word as s'
             groupFields.push('s');
+        }
+
+        var indexOfSentence = dataContainer.fields.indexOf('s2');
+        if(indexOfSentence > -1){
+            dataContainer.fields[indexOfSentence] = 'word2.word as s2'
+            sql.join('word word2', 'link_sentence_t.sentence=word2.link AND word2.version=0 AND word2.lang=\'' + dataContainer.lang2 + '\'')
+            groupFields.push('s2');
         }
 
         var indexOfEnglish = dataContainer.fields.indexOf('e');
@@ -1093,7 +1102,7 @@ module.exports.sentencesGet = function(pg, dataContainer, cb){
             groupFields.push('l');
         }
 
-        var sql = new SQL.SqlLib('link_sentence_t',dataContainer.fields);
+
 
         if(indexOfEnglish > -1){
             sql.join('word as wordEng', 'link_sentence_t.sentence=wordEng.link AND wordEng.version=0 AND wordEng.lang=\'en\'')

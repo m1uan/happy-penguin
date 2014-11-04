@@ -389,6 +389,12 @@ var wordsCtrl = function(){
             var dataContainer = {lang : langs[0]}
             dataContainer.toLinks = request.query.toLinks.split(',');
 
+            if(langs.length > 1){
+                dataContainer.lang2 = langs[1];
+            } else {
+                dataContainer.lang2 = 'en';
+            }
+
             wordsEngine.sentencesGet(pgClient, dataContainer, function(err,data){
                 response(request, err, data);
             })

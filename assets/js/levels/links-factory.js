@@ -171,7 +171,7 @@
             if(!__getSentenceToLinkCache(lang, toLink, cb, lang2)) {
 
                 __linkSentences[linkslang][toLink] = [];
-                requestGET($http, '/words/sentences/'+lang+'/?toLinks='+toLink, function(response, status){
+                requestGET($http, '/words/sentences/'+lang+'/'+lang2+'/?toLinks='+toLink, function(response, status){
                     response.sentences.forEach(function(sen){
                         __sentences[linkslang][sen.l] = sen;
                         __linkSentences[linkslang][toLink].push(sen.l);
