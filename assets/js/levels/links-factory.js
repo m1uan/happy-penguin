@@ -35,9 +35,17 @@
             //word.word = null;
         }
 
-        function __get(lang, words, cb){
-            if(!__links[lang]) {
-                __links[lang] = {};
+        function __get(lang, words, cb, lang2){
+
+            if(!lang2){
+                lang2 = 'en';
+            }
+
+            var linkslang = lang + lang2;
+
+
+            if(!__links[linkslang]) {
+                __links[linkslang] = {};
             }
 
             var downloadList = {}
@@ -46,8 +54,8 @@
             words.forEach(function(word){
                if(word.link){
                    // word already donwloaded in list
-                   if(__links[word.link]){
-                       __setupWord(__links[word.link], word);
+                   if(__links[linkslang][word.link]){
+                       __setupWord(__links[linkslang][word.link], word);
                    } else if(downloadList[word.link]) {
                        // link already is in download list
                        // add another word who is care
@@ -76,13 +84,13 @@
                 wordString = wordString.substring(1);
 
                 var fixlang = lang;
-                requestGET($http, '/words/links/'+fixlang+'/?fields=lid,desc,word,english,usage&links='+wordString, function(response, status){
+                requestGET($http, '/words/links/'+fixlang+'/'+lang2+'/?fields=lid,desc,word,word2,english,usage&links='+wordString, function(response, status){
                     console.log(response);
 
                     response.forEach(function(linkedWord, idx){
                         var wl = downloadListLinks[idx];
 
-                        __links[lang][wl[0].link] = linkedWord;
+                        __links[linkslang][wl[0].link] = linkedWord;
                         wl.forEach(function(word){
                             __setupWord(linkedWord, word);
                         })
@@ -97,38 +105,52 @@
 
         }
 
-        function __removeCacheForSentencesToLink(lang, toLink){
+        function __removeCacheForSentencesToLink(lang, toLink, lang2){
+            if(!lang2){
+                lang2 = 'en'
+            }
+
+            var linkslang = lang + lang2;
+
+
             // init __linkSentences for lang
-            if(!__linkSentences[lang]){
-                __linkSentences[lang] = {}
+            if(!__linkSentences[linkslang]){
+                __linkSentences[linkslang] = {}
             }
 
-            if(!__sentences[lang]){
-                __sentences[lang] = {}
+            if(!__sentences[linkslang]){
+                __sentences[linkslang] = {}
             }
 
-            __linkSentences[lang][toLink] = undefined;
-            __sentences[lang][toLink] = undefined;
+            __linkSentences[linkslang][toLink] = undefined;
+            __sentences[linkslang][toLink] = undefined;
         }
 
-        function __getSentenceToLinkCache(lang, toLink, cb){
+        function __getSentenceToLinkCache(lang, toLink, cb, lang2){
+
+            if(!lang2){
+                lang2 = 'en'
+            }
+
+            var linkslang = lang + lang2;
+
             // init __linkSentences for lang
-            if(!__linkSentences[lang]){
-                __linkSentences[lang] = {}
+            if(!__linkSentences[linkslang]){
+                __linkSentences[linkslang] = {}
             }
 
-            if(!__sentences[lang]){
-                __sentences[lang] = {}
+            if(!__sentences[linkslang]){
+                __sentences[linkslang] = {}
             }
 
-            var sentenceLink = __linkSentences[lang][toLink];
+            var sentenceLink = __linkSentences[linkslang][toLink];
 
             if(!sentenceLink){
                 return false;
             }
 
 
-            var cacheSentence = __sentences[lang];
+            var cacheSentence = __sentences[linkslang];
             var sentences = [];
             sentenceLink.forEach(function(senLink){
                 sentences.push(cacheSentence[senLink]);
@@ -138,19 +160,24 @@
             return true;
         }
 
-        function __getSentencesToLink(lang, toLink, cb){
+        function __getSentencesToLink(lang, toLink, cb, lang2){
 
+            if(!lang2){
+                lang2 = 'en'
+            }
 
-            if(!__getSentenceToLinkCache(lang, toLink, cb)) {
+            var linkslang = lang + lang2;
 
-                __linkSentences[lang][toLink] = [];
+            if(!__getSentenceToLinkCache(lang, toLink, cb, lang2)) {
+
+                __linkSentences[linkslang][toLink] = [];
                 requestGET($http, '/words/sentences/'+lang+'/?toLinks='+toLink, function(response, status){
                     response.sentences.forEach(function(sen){
-                        __sentences[lang][sen.l] = sen;
-                        __linkSentences[lang][toLink].push(sen.l);
+                        __sentences[linkslang][sen.l] = sen;
+                        __linkSentences[linkslang][toLink].push(sen.l);
                     });
 
-                    __getSentenceToLinkCache(lang, toLink, cb);
+                    __getSentenceToLinkCache(lang, toLink, cb, lang2);
                 });
             }
 
@@ -158,12 +185,18 @@
 
         }
 
-        function __update(lang, word){
-            if(!__links[lang]) {
-                __links[lang] = {};
+        function __update(lang, word, lang2){
+            if(!lang2){
+                lang2='en';
             }
 
-            __links[lang][word.link] = word;
+            var linkslang = lang + lang2;
+
+            if(!__links[linkslang]) {
+                __links[linkslang] = {};
+            }
+
+            __links[linkslang][word.link] = word;
         }
 
 

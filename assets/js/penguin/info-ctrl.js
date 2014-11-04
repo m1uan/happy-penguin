@@ -67,14 +67,19 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
             words.push(word)
         })
 
-        linksFactory.get('cz', words, function(){
+        linksFactory.get(worldFactory.getNative(), words, function(){
             $scope.wordsLoading = false;
-        });
+        }, worldFactory.getLearn());
         return words;
     }
 
 
     $scope.clickTranslate = function(word){
+        linksFactory.getSentencesToLink(worldFactory.getNative(), word.link, function(sentences){
+            word.sentences = sentences;
+        }, worldFactory.getLearn())
+
+
         // word already translated, don't charge more coins
         if(word.translated){
             return;
@@ -87,7 +92,7 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
             return;
         }
 
-        $scope.game.coins -= 1;
+        //$scope.game.coins -= 1;
         worldFactory.store();
 
         word.translated = true;

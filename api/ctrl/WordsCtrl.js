@@ -26,6 +26,8 @@ var wordsCtrl = function(){
                 params : '{params*}'
             },links_get : {
                 auth : false
+            },sentences_get : {
+                auth : false
             }
         }
     }

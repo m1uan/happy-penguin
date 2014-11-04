@@ -57,13 +57,7 @@
                 cb(words, wordsIds);
             } else {
 
-                if(learn == 'cz'){
-                    learn = 'cs';
-                }
 
-                if(native == 'cz'){
-                    native = 'cs';
-                }
                 // who created this?????
                 // >>> not deleted : 1 - show all (not deleted and unaproved)
                 // >>>             0 - NOT show deleted files
