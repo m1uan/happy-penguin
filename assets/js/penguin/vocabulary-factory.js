@@ -140,7 +140,7 @@
 
                 console.log('ret before rand: ', ret);
 
-                ret.word1= shuffle(ret.word1);
+                ret.word1 = shuffle(ret.word1);
                 ret.word2 = shuffle(ret.word2);
 
                 console.log('ret after rand: ', ret);
@@ -197,6 +197,31 @@
 
             return ret;
 
+        }
+
+        function __addToTrain(word){
+            restoreFactory();
+            var founded = false;
+            usedWords.forEach(function(uw, idx){
+                if(uw.link == word.lid){
+                    founded = true;
+                    uw.weight1 = 1;
+                    uw.weight2 = 1;
+                }
+            })
+
+            if(!founded){
+                var nw = {
+                    link:word.lid,
+                    w1:word.word2,
+                    w2:word.word,
+                    weight1:1,
+                    weight2:1
+                }
+                usedWords.unshift(nw);
+            }
+
+            storeFactory();
         }
 
         function getTrainWords(){
@@ -342,7 +367,8 @@
             getVocabularyRandomSet:getVocabularyRandomSet,
             getTrainWords : getTrainWords,
             trainNext : trainNext,
-            isPossibleTrain : isPossibleTrain
+            isPossibleTrain : isPossibleTrain,
+            addToTrain : __addToTrain
            };
     });
 }).call(this);

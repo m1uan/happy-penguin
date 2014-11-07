@@ -1,4 +1,4 @@
-function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout){
+function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory){
 
     var placeId = $routeParams.placeid;
 
@@ -34,6 +34,8 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
         var blocks = $scope.place.info.split('\n\n');
         var numProcesedBlock = 0;
         var historyVisit = $scope.place.history.countVisit;
+
+        var allWords = []
         blocks.forEach(function(block, idx){
             var trimedBlock = block.trim();
             if(trimedBlock.length < 1){
@@ -43,12 +45,16 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
             if(historyVisit > idx){
                 var words = getWordsFromBlock(trimedBlock);
                 $scope.blocks.push(words);
+                allWords = allWords.concat(words);
             } else {
                 $scope.secret.push(trimedBlock);
             }
         });
 
 
+        linksFactory.get(worldFactory.getNative(), allWords, function(){
+            $scope.wordsLoading = false;
+        }, worldFactory.getLearn());
     }
 
     function getWordsFromBlock(block){
@@ -68,9 +74,7 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
             words.push(word)
         })
 
-        linksFactory.get(worldFactory.getNative(), words, function(){
-            $scope.wordsLoading = false;
-        }, worldFactory.getLearn());
+
         return words;
     }
 
@@ -96,6 +100,8 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
             alertify.alert(text);
             return;
         }
+
+        vocabularyFactory.addToTrain(word.possible[0]);
 
         //$scope.game.coins -= 1;
         worldFactory.store();
