@@ -331,10 +331,18 @@
 }
 
 #info-resources{
-    position: absolute;
-    left:0px;
+    float:left;
     margin:4px;
     font-weight: bold;
+}
+
+#info-top-panel {
+    width: 100%;
+
+}
+
+#info-center-panel {
+    margin: 0 auto;
 }
 
 #info-sentences {
@@ -344,3 +352,4 @@
 .intro-content {
     padding: 15px;
 }
+

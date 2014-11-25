@@ -14,8 +14,12 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
             var game = worldFactory.game();
             $scope.game = game;
             $scope.place = plc;
-            setupInfo();
 
+            // sometime loadPlace is already loaded
+            // and need to be apply
+            $timeout(function(){
+                setupInfo();
+            }, 0)
 
         })
 
