@@ -33,7 +33,8 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
         $scope.secret = [];
         var blocks = $scope.place.info.split('\n\n');
         var numProcesedBlock = 0;
-        var historyVisit = $scope.place.history.countVisit;
+        // sometime is history empty (after new game and first visit)
+        var historyVisit = $scope.place.history.countVisit || 1;
 
         var allWords = []
         blocks.forEach(function(block, idx){

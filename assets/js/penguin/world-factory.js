@@ -259,8 +259,9 @@
             if(self.game.placesHistory && self.game.placesHistory[place.id]){
                 place.history = self.game.placesHistory[place.id];
             } else {
-                place.hirstory = {};
+                place.history = {};
             }
+
         }
 
 
