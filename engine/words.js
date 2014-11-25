@@ -160,25 +160,42 @@ function WORDS(pg, lesson){
 
 
         if(actual){
-            sql.whereAnd('link.version=',0);
+            sql.whereAnd('link.version=0');
         }
 
 
 
         if(langs.length == 1){
-            sql.join('word', 'word.link=link.lid');
-            sql.whereAnd('word.lang=',langs[0]);
+            var joinClausole = 'word.link=link.lid AND word.lang=\'' + langs[0] + '\'';
+
+
+            //DELETED: sql.whereAnd('word.lang=',langs[0]);
+            // must be on join clausole othervise if you open lang cz and es
+            // and some words missing in 'es' or 'cz' you will not see empty fields
+            // just will se the words which they match
             if(actual){
-                sql.whereAnd('word.version=',0);
+                joinClausole += ' AND word.version=0'
+                // DELETED: sql.whereAnd('word.version=0');
+                // same reason as top
             }
+
+            sql.join('word', joinClausole);
         } else if(langs.length > 1){
             langs.forEach(function(lang,midx){
                 var idx = midx + 1;
-                sql.join('word as word'+idx, 'word'+idx+'.link=link.lid');
-                sql.whereAnd('word'+idx+'.lang=',lang);
+                var joinClausole = 'word'+idx+'.link=link.lid AND word'+idx+'.lang=\'' + lang+ '\'';
+
+                //DELETED: sql.whereAnd('word'+idx+'.lang=',lang);
+                // must be on join clausole othervise if you open lang cz and es
+                // and some words missing in 'es' or 'cz' you will not see empty fields
+                // just will se the words which they match
                 if(actual){
-                    sql.whereAnd('word'+idx+'.version=',0);
+                    joinClausole += ' AND word'+idx+'.version=0'
+                    //DELETED: sql.whereAnd('word'+idx+'.version=0');
+                    // same reason as top
                 }
+
+                sql.join('word as word'+idx, joinClausole);
             });
 
             var newFields = [];
