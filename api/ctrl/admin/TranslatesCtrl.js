@@ -36,7 +36,7 @@ module.exports = {
             lang_of_names :  'en'
         };
 
-        langEngine.getlangs(pgClient, ['lang','name','translate'], dataContainer, function(err,data){
+        langEngine.getlangs(pgClient, ['lang','name','translate','enable'], dataContainer, function(err,data){
             console.log('get langs:',err, data);
             response(request, err, {'langs':data});
         });

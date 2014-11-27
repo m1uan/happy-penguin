@@ -107,7 +107,7 @@ function ExchangeDialog(){
         }
     }
 }
-function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate) {
+function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate,$timeout) {
 
     $scope.currentLang = $translate.use();
     $scope.langs = [];
@@ -145,12 +145,25 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
         if($translate.use() != lang){
             $translate.use(lang).then(function(data){
                 var translation = $translate.instant('native_lang_changed', {lang:lang});
+
                 alertify.success(translation);
             });
-
-
-
         }
+
+        $timeout(function(){
+            var translation = $translate.instant('do-you-want-change-native-lang', {lang:lang});
+            var translationYes = $translate.instant('button-yes', {lang:lang});
+            var translationNo = $translate.instant('button-no', {lang:lang});
+            alertify.set({labels:{ok:translationYes,cancel:translationNo}});
+            alertify.confirm(translation, function(e){
+                if(e){
+                    var exchange = $('#modal-exchange');
+                    exchange.modal('show');
+                }
+            });
+        }, 750);
+
+
         $scope.currentLang = lang;
         track("lang", lang);
     }
@@ -170,11 +183,14 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 }
 
 function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate) {
+
+
     var PAGEMAX = 8;
 
     var stage= parseInt($routeParams.page);
     if(isNaN(stage) || stage < 1 || stage > PAGEMAX){
         stage = 1;
+
     }
     showStage(stage);
 
@@ -194,6 +210,8 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
 
         $('.intro_item').hide();
         if(stage==1){
+            var exchange = $('#modal-exchange');
+            exchange.modal('show');
             $('#intro_distances_place').fadeIn(500);
         } else if(stage>1 && stage<7){
             var intro_place = '#intro_place_info_' + stage;
@@ -297,7 +315,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
     showExperiencePopup();
     showTrainPopup();
 
-    $scope.showExchange = function(){
+    function showExchange(){
 
 
         var ed = ExchangeDialog();

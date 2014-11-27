@@ -11,6 +11,7 @@ div
             td code
             td translate
             td name
+            td
         tr(ng-repeat="lang in langs")
             td {{$index+1}}
             td
@@ -19,3 +20,5 @@ div
             td {{lang.name}}
             td
                 a(href="#/import/{{lang.lang}}") import/export
+            td
+                input(type="checkbox",name="lang-enable",checked,data-label-text="from",ng-model="lang.enable",disabled).input

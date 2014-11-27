@@ -134,6 +134,7 @@ function TranslateCtrl($scope, $http, $routeParams) {
                 trans.origin = trans.data;
 
 
+
                 $scope.translates.push(trans);
             });
         });
@@ -214,8 +215,13 @@ function AddLangCtrl($scope, $http) {
     function loadLangs(){
         var date = new Date();
 
-        requestGET($http, 'langs/?fields=name,translate,lang&timestamp='+date.getMilliseconds(), function(response, status){
+        requestGET($http, 'langs/?fields=name,translate,lang,enable&timestamp='+date.getMilliseconds(), function(response, status){
             $scope.langs=response.langs;
+
+
         });
     }
+
+
+
 }
