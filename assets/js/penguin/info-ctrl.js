@@ -85,6 +85,12 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
 
 
     $scope.clickTranslate = function(word){
+
+        // if the word have no link it is mean is not translatable word
+        if(!word.link){
+            return;
+        }
+
         linksFactory.getSentencesToLink(worldFactory.getNative(), word.link, function(sentences){
             $timeout(function(){
                 $scope.sentences = sentences;
@@ -106,7 +112,9 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
             return;
         }
 
-        vocabularyFactory.addToTrain(word.possible[0]);
+        if(word && word.possible){
+            vocabularyFactory.addToTrain(word.possible[0]);
+        }
 
         //$scope.game.coins -= 1;
         worldFactory.store();

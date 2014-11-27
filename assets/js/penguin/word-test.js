@@ -134,13 +134,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
     function showIntroductionOrStartVocabularyTest(){
-        // some places have not introduction (info) text
-        // go straight way to vocabulary test
-        if($scope.place.info){
-            showIntroduction();
-        } else {
-            $scope.visit()
-        }
+        startVocabularyTest();
     }
 
     function showIntroduction(){
@@ -266,6 +260,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
     function startVocabularyTest(){
+        $scope.part = 1;
         loadOrNext(function(){
             lastAnswer = moment();
             $interval(function(){
@@ -297,10 +292,6 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
 
-    $scope.visit = function(){
-        $scope.part = 1;
-        startVocabularyTest();
-    }
 
 
     function loadOrNext(cb){
