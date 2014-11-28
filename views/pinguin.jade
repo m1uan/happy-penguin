@@ -45,7 +45,7 @@ html(ng-app="pinguin")
                         img(src="/assets/img/penguin/lang_arrow.gif",ng-show="lang.lang==currentLang").lang-pointer
 
 
-                //div(ng-view).column-center.main-view
+
                 // style is in this way because on
                 // chrome browser is not size fit before map is initialized
                 // and map have realy low height
@@ -60,6 +60,8 @@ html(ng-app="pinguin")
                 span()#game_resources.gold_resource
                     span#game_resources_golds {{coins}}
                     img(src="/assets/img/penguin/ic_golds.png").resource_gold_icon
+
+            div(ng-view)#main-view.main-view
             // it is here because in main-view is disabled
             // shadow screen cover the dialog as well
             div(data-backdrop="static",data-keyboard="false" )#modal-exchange.modal.fade

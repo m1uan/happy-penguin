@@ -6,7 +6,7 @@
 
     vocabularyFactory.factory('vocabularyFactory', function($http, localStorageService) {
         var words = [];
-        var usedWords = [];
+        //var usedWords = [];
         // set null for detect if is loadet from storage or not
         var wordsIds = null;
         var loadedLessons = [];
@@ -28,7 +28,7 @@
 //                localStorageService.set(LOCALSTOREGE_USED_WORDS, null);
 //                localStorageService.set(LOCALSTOREGE_LOADED_LESSONS, null);
                 words = localStorageService.get(LOCALSTORAGE_WORDS) || [];
-                usedWords = localStorageService.get(LOCALSTOREGE_USED_WORDS) || [];
+                //usedWords = localStorageService.get(LOCALSTOREGE_USED_WORDS) || [];
                 loadedLessons = localStorageService.get(LOCALSTOREGE_LOADED_LESSONS) || [];
 
                 wordsIds = {}
@@ -37,15 +37,15 @@
                     wordsIds[word.link] = word;
                 });
                 // part of words is in usedWords
-                usedWords.forEach(function(word, idx){
-                    wordsIds[word.link] = word;
-                });
+                //usedWords.forEach(function(word, idx){
+                 //   wordsIds[word.link] = word;
+                //});
             }
         }
 
         function storeFactory(){
             localStorageService.set(LOCALSTORAGE_WORDS, words);
-            localStorageService.set(LOCALSTOREGE_USED_WORDS, usedWords);
+            //localStorageService.set(LOCALSTOREGE_USED_WORDS, usedWords);
             localStorageService.set(LOCALSTOREGE_LOADED_LESSONS, loadedLessons);
         }
 
@@ -91,6 +91,7 @@
             words.some(function(w,idx){
                 if((sentencesOnly && w.sentence) || (!sentencesOnly && !w.sentence)){
                     index = idx;
+                    word = w;
                 }
 
                 return word;
@@ -107,7 +108,7 @@
         }
 
         function getNextWords(lesson, sentencesOnly){
-            if(!words){
+            if(!words || words.length < 1){
                 restoreFactory();
                 if(!words || words.length < 1){
                     // it seems now word for dealing with
@@ -136,6 +137,7 @@
             var s1 = getNextWords(lesson, false);
             if(!s1){
                 cb(ret);
+                return;
             }
 
             s1.forEach(function(w){
@@ -216,7 +218,7 @@
         function __addToTrain(word, sentence){
             restoreFactory();
             var founded = false;
-            usedWords.some(function(uw, idx){
+            words.some(function(uw, idx){
                 if(uw.link == word.lid){
                     founded = true;
                     uw.weight1 = 1;
@@ -235,7 +237,7 @@
                     weight2:1,
                     sentence : sentence
                 }
-                usedWords.unshift(nw);
+                words.unshift(nw);
             }
 
             storeFactory();
@@ -363,7 +365,7 @@
             var a2 = word.weight2 >= MAX_INT;
             if(a1 && a2){
                 var position = -1;
-                var found = usedWords.some(function(usedWord,idx){
+                var found = words.some(function(usedWord,idx){
                     position = idx;
                     return word.id == usedWord.id;
                 });
@@ -371,7 +373,7 @@
                 // removed from usedWord because "usedWords"
                 // are used for generate train word list
                 if(found){
-                    usedWords.splice(position,1);
+                    words.splice(position,1);
                 }
             }
 
@@ -387,7 +389,7 @@
          * @returns {boolean}
          */
         function isPossibleTrain(){
-            return usedWords.length >= 28;
+            return words.length >= 28;
         }
 
 

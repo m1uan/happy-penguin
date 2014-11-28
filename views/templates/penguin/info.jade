@@ -6,9 +6,6 @@ div(ng-show="wordsLoading").loaidng
         div(translate="loading_could_be_long").loaidng-i first load could be long
 div(ng-hide="wordsLoading").top-panel
     div#info-top-panel
-        div.gold_resource#info-resources
-            span {{game.coins}}
-            img(src="/assets/img/penguin/ic_golds.png").resource_gold_icon
         div#info-center-panel
             h2(translate="place_welcome",translate-values="{name:place.name}")
             div(ng-show="place.source").text-center
@@ -42,4 +39,4 @@ div.content-cell
                     span {{sentence.s}} {{sentence.s2}}
     div.bottom-panel
         div.text-center
-            button(ng-click="back()",translate="btn_back").btn.btn-primary
+            a(href="#/place",translate="btn_back").btn.btn-primary

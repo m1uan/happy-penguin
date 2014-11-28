@@ -8,15 +8,17 @@ var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','pe
             controller: IntroCtrl
         });
 
-        $routeProvider.when('/world', {
+        /*$routeProvider.when('/world', {
             templateUrl: '/templates/levels/world',
             controller: WorldCtrl
-        });
+        });*/
 
-        $routeProvider.when('/wordstest/:placeid', {
+        $routeProvider.when('/wordstest/', {
             templateUrl: '/templates/penguin/wordstest',
             controller: WordsTestCtrl
         });
+
+
 
         $routeProvider.when('/gameover', {
             templateUrl: '/templates/penguin/gameover',
@@ -37,13 +39,18 @@ var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','pe
             templateUrl: '/templates/penguin/place',
             controller: PlaceCtrl
         });
+        $routeProvider.when('/place', {
+            templateUrl: '/templates/penguin/place',
+            controller: PlaceCtrl
+        });
+
 
         $routeProvider.when('/place/:placeid/wordtest', {
             templateUrl: '/templates/penguin/place',
             controller: WorldCtrl
         });
 
-        $routeProvider.when('/place/:placeid/info', {
+        $routeProvider.when('/info', {
             templateUrl: '/templates/penguin/info',
             controller: InfoCtrl
         });
@@ -53,7 +60,7 @@ var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','pe
         });
 
         $routeProvider.otherwise( {
-            redirectTo: '/world'
+            redirectTo: '/place'
         });
 
 
@@ -69,44 +76,7 @@ var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','pe
     });
 
 
-function ExchangeDialog(){
-    var exchange = $('#modal-exchange');
 
-    // the values on inputs are put there from another controller
-    // with the same jQuery technics, so the models are not actualised...
-    // have to be recaived with the same technics
-    var exp = exchange.find('#modal-exchange-exp');
-    var walk = exchange.find('#modal-exchange_resources_walk');
-    var swim = exchange.find('#modal-exchange_resources_swim');
-    var fly = exchange.find('#modal-exchange_resources_fly');
-
-
-
-    return {
-        expToTravelers : function(){
-            var e = parseInt(exp.val());
-            if(e >= 3){
-                exp.val(e - 3);
-                walk.val(parseInt(walk.val())+1);
-                swim.val(parseInt(swim.val())+1);
-                fly.val(parseInt(fly.val())+1);
-            }
-        }, setup : function(e,w,s,f){
-            exp.val(e);
-            walk.val(w);
-            swim.val(s);
-            fly.val(f);
-        }, show : function(onClick){
-            exchange.modal('show');
-            if(onClick){
-                exchange.find('#modal-exchange-button').unbind().click(onClick);
-            }
-
-        },getValues : function(){
-            return {exp:parseInt(exp.val()),walk:parseInt(walk.val()), swim:parseInt(swim.val()), fly:parseInt(fly.val())}
-        }
-    }
-}
 function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate,$timeout) {
 
     $scope.currentLang = $translate.use();
@@ -131,7 +101,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
     if(mygame && mygame.native){
         var native = mygame.native;
         $translate.use(native);
-        $location.path('/world');
+        $location.path('/place/' + mygame.placeId);
         $scope.currentLang = native;
     } else {
         $location.path('/intro/1');
@@ -265,7 +235,7 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
         alertify.error('jorney:' + lang + ' native:' + native);
         worldFactory.setup(lang,  native);
         worldFactory.createNewGame();
-        $location.path('/world');
+        $location.path('/place/1');
         track("Start game", {jorney:lang, native: $translate.use()});
     }
 
@@ -492,30 +462,31 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
 
     function moveToPlace(place){
-//        if(worldFactory.game().coins < place.coins){
-//            $('#game_resources_golds').css({color:'red'});
-//            alertify.error($translate.instant('not_enought', {have:worldFactory.game().coins, need: place.coins}));
-//        } else {
-//            $location.path('/place/'+place.id+'/info');
-//            $scope.$apply(function(){
-//
-//
-//                worldFactory.setPlace(place);
-//
-//                showPenguin();
-//                worldFactory.setupPlacesDistancesAndExp();
-//                worldFactory.update($scope);
-//
-//                //testEndGame();
-//                //element.hide();
-//
-//            })
-//            track("Place", {placeId: place.id});
-//        }
+//        placeFactory.setupPlace(placeId, function(successPlace){
+//            $scope.place = successPlace;
+//        });
 
-        $scope.$apply(function(){
-            $location.path('/place/'+place.id);
-        })
+        if(worldFactory.game().coins < place.coins){
+            $('#game_resources_golds').css({color:'red'});
+            alertify.error($translate.instant('not_enought', {have:worldFactory.game().coins, need: place.coins}));
+            track("Place-wanted", {placeId: place.id});
+        } else {
+
+            $scope.$apply(function(){
+
+
+                worldFactory.setPlace(place);
+
+                showPenguin();
+                worldFactory.setupPlacesDistancesAndExp();
+                worldFactory.update($scope);
+                $location.path('/info');
+                //testEndGame();
+                //element.hide();
+
+            })
+            track("Place", {placeId: place.id});
+        }
     }
 
 

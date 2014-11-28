@@ -50,7 +50,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
 
-    var placeid = $routeParams.placeid;
+    var placeid = worldFactory.getCurrentPlace().id;
 
     $scope.part = 0;
 

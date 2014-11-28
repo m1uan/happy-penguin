@@ -7,20 +7,22 @@
 
 }
 
-.main-view {
-
-    height:600px;
+#main-view {
+    position: absolute;
+    top:150px;
+    left:20px;
+    width: 450px;
+    height:550px;
 
     background-size: 120%, 100%;
 
     background-color: #eafbff;
-    opacity: 0.9;
     padding:0px;
 
     -moz-border-radius: 8px;
     -webkit-border-radius:8px;
-    border-radius: 8px;
-    border-width: 10px;
+    border-radius: 2px;
+    border-width: 2px;
     border-style: solid;
     /*border-color: #207cca;*/ /* Old browsers */
     border-color:#313031;

@@ -1,31 +1,31 @@
-function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory){
+function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory, $location){
 
-    var placeId = $routeParams.placeid;
+    $scope.place =  worldFactory.getCurrentPlace();
 
 
     $scope.wordsLoading = true;
     $scope.sentences = [{s:'ahoj',s2:'cau'}]
 
-    placeFactory.setupPlace(placeId, function(successPlace){
-        $scope.place = successPlace;
+    worldFactory.loadPlace($scope.place.id, function(plc){
 
+        // this place have no info
+        if(!plc.info){
+            $location.path('/place');
+            console.error('no info here!')
+            return;
+        }
 
-        worldFactory.loadPlace(placeId, function(plc){
-            var game = worldFactory.game();
-            $scope.game = game;
-            $scope.place = plc;
+        var game = worldFactory.game();
+        $scope.game = game;
+        $scope.place = plc;
 
-            // sometime loadPlace is already loaded
-            // and need to be apply
-            $timeout(function(){
-                setupInfo();
-            }, 0)
+        // sometime loadPlace is already loaded
+        // and need to be apply
+        $timeout(function(){
+            setupInfo();
+        }, 0)
 
-        })
-
-
-
-    });
+    })
 
     var Patt = new RegExp('\[[0-9]*\]', 'gm');
     var REGEXP = /\[([1-9]*)\]/;
@@ -121,4 +121,6 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
 
         word.translated = true;
     }
+
+
 }
