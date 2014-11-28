@@ -118,6 +118,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
     })
 
 
+    worldFactory.update($scope);
 
     //var base = {};
     var mygame = worldFactory.game();
@@ -304,45 +305,21 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
     worldFactory.update($scope);
 
-    $('#score-progress-bar')
+
+    // commented when map was changed to full map
+    /* $('#score-progress-bar')
         .attr('aria-valuemin', $scope.levelInfo.baseLevelExp)
         .attr('aria-valuemax', $scope.levelInfo.nextLevelExp)
-        .attr('data-transitiongoal', $scope.levelInfo.levelExp);
+        .attr('data-transitiongoal', $scope.levelInfo.levelExp); */
 
-    $('.progress .progress-bar').progressbar({use_percentage: false,display_text: 'center'});
+    // // commented when map was changed to full map
+    //$('.progress .progress-bar').progressbar({use_percentage: false,display_text: 'center'});
 
-    showGoldPopup();
-    showExperiencePopup();
-    showTrainPopup();
+    // commented when map was changed to full map
+    //showGoldPopup();
+    //showExperiencePopup();
+    //showTrainPopup();
 
-    function showExchange(){
-
-
-        var ed = ExchangeDialog();
-        ed.setup(worldFactory.game().exp, worldFactory.game().walk, worldFactory.game().swim, worldFactory.game().fly);
-        ed.show(function(){
-            $scope.$apply(function(){
-                var values = ed.getValues();
-                var score = {
-                    exp: values.exp - parseInt(worldFactory.game().exp),
-                    walk : values.walk - parseInt(worldFactory.game().walk),
-                    swim : values.swim - parseInt(worldFactory.game().swim),
-                    fly : values.fly - parseInt(worldFactory.game().fly)
-                }
-
-
-                console.log('score', score, values);
-                worldFactory.addScore(score);
-
-                worldFactory.update($scope);
-
-                //testEndGame();
-                //element.hide();
-
-            })
-        });
-
-    }
 
 
 
@@ -405,7 +382,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
                 if(!item.length){
 
-                    var item = $('<div id="'+placeid+'" data-toggle="tooltip" data-placement="left" >' + '</div>').addClass('place');
+                    var item = $('<div id="'+placeid+'" data-toggle="tooltip" data-placement="right" >' + '</div>').addClass('place');
 
                     item.addClass('placesize' + place.size);
 
@@ -428,7 +405,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
                 }
 
                 var pos = map.latLngToPoint(place.posx, place.posy);
-                item.css({top: pos.y-14, left: pos.x-14});
+                item.css({top: pos.y-4, left: pos.x-4});
 
 
 //                var marker = {latLng: [pl.posx, pl.posy], name: pl.name, style: {r: 8, fill: 'yellow'}};
@@ -668,20 +645,31 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
             },onViewportChange : onViewportChange,
             backgroundColor: '#207cca',
             borderColor: '#000',
-            borderOpacity: 0.9,
-            borderWidth: 30,
-            color: '#f4fff0',
+            borderOpacity: 0.1,
+            borderWidth: 3,
+            color: '#0b4e00',
             markersSelectable: true,
             markersSelectableOne: true,
+            normalizeFunction: 'linear',
+            scaleColors: ['#207cca', '#005ace'],
             focusOn: {
                 x: 0.5,
                 y: -0.39,
-                scale: 3
+                scale: 1
             },map: 'world_mill_en',series: {
                 regions: [{
                     values: {
-                        "CZ":'#0b4e00',
-                        "NZ":'#0b4e00'
+                        "CZ":'#4aff4a',
+                        "NZ":'#4aff4a',
+                        "GB":'#4aff4a',
+                        "FR":'#4aff4a',
+                        "ES":'#fdff68',
+                        "TH":'#fdff68',
+                        "US":'#4aff4a',
+                        "TR":'#fdff68',
+                        "IN":'#fdff68',
+                        "BR":'#4aff4a',
+                        "AU":'#FF7c7c'
                     }
                 }]
             }});
