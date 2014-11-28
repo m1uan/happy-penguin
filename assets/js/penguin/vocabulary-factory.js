@@ -85,28 +85,40 @@
             }
         }
 
-        function getNextWords(lesson){
-            var rw = [];
+        function getFirstWordOrSentenceFromUsedWords(sentencesOnly){
+            var word = null, index;
 
-            // set first time
-            if(!usedWords){
-                usedWords = [];
-            }
-
-            do{
-                var w = words.shift();
-
-                // words empty lets use usedWords again
-                if(!w){
-                    w = usedWords.shift();
-                    words = usedWords;
-                    usedWords = [];
+            words.some(function(w,idx){
+                if((sentencesOnly && w.sentence) || (!sentencesOnly && !w.sentence)){
+                    index = idx;
                 }
 
+                return word;
+            })
+
+            // clean from words and put to end
+            if(word){
+                words.splice(index, 1);
+                words.push(word);
+            }
+
+
+            return word;
+        }
+
+        function getNextWords(lesson, sentencesOnly){
+            if(!words){
+                restoreFactory();
+                if(!words || words.length < 1){
+                    // it seems now word for dealing with
+                    return null;
+                }
+            }
+
+            var rw = [];
+            do{
+                var w = getFirstWordOrSentenceFromUsedWords(sentencesOnly);
                 rw.push(w);
-                usedWords.push(w);
-
-
             } while(rw.length < MAX_IN_SET)
 
             // store to storage for let know
@@ -117,36 +129,38 @@
         }
 
         function getVocabularyRandomSet(lesson, learn, native, cb){
-            getWords(lesson, learn, native,  function(w,i){
-                var s1 = getNextWords(lesson);
+            var ret = {};
+            ret.word1 = [];
+            ret.word2 = [];
 
-                var ret = {};
-                ret.word1 = [];
-                ret.word2 = [];
-                s1.forEach(function(w){
-                    var w1 = {
-                        word : w.w1,
-                        link : w.link
-                    }
-
-                    var w2 = {
-                        word : w.w2,
-                        link : w.link
-                    }
-
-                    ret.word1.push(w1);
-                    ret.word2.push(w2);
-                });
-
-                console.log('ret before rand: ', ret);
-
-                ret.word1 = shuffle(ret.word1);
-                ret.word2 = shuffle(ret.word2);
-
-                console.log('ret after rand: ', ret);
+            var s1 = getNextWords(lesson, false);
+            if(!s1){
                 cb(ret);
+            }
 
-            })
+            s1.forEach(function(w){
+                var w1 = {
+                    word : w.w1,
+                    link : w.link
+                }
+
+                var w2 = {
+                    word : w.w2,
+                    link : w.link
+                }
+
+                ret.word1.push(w1);
+                ret.word2.push(w2);
+            });
+
+            console.log('ret before rand: ', ret);
+
+            ret.word1 = shuffle(ret.word1);
+            ret.word2 = shuffle(ret.word2);
+
+            console.log('ret after rand: ', ret);
+            cb(ret);
+
         }
 
         function numEmpty(words){
@@ -199,15 +213,17 @@
 
         }
 
-        function __addToTrain(word){
+        function __addToTrain(word, sentence){
             restoreFactory();
             var founded = false;
-            usedWords.forEach(function(uw, idx){
+            usedWords.some(function(uw, idx){
                 if(uw.link == word.lid){
                     founded = true;
                     uw.weight1 = 1;
                     uw.weight2 = 1;
                 }
+
+                return founded;
             })
 
             if(!founded){
@@ -216,7 +232,8 @@
                     w1:word.word2,
                     w2:word.word,
                     weight1:1,
-                    weight2:1
+                    weight2:1,
+                    sentence : sentence
                 }
                 usedWords.unshift(nw);
             }
@@ -224,7 +241,12 @@
             storeFactory();
         }
 
-        function getTrainWords(){
+        /**
+         *
+         * @param sentenceOnly {Boolean} - true -only sentences opossite only words
+         * @returns {Array}
+         */
+        function getTrainWords(sentencesOnly){
 
             var trainWords = [];
 
@@ -233,15 +255,9 @@
             // the words could be not restored from storage
             restoreFactory();
 
-            usedWords.some(function(word, idx){
-                //if(word.weight1 < MAX_INT || word.weight2 < MAX_INT){
-                    var trainWord = generateTrainWordFromWord(word);
-                    trainWords.push(trainWord);
-                    return trainWords.length == 28;
-                //}
-            })
+            var testWordsArray = words.concat();
 
-            trainWords.sort(function(w1,w2){
+            testWordsArray.sort(function(w1,w2){
                 // detect which weight from which word is taken
                 // if is weightX is not defined setup to 0
                 var ww1 = (w1.testSide == 0 ? w1.word.weight1 : w1.word.weight2);
@@ -250,6 +266,18 @@
                 // sort ascending (http://www.w3schools.com/jsref/jsref_sort.asp)
                 return ww1 - ww2;
             });
+
+            testWordsArray.some(function(word, idx){
+                // if sentences Only take only sentences
+                // if words only (sentencesOnly is false or undefined) take only words
+                if((sentencesOnly && word.sentence) || (!sentencesOnly && !word.sentence)){
+                    var trainWord = generateTrainWordFromWord(word);
+                    trainWords.push(trainWord);
+                }
+                return trainWords.length == 28;
+            })
+
+
 
             return trainWords;
         }
