@@ -35,9 +35,9 @@ var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','pe
             controller: HallOfFameCtrl
         });
 
-        $routeProvider.when('/place/:placeid', {
-            templateUrl: '/templates/penguin/place',
-            controller: PlaceCtrl
+        $routeProvider.when('/map', {
+            controller: EmptyCtrl,
+            template: '<div></div>'
         });
         $routeProvider.when('/place', {
             templateUrl: '/templates/penguin/place',
@@ -60,7 +60,7 @@ var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','pe
         });
 
         $routeProvider.otherwise( {
-            redirectTo: '/place'
+            redirectTo: '/map'
         });
 
 
@@ -77,7 +77,25 @@ var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','pe
 
 
 
+function EmptyCtrl($scope, $timeout){
+    var coverBackground = $('#cover-background');
+    coverBackground.stop();
+    var cover = $('#cover');
+    cover.slideUp();
+}
+
 function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate,$timeout) {
+
+    // http://stackoverflow.com/questions/19787338/how-do-i-get-the-angularjs-routeprovider-to-perform-an-action-before-the-route-c
+    $scope.$on('$routeChangeStart',function(angularEvent,next,current) {
+        var coverBackground = $('#cover-background');
+        coverBackground.css({opacity:0});
+        var cover = $('#cover');
+
+        cover.slideDown('slow', function(){
+            coverBackground.animate({opacity:1}, 5000);
+        });
+    });
 
     $scope.currentLang = $translate.use();
     $scope.langs = [];
@@ -101,7 +119,7 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
     if(mygame && mygame.native){
         var native = mygame.native;
         $translate.use(native);
-        $location.path('/place/' + mygame.placeId);
+        //$location.path('/map');
         $scope.currentLang = native;
     } else {
         $location.path('/intro/1');

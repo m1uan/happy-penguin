@@ -1,5 +1,6 @@
 function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory, $location){
 
+
     $scope.place =  worldFactory.getCurrentPlace();
 
 

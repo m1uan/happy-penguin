@@ -49,7 +49,7 @@ html(ng-app="pinguin")
                 // style is in this way because on
                 // chrome browser is not size fit before map is initialized
                 // and map have realy low height
-                div(style="width:100%;height:600px;background-color:blue;",ng-controller="WorldCtrl")#world-main
+                div(style="width:100%;height:680px;background-color:blue;",ng-controller="WorldCtrl")#world-main
 
                 div#like.panel-dark
                     button(ng-click="like()").btn.btn-xs.btn-primary
@@ -61,7 +61,30 @@ html(ng-app="pinguin")
                     span#game_resources_golds {{coins}}
                     img(src="/assets/img/penguin/ic_golds.png").resource_gold_icon
 
-            div(ng-view)#main-view.main-view
+            div(ng-controller="PlaceCtrl")#place-controll
+                //div(ng-show="wordsLoading").loaidng
+                    div.loaidng-border
+                        img(src="/assets/img/loading64.gif")
+                        div(translate="please_wait").loaidng-span Loading please wait ...
+                        div(translate="loading_could_be_long").loaidng-i first load could be long
+                div.top-panel
+                    h2() {{place.name}}
+                div
+                    div.text-center
+                        a(href="#/info").btn.btn-lg.btn-default.btn-place Info
+                        br
+                        a(href="#/wordstest").btn.btn-lg.btn-default.btn-place Test
+                        br
+                        button.btn.btn-lg.btn-default.btn-place Sentences
+                        br
+                        button.btn.btn-lg.btn-default.btn-place Quiz
+                        br
+                        button.btn.btn-lg.btn-default.btn-place Gallery
+                        br
+                        a(href="#/place").btn.btn-lg.btn-danger.btn-place Back
+            div#cover
+                div#cover-background
+                div(ng-view)#main-view1.column-center
             // it is here because in main-view is disabled
             // shadow screen cover the dialog as well
             div(data-backdrop="static",data-keyboard="false" )#modal-exchange.modal.fade
