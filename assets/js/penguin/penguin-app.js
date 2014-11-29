@@ -77,11 +77,21 @@ var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','pe
 
 
 
-function EmptyCtrl($scope, $timeout){
-    var coverBackground = $('#cover-background');
-    coverBackground.stop();
-    var cover = $('#cover');
-    cover.slideUp();
+function EmptyCtrl($scope, $timeout, $location, worldFactory){
+
+
+    // MAP CTRL is always call
+    // so best aproach to test if game have setup game is here
+    // if is in PinguinCtrl it works one time
+    // but after someone pres back button
+    // you get to map...
+    var mygame = worldFactory.game();
+    //mygame = null;
+    if(mygame && mygame.native){
+
+    } else {
+        $location.path('/intro/1');
+    }
 }
 
 function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate,$timeout) {
@@ -89,8 +99,18 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
     // http://stackoverflow.com/questions/19787338/how-do-i-get-the-angularjs-routeprovider-to-perform-an-action-before-the-route-c
     $scope.$on('$routeChangeStart',function(angularEvent,next,current) {
         var coverBackground = $('#cover-background');
-        coverBackground.css({opacity:0});
         var cover = $('#cover');
+        var mainView = $('#main-view1')
+        // stop show map
+        if(!next || next.$$route.originalPath == '/map'){
+            mainView.hide();
+            coverBackground.stop();
+            cover.slideUp('fast');
+            return;
+        }
+
+        mainView.show();
+        coverBackground.css({opacity:0});
 
         cover.slideDown('slow', function(){
             coverBackground.animate({opacity:1}, 5000);
@@ -115,14 +135,18 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 //        mygame = worldFactory.createNewGame(localStorageService);
 //    }
 
+    // first going to map to be activate
+    // $scope.$on('$routeChangeStart'
+    //$location.path('/map');
 
+    mygame = null;
     if(mygame && mygame.native){
         var native = mygame.native;
         $translate.use(native);
         //$location.path('/map');
         $scope.currentLang = native;
     } else {
-        $location.path('/intro/1');
+        //$location.path('/intro/1');
     }
 
 
@@ -156,12 +180,6 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
         $scope.currentLang = lang;
         track("lang", lang);
     }
-
-    $scope.expToTravelers = function(){
-        ExchangeDialog().expToTravelers();
-
-    }
-
 
     $scope.like = function(){
         facebook($translate, 'fb_share_base');
