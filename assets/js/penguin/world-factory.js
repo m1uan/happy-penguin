@@ -21,6 +21,10 @@
             native = _native;
         }
 
+        function _getCoins(){
+            return self.game.coins;
+        }
+
         function _createNewGame(){
             self.game = {
                 coins: BASE,
@@ -354,6 +358,7 @@
             ,getNative : getNative
             ,getStats : function(){ return _game().stats; }
             ,calcLevelInfo : _calcLevelInfo
+            ,getCoins : _getCoins
             };
 
     });

@@ -1,4 +1,4 @@
-function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory, $location){
+function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory, $location){
 
 
     $scope.place =  worldFactory.getCurrentPlace();
@@ -11,7 +11,7 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
 
         // this place have no info
         if(!plc.info){
-            $location.path('/place');
+            $location.path('/map');
             console.error('no info here!')
             return;
         }
@@ -117,7 +117,7 @@ function InfoCtrl($scope, $routeParams, placeFactory, worldFactory, linksFactory
             vocabularyFactory.addToTrain(word.possible[0]);
         }
 
-        //$scope.game.coins -= 1;
+        $scope.game.coins -= 1;
         worldFactory.store();
 
         word.translated = true;

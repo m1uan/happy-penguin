@@ -81,9 +81,10 @@
 
 #game_resources{
     position: absolute;
-    top:150px;
-    right:10px;
-
+    top:100px;
+    left:180px;
+    color:gold;
+    font-size: 24px;
     cursor:pointer;
     padding:0px;
 
@@ -103,12 +104,12 @@
 .resource_icon {
     margin-top:2px;
     margin-bottom:2px;
-    width:24px;
+    width:28px;
 }
 
 .resource_gold_icon {
     margin:5px;
-    width:28px;
+    width:30px;
 }
 
 .resource_gold_icon_small{

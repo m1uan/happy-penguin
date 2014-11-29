@@ -35,7 +35,8 @@ html(ng-app="pinguin")
                 i.text-center www.happy-penguin.eu
 
             div#body
-                div.panel-dark
+                div.panel-dark#thin-line
+
                     //span(ng-repeat="lang in langs",ng-click="changeLang(lang.lang)").translation
                         span(ng-hide="lang.lang==currentLang").lang-pointer-space
                         img(src="/assets/img/penguin/lang_arrow.gif",ng-show="lang.lang==currentLang").lang-pointer.lang-pointer-left
@@ -56,35 +57,31 @@ html(ng-app="pinguin")
                         img(src="/assets/img/penguin/facebook_like_icon_thumb.gif").like-xs
                         span.like-text-xs like me
 
-            div
-                span()#game_resources.gold_resource
-                    span#game_resources_golds {{coins}}
-                    img(src="/assets/img/penguin/ic_golds.png").resource_gold_icon
 
-            div(ng-controller="PlaceCtrl")#place-controll
+            div#place-controll-line
+                a(href="#/info").btn.btn-xs.btn-default.btn-place Info
+                a(href="#/wordstest").btn.btn-xs.btn-default.btn-place Test
+                a.btn.btn-default.btn-xs.btn-place Sentences
+                a.btn.btn-default.btn-xs.btn-place Crosswords
+
+                a.btn.btn-default.btn-xs.btn-place Quiz
+                a(href="#/train").btn.btn-default.btn-xs.btn-place Memorizing
+            div()#place-controll
                 //div(ng-show="wordsLoading").loaidng
                     div.loaidng-border
                         img(src="/assets/img/loading64.gif")
                         div(translate="please_wait").loaidng-span Loading please wait ...
                         div(translate="loading_could_be_long").loaidng-i first load could be long
-                div.top-panel
-                    h2() {{place.name}}
-                div
-                    div.text-center
-                        a(href="#/info").btn.btn-lg.btn-default.btn-place Info
-                        br
-                        a(href="#/wordstest").btn.btn-lg.btn-default.btn-place Test
-                        br
-                        button.btn.btn-lg.btn-default.btn-place Sentences
-                        br
-                        button.btn.btn-lg.btn-default.btn-place Quiz
-                        br
-                        button.btn.btn-lg.btn-default.btn-place Gallery
-                        br
-                        a(href="#/place").btn.btn-lg.btn-danger.btn-place Back
+                h2 {{place.name}}
+                img()#place-controll-img
             div#cover
                 div#cover-background
                 div(ng-view)#main-view1.column-center
+
+            div
+                span()#game_resources
+                    span#game_resources_golds {{coins}}
+                    img(src="/assets/img/penguin/ic_golds.png").resource_gold_icon
             // it is here because in main-view is disabled
             // shadow screen cover the dialog as well
             div(data-backdrop="static",data-keyboard="false" )#modal-exchange.modal.fade

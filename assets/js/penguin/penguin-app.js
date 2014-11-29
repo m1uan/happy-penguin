@@ -128,6 +128,8 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 
     worldFactory.update($scope);
 
+    $scope.place = {name:'',preview:'/assets/img/orig/place/1401694785767-184379-bhmmug.jpg'}
+
     //var base = {};
     var mygame = worldFactory.game();
 
@@ -148,6 +150,40 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
     } else {
         //$location.path('/intro/1');
     }
+
+//    prepare();
+//
+//    function prepare(){
+//        var successPlace = worldFactory.getCurrentPlace();
+//
+//        if(!successPlace){
+//            // in first load, the places are loaded by WordlCtrl
+//            // the places may not loaded yet, so try later
+//            $timeout(prepare, 488);
+//        } else {
+//
+//        }
+//    }
+
+    $scope.$watch(function () { return worldFactory.getCurrentPlace(); },
+        function (successPlace) {
+            if(successPlace){
+                $scope.place = successPlace;
+                $scope.wordsLoading = false;
+                $('#place-controll-img').attr({'src':'/assets/img/orig/'+successPlace.preview});
+                $('#cover-background').css({'background-image':'url(/assets/img/orig/'+successPlace.preview+')'});
+            }
+        }
+    );
+    $scope.$watch(function () { return worldFactory.getCoins(); },
+        function (coins) {
+            $scope.coins = coins;
+        }
+    );
+
+
+
+
 
 
     $scope.voc4ulink = function(){
@@ -285,7 +321,7 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
 
 }
 
-function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, $translate, vocabularyFactory) {
+function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, $translate, vocabularyFactory,$rootScope) {
     var self = this;
     var element = $('#world-main');
     var map = null;
@@ -482,11 +518,7 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
 
         item.css({top: v.y-30, left: v.x-18});
         item.on('click', function(){
-            var place = '/place/'+currPlace.id;
 
-            $scope.$apply(function(){
-                $location.path(place);
-            })
 
 
 
@@ -511,16 +543,22 @@ function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, 
             $scope.$apply(function(){
 
 
+
+
                 worldFactory.setPlace(place);
 
                 showPenguin();
                 worldFactory.setupPlacesDistancesAndExp();
                 worldFactory.update($scope);
                 $location.path('/info');
+
+
                 //testEndGame();
                 //element.hide();
 
             })
+
+
             track("Place", {placeId: place.id});
         }
     }
@@ -873,7 +911,7 @@ function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactor
     }
 
     $scope.backToMap = function(){
-        $location.path('/world');
+        $location.path('/map');
         worldFactory.addScore({totalCoins:10});
     }
 
