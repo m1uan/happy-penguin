@@ -176,8 +176,8 @@
 
             console.log('ret before rand: ', ret);
 
-            ret.word1 = shuffle(ret.word1);
-            ret.word2 = shuffle(ret.word2);
+            ret.word1 = _shuffle(ret.word1);
+            ret.word2 = _shuffle(ret.word2);
 
             console.log('ret after rand: ', ret);
             cb(ret);
@@ -212,7 +212,7 @@
             return countEmpty;
         }
 
-        function shuffle(words){
+        function _shuffle(words){
             var ret = [];
             words.forEach(function(w){
                 ret.push(null);
@@ -423,7 +423,8 @@
             getTrainWords : getTrainWords,
             trainNext : trainNext,
             isPossibleTrain : isPossibleTrain,
-            addToTrain : __addToTrain
+            addToTrain : __addToTrain,
+            shuffle : _shuffle
            };
     });
 }).call(this);

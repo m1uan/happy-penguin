@@ -1,0 +1,37 @@
+.part0-btn-sentence {
+    width: 340px;
+    margin:4px;
+}
+
+#part0-sentence-top {
+    margin:8px;
+    color: #464646;
+    font-weight: bold;
+}
+
+#part0-btn-continue {
+    margin-top:18px;
+}
+
+#part1-drop-words-here {
+    margin-left:100px;
+    border-style: dotted;
+    border-color: darkblue;
+    border-width: 1px;
+    width: 600px;
+    height: 100px;
+}
+
+#part1-drop-words-info {
+    margin-top:40px;
+    color:darkblue;
+}
+
+.part1-drag-word {
+    float:left;
+    margin-right:8px;
+}
+
+#part1-drag-words-area {
+    margin:10px;
+}

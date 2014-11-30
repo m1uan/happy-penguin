@@ -12,7 +12,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.correctInRow = 0;
     if(DEBUG_PENGUIN){
         GAME_TIME = 50;
-        NUM_WORDS_SET = 3;
+        //NUM_WORDS_SET = 3;
         $scope.correctTotal = 0;
         $scope.correctInRowScore = [1,1,1,1,1];
         $scope.fastAnswerScore = [1,1,1];

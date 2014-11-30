@@ -1,1 +1,39 @@
-span ahoj
+link(rel='stylesheet', href='/assets/css/penguin/wordtest.css')
+// for gold resource
+link(rel='stylesheet', href='/assets/css/penguin/sentences.css')
+div(ng-show="wordsLoading").loaidng
+    div.loaidng-border
+        img(src="/assets/img/loading64.gif")
+        div(translate="please_wait").loaidng-span Loading please wait ...
+        div(translate="loading_could_be_long").loaidng-i first load could be long
+div().content-cell
+    div.top-panel#wordtest-timer.text-center
+        div(ng-hide="showResult")
+            div(ng-show="timer")
+                span(translate="bonus_coins",translate-values="{coins:bonus2}")#voc-test-bonus Bonus +5 gold coins
+                img(src="assets/img/penguin/ic_countdown.png")
+                span#voc-test-timer {{timer}}
+            span(ng-hide="timer",translate="bonus_coins",translate-values="{coins:bonus1}").voc-test-bonus Bonus +1 gold coins
+        div(ng-show="showResult")
+            span.gold_resource#total_gold
+                span {{score}}
+                img(src="/assets/img/penguin/ic_golds.png")
+
+
+    div#parts
+        div.text-center
+            h3#part0-sentence-top {{sentenceTop.word}}
+        div(ng-show="part==0")#part0.text-center
+            div(ng-repeat="sen in sentenceChoice")
+                div(ng-click="btnPart1Select($index)",id="part0-btn-select-{{$index}}").btn.btn-default.part0-btn-sentence {{sen.word}}
+        div(ng-show="part==1").text-center
+            div(ng-drop="true",ng-drop-success="part1dropSuccess($data,$event)")#part1-drop-words-here
+                div(ng-hide="dropedWords.length",translate="voc-test-drop-here")#part1-drop-words-info
+                div(ng-repeat="dropword in dropedWords")
+                    //div(ng-drop="true",ng-drop-success="part1dropSuccess($data,$event,$index)").part1-drag-space
+                    div(ng-drag="true",ng-drag-data="dropword",ng-drop="true",ng-drop-success="part1dropSuccess($data,$event,$index)").btn.btn-default.part1-drag-word {{dropword.word}}
+            div#part1-drag-words-area
+                div(ng-repeat="dragword in dragWords",ng-drag="true",ng-drag-data="dragword").btn.btn-default.part1-grag-word {{dragword.word}}
+            div.clearfix
+        div.text-center
+            div(ng-click="btnNextCall(part)",ng-show="finish",translate="btn-continue").btn.btn-default#part0-btn-continue
