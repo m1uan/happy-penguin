@@ -215,14 +215,20 @@
 
         }
 
-        function __addToTrain(word, sentence){
+        function __addToTrain(word, notUpdateWeight, sentence){
             restoreFactory();
             var founded = false;
             words.some(function(uw, idx){
                 if(uw.link == word.lid){
                     founded = true;
-                    uw.weight1 = 1;
-                    uw.weight2 = 1;
+
+                    // for example when add sentences
+                    // don't remove the train weight
+                    if(!notUpdateWeight){
+                        uw.weight1 = 1;
+                        uw.weight2 = 1;
+                    }
+
                 }
 
                 return founded;

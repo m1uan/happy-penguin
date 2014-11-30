@@ -124,6 +124,11 @@ function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, 
         linksFactory.getSentencesToLink(worldFactory.getNative(), word.link, function(sentences){
             $timeout(function(){
                 $scope.sentences = sentences;
+                sentences.forEach(function(sen){
+                    var sword = {word: sen.s, word2: sen.s2, lid: sen.l};
+                    vocabularyFactory.addToTrain(sword, true, true);
+                })
+                //$('#info-sentences').getNiceScroll().resize();
             },0)
 
 
