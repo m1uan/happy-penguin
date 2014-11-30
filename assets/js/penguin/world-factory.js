@@ -269,10 +269,37 @@
             if(self.game.placesHistory && self.game.placesHistory[place.id]){
                 place.history = self.game.placesHistory[place.id];
             } else {
-                place.history = {};
+                self.game.placesHistory[place.id] = {}
+                place.history = self.game.placesHistory[place.id];
             }
 
         }
+
+        function __generateCountOfLeftHistoryKey(place, name){
+            if(place.history.countVisit == undefined){
+                place.history.countVisit = 0;
+            }
+
+            return name + place.history.countVisit;
+        }
+
+        function _getCountOfLeftToPlaceHistory(place, name){
+            var countVocTest = __generateCountOfLeftHistoryKey(place,name);
+            return self.game.placesHistory[place.id][countVocTest] || 0;
+        }
+
+        function _putCountOfLeftToPlaceHistory(place, name, value){
+            var countVocTest = __generateCountOfLeftHistoryKey(place, name);
+            if(self.game.placesHistory[place.id][countVocTest] == undefined){
+                self.game.placesHistory[place.id][countVocTest] = value;
+            } else {
+                self.game.placesHistory[place.id][countVocTest] += value;
+            }
+
+            _store();
+        }
+
+
 
 
         function loadPlace(placeid, cb){
@@ -366,6 +393,8 @@
             ,calcLevelInfo : _calcLevelInfo
             ,getCoins : _getCoins
             ,getCurrentPlaceAsync : _getCurrentPlaceAsync
+            ,putCountOfLeftToPlaceHistory: _putCountOfLeftToPlaceHistory
+            ,getCountOfLeftToPlaceHistory : _getCountOfLeftToPlaceHistory
             };
 
     });

@@ -59,9 +59,14 @@ html(ng-app="pinguin")
 
 
             div#place-controll-line
-                a(href="#/info").btn.btn-xs.btn-default.btn-place Info
-                a(href="#/wordstest").btn.btn-xs.btn-default.btn-place Test
-                a.btn.btn-default.btn-xs.btn-place Sentences
+                a(href="#/info").btn.btn-xs.btn-default.btn-place Curriosity
+                a(href="#/wordstest").btn.btn-xs.btn-default.btn-place
+                    span.badge.badge-important {{testCount}}
+                    span Test
+
+                a.btn.btn-default.btn-xs.btn-place
+                    span.badge.badge-important {{sentenceCount}}
+                    span Sentences
                 a.btn.btn-default.btn-xs.btn-place Crosswords
 
                 a.btn.btn-default.btn-xs.btn-place Quiz

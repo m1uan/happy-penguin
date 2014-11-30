@@ -69,7 +69,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             place = p;
 
             // test if the test wasn rum so offen
-            if(getCountTestHistory() > MAX_TEST_PER_VISIT){
+            $scope.repeats = worldFactory.getCountOfLeftToPlaceHistory(place, 'voc-test');
+            if($scope.repeats < 1){
                 var mess = $translate.instant('msg-voc-test-limit-test-max', {limit:MAX_TEST_PER_VISIT});
                 alertify.alert(mess);
                 $location.path('/map')
@@ -93,34 +94,14 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
             }, 1000, $scope.timer, true)
 
-            setupCountTestHistory(1);
-            $scope.repeats = MAX_TEST_PER_VISIT - getCountTestHistory();
+            $scope.repeats -= 1;
+            worldFactory.putCountOfLeftToPlaceHistory(place, 'voc-test', $scope.repeats);
+
         })
     }
 
-    function generateCountTestHistoryKey(){
-        if(place.history.countVisit == undefined){
-            place.history.countVisit = 0;
-        }
 
-        return 'countVocTest' + place.history.countVisit;
-    }
 
-    function setupCountTestHistory(increment){
-        var countVocTest = generateCountTestHistoryKey();
-        if(place.history[countVocTest] == undefined){
-            place.history[countVocTest] = increment;
-        } else {
-            place.history[countVocTest] += increment;
-        }
-
-        worldFactory.store();
-    }
-
-    function getCountTestHistory(){
-        var countVocTest = generateCountTestHistoryKey();
-        return place.history[countVocTest] || 0;
-    }
 
     $scope.btnRepeat = function(){
         init();
@@ -503,3 +484,6 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         });
     }
 }
+
+
+
