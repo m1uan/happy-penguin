@@ -48,8 +48,8 @@ function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, 
     function unlockTestAndSentences(){
         // for next time, this is already unlocked once
         worldFactory.putCountOfLeftToPlaceHistory($scope.place,'info', 1);
-        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'voc-test', 3);
-        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'sentences', 3);
+        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'voc-test', 30);
+        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'sentences', 30);
 
         var info = $translate.instant('info-tests-unlocked');
         alertify.success(info);

@@ -3,7 +3,7 @@
     'use strict';
     var penguinGame = angular.module('milan.world.factory', ['penguin.LocalStorageService','pascalprecht.translate']);
 
-    penguinGame.factory('worldFactory', function($http, localStorageService, $translate, $sce) {
+    penguinGame.factory('worldFactory', function($http, localStorageService, $translate, $sce, $location) {
         var BASE = DEBUG_PENGUIN ? 100 : 10;
         var self = this;
         self.game = null;
@@ -297,13 +297,24 @@
             if(self.game.placesHistory[place.id][countVocTest] == undefined){
                 self.game.placesHistory[place.id][countVocTest] = value;
             } else {
-                self.game.placesHistory[place.id][countVocTest] += value;
+                self.game.placesHistory[place.id][countVocTest] = value;
             }
 
             _store();
         }
 
+        function _redirectToInfoIsTestsUnlockedWithAlert(place){
+            var unlocked = _getCountOfLeftToPlaceHistory(place, 'info');
 
+            if(!unlocked){
+                var mess = $translate.instant('places-test-still-locked');
+                alertify.alert(mess);
+                $location.path('/info');
+            }
+
+
+            return unlocked;
+        }
 
 
         function loadPlace(placeid, cb){
@@ -399,6 +410,7 @@
             ,getCurrentPlaceAsync : _getCurrentPlaceAsync
             ,putCountOfLeftToPlaceHistory: _putCountOfLeftToPlaceHistory
             ,getCountOfLeftToPlaceHistory : _getCountOfLeftToPlaceHistory
+            ,redirectToInfoIsTestsUnlockedWithAlert: _redirectToInfoIsTestsUnlockedWithAlert
             };
 
     });

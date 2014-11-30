@@ -17,11 +17,13 @@ div(ng-show="part==0&&!wordsLoading").content-cell
             div(ng-show="timer")
                 span {{timer}}
                 img(src="assets/img/penguin/ic_countdown.png")
-                span(translate1="bonus_coins",translate-values:"{coins:5}") Bonus +5 gold coins
-            span(ng-hide="timer",translate1="bonus_coins",translate-values:"{coins:1}") Bonus +1 gold coins
-        span(ng-show="showResult").gold_resource#total_gold
-            span {{score}}
-            img(src="/assets/img/penguin/ic_golds.png")
+                span(translate="bonus_coins",translate-values="{coins:5}") Bonus +5 gold coins
+            span(ng-hide="timer",translate="bonus_coins",translate-values="{coins:1}") Bonus +1 gold coins
+        div(ng-show="showResult")
+            span.gold_resource#total_gold
+                span {{score}}
+                img(src="/assets/img/penguin/ic_golds.png")
+
         //h2(translate="place_welcome",translate-values="{name:place.name}")
 
     div#word-test.container-fluid
@@ -31,7 +33,7 @@ div(ng-show="part==0&&!wordsLoading").content-cell
 
             div.col-md-6
                 div(ng-drag="true",ng-drag-data="words.user[$index]").words.words-for-drag
-                    div(ng-hide="words.user[$index]") drop here
+                    div(ng-hide="words.user[$index]",translate="voc-test-drop-here") drop here
                     div(ng-show="words.user[$index]") {{words.user[$index].word}}
 
     hr
@@ -50,157 +52,10 @@ div(ng-show="part==0&&!wordsLoading").content-cell
             div(ng-hide="showResult")
                 div(translate="btn-check",ng-click="check()").btn.btn-primary Check and coins
             div(ng-show="showResult")
-                div(ng-click="btnRepeat()").btn.btn-primary try again
+                div(ng-click="btnRepeat()",translate="btn-try-again").btn.btn-primary try again
                 div(ng-click="btnBack()",translate="btn-back").btn.btn-default
+                div(ng-click="facebook()").btn.btn-xs.btn-primary#score-fb_link
+                    img(src="/assets/img/penguin/facebook_like_icon_thumb.gif").like-xs
+                    span.like-text-xs score me
 
 
-div(ng-show="part==3&&!wordsLoading").content-cell
-    div.top-panel
-        h2(translate="place_welcome",translate-values="{name:place.name}")
-        h4(ng-show="questionType==0",translate="place_question_title")
-        h4(ng-show="questionType==1",translate="place_question_title_1")
-        h4(ng-show="questionType==2",translate="place_question_title_2")
-    div.content-body
-        div.alert.alert-danger
-            h3 {{questionText}}
-        div(ng-hide="user_answered").alert.alert-info
-
-            div
-                p(ng-show="questionType==0",translate="place_question_help")
-                p(ng-show="questionType==1",translate="place_question_help_1")
-                p(ng-show="questionType==2",translate="place_question_help_2")
-
-            blockquote
-                strong(ng-show="questionType==0",translate="place_question_example_0")
-                strong(ng-show="questionType==1",translate="place_question_example_1")
-                strong(ng-show="questionType==2",translate="place_question_example_2")
-            div
-                p(translate="place_question_help_example")
-            blockquote
-                strong {{example}}
-            footer(translate="place_question_could_be_skip")
-
-
-
-
-        div(ng-show="user_answered")
-            div(ng-show="user_answered==1")
-                p(translate="place_wrong_answer",translate-values="{answer:user_answer}").alert.alert-warning
-                h3(translate="place_possible_answers")
-                p(ng-repeat="answer in questionAnswers").alert.alert-info {{answer}}
-            div(ng-show="user_answered==2").alert.alert-success
-                p(translate="place_correct_answer",translate-values="{answer:user_answer}")
-
-
-    div.bottom-panel
-        div(ng-hide="user_answered").input-group#place-score-answer
-            input(ng-model="user_answer").form-control
-            span(ng-hide="user_answer.length < 2").input-group-btn
-                button(data-ng-disabled="user_answer.length < 2",ng-click="answer(false)",translate="btn_answer").btn.btn-primary
-            span(ng-show="user_answer.length < 2").input-group-btn
-                button(ng-click="answer(true)",translate="btn_skip").btn.btn-warning
-        div(ng-show="user_answered")
-            div.text-center
-                button(ng-click="conclusion()",translate="btn-conclusion").btn.btn-primary
-
-div(ng-show="part==4").content-cell
-    div.top-panel
-        h2(translate="place_welcome",translate-values="{name:place.name}")
-        h4(translate="title-score")
-
-    div.content-body
-        div.separe-table
-            table
-                tr
-                    td {{correctTotal}} x
-                    td(translate="score_correct")
-                    td {{correctCoins}}
-                tr
-                    td {{wrong}} x
-                    td(translate="score_wrong")
-                    td
-        div.separe-table
-            table
-                //tr
-                //    td
-                //        img(src="/assets/img/penguin/ic_swim.png").intro_resource_icon
-                //        i Math.round(correctInRow[5]/3 +  correctInRow[10]/2 +  correctInRow[15] +  correctInRow[30]*2.5 +  correctInRow[60]*5.5);
-                //
-                //    td
-                //        b {{score.swim}}
-
-                tr
-                    td {{correctInRowScore[0]}} x
-                    td(translate="score_correct_in_row",translate-values="{row:5}")
-                    td {{correctInRowCoins[0]}}
-                tr
-                    td {{correctInRowScore[1]}} x
-                    td(translate="score_correct_in_row",translate-values="{row:10}")
-                    td {{correctInRowCoins[1]}}
-                tr
-                    td {{correctInRowScore[2]}} x
-                    td(translate="score_correct_in_row",translate-values="{row:15}")
-                    td {{correctInRowCoins[2]}}
-                tr
-                    td {{correctInRowScore[3]}} x
-                    td(translate="score_correct_in_row",translate-values="{row:30}")
-                    td {{correctInRowCoins[3]}}
-                tr
-                    td {{correctInRowScore[4]}} x
-                    td(translate="score_correct_in_row",translate-values="{row:60}")
-                    td {{correctInRowCoins[4]}}
-        div.separe-table
-            table
-                //tr
-                //    td
-                //        img(src="/assets/img/penguin/ic_fly.png").intro_resource_icon
-                //        i (fastAnswer[1] + fastAnswer[2]/1.5 + fastAnswer[3]/2)
-                //    td
-                //        b {{score.fly}}
-                tr
-                    td {{fastAnswerScore[0]}} x
-                    td(translate="score_correct_fast",translate-values="{time:1}")
-
-                    td {{fastAnswerCoins[0]}}
-                tr
-                    td {{fastAnswerScore[1]}} x
-                    td(translate="score_correct_fast",translate-values="{time:2}")
-
-                    td {{fastAnswerCoins[1]}}
-                tr
-                    td {{fastAnswerScore[2]}} x
-                    td(translate="score_correct_fast",translate-values="{time:3}")
-                    td {{fastAnswerCoins[2]}}
-        div.separe-table
-            table
-                //tr
-                //    td
-                //        img(src="/assets/img/penguin/ic_exp.png").intro_resource_icon
-                //    td
-                //        b {{score.exp}}
-                tr
-                    td
-                    td(translate="score_first_time_visited")
-                    //td {{first_time_visit}}
-                    td {{first_time_visit}}
-                tr
-                    td
-                    td(translate="score_num_of_correct_answers")
-                    //td {{user_answered}}
-                    td {{user_answered}}
-                tr
-                    td
-                    td(translate="score_social_share")
-                    //td {{user_answered}}
-                    td {{facebookExtra}}
-    div.text-center#result_total_gold
-        span.gold_resource#total_gold
-            span {{score.totalCoins}}
-            img(src="/assets/img/penguin/ic_golds.png")
-
-    div.bottom-panel
-        div.text-center
-            button(ng-click="backToMap()",translate="btn_back_map").btn.btn-primary
-            button(ng-click="facebook()").btn.btn-xs.btn-primary#score-fb_link
-                img(src="/assets/img/penguin/facebook_like_icon_thumb.gif").like-xs
-                span.like-text-xs score me

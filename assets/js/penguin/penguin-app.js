@@ -170,10 +170,17 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
             if(successPlace){
                 $scope.place = successPlace;
                 $scope.wordsLoading = false;
-                $scope.testCount = worldFactory.getCountOfLeftToPlaceHistory(successPlace, 'voc-test');
+                //$scope.testCount = worldFactory.getCountOfLeftToPlaceHistory(successPlace, 'voc-test');
                 $scope.sentenceCount = worldFactory.getCountOfLeftToPlaceHistory(successPlace, 'sentence-test');
                 $('#place-controll-img').attr({'src':'/assets/img/orig/'+successPlace.preview});
                 $('#cover-background').css({'background-image':'url(/assets/img/orig/'+successPlace.preview+')'});
+
+                $scope.$watch(function () { return worldFactory.getCountOfLeftToPlaceHistory(successPlace,'voc-test'); },
+                    function (coins) {
+                        $scope.testCount = coins;
+                    }
+                );
+
             }
         }
     );

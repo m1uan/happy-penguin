@@ -67,17 +67,21 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         worldFactory.getCurrentPlaceAsync(function(p){
             place = p;
-
-            // test if the test wasn rum so offen
-            $scope.repeats = worldFactory.getCountOfLeftToPlaceHistory(place, 'voc-test');
-            if($scope.repeats < 1){
-                var mess = $translate.instant('msg-voc-test-limit-test-max', {limit:MAX_TEST_PER_VISIT});
-                alertify.alert(mess);
-                $location.path('/map')
-                return;
-            } else {
-                startTest();
+            // for case the user not yet visit a info
+            // to unlock place's test -> redirect him to info
+            if(worldFactory.redirectToInfoIsTestsUnlockedWithAlert(place)) {
+                // test if the test was not run so offten
+                $scope.repeats = worldFactory.getCountOfLeftToPlaceHistory(place, 'voc-test');
+                if($scope.repeats < 1){
+                    var mess = $translate.instant('voc-test-limit-test-max', {count:MAX_TEST_PER_VISIT});
+                    alertify.alert(mess);
+                    $location.path('/map')
+                    return;
+                } else {
+                    startTest();
+                }
             }
+
 
 
         });
@@ -155,6 +159,12 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
                 }
             }
             worldFactory.addScore({totalCoins:$scope.score});
+            // without timeout is pointed somewhere else than on the button
+            window.setTimeout(function(){
+                showPopup('score-fb', $translate);
+            }, 800);
+
+            track('voc-test-score', $scope.score);
         } else {
             $scope.allCorrect = false;
         }
@@ -213,102 +223,6 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
 
-
-
-
-    function showConclusion(){
-
-
-
-        $scope.part = 4;
-        $scope.score.walk = Math.round(($scope.correctTotal)/4);
-        $scope.correctCoins = Math.round(($scope.correctTotal)/4);
-
-        $scope.correctInRowCoins = [0,0,0,0,0];
-        $scope.correctInRowCoins[0] = Math.floor($scope.correctInRowScore[0] / 2);
-        $scope.correctInRowCoins[1] = Math.round($scope.correctInRowScore[1]);
-        $scope.correctInRowCoins[2] = Math.floor($scope.correctInRowScore[2]*3);
-        $scope.correctInRowCoins[3] = Math.floor($scope.correctInRowScore[3]*7);
-        $scope.correctInRowCoins[4] = Math.round($scope.correctInRowScore[4]*15);
-        /*$scope.score.swim = Math.round(
-            $scope.correctInRowScore[0]/3
-                +  $scope.correctInRowScore[1]/2
-                +  $scope.correctInRowScore[2]
-                +  $scope.correctInRowScore[3]*2.5
-                +  $scope.correctInRowScore[4]*5.5);*/
-
-        $scope.fastAnswerCoins = [0,0,0];
-        $scope.fastAnswerCoins[0] = Math.floor($scope.fastAnswerScore[0] *3);
-        $scope.fastAnswerCoins[1] = Math.round($scope.fastAnswerScore[1]);
-        $scope.fastAnswerCoins[2] = Math.floor($scope.fastAnswerScore[2] /3);
-
-        /*$scope.score.fly = Math.round(
-            $scope.fastAnswerScore[0] / 6
-                + $scope.fastAnswerScore[1] /5
-                + $scope.fastAnswerScore[2] /4);*/
-
-        $scope.score.exp = Math.round(Math.floor($scope.user_answered) * 2 + $scope.first_time_visit);
-
-        $scope.score.totalCoins = $scope.correctCoins + $scope.facebookExtra + $scope.user_answered * 2 + $scope.first_time_visit;
-
-
-        var stats = worldFactory.getStats();
-        stats.correct += $scope.correctTotal;
-        stats.wrong += $scope.wrong;
-        stats.walkTotal += $scope.score.walk;
-        stats.swimTotal += $scope.score.swim;
-        stats.flyTotal += $scope.score.fly;
-        stats.expTotal += $scope.score.exp;
-        stats.coinTotal += $scope.score.coin;
-        stats.user_answered += Math.floor($scope.user_answered/2);
-
-        $scope.correctInRowScore.forEach(function(cirs, idx){
-            stats.correctInRowScore[idx] += cirs;
-            //stats.correctInRowCoins[idx] += $scope.correctInRowCoins[idx];
-            $scope.score.totalCoins += $scope.correctInRowCoins[idx];
-        });
-
-        $scope.fastAnswerScore.forEach(function(fas, idx){
-            stats.fastAnswerScore[idx] += fas;
-            //stats.fastAnswerCoins[idx] += $scope.fastAnswerCoins[idx];
-            $scope.score.totalCoins += $scope.fastAnswerCoins[idx];
-        });
-
-        var mixdata = {
-            correct:$scope.correctTotal,
-            wrong:$scope.correctTotal,
-            'correctInRowScore[0]' : $scope.correctInRowScore[0],
-            'correctInRowScore[1]' : $scope.correctInRowScore[1],
-            'correctInRowScore[2]' : $scope.correctInRowScore[2],
-            'correctInRowScore[3]' : $scope.correctInRowScore[3],
-            'correctInRowScore[4]' : $scope.correctInRowScore[4],
-            'fastAnswerScore[0]' : $scope.fastAnswerScore[0],
-            'fastAnswerScore[1]' : $scope.fastAnswerScore[1],
-            'fastAnswerScore[2]' : $scope.fastAnswerScore[2],
-            'coins' : $scope.totalCoins,
-            'wordTestTime' : stats.wordTestTime,
-            travelersTotal: $scope.travelersTotal,
-            citiesTotal : $scope.citiesTotal,
-            'placesTotal': stats.placesTotal,
-            'placesUniq' : game.visited.length,
-            placeId : game.placeId,
-            lang: game.lang,
-            learn: game.learn
-        }
-
-        track("conclusion", mixdata);
-
-        // without timeout is pointed somewhere else than on the button
-        window.setTimeout(function(){
-            showPopup('score-fb', $translate);
-        },1500 );
-
-    }
-
-
-
-
-
     function showRandomBackground(){
         var img = '/assets/img/orig/place/1399279830623-27882-ldhox9.jpg'
         if($scope.place.images && $scope.place.images.length > 0){
@@ -321,8 +235,6 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
         $('#body').css("background-image", "url("+img+")");
     }
-
-
 
 
     function loadOrNext(cb){
@@ -348,135 +260,17 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         });
     }
 
-    function countCorrectInRow(){
-        var tell = null;
-
-
-        if($scope.correctInRow > 50){
-            $scope.correctInRowScore[4] += 1;
-            $scope.correctInRowScore[3] -= 1;
-            tell='50';
-        } else if($scope.correctInRow == 30){
-            $scope.correctInRowScore[3] += 1;
-            $scope.correctInRowScore[2] -= 1;
-            tell = '30';
-        } else if($scope.correctInRow == 15){
-            $scope.correctInRowScore[2] += 1;
-            $scope.correctInRowScore[1] -= 1;
-            tell = '15';
-        } else if($scope.correctInRow == 10){
-            $scope.correctInRowScore[1] += 1;
-            $scope.correctInRowScore[0] -= 1;
-            tell = '10';
-        } else if($scope.correctInRow == 5){
-            $scope.correctInRowScore[0] += 1;
-            tell = '5';
-        }
-
-        if(tell){
-            var ins = $translate.instant('correct_in_row', {correct:tell});
-            alertify.success(ins);
-        }
-    }
-
-    function countFastAnswer(){
-        var time = new Date().getTime();
-        var diff = time - lastAnswer;
-        var name = 0;
-        if(diff < 1500){
-            name = 1;
-        }else if(diff < 2000){
-            name = 2;
-        } else if(diff < 2500){
-            name = 3;
-        }
-
-        if(name){
-            $scope.fastAnswerScore[name-1] += 1;
-            var ins = $translate.instant('correct_fast', {fast:name});
-            alertify.success(ins);
-        }
-
-        lastAnswer = new Date().getTime();
-    }
-
-
-    $scope.select = function(side, word, event){
-        // button already coreclty selected
-        if(word.status == BUTTON_STATUS_CORRECT) {
-            return ;
-        }
-
-
-        // select this side to normal for case there is selected another button
-        setStatusButton(side, BUTTON_STATUS_NORMAL);
-
-        var status = BUTTON_STATUS_SELECT;
-
-        if(!word.status){
-            word.status = status;
-        }
-
-
-
-        var link1 = getLinkOfSelectedButton(0);
-        var link2 = getLinkOfSelectedButton(1);
-
-        if(link1 !=-1 && link2 !=-1){
-            if(link2 == link1){
-                status = BUTTON_STATUS_CORRECT;
-                correctAnswer();
-            } else {
-                status = BUTTON_STATUS_WRONG;
-                $scope.wrong+=1;
-                $scope.correctInRow=0;
-
-            }
-            // select also second side of buttons with this status
-            setStatusButton(side == 0 ? 1 : 0, status);
-        }
-
-        console.log(link1,link2,status);
-
-
-        word.status = status;
-
-
-        updateButtons();
-
-        if(status == BUTTON_STATUS_CORRECT && $scope.correct == $scope.words.word1.length){
-            loadOrNext(function(){
-                showRandomBackground();
-            });
-
-        }
-    }
-
-
-
-
-
-
-    $scope.conclusion = function(){
-        showConclusion();
-
-    }
-
-    $scope.backToMap = function(){
-        $location.path('/map');
-        worldFactory.addScore($scope.score);
-    }
 
     $scope.facebook = function(){
         var descData =  {
             name:$scope.place.name,
-            coins : $scope.totalCoins};
+            coins : $scope.score};
 
 
         facebook($translate, 'fb_share_score', descData, function(e){
             $scope.apply(function(){
                 $scope.facebookExtra = 25;
-                showConclusion();
+                $scope.score += 25;
             })
             var infostr = $translate.instant('score_fb_share_info', {golds: $scope.facebookExtra});
             alertify.success(infostr);
