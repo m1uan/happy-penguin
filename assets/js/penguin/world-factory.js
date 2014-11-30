@@ -269,6 +269,10 @@
             if(self.game.placesHistory && self.game.placesHistory[place.id]){
                 place.history = self.game.placesHistory[place.id];
             } else {
+                // for case
+                if(!self.game.placesHistory){
+                    self.game.placesHistory = {}
+                }
                 self.game.placesHistory[place.id] = {}
                 place.history = self.game.placesHistory[place.id];
             }

@@ -362,11 +362,21 @@
 }
 
 .info-words-translatable:hover {
-    background-color: black;
-    color:#ffff00;
+    background-color: #808080;
+    color:lightyellow;
     margin:0px 0px 0px 0px;
     border: 2px solid;
     border-radius: 5px;
+}
+
+.info-price {
+    font-weight: bold;
+    margin-right:4px;
+    font-size:10px;
+}
+
+#unlocking-info{
+    color:#add8e6;
 }
 
 

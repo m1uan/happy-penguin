@@ -1,35 +1,59 @@
 function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory, $location){
 
+    $scope.unlockCount = 5;
+    worldFactory.getCurrentPlaceAsync(function(place){
+        $scope.place = place;
 
-    $scope.place =  worldFactory.getCurrentPlace();
+        // set leftWords if place already not unlocked test and sentences in this visit
+        var unlocked = worldFactory.getCountOfLeftToPlaceHistory(place,'info')
+        $scope.leftWords = unlocked ? 0 : $scope.unlockCount;
+
+        worldFactory.loadPlace($scope.place.id, function(plc){
+
+            // this place have no info
+            if(!plc.info){
+                // maybe in this place is not
+                unlockTestAndSentences();
+
+                $location.path('/map');
+                console.error('no info here!')
+                return;
+            }
+
+
+
+            var game = worldFactory.game();
+            $scope.game = game;
+            $scope.place = plc;
+            $scope.price = place.history.countVisit || 1;
+
+            // sometime loadPlace is already loaded
+            // and need to be apply
+            $timeout(function(){
+                setupInfo();
+            }, 0)
+
+        })
+    });
 
 
     $scope.wordsLoading = true;
     $scope.sentences = [{s:'ahoj',s2:'cau'}]
 
-    worldFactory.loadPlace($scope.place.id, function(plc){
 
-        // this place have no info
-        if(!plc.info){
-            $location.path('/map');
-            console.error('no info here!')
-            return;
-        }
-
-        var game = worldFactory.game();
-        $scope.game = game;
-        $scope.place = plc;
-
-        // sometime loadPlace is already loaded
-        // and need to be apply
-        $timeout(function(){
-            setupInfo();
-        }, 0)
-
-    })
 
     var Patt = new RegExp('\[[0-9]*\]', 'gm');
     var REGEXP = /\[([1-9]*)\]/;
+
+    function unlockTestAndSentences(){
+        // for next time, this is already unlocked once
+        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'info', 1);
+        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'voc-test', 3);
+        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'sentences', 3);
+
+        var info = $translate.instant('info-tests-unlocked');
+        alertify.success(info);
+    }
 
     function setupInfo(){
 
@@ -107,7 +131,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, 
         }
 
         // no more coins
-        if($scope.game.coins < 1){
+        if($scope.game.coins < $scope.price){
             var text = $translate.instant('not-enought-coins');
             alertify.alert(text);
             return;
@@ -117,11 +141,29 @@ function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, 
             vocabularyFactory.addToTrain(word.possible[0]);
         }
 
-        $scope.game.coins -= 1;
+        $scope.game.coins -= $scope.price;
+
+        // have to be 1 before decrease
+        // because if we compring 0 we don't know
+        // if leftWords was 0 from initial (already unlocked)
+        if($scope.leftWords == 1){
+            unlockTestAndSentences();
+        }
+        $scope.leftWords -= 1;
+
         worldFactory.store();
 
         word.translated = true;
     }
 
+
+    $scope.btnBack = function(){
+        if($scope.leftWords > 0){
+            var info = $translate.instant('info-not-enought-words-for-unlock', {count:$scope.unlockCount});
+            alertify.alert(info);
+        } else {
+            $location.path('/map');
+        }
+    }
 
 }

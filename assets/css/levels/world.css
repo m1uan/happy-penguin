@@ -62,10 +62,10 @@
 }
 
 .gold_resource {
-    color:gold;
+    color:lightyellow;
 
-    background-color: black;
-    border-color:black;
+    background-color: #808080;
+    border-color: #808080;
     -moz-border-radius: 3px;
     -webkit-border-radius:3px;
     border-radius: 3px;
