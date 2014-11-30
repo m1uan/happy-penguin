@@ -866,7 +866,7 @@ function TrainCtrl($scope, worldFactory, $location, $translate, vocabularyFactor
     if(!vocabularyFactory.isPossibleTrain()){
         // is not enought words for practising
         // show alert message
-        $location.path('/world');
+        $location.path('/map');
         var noEnoughtWords = $translate.instant('train-no-enought-words');
         alertify.alert(noEnoughtWords);
     } else {

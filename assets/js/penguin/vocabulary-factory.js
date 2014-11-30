@@ -262,8 +262,8 @@
             testWordsArray.sort(function(w1,w2){
                 // detect which weight from which word is taken
                 // if is weightX is not defined setup to 0
-                var ww1 = (w1.testSide == 0 ? w1.word.weight1 : w1.word.weight2);
-                var ww2 = (w2.testSide == 0 ? w2.word.weight1 : w2.word.weight2);
+                var ww1 = (w1.testSide == 0 ? w1.weight1 : w1.weight2);
+                var ww2 = (w2.testSide == 0 ? w2.weight1 : w2.weight2);
 
                 // sort ascending (http://www.w3schools.com/jsref/jsref_sort.asp)
                 return ww1 - ww2;
