@@ -107,7 +107,17 @@
             return word;
         }
 
-        function getNextWords(lesson, sentencesOnly){
+        /**
+         * Get set of testing words or sentences
+         * @param sentencesOnly {Boolean} - just words or just sentences (switcher)
+         * @param setSize {Number} - num of words in one set
+         * @returns {*}
+         */
+        function getNextWords(setSize, sentencesOnly){
+            if(!setSize){
+                setSize = MAX_IN_SET;
+            }
+
             if(!words || words.length < 1){
                 restoreFactory();
                 if(!words || words.length < 1){
@@ -120,7 +130,7 @@
             do{
                 var w = getFirstWordOrSentenceFromUsedWords(sentencesOnly);
                 rw.push(w);
-            } while(rw.length < MAX_IN_SET)
+            } while(rw.length < setSize)
 
             // store to storage for let know
             // usedWord, and words are changed
@@ -129,12 +139,21 @@
             return rw;
         }
 
-        function getVocabularyRandomSet(lesson, learn, native, cb, sentence){
+        function getVocabularyRandomSet(setSize, sentenceOnly, cb){
+            if(sentenceOnly == undefined){
+                cb = setSize;
+            }
+
+            if(cb == undefined){
+                cb = sentenceOnly;
+                sentenceOnly = false;
+            }
+
             var ret = {};
             ret.word1 = [];
             ret.word2 = [];
 
-            var s1 = getNextWords(lesson, sentence);
+            var s1 = getNextWords(setSize, sentenceOnly);
             if(!s1){
                 cb(ret);
                 return;

@@ -1,13 +1,6 @@
 function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval, $location, $translate){
 
-    var BUTTON_STATUS_NORMAL = 0;
-    var BUTTON_STATUS_SELECT = 1;
-    var BUTTON_STATUS_CORRECT = 2;
-    var BUTTON_STATUS_WRONG = 3;
-
-
-    var TRANSLATE_TIME_MAX = 30;
-
+    var NUM_WORDS_SET = 8;
     var GAME_TIME = 20;
     var MAX_TEST_PER_VISIT = 5;
 
@@ -19,6 +12,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.correctInRow = 0;
     if(DEBUG_PENGUIN){
         GAME_TIME = 50;
+        NUM_WORDS_SET = 3;
         $scope.correctTotal = 0;
         $scope.correctInRowScore = [1,1,1,1,1];
         $scope.fastAnswerScore = [1,1,1];
@@ -140,7 +134,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             var color = 'red';
             if(word1[idx].link == w.link){
                 numOfCorrect += 1;
-                color='green';
+                color='lightgreen';
             } else {
 
             }
@@ -148,7 +142,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             $('#word-row-'+idx).css('background-color',color);
         })
 
-        if(numOfCorrect == 8){
+        if(numOfCorrect == NUM_WORDS_SET){
             $scope.showResult = true;
             $scope.score = numOfCorrect;
             if($scope.allCorrect){
@@ -240,7 +234,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     function loadOrNext(cb){
         $scope.wordsLoading = true;
         // get words from game setting - not for current user switch :-)
-        vocabularyFactory.getVocabularyRandomSet($scope.levelInfo.lesson, worldFactory.getLearn(), worldFactory.getNative(), function(words){
+        vocabularyFactory.getVocabularyRandomSet(NUM_WORDS_SET, function(words){
             $scope.correct = 0;
             $scope.words = words;
             $scope.words.user = [];
