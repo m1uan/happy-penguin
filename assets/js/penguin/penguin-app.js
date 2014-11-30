@@ -44,6 +44,10 @@ var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','pe
             controller: PlaceCtrl
         });
 
+        $routeProvider.when('/sentences', {
+            templateUrl: '/templates/penguin/sentences',
+            controller: SentencesCtrl
+        });
 
         $routeProvider.when('/place/:placeid/wordtest', {
             templateUrl: '/templates/penguin/place',

@@ -162,7 +162,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             // without timeout is pointed somewhere else than on the button
             window.setTimeout(function(){
                 showPopup('score-fb', $translate);
-            }, 800);
+            }, 500);
 
             track('voc-test-score', $scope.score);
         } else {
@@ -271,6 +271,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             $scope.apply(function(){
                 $scope.facebookExtra = 25;
                 $scope.score += 25;
+
+                worldFactory.addScore({totalCoins:$scope.facebookExtra});
             })
             var infostr = $translate.instant('score_fb_share_info', {golds: $scope.facebookExtra});
             alertify.success(infostr);

@@ -45,6 +45,15 @@
 
 }
 
+.voc-test-bonus {
+    color:gold;
+}
+
+
+#voc-test-bonus {
+    margin-right:15px;
+}
+
 
 #conection-canvas {
     width:1000px;

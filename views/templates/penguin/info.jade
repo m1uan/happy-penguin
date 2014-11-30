@@ -7,9 +7,12 @@ div(ng-show="wordsLoading").loaidng
 div(ng-hide="wordsLoading").top-panel
     div#info-top-panel
         div#info-center-panel
-            h2(ng-show="leftWords>0",translate="info-words-to-unlock",translate-values="{left:leftWords}")
-            h2(ng-hide="leftWords>0",translate="info-words-unlocked")
-            div.text-center#unlocking-info(translate="info-translate-words-to-unlock-tests",translate-values="{count:unlockCount}")
+            div(ng-show="leftWords>0")
+                h2(translate="info-words-to-unlock",translate-values="{left:leftWords}")
+                div.text-center#unlocking-info(translate="info-translate-words-to-unlock-tests",translate-values="{count:unlockCount}")
+            div(ng-hide="leftWords>0")
+                h2(translate="info-words-unlocked")
+
 div.content-cell
 
     div(ng-hide="wordsLoading").intro-content

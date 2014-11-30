@@ -59,18 +59,21 @@ html(ng-app="pinguin")
 
 
             div#place-controll-line
-                a(href="#/info").btn.btn-xs.btn-default.btn-place Curriosity
+                a(href="#/info",translate="menu-info").btn.btn-xs.btn-default.btn-place Curriosity
                 a(href="#/wordstest").btn.btn-xs.btn-default.btn-place
-                    span.badge.badge-important {{testCount}}
-                    span Test
+                    span.badge.badge-important.menu-badge {{testCount}}
+                    span(translate="menu-test") Test
 
-                a.btn.btn-default.btn-xs.btn-place
-                    span.badge.badge-important {{sentenceCount}}
-                    span Sentences
-                a.btn.btn-default.btn-xs.btn-place Crosswords
 
-                a.btn.btn-default.btn-xs.btn-place Quiz
-                a(href="#/train").btn.btn-default.btn-xs.btn-place Memorizing
+
+                a(href="#/sentences").btn.btn-default.btn-xs.btn-place
+                    span.badge.badge-important.menu-badge {{sentenceCount}}
+                    span(translate="menu-sentences") Sentences
+
+                a(translate="menu-crosswords").btn.btn-default.btn-xs.btn-place Crosswords
+
+                a(translate="menu-quiz").btn.btn-default.btn-xs.btn-place Quiz
+                a(href="#/train",translate="menu-train").btn.btn-default.btn-xs.btn-place Memorizing
             div()#place-controll
                 //div(ng-show="wordsLoading").loaidng
                     div.loaidng-border
@@ -171,6 +174,7 @@ html(ng-app="pinguin")
     script(src="/assets/js/penguin/place-factory.js")
     script(src="/assets/js/penguin/word-test.js")
     script(src="/assets/js/penguin/info-ctrl.js")
+    script(src="/assets/js/penguin/sentences-ctrl.js")
     script(src="/assets/js/penguin/place-ctrl.js")
     script(src="/assets/js/levels/links-factory.js")
     script(src="/assets/js/penguin/penguin-app.js")
