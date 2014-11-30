@@ -382,7 +382,7 @@
 
 #introduction {
     height:350px;
-    overflow-y: auto;
+    overflow-y: inherit;
     overflow-x: hidden;
 
 }
@@ -425,7 +425,9 @@
 }
 
 #info-sentences {
-    height: 100px;
+    padding: 4px;
+    margin-top:20px;
+    height: 68px;
 }
 
 .intro-content {

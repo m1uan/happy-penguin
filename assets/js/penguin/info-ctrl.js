@@ -1,5 +1,6 @@
 function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory, $location){
 
+
     $scope.unlockCount = 5;
     worldFactory.getCurrentPlaceAsync(function(place){
         $scope.place = place;
@@ -38,7 +39,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, 
 
 
     $scope.wordsLoading = true;
-    $scope.sentences = [{s:'ahoj',s2:'cau'}]
+    $scope.sentences = [{s:'ahoj',s2:'cau'},{s:'ahoj',s2:'cau'},{s:'ahoj',s2:'cau'},{s:'ahoj',s2:'cau'},{s:'ahoj',s2:'cau'},{s:'ahoj',s2:'cau'}]
 
 
 
@@ -84,7 +85,11 @@ function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, 
 
         linksFactory.get(worldFactory.getNative(), allWords, function(){
             $scope.wordsLoading = false;
+            $('#introduction').niceScroll();
+            $('#info-sentences').niceScroll();
         }, worldFactory.getLearn());
+
+
     }
 
     function getWordsFromBlock(block){

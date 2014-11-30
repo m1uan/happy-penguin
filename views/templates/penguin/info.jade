@@ -38,11 +38,13 @@ div.content-cell
                 hr
             div(ng-show="place.source").text-center
                 a(href="{{place.source}}",target="_blank") {{place.source}}
-        div#info-sentences
-            hr
+        div#info-sentences.alert-info
+
             div(ng-show="sentences")
-                div(ng-repeat="sentence in sentences")
-                    span {{sentence.s}} {{sentence.s2}}
+                div(ng-repeat="sentence in sentences").container
+                    div.row
+                        div.col-md-6 {{sentence.s}}
+                        div.col-md-6 {{sentence.s2}}
 
     div.bottom-panel
 
