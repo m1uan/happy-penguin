@@ -1,3 +1,45 @@
+#word-test {
+    /* top, right, bottom, left */
+    margin:5px 10px 0px 10px;
+}
+
+#words-selector{
+}
+
+.words-row{
+    padding:0px;
+    margin:3px;
+}
+
+.words{
+    width:373px;
+    padding:8px;
+    text-align: center;
+}
+
+.words-for-drag{
+    cursor:pointer;
+}
+
+.words-drop-area {
+
+    border-style: dotted;
+    border-color: blue;
+    border-width: 1px;
+}
+
+.btn-word {
+    width:100px;
+    text-align: center;
+    border-style: solid;
+    border-color: #808080;
+    border-width: 1px;
+    padding:5px;
+    margin:5px;
+    cursor:pointer;
+    float:left
+}
+
 .wordtest {
     padding:10px;
 
@@ -11,9 +53,9 @@
     background-color: #e0f2be;
 }
 
-.btn-word {
-    width:270px;
-    margin:5px;
+#info-repeats {
+    margin:10px;
+    padding:4px;
 }
 
 #introduction {
@@ -64,17 +106,9 @@ td b {
     border-bottom-style: solid;
 }
 
-table {
-    width:100%;
-    padding:10px;
 
-}
 
-#word-test {
-    /* top, right, bottom, left */
-    margin:50px 10px 0px 10px;
-    width: 100%;
-}
+
 
 .wordtest-score {
     position: relative;

@@ -8,48 +8,51 @@ div(ng-show="wordsLoading").loaidng
         div(translate="please_wait").loaidng-span Loading please wait ...
         div(translate="loading_could_be_long").loaidng-i first load could be long
 
-div(ng-show="part==0&&!wordsLoading").content-cell
-    div.top-panel
-        h2(translate="place_welcome",translate-values="{name:place.name}")
-    div.content-body
-        div.alert.alert-info
-            div(translate="place_info_help")
 
-        div#introduction
-            div(ng-bind-html="place.info")
-            div(ng-show="place.info_native")
-                div(ng-hide="showTranslate").text-center
-                    button(ng-click="btnShowTranslate()").btn.btn-primary {{buttonTranslate}}
-                div(ng-show="showTranslate")
-                    hr
-                    div(ng-bind-html="place.info_native")
+
+
+div(ng-show="part==0&&!wordsLoading").content-cell
+    div.top-panel#wordtest-timer.text-center
+        div(ng-hide="showResult")
+            div(ng-show="timer")
+                span {{timer}}
+                img(src="assets/img/penguin/ic_countdown.png")
+                span(translate1="bonus_coins",translate-values:"{coins:5}") Bonus +5 gold coins
+            span(ng-hide="timer",translate1="bonus_coins",translate-values:"{coins:1}") Bonus +1 gold coins
+        span(ng-show="showResult").gold_resource#total_gold
+            span {{score}}
+            img(src="/assets/img/penguin/ic_golds.png")
+        //h2(translate="place_welcome",translate-values="{name:place.name}")
+
+    div#word-test.container-fluid
+        div(ng-repeat="w in words.word1",id="word-row-{{$index}}",ng-drop="true",ng-drop-success="onDropSuccess($index,$data,$event)").row.words-row.words-drop-area
+            div.col-md-6
+                div.words {{w.word}}
+
+            div.col-md-6
+                div(ng-drag="true",ng-drag-data="words.user[$index]").words.words-for-drag
+                    div(ng-hide="words.user[$index]") drop here
+                    div(ng-show="words.user[$index]") {{words.user[$index].word}}
+
+    hr
+    div(ng-hide="showResult")#words-selector
+        div(ng-repeat="w in words.word2",ng-drag="true",ng-drag-data="w").btn-word {{w.word}}
+    div.clearfix
+    div(ng-show="showResult")
+        div(translate="voc-test-still-have",translate-values:"{repeats:repeats}").alert-info#info-repeats
+        div.text-center#result_total_gold
+
+
 
 
     div.bottom-panel
         div.text-center
-            button(ng-click="visit()",translate="explore").btn.btn-primary#btn_explore Explore
+            div(ng-hide="showResult")
+                div(translate="btn-check",ng-click="check()").btn.btn-primary Check and coins
+            div(ng-show="showResult")
+                div(ng-click="btnRepeat()").btn.btn-primary try again
+                div(ng-click="btnBack()",translate="btn-back").btn.btn-default
 
-
-div(ng-show="part==1&&!wordsLoading").content-cell
-    div.top-panel
-        h2(translate="place_welcome",translate-values="{name:place.name}")
-    div.row#word-test
-        div.col-md-5
-            div(ng-repeat="w in words.word1")
-                span.hide {{w.link}}
-                span(id="testctn_0 _{{$index}}")
-                    span(id="testbtn_0_{{$index}}",ng-click="select(0,w, $event)").btn.btn-default.btn-word {{w.word}}
-        div.col-md-2
-
-        div.col-md-5
-            div(ng-repeat="w in words.word2")
-                span(id="testctn_1_{{$index}}")
-                    span(id="testbtn_1_{{$index}}",ng-click="select(1,w, $event)").btn.btn-default.btn-word {{w.word}}
-                span.hide {{w.link}}
-    div.bottom-panel#wordtest-timer
-        div.text-center
-            img(src="assets/img/penguin/ic_countdown.png")
-            span {{timer}}
 
 div(ng-show="part==3&&!wordsLoading").content-cell
     div.top-panel

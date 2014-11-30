@@ -234,6 +234,12 @@
 
         }
 
+        function _getCurrentPlaceAsync(cb){
+            loadPlaces(function(){
+                cb(getCurrentPlace());
+            })
+        }
+
         function setupPlacesDistancesAndExp(){
             var gamePlace = getCurrentPlace();
 
@@ -359,6 +365,7 @@
             ,getStats : function(){ return _game().stats; }
             ,calcLevelInfo : _calcLevelInfo
             ,getCoins : _getCoins
+            ,getCurrentPlaceAsync : _getCurrentPlaceAsync
             };
 
     });

@@ -8,7 +8,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     var TRANSLATE_TIME_MAX = 30;
 
-    var GAME_TIME = 90;
+    var GAME_TIME = 20;
+    var MAX_TEST_PER_VISIT = 5;
 
     $scope.correct = 100;
     $scope.user_answer = '';
@@ -17,7 +18,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     $scope.correctInRow = 0;
     if(DEBUG_PENGUIN){
-        GAME_TIME = 40;
+        GAME_TIME = 50;
         $scope.correctTotal = 0;
         $scope.correctInRowScore = [1,1,1,1,1];
         $scope.fastAnswerScore = [1,1,1];
@@ -49,126 +50,190 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         exp : 0
     }
 
-
-    var placeid = worldFactory.getCurrentPlace().id;
-
-    $scope.part = 0;
-
     $scope.wordsLoading = true;
-    worldFactory.loadPlace(placeid, function(place){
-        $scope.place = place;
 
-        $scope.levelInfo = worldFactory.calcLevelInfo();
-        //startVocabularyTest();
-        //showIntroduction();
-        //showConclusion();
-        if(DEBUG_PENGUIN){
-            showIntroductionOrStartVocabularyTest();
-            //showIntroduction();
-            //startVocabularyTest();
-            //showIntroduction();
-            //showConclusion();
-            //showQuestion();
-        } else {
-            // **** DONT CHANGE HERE ****
-            showIntroductionOrStartVocabularyTest();
-            // **************************
-        }
-        $scope.wordsLoading = false;
-
-    });
+    var bonusInterval = null;
 
 
+    init();
+    var place;
 
-    function loadExamplesForQuestion(type){
-
-        // examples for question
-        requestGET($http, '/admin/translates/get/'+game.learn+'/11/?group=1002&type=api&fields=key,data', function(data){
-            var lookKey = 'example_answer_' + type;
-            data.trans.some(function(trans){
-                if(trans.key == lookKey){
-                    $scope.example = trans.data;
-                    return true;
-                }
-            });
-
-        });
-    }
-
-    /**
-     * have to be call after place loaded
-     */
-    function showQuestion(){
-
-        $scope.part = 3;
-
-        var haveAtleastOneQuestionWithAnswer = $scope.place.questions.some(function(q){
-            // could happen the question is null, because is not translated to player-native-language
-            return q && q.question && q.answers;
-        });
-
-        if(haveAtleastOneQuestionWithAnswer){
-            do {
-                var pos = worldFactory.getRandomNumber('question_place_'+placeid, $scope.place.questions.length);
-                var answers = $scope.place.questions[pos].answers;
-
-                // in some languages can answer missing
-                if(answers){
-                    $scope.questionText = $scope.place.questions[pos].question;
-                    $scope.questionAnswers = answers.split(';');
-                    $scope.questionType = $scope.place.questions[pos].type;
-
-                }
-                // could happend the quesiton is not translanted
-                // like above (because is not translated to player-native-language)
-                // generate random question till you reach the question
-                // with question-text and questionAnswers
-            } while(!$scope.questionText || !$scope.questionAnswers);
-
-            loadExamplesForQuestion($scope.questionType);
-        } else {
-            showConclusion();
-        }
-
-        showRandomBackground();
-    }
-
-    function showIntroductionOrStartVocabularyTest(){
-        startVocabularyTest();
-    }
-
-    function showIntroduction(){
+    function init(){
         $scope.part = 0;
-        $scope.translate_timer = TRANSLATE_TIME_MAX;
-        $scope.showTranslate = false;
-        $scope.buttonTranslateBase = $translate.instant('btn-info-translate');
-        generateButtonName();
-        //$scope.buttonTranslate
-        $interval(function(){
+        $scope.allCorrect = true;
+        $scope.showResult = false;
+        $scope.score = 0;
+        $scope.timer = GAME_TIME;
 
-            $scope.translate_timer = $scope.translate_timer -1;
-            generateButtonName();
+        worldFactory.getCurrentPlaceAsync(function(p){
+            place = p;
 
-        }, 1000, 30, true);
+            // test if the test wasn rum so offen
+            if(getCountTestHistory() > MAX_TEST_PER_VISIT){
+                var mess = $translate.instant('msg-voc-test-limit-test-max', {limit:MAX_TEST_PER_VISIT});
+                alertify.alert(mess);
+                $location.path('/map')
+                return;
+            } else {
+                startTest();
+            }
 
-        showRandomBackground();
+
+        });
+
 
     }
 
-    function generateButtonName(){
-        $scope.buttonTranslate = $scope.buttonTranslateBase;
-        if($scope.translate_timer != 0){
-            $scope.buttonTranslate = $scope.buttonTranslate + ' (' + $scope.translate_timer + ')';
+    function startTest(){
+        var placeid = place.id;
+
+        loadOrNext(function(){
+            bonusInterval = $interval(function(){
+                $scope.timer -= 1;
+
+            }, 1000, $scope.timer, true)
+
+            setupCountTestHistory(1);
+            $scope.repeats = MAX_TEST_PER_VISIT - getCountTestHistory();
+        })
+    }
+
+    function generateCountTestHistoryKey(){
+        if(place.history.countVisit == undefined){
+            place.history.countVisit = 0;
         }
+
+        return 'countVocTest' + place.history.countVisit;
     }
 
-    $scope.btnShowTranslate = function(){
-        if($scope.translate_timer > 0){
-            alertify.error($translate.instant('wait-for-translate-info',{time:$scope.translate_timer}));
+    function setupCountTestHistory(increment){
+        var countVocTest = generateCountTestHistoryKey();
+        if(place.history[countVocTest] == undefined){
+            place.history[countVocTest] = increment;
         } else {
-            $scope.showTranslate = true;
+            place.history[countVocTest] += increment;
+        }
+
+        worldFactory.store();
+    }
+
+    function getCountTestHistory(){
+        var countVocTest = generateCountTestHistoryKey();
+        return place.history[countVocTest] || 0;
+    }
+
+    $scope.btnRepeat = function(){
+        init();
+    }
+
+    $scope.btnBack = function(){
+        $location.path('/map');
+    }
+
+    $scope.check = function(){
+        if(bonusInterval && angular.isDefined(bonusInterval)){
+            $interval.cancel(bonusInterval);
+            bonusInterval = null;
+        }
+
+        var user = $scope.words.user;
+        var word1 = $scope.words.word1;
+
+        var someMissing = user.some(function(w,idx){
+            return w == null;
+        });
+
+        if(someMissing){
+            var text = $translate.instant('msg-voctest-complete-all');
+            alertify.error(text);
+            return;
+        }
+
+
+        var numOfCorrect = 0;
+        user.forEach(function(w,idx){
+            var color = 'red';
+            if(word1[idx].link == w.link){
+                numOfCorrect += 1;
+                color='green';
+            } else {
+
+            }
+
+            $('#word-row-'+idx).css('background-color',color);
+        })
+
+        if(numOfCorrect == 8){
+            $scope.showResult = true;
+            $scope.score = numOfCorrect;
+            if($scope.allCorrect){
+                if($scope.timer > 0){
+                    $scope.score += 10;
+                } else {
+                    $scope.score += 5;
+                }
+            }
+            worldFactory.addScore({totalCoins:$scope.score});
+        } else {
+            $scope.allCorrect = false;
         }
     }
+
+    $scope.onDropSuccess = function(index, data,event){
+        console.log(index,data,event);
+
+        var si = -1;
+        var word2 = $scope.words.word2;
+        word2.some(function(w,idx){
+            if(w.link == data.link){
+                si = idx;
+                return true;
+            }
+        })
+
+        if(si> -1){
+            word2.splice(si, 1);
+        }
+
+        // is comming from another user
+        // basicaly user swiping between two items
+        var swipedIdx = -1;
+        $scope.words.user.some(function(w, idx){
+            if(w && w.link == data.link){
+                swipedIdx = idx;
+                return true;
+            }
+        });
+
+        if(swipedIdx > -1){
+            $scope.words.user[swipedIdx] = $scope.words.user[index];
+            $scope.words.user[index] = null;
+
+            // here was before orange bat after the user
+            // put htis element here is again empty
+            if(!$scope.words.user[swipedIdx]){
+                $('#word-row-'+swipedIdx).css('background-color','inherit');
+            } else {
+                // also put orange there because after the check row could be red
+                $('#word-row-'+swipedIdx).css('background-color','orange');
+            }
+        }
+
+        // is already something in list
+        // add back to selector
+        if($scope.words.user[index]){
+            word2.push($scope.words.user[index]);
+        }
+
+        $scope.words.user[index] = data;
+
+        $('#word-row-'+index).css('background-color','orange');
+
+    }
+
+
+
+
 
     function showConclusion(){
 
@@ -259,22 +324,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
     }
 
-    function startVocabularyTest(){
-        $scope.part = 1;
-        loadOrNext(function(){
-            lastAnswer = moment();
-            $interval(function(){
-                $scope.timer -= 1;
-                worldFactory.getStats().wordTestTime+=1;
-                if($scope.timer == 0){
-                    showQuestion();
-                }
 
-            }, 1000, GAME_TIME);
-        });
-
-
-    }
 
 
 
@@ -300,8 +350,13 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         vocabularyFactory.getVocabularyRandomSet($scope.levelInfo.lesson, worldFactory.getLearn(), worldFactory.getNative(), function(words){
             $scope.correct = 0;
             $scope.words = words;
+            $scope.words.user = [];
+            $scope.words.word1.forEach(function(w){
+                $scope.words.user.push(null);
+            })
+
             console.log(words.word1)
-            updateButtons();
+            //updateButtons();
 
             if(cb){
                 cb();
@@ -364,15 +419,6 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         lastAnswer = new Date().getTime();
     }
 
-    function correctAnswer(){
-        $scope.correctTotal+=1;
-        $scope.correct+=1;
-        $scope.correctInRow+=1;
-        countFastAnswer();
-        countCorrectInRow();
-
-
-    }
 
     $scope.select = function(side, word, event){
         // button already coreclty selected
@@ -426,111 +472,9 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
 
-    function updateButtons(){
-        _updateButtons(0);
-        _updateButtons(1);
-    }
-
-    function _updateButtons(side){
-        var words = side == 0 ? $scope.words.word1 : $scope.words.word2;
-        words.forEach(function(w,idx){
-            var id = '#testbtn_'+side+'_' + idx;
-            var btn = $(id);
-            btn.removeClass('btn-default');
-            btn.removeClass('btn-primary');
-            btn.removeClass('btn-success');
-            btn.removeClass('btn-warning');
-
-            if(w.status == BUTTON_STATUS_SELECT){
-                btn.addClass('btn-primary');
-            } else if(w.status == BUTTON_STATUS_CORRECT){
-                btn.addClass('btn-success');
-            } else if(w.status == BUTTON_STATUS_WRONG){
-                btn.addClass('btn-warning');
-            } else {
-                btn.addClass('btn-default');
-            }
-
-
-        })
-    }
-
-
-    function setStatusButton(side, status){
-        var words = side == 0 ? $scope.words.word1 : $scope.words.word2;
-        words.some(function(w,idx){
-            if(w.status == BUTTON_STATUS_SELECT || w.status == BUTTON_STATUS_WRONG){
-                w.status = status;
-                return true;
-            }
-        });
-    };
-
-
-    function getLinkOfSelectedButton(side){
-        var words = side == 0 ? $scope.words.word1 : $scope.words.word2;
-        var link = -1;
-        words.some(function(w,idx){
-            if(w.status == BUTTON_STATUS_SELECT || w.status == BUTTON_STATUS_WRONG){
-                link = w.link;
-                return true;
-            }
-        });
-
-        return link;
-    };
-
-
-    $scope.answer = function(skip){
-
-        if(!skip){
-            if(!$scope.user_answer){
-                return ;
-            }
-
-            // have to be 2 or 1
-            // because 0 - mean the user didn't answer yet
-            // any other mean show the area with naswered text
-            $scope.user_answered = $scope.questionAnswers.some(function(ans){
-                return ans == $scope.user_answer;
-            }) ? 2 : 1;
-
-
-            var game = worldFactory.game();
-            var mixdata = {
-                placeId : game.placeId,
-                lang: game.lang,
-                learn: game.learn,
-                user_answered: $scope.user_answered,
-                user_answer : $scope.user_answer,
-                questionAnswers : $scope.questionAnswers,
-                questionText : $scope.questionText
-            }
-
-
-            track("answer", mixdata);
-
-        } else {
-            // user press button skip
-            $scope.user_answered = 1;
-
-            var game = worldFactory.game();
-            var mixdata = {
-                placeId : game.placeId,
-                lang: game.lang,
-                learn: game.learn,
-                questionText : $scope.questionText
-            }
-
-
-            track("answer_skip", mixdata);
-            showConclusion();
-        }
 
 
 
-
-    }
 
     $scope.conclusion = function(){
         showConclusion();
@@ -538,7 +482,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     }
 
     $scope.backToMap = function(){
-        $location.path('/world');
+        $location.path('/map');
         worldFactory.addScore($scope.score);
     }
 
