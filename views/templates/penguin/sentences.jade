@@ -23,10 +23,12 @@ div().content-cell
     div#parts
         div.text-center
             h3#part0-sentence-top {{sentenceTop.word}}
-        div(ng-show="part==0")#part0.text-center
+        div(ng-show="call==0")#part0.text-center
             div(ng-repeat="sen in sentenceChoice")
                 div(ng-click="btnPart1Select($index)",id="part0-btn-select-{{$index}}").btn.btn-default.part0-btn-sentence {{sen.word}}
-        div(ng-show="part==1").text-center
+        div(ng-show="call==1").text-center
+            div(ng-show="mistake").alert-info
+                div {{correctSentence.word}}
             div(ng-drop="true",ng-drop-success="part1dropSuccess($data,$event)")#part1-drop-words-here
                 div(ng-hide="dropedWords.length",translate="voc-test-drop-here")#part1-drop-words-info
                 div#part1-drop-words-center
@@ -35,6 +37,10 @@ div().content-cell
                         div(ng-drag="true",ng-drag-data="dropword",ng-drop="true",ng-drop-success="part1dropSuccess($data,$event,$index)").btn.btn-default.part1-drag-word {{dropword.word}}
             div#part1-drag-words-area
                 div(ng-repeat="dragword in dragWords",ng-drop="true",ng-drag="true",ng-drag-data="dragword").btn.btn-default.part1-grag-word {{dragword.word}}
+
             div.clearfix
+            div.text-center
+                div(translate="btn-check",ng-click="btnCheckSecondCall()",ng-hide="finish").btn.btn-default
+
         div.text-center
             div(ng-click="btnNextCall(part)",ng-show="finish",translate="btn-continue").btn.btn-default#part0-btn-continue

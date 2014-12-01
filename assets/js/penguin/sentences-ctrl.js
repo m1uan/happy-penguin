@@ -1,5 +1,5 @@
 function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
-    var NUM_WORDS_SET = 3;
+    var NUM_WORDS_SET = 5;
     var bonusInterval = null;
     var SENTENCES ;
     var BONUS_TIME0 = 3;
@@ -17,15 +17,17 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
     vocabularyFactory.getVocabularyRandomSet(NUM_WORDS_SET, true, function(sentences){
         SENTENCES = sentences;
         $scope.score = 0;
-        //firstCall();
-        secondCall();
+        $scope.part = 0;
+
+        firstCall();
+        //secondCall();
     }, true)
 
 
-    function setupCall(part, time, coins, bonus1, bonus2){
+    function setupCall(call, time, coins, bonus1, bonus2){
         $scope.finish = false;
         $scope.showResult = false;
-        $scope.part = part;
+        $scope.call = call;
         $scope.mistake = false;
         $scope.coins = coins;
         $scope.bonus1 = bonus1;
@@ -43,18 +45,30 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
 
     function firstCall(){
         $scope.sentenceChoice = SENTENCES.word1;
+        for(var i = 0; i < NUM_WORDS_SET;i++){
+            var buttonId = '#part0-btn-select-' + i;
+            $(buttonId).show().removeClass('btn-success');
+
+        }
 
         setupCall(0, BONUS_TIME1, 1, BONUS_PART0_1, BONUS_PART0_2);
     }
 
     function secondCall(){
         setupCall(1, BONUS_TIME1, 2, BONUS_PART1_1, BONUS_PART1_2);
+        $scope.correctSentence = SENTENCES.word1[$scope.random];
+        SENTENCES.word1.some(function(w){
+            if($scope.sentenceTop.link == w.link){
+                $scope.correctSentence = w;
+                return true;
+            }
+        })
 
         secondCallPrepareWords();
     }
 
     function secondCallPrepareWords(){
-        var words = SENTENCES.word1[$scope.random].word.trim().split(' ');
+        var words = $scope.correctSentence.word.trim().split(' ');
         $scope.part1Corect = [];
         $scope.dragWords = [];
         $scope.dropedWords = [];
@@ -63,8 +77,9 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
 
         words.forEach(function(word,idx){
             var w = capitaliseFirstLetterAndRemoveDots(word);
-            $scope.part1Corect.push(w);
-            $scope.dragWords.push({word:w,index:idx,correct:true});
+            var superWord = {word:w,index:idx,correct:true};
+            $scope.part1Corect.push(superWord);
+            $scope.dragWords.push(superWord);
             maxIndex = idx;
         });
 
@@ -154,9 +169,11 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
             $scope.btnNextCall($scope.part);
         }
 
+        stopBonusInterval();
+
         $scope.showResult = true;
         var buttonId = '#part0-btn-select-' + index;
-        if(SENTENCES.word2[index].link == $scope.sentenceTop.link){
+        if(SENTENCES.word1[index].link == $scope.sentenceTop.link){
             countScore();
             $(buttonId).addClass('btn-success');
             // hide other buttons
@@ -179,14 +196,37 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
         $scope.finish = false;
         $('#parts').fadeOut(function(){
             $scope.$apply(function(){
-                if($scope.part == 0){
+                if($scope.part < 1){
+                    firstCall();
+                } else {
                     secondCall();
                 }
 
+                $scope.part++;
             });
 
 
         });
+
+    }
+
+    $scope.btnCheckSecondCall = function(){
+        var theareAreMistakes = true;
+        stopBonusInterval();
+        if($scope.part1Corect.length == $scope.dropedWords.length){
+            theareAreMistakes = $scope.part1Corect.some(function(w,idx){
+                return w.index != $scope.dropedWords[idx].index;
+            });
+        }
+
+        if(!theareAreMistakes){
+            countScore();
+        } else {
+            $scope.timer = 0;
+            $scope.mistake = true;
+            $scope.showResult = true;
+        }
+
 
     }
 
