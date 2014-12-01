@@ -907,7 +907,7 @@ function searchOrLinks(pg, search, cb){
                 searchString = "(%)?("+word+")(%)?";
             }
 
-            sql.whereAnd("(lower(word1.word) SIMILAR TO '"+searchString+"')");
+            sql.whereAnd("(lower(word1.word) SIMILAR TO '"+searchString.toLowerCase()+"')");
         }
 
         if(link){

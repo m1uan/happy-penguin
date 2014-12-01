@@ -5,6 +5,7 @@
     'use strict';
     var penguinGame = angular.module('milan.levels.links.factory',['ngRoute']);
 
+    var CACHE = false;
     penguinGame.factory('linksFactory', function($http) {
 
         var __links = {};
@@ -54,7 +55,7 @@
             words.forEach(function(word){
                if(word.link){
                    // word already donwloaded in list
-                   if(__links[linkslang][word.link]){
+                   if(CACHE && __links[linkslang][word.link]){
                        __setupWord(__links[linkslang][word.link], word);
                    } else if(downloadList[word.link]) {
                        // link already is in download list

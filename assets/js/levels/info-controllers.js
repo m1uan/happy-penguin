@@ -662,7 +662,7 @@ function InfoCtrl($scope, $routeParams, $http, $timeout, $window, linksFactory, 
                    }
                 }
 
-            })
+            }, $scope.current == 'en' ? $scope.selectedWord.sentence : $scope.selectedWord.english)
             //addWordRequest
 
 

@@ -1,4 +1,4 @@
-var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
+var app = angular.module('voc4u', ['ngRoute'],
     function($routeProvider, $locationProvider) {
         $routeProvider.when('/users/:lang1/:lang2', {
             templateUrl: 'templates/users',
@@ -48,7 +48,7 @@ var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
         //$locationProvider.html5Mode(true);
     });
 
-function MainCtrl($scope, $route, $routeParams, $location, $cookieStore, lastVisitService) {
+function MainCtrl($scope, $route, $routeParams, $location, lastVisitService) {
     $scope.lang1 = '';
     $scope.lang2 = '';
 
@@ -56,10 +56,10 @@ function MainCtrl($scope, $route, $routeParams, $location, $cookieStore, lastVis
 
 
 
-    $scope.languages =['cs', 'de','en', 'es','fr','it','id','nl','no','pl','pt','ru','sr','vi','zh', 'tr','sk','ko']
+    $scope.languages =['cz', 'de','en', 'es','fr','it','id','nl','no','pl','pt','ru','sr','vi','zh', 'tr','sk','ko']
 
 
-    $scope.lessons =[ 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010];
+    $scope.lessons =[ 8001, 1088, 1001, 1002, 1003,1004, 1005, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010];
 
 
     this.$route = $route;
@@ -68,16 +68,16 @@ function MainCtrl($scope, $route, $routeParams, $location, $cookieStore, lastVis
 
 
 
+    $scope.lessonFields = ['8001', 'cz', 'en']
 
-
-    var cookieLessonFields =  $cookieStore.get('lessonFields');
+    /*var cookieLessonFields =  $cookieStore.get('lessonFields');
     if(cookieLessonFields) {
        $scope.lessonFields = cookieLessonFields;
     } else {
         // must be set for help
         // when page load is first what you can see
         $scope.lessonFields = ['lesson', 'lang 1', 'lang 2'];
-    }
+    }*/
 
 
     function haveAllLessonFields(){
@@ -105,7 +105,7 @@ function MainCtrl($scope, $route, $routeParams, $location, $cookieStore, lastVis
 
         $scope.lessonFields = lesson;
 
-        $cookieStore.put('lessonFields', $scope.lessonFields);
+        //$cookieStore.put('lessonFields', $scope.lessonFields);
 
 
         if(haveAllLessonFields()){

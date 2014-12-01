@@ -5,6 +5,7 @@
     'use strict';
     var amod = angular.module('milan.levels.search.factory',['ngRoute', 'milan.levels.links.factory']);
 
+    var CACHE = false;
     amod.factory('searchFactory', function($http, linksFactory) {
         var self = {};
         var __foundWords = {}
@@ -141,13 +142,13 @@
             // how much words was founded
             var resCount = 0;
 
-
+            // CACHE enabled? and
             // in words list could be some words multiple time
             // create list just with uniq words or if you find it
             // in previous founded list, use this data
             words.forEach(function(word){
                 // foundwords contain already searched words
-                if(__foundWords[foundLang][word.simple] &&
+                if(CACHE && __foundWords[foundLang][word.simple] &&
                     // if we looking for word it not be taken from cache for sentence
                     // and oppossite
                     // if we looking for sentence don't take from cache what is a word
