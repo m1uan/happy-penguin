@@ -1,4 +1,4 @@
-function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $translate){
+function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $translate, $location){
     var NUM_WORDS_SET = 3;
     var bonusInterval = null;
     var SENTENCES ;
@@ -182,11 +182,11 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
     }
 
     $scope.btnPart1Select = function(index){
+        stopBonusInterval();
+
         if($scope.finish){
             $scope.btnNextCall($scope.part);
         }
-
-        stopBonusInterval();
 
         $scope.showResult = true;
         var buttonId = '#part0-btn-select-' + index;
@@ -247,6 +247,7 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
     }
 
     $scope.btnSkip = function(){
+        stopBonusInterval();
         track('sentences-skip', $scope.part);
         $scope.btnNextCall();
     }
@@ -321,6 +322,8 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
     }
 
     function stopBonusInterval(){
+        // if you will pres skip button don't show bonus information
+        $scope.showResult = true;
         if(bonusInterval && angular.isDefined(bonusInterval)){
             $interval.cancel(bonusInterval);
             bonusInterval = null;

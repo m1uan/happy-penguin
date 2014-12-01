@@ -14,7 +14,11 @@ function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, 
             // this place have no info
             if(!plc.info){
                 // maybe in this place is not
-                unlockTestAndSentences();
+                if(!unlocked){
+                    // just in case is not already unocked
+                    unlockTestAndSentences();
+                }
+
 
                 $location.path('/map');
                 console.error('no info here!')
@@ -47,10 +51,14 @@ function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, 
     var REGEXP = /\[([1-9]*)\]/;
 
     function unlockTestAndSentences(){
+        var numUnlock = 5;
+        if(DEBUG_PENGUIN){
+            numUnlock = 30;
+        }
         // for next time, this is already unlocked once
         worldFactory.putCountOfLeftToPlaceHistory($scope.place,'info', 1);
-        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'voc-test', 30);
-        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'sentences', 30);
+        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'voc-test', numUnlock);
+        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'sentences', numUnlock);
 
         var info = $translate.instant('info-tests-unlocked');
         alertify.success(info);

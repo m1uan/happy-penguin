@@ -29,6 +29,8 @@ div().content-cell
         div(ng-show="call==1").text-center
             div(ng-show="mistake").alert-danger
                 div {{correctSentence.word}}
+            div(ng-show="finish && !mistake").alert-success
+                div {{correctSentence.word}}
             div(ng-drop="true",ng-drop-success="part1dropSuccess($data,$event)")#part1-drop-words-here
                 div(ng-hide="dropedWords.length",translate="voc-test-drop-here")#part1-drop-words-info
                 div#part1-drop-words-center
@@ -40,7 +42,7 @@ div().content-cell
 
             div.clearfix
             div.text-center
-                div(translate="btn-check",ng-click="btnCheckSecondCall()",ng-hide="finish").btn.btn-default
+                div(translate="btn-check",ng-click="btnCheckSecondCall()",ng-hide="finish").btn.btn-primary
 
         div.text-center
             div(ng-click="btnNextCall(part)",ng-show="finish && !isTheLastOne()",translate="btn-continue").btn.btn-primary#part0-btn-continue
