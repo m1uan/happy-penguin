@@ -125,20 +125,28 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
         // find existing and remove
         var removeIndex = part1searchSameItemInDropAndDragListAndRemove($scope.dropedWords, data.index, true);
 
-        if(index == undefined){
-            $scope.dropedWords.push(data);
-        } else {
-            // the item was on position before inserting positin
-            // but becuse was already removed from array
-            // update index about -1;
-            if(removeIndex > -1 && removeIndex < index){
-                index-=1;
+        if(event.y > 400){
+            // test if is here in drag list
+            var alreadyHere = part1searchSameItemInDropAndDragListAndRemove($scope.dragWords, data.index);
+            // is not in dragList add it
+            if(alreadyHere == -1){
+                $scope.dragWords.push(data);
             }
-            $scope.dropedWords.splice(index, 0, data);
+        }else {
+            if(index == undefined){
+                $scope.dropedWords.push(data);
+            } else {
+                // the item was on position before inserting positin
+                // but becuse was already removed from array
+                // update index about -1;
+                if(removeIndex > -1 && removeIndex < index){
+                    index-=1;
+                }
+                $scope.dropedWords.splice(index, 0, data);
+            }
+            // also remove from selector list
+            part1searchSameItemInDropAndDragListAndRemove($scope.dragWords, data.index, true);
         }
-
-        // also remove from selector list
-        part1searchSameItemInDropAndDragListAndRemove($scope.dragWords, data.index, true);
     }
 
     $scope.btnPart1Select = function(index){

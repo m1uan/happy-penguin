@@ -20,7 +20,13 @@
     border-width: 1px;
     width: 600px;
     height: 100px;
+
 }
+
+#part1-drop-words-center {
+    margin-left: auto;
+}
+
 
 #part1-drop-words-info {
     margin-top:40px;
