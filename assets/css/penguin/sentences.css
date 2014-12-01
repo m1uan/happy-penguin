@@ -41,3 +41,9 @@
 #part1-drag-words-area {
     margin:10px;
 }
+
+.sentence-bottom {
+    color:whitesmoke;
+    margin-left:4px;
+    font-weight: bold;
+}

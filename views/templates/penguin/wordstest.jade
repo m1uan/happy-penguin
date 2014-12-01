@@ -41,7 +41,7 @@ div(ng-show="part==0&&!wordsLoading").content-cell
         div(ng-repeat="w in words.word2",ng-drag="true",ng-drag-data="w").btn-word {{w.word}}
     div.clearfix
     div(ng-show="showResult")
-        div(translate="voc-test-still-have",translate-values:"{repeats:repeats}").alert-info#info-repeats
+        div(translate="voc-test-still-have",translate-values="{repeats:repeats}").alert-info#info-repeats
         div.text-center#result_total_gold
 
 

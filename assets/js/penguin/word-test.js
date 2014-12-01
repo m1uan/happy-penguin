@@ -12,7 +12,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.correctInRow = 0;
     if(DEBUG_PENGUIN){
         GAME_TIME = 50;
-        //NUM_WORDS_SET = 3;
+        NUM_WORDS_SET = 3;
         $scope.correctTotal = 0;
         $scope.correctInRowScore = [1,1,1,1,1];
         $scope.fastAnswerScore = [1,1,1];
@@ -256,22 +256,25 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
 
     $scope.facebook = function(){
-        var descData =  {
-            name:$scope.place.name,
-            coins : $scope.score};
+        worldFactory.getCurrentPlaceAsync(function(place){
+            var descData =  {
+                name:place.name,
+                coins : $scope.score};
 
 
-        facebook($translate, 'fb_share_score', descData, function(e){
-            $scope.apply(function(){
-                $scope.facebookExtra = 25;
-                $scope.score += 25;
+            facebook($translate, 'fb_share_score', descData, function(e){
+                $scope.apply(function(){
+                    $scope.facebookExtra = 25;
+                    $scope.score += 25;
 
-                worldFactory.addScore({totalCoins:$scope.facebookExtra});
-            })
-            var infostr = $translate.instant('score_fb_share_info', {golds: $scope.facebookExtra});
-            alertify.success(infostr);
+                    worldFactory.addScore({totalCoins:$scope.facebookExtra});
+                })
+                var infostr = $translate.instant('score_fb_share_info', {golds: $scope.facebookExtra});
+                alertify.success(infostr);
 
-        });
+            });
+        })
+
     }
 }
 

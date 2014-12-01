@@ -1,5 +1,5 @@
-function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
-    var NUM_WORDS_SET = 5;
+function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $translate){
+    var NUM_WORDS_SET = 3;
     var bonusInterval = null;
     var SENTENCES ;
     var BONUS_TIME0 = 3;
@@ -9,19 +9,28 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
     var BONUS_PART1_1 = 2;
     var BONUS_PART1_2 = 5;
 
+    var MAX_PARTS = 2;
+
     if(DEBUG_PENGUIN){
         BONUS_TIME0 = 10;
         BONUS_TIME1 = 30;
     }
 
-    vocabularyFactory.getVocabularyRandomSet(NUM_WORDS_SET, true, function(sentences){
-        SENTENCES = sentences;
-        $scope.score = 0;
-        $scope.part = 0;
+    track('sentences');
+    init();
 
-        firstCall();
-        //secondCall();
-    }, true)
+    function init(){
+        $scope.showFinalResult = false;
+        vocabularyFactory.getVocabularyRandomSet(NUM_WORDS_SET, true, function(sentences){
+            SENTENCES = sentences;
+            $scope.score = 0;
+            $scope.part = 0;
+            $scope.maxPart = MAX_PARTS;
+
+            firstCall();
+            //secondCall();
+        }, true)
+    }
 
 
     function setupCall(call, time, coins, bonus1, bonus2){
@@ -192,8 +201,27 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
         }
     }
 
+    $scope.isTheLastOne = function(){
+        return $scope.part+1 == $scope.maxPart;
+    }
+
+    function showFinalResult(){
+        // end of end
+        $scope.showFinalResult = true;
+        window.setTimeout(function(){
+            showPopup('score-fb', $translate);
+        }, 500);
+    }
+
     $scope.btnNextCall = function(part){
-        $scope.finish = false;
+
+        if($scope.isTheLastOne()){
+            showFinalResult();
+            return;
+        }
+
+        // $scope.finish = false; - deleted because reopening game and alowe user add new coins, even game is end
+
         $('#parts').fadeOut(function(){
             $scope.$apply(function(){
                 if($scope.part < 1){
@@ -208,6 +236,20 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
 
         });
 
+    }
+
+    $scope.btnSkip = function(){
+        track('sentences-skip', $scope.part);
+        $scope.btnNextCall();
+    }
+
+    $scope.btnBack = function(){
+        $location.path('/map');
+    }
+
+    $scope.btnRepeat = function(){
+        init();
+        track('sentences-repeat');
     }
 
     $scope.btnCheckSecondCall = function(){
@@ -245,11 +287,21 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
             // user got in bonus time
             if($scope.timer > 0){
                 $scope.score += $scope.bonus2;
+                track('sentences-score', 2);
             } else {
                 // user don't got in bonus time
                 // but first answer was corect
                 $scope.score += $scope.bonus1;
+                track('sentences-score', 1);
             }
+        } else {
+            track('sentences-score', 0);
+        }
+
+        // add score to user game
+        if($scope.isTheLastOne()){
+            worldFactory.addScore({'totalCoins': $scope.score});
+            showFinalResult();
         }
     }
 
@@ -265,5 +317,27 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval){
             $interval.cancel(bonusInterval);
             bonusInterval = null;
         }
+    }
+
+    $scope.facebook = function(){
+        worldFactory.getCurrentPlaceAsync(function(place){
+            var descData =  {
+                name:place.name,
+                coins : $scope.score};
+
+
+            facebook($translate, 'fb_share_score', descData, function(e){
+                $scope.apply(function(){
+                    $scope.facebookExtra = 25;
+                    $scope.score += 25;
+
+                    worldFactory.addScore({totalCoins:$scope.facebookExtra});
+                })
+                var infostr = $translate.instant('score_fb_share_info', {golds: $scope.facebookExtra});
+                alertify.success(infostr);
+
+            });
+        })
+
     }
 }

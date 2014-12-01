@@ -43,4 +43,23 @@ div().content-cell
                 div(translate="btn-check",ng-click="btnCheckSecondCall()",ng-hide="finish").btn.btn-default
 
         div.text-center
-            div(ng-click="btnNextCall(part)",ng-show="finish",translate="btn-continue").btn.btn-default#part0-btn-continue
+            div(ng-click="btnNextCall(part)",ng-show="finish && !isTheLastOne()",translate="btn-continue").btn.btn-default#part0-btn-continue
+        div(ng-show="showFinalResult")
+            div(translate="voc-test-still-have",translate-values="{repeats:repeats}").alert-info#info-repeats
+
+
+
+
+
+        div.bottom-panel
+            div.text-center
+                div(ng-hide="showFinalResult")
+
+                    span(translate="btn-skip",ng-click="btnSkip()").btn.btn-warning Skip
+                    span(translate="sentences-of-part",translate-values="{part:(part+1),maxPart:maxPart}").sentence-bottom Sentence test part 1/3
+                div(ng-show="showFinalResult")
+                    div(ng-click="btnRepeat()",translate="btn-try-again").btn.btn-primary try again
+                    div(ng-click="btnBack()",translate="btn-back").btn.btn-default
+                    div(ng-click="facebook()").btn.btn-xs.btn-primary#score-fb_link
+                        img(src="/assets/img/penguin/facebook_like_icon_thumb.gif").like-xs
+                        span.like-text-xs score me
