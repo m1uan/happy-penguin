@@ -185,6 +185,12 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
                     }
                 );
 
+                $scope.$watch(function () { return worldFactory.getCountOfLeftToPlaceHistory(successPlace,'sentences'); },
+                    function (coins) {
+                        $scope.sentencesCount = coins;
+                    }
+                );
+
             }
         }
     );

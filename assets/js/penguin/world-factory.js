@@ -316,6 +316,25 @@
             return unlocked;
         }
 
+        function _testIsAlowedATest(testName, startTestCB){
+            var MAX_TEST_PER_VISITS = {'sentences':5,'voc-test':5}
+            _getCurrentPlaceAsync(function(place){
+                // for case the user not yet visit a info
+                // to unlock place's test -> redirect him to info
+                if(_redirectToInfoIsTestsUnlockedWithAlert(place)) {
+                    // test if the test was not run so offten
+                    var repeats = _getCountOfLeftToPlaceHistory(place, testName);
+                    if(repeats < 1){
+                        var mess = $translate.instant('voc-test-limit-test-max', {count:MAX_TEST_PER_VISITS[testName]});
+                        alertify.alert(mess);
+                        $location.path('/map')
+                    } else {
+                        startTestCB(place, repeats);
+                    }
+                }
+            });
+        }
+
 
         function loadPlace(placeid, cb){
             if(placesForVocabularyTest[placeid]){
@@ -411,6 +430,7 @@
             ,putCountOfLeftToPlaceHistory: _putCountOfLeftToPlaceHistory
             ,getCountOfLeftToPlaceHistory : _getCountOfLeftToPlaceHistory
             ,redirectToInfoIsTestsUnlockedWithAlert: _redirectToInfoIsTestsUnlockedWithAlert
+            ,testIsAlowedATest : _testIsAlowedATest
             };
 
     });

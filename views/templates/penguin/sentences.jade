@@ -27,7 +27,7 @@ div().content-cell
             div(ng-repeat="sen in sentenceChoice")
                 div(ng-click="btnPart1Select($index)",id="part0-btn-select-{{$index}}").btn.btn-default.part0-btn-sentence {{sen.word}}
         div(ng-show="call==1").text-center
-            div(ng-show="mistake").alert-info
+            div(ng-show="mistake").alert-danger
                 div {{correctSentence.word}}
             div(ng-drop="true",ng-drop-success="part1dropSuccess($data,$event)")#part1-drop-words-here
                 div(ng-hide="dropedWords.length",translate="voc-test-drop-here")#part1-drop-words-info
@@ -43,7 +43,7 @@ div().content-cell
                 div(translate="btn-check",ng-click="btnCheckSecondCall()",ng-hide="finish").btn.btn-default
 
         div.text-center
-            div(ng-click="btnNextCall(part)",ng-show="finish && !isTheLastOne()",translate="btn-continue").btn.btn-default#part0-btn-continue
+            div(ng-click="btnNextCall(part)",ng-show="finish && !isTheLastOne()",translate="btn-continue").btn.btn-primary#part0-btn-continue
         div(ng-show="showFinalResult")
             div(translate="voc-test-still-have",translate-values="{repeats:repeats}").alert-info#info-repeats
 

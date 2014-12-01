@@ -9,7 +9,7 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
     var BONUS_PART1_1 = 2;
     var BONUS_PART1_2 = 5;
 
-    var MAX_PARTS = 2;
+    var MAX_PARTS = 4;
 
     if(DEBUG_PENGUIN){
         BONUS_TIME0 = 10;
@@ -20,16 +20,24 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
     init();
 
     function init(){
-        $scope.showFinalResult = false;
-        vocabularyFactory.getVocabularyRandomSet(NUM_WORDS_SET, true, function(sentences){
-            SENTENCES = sentences;
-            $scope.score = 0;
-            $scope.part = 0;
-            $scope.maxPart = MAX_PARTS;
+        worldFactory.testIsAlowedATest('sentences', function(place, repeats){
+            $scope.place = place;
+            $scope.repeats = repeats;
+            $scope.showFinalResult = false;
+            vocabularyFactory.getVocabularyRandomSet(NUM_WORDS_SET, true, function(sentences){
+                SENTENCES = sentences;
+                $scope.score = 0;
+                $scope.part = 0;
+                $scope.maxPart = MAX_PARTS;
 
-            firstCall();
-            //secondCall();
-        }, true)
+                firstCall();
+
+                $scope.repeats -= 1;
+                worldFactory.putCountOfLeftToPlaceHistory(place, 'sentences', $scope.repeats);
+                //secondCall();
+            }, true)
+        })
+
     }
 
 
