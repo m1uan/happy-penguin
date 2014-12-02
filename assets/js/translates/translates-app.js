@@ -1,4 +1,4 @@
-var app = angular.module('voc4u', ['ngRoute', 'ngAnimate', 'ngCookies'],
+var app = angular.module('voc4u', ['ngRoute'],
     function($routeProvider, $locationProvider) {
         $routeProvider.when('/trans/:page/:lang', {
             templateUrl: '/templates/translates/trans',

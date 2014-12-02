@@ -20,7 +20,7 @@ html(ng-app="pinguin")
         meta(name="description",content="Online game for learning vocabulary")
         meta(name="author",content="Milan Medlik")
         title happy-penguing - travel and learn vocabulary
-    body(ng-controller="PinguinCtrl as main")
+    body(ng-controller="PenguinCtrl as main")
         a(href="http://www.voc4u.com",target="_blank",ng-click="voc4ulink()").voc4u-screen
             img(src="/assets/img/penguin/voc4u.png", alt="Voc4u best android vocabulary trainer")
             p vocabulary
@@ -50,7 +50,7 @@ html(ng-app="pinguin")
                 // style is in this way because on
                 // chrome browser is not size fit before map is initialized
                 // and map have realy low height
-                div(style="width:100%;height:680px;background-color:blue;",ng-controller="WorldCtrl")#world-main
+                div(style="width:100%;height:680px;background-color:blue;")#world-main
 
                 div#like.panel-dark
                     button(ng-click="like()").btn.btn-xs.btn-primary
@@ -81,7 +81,7 @@ html(ng-app="pinguin")
                         div(translate="please_wait").loaidng-span Loading please wait ...
                         div(translate="loading_could_be_long").loaidng-i first load could be long
                 h2 {{place.name}}
-                img()#place-controll-img
+                img(src="/assets/img/orig/place/1401694785767-184379-bhmmug.jpg")#place-controll-img
             div#cover
                 div#cover-background
                 div(ng-view)#main-view1.column-center
@@ -99,9 +99,7 @@ html(ng-app="pinguin")
                             h3(translate="language-head")#warning_dialog_title Language
                         div.modal-body
                             div.translate-block
-                                   div(ng-repeat="lang in langs",ng-click="changeLang(lang.lang)",data-dismiss="modal").translation
-                                        img(src="/assets/img/flags/flag_{{lang.lang}}.png").translate_flag
-                                        span().lang-name {{lang.name}}
+
 
                         div.modal-footer
                             span(translate="select-language-you-speak") Select your language you are speaking...

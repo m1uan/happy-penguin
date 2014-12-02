@@ -1,22 +1,24 @@
 link(rel='stylesheet', href='/assets/css/penguin/intro.css')
 div#intro-page
-    div.top-panel
-        h2(ng-show="page==1", translate="intro_head_1")
-        h2(ng-show="page==2", translate="intro_head_2")
-        h2(ng-show="page==3", translate="intro_head_3")
-        h2(ng-show="page==4", translate="intro_head_4")
-        h2(ng-show="page==5", translate="intro_head_5")
-        h2(ng-show="page==6", translate="intro_head_6")
-        h2(ng-show="page==7", translate="choice_your_jorney")
+
     div.content-cell#intro-content-cell
-        div(ng-click="showStageNext();")
+        div(ng-show="page==0")
+            div
+                div(ng-repeat="welcome in welcomes",ng-click="changeLang(welcome.flag)",data-dismiss="modal",ng-mouseover="welcomeOver($index,true)",ng-mouseleave="welcomeOver($index,false)").welcome
+                    h3
+                        img(src="/assets/img/flags/flag_{{welcome.flag}}.png").welcome_flag
+                        span {{welcome.text}}
+                        //img(src="/assets/img/penguin/penguin_3.png").intro_resource_icon
+                        i(id="welcome-info{{$index}}") {{welcome.info}}
+            div.alert-info
+                div(translate="select-language-you-speak")
+        div(ng-show="page>0",ng-click="showStageNext();")
 
             div.intro_item#intro_distances_place
                 img(src="/assets/img/penguin/intro_distances_place.jpg")
             div(ng-show="page<8")#intro_text
                 div(ng-show="page==1")
-                    img(src="/assets/img/penguin/penguin_3.png").intro_resource_icon
-                    span(translate="intro_text_1")
+
                 div(ng-show="page==2",translate="intro_text_2")
                 div(ng-show="page==3",translate="intro_text_3")
                 div(ng-show="page==4",translate="intro_text_4")
@@ -53,8 +55,8 @@ div#intro-page
             table#move-table
                 tr
                     td
-                        button(ng-click="showStagePrev();",translate="button_prev",ng-show="page>1").btn.btn-lg.btn-default prev {{pagePrev}}
+                        button(ng-click="showStagePrev();",translate="button_prev",ng-show="page>0").btn.btn-lg.btn-default prev {{pagePrev}}
                     td
-                        h5#page-indicator {{page}} / 7
+                        h5#page-indicator {{page+1}} / {{pageMax}}
                     td
-                        button(ng-click="showStageNext();",translate="button_next",ng-show="page<7").btn.btn-lg.btn-success
+                        button(ng-click="showStageNext();",translate="button_next",ng-show="page<pageMax").btn.btn-lg.btn-success

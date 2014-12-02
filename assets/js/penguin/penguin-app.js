@@ -49,10 +49,7 @@ var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','pe
             controller: SentencesCtrl
         });
 
-        $routeProvider.when('/place/:placeid/wordtest', {
-            templateUrl: '/templates/penguin/place',
-            controller: WorldCtrl
-        });
+
 
         $routeProvider.when('/info', {
             templateUrl: '/templates/penguin/info',
@@ -94,13 +91,178 @@ function EmptyCtrl($scope, $timeout, $location, worldFactory){
     if(mygame && mygame.native){
 
     } else {
-        $location.path('/intro/1');
+        $location.path('/intro/10');
     }
 }
 
-function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate,$timeout) {
+/*function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate,$timeout) {
 
-    // http://stackoverflow.com/questions/19787338/how-do-i-get-the-angularjs-routeprovider-to-perform-an-action-before-the-route-c
+} */
+
+function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate, $timeout) {
+    $('#main-view1').css({'background':'none', 'border-width':0})
+
+    var PAGEMAX = 1;
+
+    $scope.pageMax = PAGEMAX;
+    var stage= parseInt($routeParams.page);
+    if(isNaN(stage) || stage < 1 || stage > PAGEMAX){
+        stage = 0;
+
+    }
+    showStage(stage);
+
+    $scope.welcomes = [
+        {text: 'Vítej', flag:'cz', info: 'Cestuj, poznavej a nauc se par slovicek'},
+        {text: 'Welcome', flag:'en', info: 'Travel, explore and learn couple words'},
+        {text: 'Bienvenida', flag:'es', info: 'Choice language which you are speak native'},
+        {text: 'Willkomen', flag:'de', info: 'Choice language which you are speak native'},
+        {text: 'Accueillir', flag:'fr', info: 'Choice language which you are speak native'},
+    ]
+
+    $scope.langs = [];
+    penguinFactory.getLangs($translate.use(), function(langs){
+
+        $scope.langs = langs;
+
+    });
+
+    $scope.welcomes.forEach(function(w,index){
+        $('#welcome-info'+index).fadeOut();
+    })
+
+    $scope.welcomeOver = function(index, show){
+        if(show){
+            $('#welcome-info'+index).fadeIn('fast');
+        } else {
+            $('#welcome-info'+index).fadeOut('slow');
+        }
+
+    }
+
+    function showStage(stage){
+        console.log(stage);
+        $scope.page = stage;
+        $scope.pageNext = $scope.page + 1;
+        $scope.pagePrev = $scope.page - 1;
+
+
+        $('.intro_item').hide();
+        if(stage>1 && stage<7){
+            var intro_place = '#intro_place_info_' + stage;
+            $(intro_place).fadeIn(500);
+            move(intro_place)
+                //.set('width',360).set('height',270)
+                .scale(10)
+//                .rotate(1080)
+                .duration(1200)
+                 .end();
+        } else if(stage==7){
+            var intro_place = '#lang_table';
+            $(intro_place).fadeIn(500);
+        }
+    }
+
+    $scope.showStageNext = function(){
+        if($scope.pageNext < PAGEMAX){
+            showStage($scope.pageNext);
+        }
+
+
+    }
+
+    $scope.showStagePrev = function(){
+        showStage($scope.pagePrev);
+
+    }
+
+    /*$scope.changeLang = function(lang){
+        if($translate.use() != lang){
+            $translate.use(lang).then(function(data){
+                var translation = $translate.instant('native_lang_changed', {lang:lang});
+
+                alertify.success(translation);
+            });
+        }
+
+        $timeout(function(){
+            var translation = $translate.instant('do-you-want-change-native-lang', {lang:lang});
+            var translationYes = $translate.instant('button-yes', {lang:lang});
+            var translationNo = $translate.instant('button-no', {lang:lang});
+            alertify.set({labels:{ok:translationYes,cancel:translationNo}});
+            alertify.confirm(translation, function(e){
+                if(e){
+                    $timeout(function(){showStage(0)},0);
+                }
+            });
+        }, 2750);
+
+
+        showStage(1);
+        $scope.currentLang = lang;
+        track("lang", lang);
+    }*/
+/*
+
+*/
+
+
+    if( $scope.pageNext > PAGEMAX) {
+        $scope.pageNext = false;
+    }
+    if( $scope.pagePrev < 1) {
+        $scope.pagePrev = false;
+    }
+
+
+    $scope.startGame = function(lang){
+        var native = $translate.use();
+
+        if(lang == native){
+            alertify.alert($translate.instant('not_same_language', {lang: lang}));
+            return;
+        }
+
+        alertify.error('jorney:' + lang + ' native:' + native);
+        worldFactory.setup(lang,  native);
+        worldFactory.createNewGame();
+        $location.path('/place/1');
+        track("Start game", {jorney:lang, native: $translate.use()});
+    }
+
+    var mixdata = {
+        page : $scope.page,
+        native: $translate.use()
+    }
+
+
+    track("intro", mixdata);
+
+}
+//$scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate,$timeout
+function PenguinCtrl($scope, $location, $http, localStorageService, worldFactory, $translate, vocabularyFactory,$rootScope,penguinFactory) {
+    var self = this;
+    var element = $('#world-main');
+    var map = null;
+    var places;
+
+
+
+
+    $scope.mapLoading = true;
+    //console.log(element);
+//    element.mousemove(function(evt) {
+//        var x = evt.pageX - element.offset().left;
+//        var y = evt.pageY - element.offset().top;
+//
+//        var portX = parseFloat(x)/parseFloat(element.width());
+//        var portY = parseFloat(y)/parseFloat(element.height());
+//        console.log({x:x, y:y, portX:portX, portY:portY});
+//    });
+
+    //element.click(onClick);
+
+// http://stackoverflow.com/questions/19787338/how-do-i-get-the-angularjs-routeprovider-to-perform-an-action-before-the-route-c
     $scope.$on('$routeChangeStart',function(angularEvent,next,current) {
         var coverBackground = $('#cover-background');
         var cover = $('#cover');
@@ -115,10 +277,17 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 
         mainView.show();
         coverBackground.css({opacity:0});
+        // don't show background at intro
+
 
         cover.slideDown('slow', function(){
-            coverBackground.animate({opacity:1}, 5000);
+            if(next && next.$$route.originalPath.indexOf('/intro') == -1){
+                coverBackground.animate({opacity:1}, 5000);
+            }
         });
+
+
+
     });
 
     $scope.currentLang = $translate.use();
@@ -129,45 +298,41 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
 
     })
 
+    $scope.changeLang = function(lang){
+        //if($translate.use() != lang){
+        $translate.use(lang).then(function(data){
+            var translation = $translate.instant('native_lang_changed', {lang:lang});
+            alertify.success(translation);
 
-    worldFactory.update($scope);
+            worldFactory.setup(null, lang);
+            worldFactory.createNewGame();
+            worldFactory.store();
+            $location.path('/map');
+        });
+        //}
 
-    $scope.place = {name:'',preview:'/assets/img/orig/place/1401694785767-184379-bhmmug.jpg'}
+    }
 
-    //var base = {};
+    $scope.coins = 20;
+    // fake place
+    $scope.place = {name:'Zlin',preview:'/assets/img/orig/place/1401694785767-184379-bhmmug.jpg'}
+
     var mygame = worldFactory.game();
 
-//    if(!mygame){
-//        mygame = worldFactory.createNewGame(localStorageService);
-//    }
-
-    // first going to map to be activate
-    // $scope.$on('$routeChangeStart'
-    //$location.path('/map');
-
-    mygame = null;
-    if(mygame && mygame.native){
+    if(mygame && mygame.native && mygame.native != 'fake'){
         var native = mygame.native;
         $translate.use(native);
         //$location.path('/map');
         $scope.currentLang = native;
+        worldFactory.update($scope);
     } else {
-        //$location.path('/intro/1');
+        worldFactory.setup('fake','fake');
+        worldFactory.createNewGame();
+        $location.path('/intro/0');
+
     }
 
-//    prepare();
-//
-//    function prepare(){
-//        var successPlace = worldFactory.getCurrentPlace();
-//
-//        if(!successPlace){
-//            // in first load, the places are loaded by WordlCtrl
-//            // the places may not loaded yet, so try later
-//            $timeout(prepare, 488);
-//        } else {
-//
-//        }
-//    }
+
 
     $scope.$watch(function () { return worldFactory.getCurrentPlace(); },
         function (successPlace) {
@@ -209,162 +374,15 @@ function PinguinCtrl($scope, $location, $http, $routeParams,localStorageService,
         track('voc4u-link');
     }
 
-    $scope.changeLang = function(lang){
-        if($translate.use() != lang){
-            $translate.use(lang).then(function(data){
-                var translation = $translate.instant('native_lang_changed', {lang:lang});
-
-                alertify.success(translation);
-            });
-        }
-
-        $timeout(function(){
-            var translation = $translate.instant('do-you-want-change-native-lang', {lang:lang});
-            var translationYes = $translate.instant('button-yes', {lang:lang});
-            var translationNo = $translate.instant('button-no', {lang:lang});
-            alertify.set({labels:{ok:translationYes,cancel:translationNo}});
-            alertify.confirm(translation, function(e){
-                if(e){
-                    var exchange = $('#modal-exchange');
-                    exchange.modal('show');
-                }
-            });
-        }, 750);
-
-
-        $scope.currentLang = lang;
-        track("lang", lang);
-    }
-
     $scope.like = function(){
         facebook($translate, 'fb_share_base');
     }
 
 
 
-}
-
-function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate) {
 
 
-    var PAGEMAX = 8;
-
-    var stage= parseInt($routeParams.page);
-    if(isNaN(stage) || stage < 1 || stage > PAGEMAX){
-        stage = 1;
-
-    }
-    showStage(stage);
-
-    $scope.langs = [];
-    penguinFactory.getLangs($translate.use(), function(langs){
-
-        $scope.langs = langs;
-    });
-
-
-    function showStage(stage){
-        console.log(stage);
-        $scope.page = stage;
-        $scope.pageNext = $scope.page + 1;
-        $scope.pagePrev = $scope.page - 1;
-
-
-        $('.intro_item').hide();
-        if(stage==1){
-            var exchange = $('#modal-exchange');
-            exchange.modal('show');
-            $('#intro_distances_place').fadeIn(500);
-        } else if(stage>1 && stage<7){
-            var intro_place = '#intro_place_info_' + stage;
-            $(intro_place).fadeIn(500);
-            move(intro_place)
-                //.set('width',360).set('height',270)
-                .scale(10)
-//                .rotate(1080)
-                .duration(1200)
-                 .end();
-        } else if(stage==7){
-            var intro_place = '#lang_table';
-            $(intro_place).fadeIn(500);
-        }
-    }
-
-    $scope.showStageNext = function(){
-        if($scope.pageNext < PAGEMAX){
-            showStage($scope.pageNext);
-        }
-
-
-    }
-
-    $scope.showStagePrev = function(){
-        showStage($scope.pagePrev);
-
-    }
-/*
-
-*/
-
-
-    if( $scope.pageNext > PAGEMAX) {
-        $scope.pageNext = false;
-    }
-    if( $scope.pagePrev < 1) {
-        $scope.pagePrev = false;
-    }
-
-
-    $scope.startGame = function(lang){
-        var native = $translate.use();
-
-        if(lang == native){
-            alertify.alert($translate.instant('not_same_language', {lang: lang}));
-            return;
-        }
-
-        alertify.error('jorney:' + lang + ' native:' + native);
-        worldFactory.setup(lang,  native);
-        worldFactory.createNewGame();
-        $location.path('/place/1');
-        track("Start game", {jorney:lang, native: $translate.use()});
-    }
-
-    var mixdata = {
-        page : $scope.page,
-        native: $translate.use()
-    }
-
-
-    track("intro", mixdata);
-
-}
-
-function WorldCtrl($scope, $location, $http, localStorageService, worldFactory, $translate, vocabularyFactory,$rootScope) {
-    var self = this;
-    var element = $('#world-main');
-    var map = null;
-    var places;
-
-    $scope.mapLoading = true;
-    //console.log(element);
-//    element.mousemove(function(evt) {
-//        var x = evt.pageX - element.offset().left;
-//        var y = evt.pageY - element.offset().top;
-//
-//        var portX = parseFloat(x)/parseFloat(element.width());
-//        var portY = parseFloat(y)/parseFloat(element.height());
-//        console.log({x:x, y:y, portX:portX, portY:portY});
-//    });
-
-    //element.click(onClick);
-
-
-
-
-
-
-    worldFactory.update($scope);
+    //worldFactory.update($scope);
 
 
     // commented when map was changed to full map

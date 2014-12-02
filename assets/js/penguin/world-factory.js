@@ -31,7 +31,8 @@
                 learn:learn,
                 native: native,
                 placeId : 1,
-                visited : [],
+                visited : [1],
+                placesHistory : { '1' : {countVisit : 1}},
                 randomScenarios : {},
                 stats :{
                     correct : 0,
@@ -51,7 +52,10 @@
             }
 
 
-
+            // clean words
+            localStorageService.set('pinguin.vocabulary.words', null);
+            // old version - new version is with pEnguin.game2
+            localStorageService.set('pinguin.game', null);
             _store();
 
             return self.game;
@@ -59,10 +63,15 @@
 
         function _game(){
             if(!self.game){
-                self.game = localStorageService.get('pinguin.game');
+                self.game = localStorageService.get('penguin.game2');
+
             }
 
             return self.game;
+        }
+
+        function _store(){
+            localStorageService.set('penguin.game2', self.game);
         }
 
         function _update(scope){
@@ -155,10 +164,6 @@
 
             var infostr = $translate.instant('score_add_info', {golds: score.totalCoins});
             alertify.success(infostr);
-        }
-
-        function _store(){
-            localStorageService.set('pinguin.game', self.game);
         }
 
 
