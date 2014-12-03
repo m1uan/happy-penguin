@@ -36,9 +36,11 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
     }
 
     $scope.selectLang = function(lang){
-        worldFactory.setup(lang.lang, worldFactory.getNative());
-        worldFactory.createNewGame();
-        $('#select-your-learn-lang-field').fadeOut();
+        worldFactory.game().learn = lang.lang;
+        worldFactory.store();
+        $('#select-your-learn-lang-field').fadeOut(function(){
+            $scope.showLangSelector = false;
+        });
         init();
     }
 
@@ -176,8 +178,15 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
             $timeout(function(){
                 $scope.sentences = sentences;
                 sentences.forEach(function(sen){
-                    var sword = {word: sen.s, word2: sen.s2, lid: sen.l};
-                    vocabularyFactory.addToTrain(sword, true, true);
+                    // sometimes in the sentence missing part (czech, spain, german...)
+                    // and in sentence testing is wrong behave
+                    // -> don't add them to train list
+                    if((sen.s && sen.s.trim().length > 0) && (sen.s2 && sen.s2.trim().length > 0)){
+                        var sword = {word: sen.s, word2: sen.s2, lid: sen.l};
+                        vocabularyFactory.addToTrain(sword, true, true);
+                    }
+
+
                 })
                 $('#info-sentences').getNiceScroll().resize();
             },0)
