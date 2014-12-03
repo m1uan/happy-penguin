@@ -38,6 +38,7 @@ div.content-cell
                 hr
             div(ng-show="place.source").text-center
                 a(href="{{place.source}}",target="_blank") {{place.source}}
+
         div#info-sentences.alert-info
 
             div(ng-show="sentences")
@@ -45,7 +46,18 @@ div.content-cell
                     div.row
                         div.col-md-6 {{sentence.s}}
                         div.col-md-6 {{sentence.s2}}
+        div#select-your-learn-lang-field
+            div
+                div#lang-selector
+                    div(ng-repeat="lang in travelLangs").travel-lang
+                        h3
+                            img(src="/assets/img/flags/flag_{{lang.lang}}.png").travel_flag
+                            span {{lang.name}}
+                            i experimental!
+                div#lang-selector-info
+                    img(src="/assets/img/penguin/penguin_3.png").info-penguin-info
 
+                    i(translate="experimental-info")
     div.bottom-panel
 
         div.text-center

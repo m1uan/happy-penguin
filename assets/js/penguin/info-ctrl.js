@@ -1,49 +1,81 @@
-function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory, $location){
+function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory, $location){
 
 
     $scope.unlockCount = 5;
-    worldFactory.getCurrentPlaceAsync(function(place){
-        $scope.place = place;
 
-        // set leftWords if place already not unlocked test and sentences in this visit
-        var unlocked = worldFactory.getCountOfLeftToPlaceHistory(place,'info')
-        $scope.leftWords = unlocked ? 0 : $scope.unlockCount;
+    $scope.travelLangs = $rootScope.travelLangs;
+    init();
 
-        worldFactory.loadPlace($scope.place.id, function(plc){
 
-            // this place have no info
-            if(!plc.info){
-                // maybe in this place is not
-                if(!unlocked){
-                    // just in case is not already unocked
-                    unlockTestAndSentences();
+    function initTravelLang(){
+        var native = worldFactory.getNative();
+        var learn = worldFactory.getLearn();
+
+        if(learn && learn != 'fake'){
+            $scope.showLangSelector = false;
+            return;
+        }
+
+        $scope.showLangSelector = true;
+        penguinFactory.getLangs(native, function(langs){
+
+            $scope.travelLangs = [];
+            $scope.langs.forEach(function(travellang){
+                if(travellang.lang != native){
+                    $scope.travelLangs.push(travellang);
+                }
+            })
+        });
+        $timeout(function(){
+            $('#lang-selector,#lang-selector-info').fadeIn();
+        }, 1000)
+    }
+
+    function init(){
+        initTravelLang()
+        worldFactory.getCurrentPlaceAsync(function(place){
+            $scope.place = place;
+
+            // set leftWords if place already not unlocked test and sentences in this visit
+            var unlocked = worldFactory.getCountOfLeftToPlaceHistory(place,'info')
+            $scope.leftWords = unlocked ? 0 : $scope.unlockCount;
+
+            worldFactory.loadPlace($scope.place.id, function(plc){
+
+                // this place have no info
+                if(!plc.info){
+                    // maybe in this place is not
+                    if(!unlocked){
+                        // just in case is not already unocked
+                        unlockTestAndSentences();
+                    }
+
+
+                    $location.path('/map');
+                    console.error('no info here!')
+                    return;
                 }
 
 
-                $location.path('/map');
-                console.error('no info here!')
-                return;
-            }
 
+                var game = worldFactory.game();
+                $scope.game = game;
+                $scope.place = plc;
+                $scope.price = place.history.countVisit || 1;
 
+                // sometime loadPlace is already loaded
+                // and need to be apply
+                $timeout(function(){
+                    setupInfo();
+                }, 0)
 
-            var game = worldFactory.game();
-            $scope.game = game;
-            $scope.place = plc;
-            $scope.price = place.history.countVisit || 1;
-
-            // sometime loadPlace is already loaded
-            // and need to be apply
-            $timeout(function(){
-                setupInfo();
-            }, 0)
-
-        })
-    });
+            })
+        });
+    }
 
 
     $scope.wordsLoading = true;
-    $scope.sentences = [{s:'ahoj',s2:'cau'},{s:'ahoj',s2:'cau'},{s:'ahoj',s2:'cau'},{s:'ahoj',s2:'cau'},{s:'ahoj',s2:'cau'},{s:'ahoj',s2:'cau'}]
+    $scope.sentences = [{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'}]
 
 
 
@@ -136,7 +168,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, placeFactory, worldFactory, 
                     var sword = {word: sen.s, word2: sen.s2, lid: sen.l};
                     vocabularyFactory.addToTrain(sword, true, true);
                 })
-                //$('#info-sentences').getNiceScroll().resize();
+                $('#info-sentences').getNiceScroll().resize();
             },0)
 
 

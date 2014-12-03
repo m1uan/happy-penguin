@@ -11,7 +11,7 @@
         var placesInWorld = null;
         var placesInWorldIds = null;
 
-        var placesForVocabularyTest = {};
+        var cachedPlacesForInfo = {};
 
         var learn = 'en';
         var native = 'cz';
@@ -342,31 +342,34 @@
 
 
         function loadPlace(placeid, cb){
-            if(placesForVocabularyTest[placeid]){
-                __setupPlaceWithHistory(placesForVocabularyTest[placeid])
-                cb(placesForVocabularyTest[placeid]);
+            var learn = self.game.learn;
+
+            if(!learn || learn == 'fake'){
+                learn = 'en';
+            }
+
+            // add native into place id,
+            // because first time when user not choice the learn language
+            // show to him a 'fake' info (info in english)
+            // but after he choice (for example spain) the learn lang
+            // give him new info with spain not again eng
+            var cacheId = placeid + '-' + native;
+
+            if(cachedPlacesForInfo[cacheId]){
+                __setupPlaceWithHistory(cachedPlacesForInfo[cacheId])
+                cb(cachedPlacesForInfo[cacheId]);
                 return ;
             }
 
-            var url ='get/'+placeid+'/'+self.game.learn+'/'+self.game.native+'/?fields=id,name,info,info_native&qfields=qid,question,answers,type&ifields=iid,image';
+            var url ='get/'+placeid+'/'+learn+'/'+self.game.native+'/?fields=id,name,info,info_native&qfields=qid,question,answers,type&ifields=iid,image';
             requestGET($http, url, function(response, status){
                 __separeSourceFromName(response);
 
-                if(response.info){
-                    // ng-sanitary for bind as html
-                    // https://docs.angularjs.org/api/ngSanitize/service/$sanitize
-                    //response.info = $sce.trustAsHtml(response.info.replace(/(?:\r\n|\r|\n)/g, '<br />'));
-                }
 
-                if(response.info_native){
-                    // ng-sanitary for bind as html
-                    // https://docs.angularjs.org/api/ngSanitize/service/$sanitize
-                    //response.info_native = $sce.trustAsHtml(response.info_native.replace(/(?:\r\n|\r|\n)/g, '<br />'));
-                }
 
-                placesForVocabularyTest[placeid] = response;
-                __setupPlaceWithHistory(placesForVocabularyTest[placeid]);
-                cb(placesForVocabularyTest[placeid])
+                cachedPlacesForInfo[cacheId] = response;
+                __setupPlaceWithHistory(cachedPlacesForInfo[cacheId]);
+                cb(cachedPlacesForInfo[cacheId])
             });
         }
 
@@ -404,11 +407,13 @@
         }
 
         function getLearn(){
-            return learn;
+            _game();
+            return self.game ? self.game.learn : null;
         }
 
         function getNative(){
-            return native;
+            _game();
+            return self.game ? self.game.native : null;
         }
 
         return {

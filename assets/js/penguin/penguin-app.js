@@ -240,7 +240,7 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
 
 }
 //$scope, $location, $http, $routeParams,localStorageService,worldFactory,penguinFactory,$translate,$timeout
-function PenguinCtrl($scope, $location, $http, localStorageService, worldFactory, $translate, vocabularyFactory,$rootScope,penguinFactory) {
+function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, worldFactory, $translate, vocabularyFactory,penguinFactory) {
     var self = this;
     var element = $('#world-main');
     var map = null;
@@ -298,6 +298,10 @@ function PenguinCtrl($scope, $location, $http, localStorageService, worldFactory
 
     })
 
+    $scope.travelLangs= [{lang:'en'}]
+
+
+
     $scope.changeLang = function(lang){
         //if($translate.use() != lang){
         $translate.use(lang).then(function(data){
@@ -307,6 +311,8 @@ function PenguinCtrl($scope, $location, $http, localStorageService, worldFactory
             worldFactory.setup(null, lang);
             worldFactory.createNewGame();
             worldFactory.store();
+            //initTravelLang(native);
+
             $location.path('/map');
         });
         //}
@@ -325,6 +331,7 @@ function PenguinCtrl($scope, $location, $http, localStorageService, worldFactory
         //$location.path('/map');
         $scope.currentLang = native;
         worldFactory.update($scope);
+        //initTravelLang(native);
     } else {
         worldFactory.setup('fake','fake');
         worldFactory.createNewGame();

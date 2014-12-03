@@ -178,3 +178,71 @@
     -o-transition: width 6s ease-in-out;
     transition: width 6s ease-in-out;
 }
+
+#select-your-learn-lang-field {
+    position: relative;
+    top:-455px;
+    left:0px;
+    width: 796px;
+    height: 480px;
+    margin-left:-15px;
+    padding-top:40px;
+    background-color: rgb(0,0,140);
+    background-color: rgba(0,0,00,0.6);
+}
+
+.travel-lang h3 {
+    vertical-align: middle;
+    color : white;
+    font-size: 32px;
+    cursor: pointer;
+    margin:3px;
+    padding:8px;
+    font-weight: bold;
+    padding-left:22px;
+
+
+}
+
+.travel-lang h3:hover {
+    color:#dbf2ea;
+}
+
+.travel-lang i {
+    vertical-align: middle;
+    margin-left: 52px;
+    font-size: 12px;
+    color:red;
+}
+
+.travel-lang:hover {
+    background-color: black;
+    border-radius: 3px;
+
+}
+
+.travel_flag {
+    height: 32px;
+    margin-right: 52px;
+    margin-bottom:3px;
+}
+
+#lang-selector, #lang-selector-info {
+    padding:15px;
+    width:450px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: rgba(0,0,0,0.6);
+    display:none;
+}
+
+#lang-selector-info {
+    margin-top:20px;
+    color:#add8e6;
+}
+
+.info-penguin-info {
+    height: 42px;
+    float:left;
+    margin-right:4px;
+}
