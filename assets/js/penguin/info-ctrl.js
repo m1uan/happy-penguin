@@ -36,7 +36,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
     }
 
     $scope.selectLang = function(lang){
-        worldFactory.setup(lang, worldFactory.getNative());
+        worldFactory.setup(lang.lang, worldFactory.getNative());
         worldFactory.createNewGame();
         $('#select-your-learn-lang-field').fadeOut();
         init();
