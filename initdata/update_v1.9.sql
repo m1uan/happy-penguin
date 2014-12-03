@@ -50,6 +50,6 @@ CREATE TABLE link_sentence_t (
     PRIMARY KEY (sentence, word)
 );
 
-ALTER TABLE translates.lang_t ADD COLUMN enable BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE translates.lang_t ADD COLUMN status SMALLINT NOT NULL DEFAULT 0;
 
-UPDATE translates.lang_t SET enable=TRUE WHERE lang='cz' OR lang='en';
+UPDATE translates.lang_t SET status=1 WHERE lang='cz' OR lang='en';

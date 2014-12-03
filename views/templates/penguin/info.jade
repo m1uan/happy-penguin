@@ -7,11 +7,14 @@ div(ng-show="wordsLoading").loaidng
 div(ng-hide="wordsLoading").top-panel
     div#info-top-panel
         div#info-center-panel
-            div(ng-show="leftWords>0")
-                h2(translate="info-words-to-unlock",translate-values="{left:leftWords}")
-                div.text-center#unlocking-info(translate="info-translate-words-to-unlock-tests",translate-values="{count:unlockCount}")
-            div(ng-hide="leftWords>0")
-                h2(translate="info-words-unlocked")
+            div(ng-show="showLangSelector")
+                h2(translate="choice_your_jorney")
+            div(ng-show="!showLangSelector")
+                div(ng-show="leftWords>0")
+                    h2(translate="info-words-to-unlock",translate-values="{left:leftWords}")
+                    div.text-center#unlocking-info(translate="info-translate-words-to-unlock-tests",translate-values="{count:unlockCount}")
+                div(ng-hide="leftWords>0")
+                    h2(translate="info-words-unlocked")
 
 div.content-cell
 
@@ -46,14 +49,14 @@ div.content-cell
                     div.row
                         div.col-md-6 {{sentence.s}}
                         div.col-md-6 {{sentence.s2}}
-        div#select-your-learn-lang-field
+        div(ng-show="showLangSelector")#select-your-learn-lang-field
             div
                 div#lang-selector
-                    div(ng-repeat="lang in travelLangs").travel-lang
+                    div(ng-repeat="lang in travelLangs",ng-show="lang.status",ng-click="selectLang(lang)").travel-lang
                         h3
                             img(src="/assets/img/flags/flag_{{lang.lang}}.png").travel_flag
-                            span {{lang.name}}
-                            i experimental!
+                            span {{lang.translate}}
+                            i(ng-show="lang.status>1") experimental!
                 div#lang-selector-info
                     img(src="/assets/img/penguin/penguin_3.png").info-penguin-info
 
@@ -61,4 +64,5 @@ div.content-cell
     div.bottom-panel
 
         div.text-center
-            a(ng-click="btnBack()",translate="btn-back").btn.btn-primary
+            a(ng-show="!showLangSelector",ng-click="btnBack()",translate="btn-back").btn.btn-primary
+            a(ng-show="showLangSelector",ng-click="btnSelectNativeLang()",translate="select-language-you-speak").btn.btn-warning

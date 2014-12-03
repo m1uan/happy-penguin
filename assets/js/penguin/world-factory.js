@@ -353,7 +353,7 @@
             // show to him a 'fake' info (info in english)
             // but after he choice (for example spain) the learn lang
             // give him new info with spain not again eng
-            var cacheId = placeid + '-' + native;
+            var cacheId = placeid + '-' + learn;
 
             if(cachedPlacesForInfo[cacheId]){
                 __setupPlaceWithHistory(cachedPlacesForInfo[cacheId])

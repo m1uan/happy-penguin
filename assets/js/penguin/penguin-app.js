@@ -120,13 +120,6 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
         {text: 'Accueillir', flag:'fr', info: 'Choice language which you are speak native'},
     ]
 
-    $scope.langs = [];
-    penguinFactory.getLangs($translate.use(), function(langs){
-
-        $scope.langs = langs;
-
-    });
-
     $scope.welcomes.forEach(function(w,index){
         $('#welcome-info'+index).fadeOut();
     })
@@ -289,16 +282,6 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
 
 
     });
-
-    $scope.currentLang = $translate.use();
-    $scope.langs = [];
-    penguinFactory.getLangs('en', function(langs){
-
-        $scope.langs = langs;
-
-    })
-
-    $scope.travelLangs= [{lang:'en'}]
 
 
 

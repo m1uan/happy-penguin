@@ -627,25 +627,29 @@ module.exports = (function(){
             lang_of_names : lang
         };
 
-        langEngine.getlangs(pg, ['lang','name','translate'], dataContainer, function(err,langData){
-            if(err){
-                cb(err);
-                return ;
-            }
-
+        langEngine.getlangs(pg, ['lang','name','translate','status'], dataContainer, function(err,langData){
+            cb(err, langData);
+            return;
             var SQL = '';
             langData.forEach(function(lang){
+                /*SQL += ' UNION SELECT (SELECT count(*) from pinguin.place_info_t'
+                    //+ ' JOIN pinguin.place_info_t ON pinguin.place_info_t.pi = pinguin.place_t.place_info'
+                    + ' JOIN translates.translate_t on translates.translate_t.link=pinguin.place_info_t.info where translates.translate_t.lang=\''+lang.lang+'\') as cities'
+                    + ', \'' + lang.lang +'\' as lang'*/
+/*
                 SQL += ' UNION SELECT (SELECT count(*) from pinguin.place_t' +
-                    ' JOIN translates.translate_t on translates.translate_t.link=pinguin.place_t.info where translates.translate_t.lang=\''+lang.lang+'\') as cities' +
+                    ' JOIN translates.translate_t on translates.translate_t.link=pinguin.place_info_t.info where translates.translate_t.lang=\''+lang.lang+'\') as cities' +
                     ',(SELECT count(*) from (SELECT count(*) from pinguin.place_t' +
                     ' join pinguin.question_t on pinguin.question_t.place_id=pinguin.place_t.id' +
                     ' join translates.translate_t on translates.translate_t.link=pinguin.question_t.question' +
                     ' where translates.translate_t.lang=\''+lang.lang+'\' group by pinguin.place_t.id) as count_question) as questions' +
-                    ', \'' + lang.lang +'\' as lang'
+                    ', \'' + lang.lang +'\' as lang'*/
 
             });
 
+
             SQL = SQL.substr(6);
+            console.log(SQL);
             pg.query(SQL, function(err, data){
 
                 if(data && data.rows){

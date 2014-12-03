@@ -20,7 +20,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
         penguinFactory.getLangs(native, function(langs){
 
             $scope.travelLangs = [];
-            $scope.langs.forEach(function(travellang){
+            langs.forEach(function(travellang){
                 if(travellang.lang != native){
                     $scope.travelLangs.push(travellang);
                 }
@@ -29,6 +29,17 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
         $timeout(function(){
             $('#lang-selector,#lang-selector-info').fadeIn();
         }, 1000)
+    }
+
+    $scope.btnSelectNativeLang = function(){
+        $location.path('/intro/0');
+    }
+
+    $scope.selectLang = function(lang){
+        worldFactory.setup(lang, worldFactory.getNative());
+        worldFactory.createNewGame();
+        $('#select-your-learn-lang-field').fadeOut();
+        init();
     }
 
     function init(){

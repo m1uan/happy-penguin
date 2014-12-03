@@ -13,7 +13,7 @@
             if(langs[lang]){
                 cb(langs[lang]);
             } else {
-                requestGET($http, '/pinguin/game/langs/'+lang+'?fields=enable',function(data){
+                requestGET($http, '/pinguin/game/langs/'+lang,function(data){
                     langs[lang] = data;
                     cb(langs[lang]);
                 });

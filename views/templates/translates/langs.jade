@@ -11,7 +11,8 @@ div
             td code
             td translate
             td name
-            td
+            td inport/export
+            td status
         tr(ng-repeat="lang in langs")
             td {{$index+1}}
             td
@@ -21,4 +22,6 @@ div
             td
                 a(href="#/import/{{lang.lang}}") import/export
             td
-                input(type="checkbox",name="lang-enable",checked,data-label-text="from",ng-model="lang.enable",disabled).input
+                span(ng-show="lang.status==0") disable
+                span(ng-show="lang.status==1") enable
+                span(ng-show="lang.status==2") experimental
