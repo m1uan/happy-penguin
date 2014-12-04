@@ -30,7 +30,7 @@ div.input-group
         input(type="checkbox",name="search-lang2-choice",checked,data-label-text="to",ng-model="searchWordLang").input
         a(href="//www.slovnik.seznam.cz/{{current}}-cz/word/?q={{selectedWord.simple}}",target="slovnik_seznam").btn.btn-default.input CZ to {{current}}
         a(href="//www.slovnik.seznam.cz/cz-{{current}}/word/?q={{selectedWord.simple}}",target="slovnik_seznam").btn.btn-default.input {{current}} to CZ
-
+        a(href="//translate.google.ie/?ie=UTF-8&hl=en&client=tw-ob#{{current}}/en/{{selectedWord.simple}}",target="google_translate").btn.btn-default.input gl
 div.container-fluid
     div.row
         div.col-md-6

@@ -1,6 +1,6 @@
 function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFactory, $interval, $location, $translate){
 
-    var NUM_WORDS_SET = 8;
+    var NUM_WORDS_SET = 10;
     var GAME_TIME = 20;
     var MAX_TEST_PER_VISIT = 5;
 
@@ -12,7 +12,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     $scope.correctInRow = 0;
     if(DEBUG_PENGUIN){
         GAME_TIME = 50;
-        NUM_WORDS_SET = 3;
+        //NUM_WORDS_SET = 3;
         $scope.correctTotal = 0;
         $scope.correctInRowScore = [1,1,1,1,1];
         $scope.fastAnswerScore = [1,1,1];

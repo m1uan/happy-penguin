@@ -1,14 +1,16 @@
 #word-test {
     /* top, right, bottom, left */
-    margin:5px 10px 0px 10px;
+    margin:5px 12px 0px 12px;
 }
 
 #words-selector{
+    margin:0px 10px 0px 10px;
 }
 
 .words-row{
     padding:0px;
     margin:3px;
+    font-size:12px;
 }
 
 .words{
@@ -29,7 +31,7 @@
 }
 
 .btn-word {
-    width:100px;
+    width:145px;
     text-align: center;
     border-style: solid;
     border-color: #808080;

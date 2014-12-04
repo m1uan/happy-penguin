@@ -36,7 +36,6 @@ div(ng-show="part==0&&!wordsLoading").content-cell
                     div(ng-hide="words.user[$index]",translate="voc-test-drop-here") drop here
                     div(ng-show="words.user[$index]") {{words.user[$index].word}}
 
-    hr
     div(ng-hide="showResult")#words-selector
         div(ng-repeat="w in words.word2",ng-drag="true",ng-drag-data="w").btn-word {{w.word}}
     div.clearfix
