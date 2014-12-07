@@ -1,4 +1,4 @@
-function wordsLoader($scope, $http, url, duplicityService, callback){
+function wordsLoader($scope, $http, url, duplicityService, callback, lang1, lang2){
     $scope.loading = true;
     setTimeout(function() {
         $http({method: 'GET', url: url }).
@@ -21,7 +21,13 @@ function wordsLoader($scope, $http, url, duplicityService, callback){
 
 
 
+                    if(!tw.n1){
+                        tw.n1 = lang1;
+                    }
 
+                    if(!tw.n2){
+                        tw.n2 = lang2;
+                    }
 
                     // for removed not loading any duplicities
                     if(tw.del){
@@ -130,7 +136,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
     this.lang2 = this.params.lang2;
 
     var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del,description,flag';
-    wordsLoader($scope, $http, url, duplicityService);
+    wordsLoader($scope, $http, url, duplicityService, this.lang1, this.lang2);
 
 
     //var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile, image.thumb as imagethumb';
@@ -330,7 +336,7 @@ var QuestionsCtrl = function($scope, $http, $routeParams, duplicityService, last
                 });
         }
 
-    });
+    },$routeParams.lang1, $routeParams.lang2);
 
 
 
@@ -351,7 +357,7 @@ var ApproveImageCtrl = function($scope, $http, $routeParams, duplicityService){
     wordsLoader($scope, $http, url, null, function(){
 
 
-    });
+    },$routeParams.lang1, $routeParams.lang2);
 
 
 
