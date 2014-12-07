@@ -28,26 +28,13 @@ div(id="word_{{word.link}}").row.word-row
             div(ng-click="updateLink(word)").col-md-4 {{word.description}}
 
         div.focused-show
-            div(ng-hide="word.duplicity").duplicities_loading
-                img(src="assets/img/loading64.gif")
-                span counting duplicities on server...
-            div(ng-show="word.duplicity.length").duplicities
-                div.row(ng-show="word.duplicity")
-                    div.col-md-1
-                        b lesson (#)
-                    div.col-md-3
-                        b word 1
-                    div.col-md-3
-                        b word 2
-                    div.col-md-4
-                        b desc
-                div.row(ng-repeat="duplicity in word.duplicity")
-                    div.col-md-1 {{duplicity.s}} ({{duplicity.l}}#)
-                    div.col-md-3 {{duplicity.w1}}
-                    div.col-md-3 {{duplicity.w2}}
-                    div(ng-click="updateLink(duplicity)").col-md-4
-                        i {{duplicity.d}}
-                div(ng-click="deleteLinks([word.link])",ng-hide="isDeleted(word)").btn.btn-xs.btn-danger delete
+            div(ng-show="word.sentences").container
+                div(ng-repeat="sen in word.sentences").row
+                    div.col-md-1 {{sen.l}}
+                    div.col-md-3 {{sen.s}}
+                    div.col-md-3 {{sen.s2}}
+                    div.col-md-3 {{sen.e}}
+
     div.col-md-2
         div(id="{{word.link}}_image_select").imagepart.focused-show
             if admin

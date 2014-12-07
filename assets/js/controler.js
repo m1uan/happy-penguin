@@ -7,9 +7,7 @@ function wordsLoader($scope, $http, url, duplicityService, callback, lang1, lang
                 var tempWord = {};
                 var tempWordList = [];
                 var prevWord = null;
-                if(duplicityService){
-                    duplicityService.clear();
-                }
+
 
                 $scope.undeleteWords = 0;
                 $scope.imagesWords = 0;
@@ -36,7 +34,7 @@ function wordsLoader($scope, $http, url, duplicityService, callback, lang1, lang
                         // duplicity loading
                         tw.duplicity = false; // HAVE TO BE false
                         if(duplicityService){
-                            //duplicityService.checkDuplicity(tw);
+                            duplicityService.check(tw);
                         }
                         $scope.undeleteWords++;
 
@@ -69,7 +67,7 @@ function wordsLoader($scope, $http, url, duplicityService, callback, lang1, lang
                 $scope.loading = false;
 
                 if(duplicityService){
-                    //duplicityService.loadDuplicityTimer();
+                    duplicityService.loadDuplicityTimer($scope.words);
                 }
 
                 if(callback){
