@@ -388,7 +388,7 @@ app.directive('onEnter',function(){
         var wordEl = $('#word_' + currentLink);
 
         if(currentLink != moveLink){
-		    focusElement(wordEl, false);
+		    //focusElement(wordEl, false);
 	    }
 
         if(moveLink){

@@ -5,20 +5,20 @@ div(id="word_{{word.link}}").row.word-row
         div.row
             div.col-md-1
                 i {{word.link}}#
-                span.focused-show
+                span
                     span(ng-click="request(1)").btn.btn-xs.btn-default ?
                     span(ng-click="request(10)").btn.btn-xs.btn-default !
             div.col-md-3
-                span.focused-hide {{word.o1}}
-                span.focused-show
+                //span.focused-hide {{word.o1}}
+                span
                     input(id="ed_{{lang1}}_{{word.link}}",value="{{word.w1}}",on-enter="updateWord(lang1,word.link)",ng-change="checkWord(lang1,word.link)",ng-model="word.w1", ng-focus="focusWord(lang1,word.link)",arrowLink="{{word.link}}",arrowPrev="{{word.prevLink}}",arrowNext="{{word.link}}",arrowLang="{{lang2}}")
                     span(ng-click="showSeznam(lang1,word.link)").btn.btn-xs.btn-default sl
                     span(ng-click="showGImage(lang1,word.link)").btn.btn-xs.btn-default gi
                     span(ng-click="showLeo(lang1,word.link)").btn.btn-xs.btn-default lo
                 span(id="in_{{lang1}}_{{word.link}}",ng-click="updateWord(lang1,word.link)",ng-hide="word.w1==word.o1").label.label-danger save!
             div.col-md-3
-                span.focused-hide {{word.o2}}
-                span.focused-show
+                //span.focused-hide {{word.o2}}
+                span
                     input(id="ed_{{lang2}}_{{word.link}}",value="{{word.w2}}",on-enter="updateWord(lang2,word.link)",ng-change="checkWord(lang2,word.link)",ng-model="word.w2", ng-focus="focusWord(lang2,word.link)",arrowLink="{{word.link}}",arrowPrev="{{word.prevLink}}",arrowNext="{{word.nextLink}}",arrowLang="{{lang1}}")
                     span(ng-click="showSeznam(lang2,word.link)").btn.btn-xs.btn-default sl
                     span(ng-click="showGImage(lang2,word.link)").btn.btn-xs.btn-default gi
@@ -27,7 +27,7 @@ div(id="word_{{word.link}}").row.word-row
 
             div(ng-click="updateLink(word)").col-md-4 {{word.description}}
 
-        div.focused-show
+        div
             div(ng-show="word.sentences").container
                 div(ng-repeat="sen in word.sentences").row
                     div.col-md-1 {{sen.l}}
@@ -36,7 +36,7 @@ div(id="word_{{word.link}}").row.word-row
                     div.col-md-3 {{sen.e}}
 
     div.col-md-2
-        div(id="{{word.link}}_image_select").imagepart.focused-show
+        div(id="{{word.link}}_image_select").imagepart
             if admin
                 div(ng-show="word.imagefile")
                     div(ng-hide="approving")
@@ -47,11 +47,11 @@ div(id="word_{{word.link}}").row.word-row
             img(id="image_{{word.link}}",src="{{word.imagefile}}").focused-image.image-out-focus.imgpreview
             div(ng-show="word.imagefile",ng-click="deleteImg(word.link)").btn.btn-xs.btn-danger.delete-button x
             input(type="file",id="image_{{word.link}}_file").fileupload
-        div.imagepart-thumb.focused-hide
+        //div.imagepart-thumb.focused-hide
             img(src="{{word.imagefile}}").image-out-focus
             img(ng-show="word.imagefile",src="{{getApprovedImage()}}").approved-img
         if admin
-            div(ng-show="word.imagefile").focused-hide
+            div(ng-show="word.imagefile")
                 div(ng-hide="approving")
                     span(ng-click="approve(1)",ng-hide="word.flag==1").btn-sm.btn-primary approved
                     span
