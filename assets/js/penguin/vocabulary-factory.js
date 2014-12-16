@@ -132,7 +132,7 @@
                 var w = getFirstWordOrSentenceFromUsedWords(sentencesOnly);
                 // test if word is already in list
                 same = rw.some(function(included_word){
-                    return included_word.link = w.link;
+                    return included_word.link == w.link;
                 })
 
                 // add just inique

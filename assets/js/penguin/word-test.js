@@ -142,7 +142,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             $('#word-row-'+idx).css('background-color',color);
         })
 
-        if(numOfCorrect == NUM_WORDS_SET){
+        if(numOfCorrect == $scope.words.word1.length){
             $scope.showResult = true;
             $scope.score = numOfCorrect;
             if($scope.allCorrect){
