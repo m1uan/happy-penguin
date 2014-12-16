@@ -136,7 +136,7 @@
                 })
 
                 // add just inique
-                if(same){
+                if(!same){
                     rw.push(w);
                 }
 
