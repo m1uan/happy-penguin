@@ -964,7 +964,7 @@ function GameOverCtrl($scope, worldFactory, $location, $translate){
     }
 
     $scope.startNewGame = function(){
-        $location.path('/intro/1');
+        $location.path('/intro/0');
     }
 
     $scope.facebook = function(){

@@ -28,12 +28,13 @@ div(id="word_{{word.link}}").row.word-row
             div(ng-click="updateLink(word)").col-md-4 {{word.description}}
 
         div
-            div(ng-show="word.sentences").container
-                div(ng-repeat="sen in word.sentences").row
-                    div.col-md-1 {{sen.l}}
-                    div.col-md-3 {{sen.s}}
-                    div.col-md-3 {{sen.s2}}
-                    div.col-md-3 {{sen.e}}
+            div(ng-show="word.sentences")
+                table.table.table-responsive.sentences
+                    tr(ng-repeat="sen in word.sentences").row
+                        td {{sen.l}}
+                        td {{sen.s}}
+                        td {{sen.s2}}
+                        td {{sen.e}}
 
     div.col-md-2
         div(id="{{word.link}}_image_select").imagepart

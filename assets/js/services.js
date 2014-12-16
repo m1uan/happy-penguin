@@ -212,7 +212,9 @@ app.service('duplicityService', function($http, $timeout) {
 
     self.loadDuplicityTimer = function(words){
 
-        wordsByLink = words;
+        if(words){
+            wordsByLink = words;
+        }
 
         if(!timerRun){
             timerRun = $timeout(loadDuplicity, 10);
@@ -225,7 +227,10 @@ app.service('duplicityService', function($http, $timeout) {
         var lang,lang2;
 
         if(waitingList.length < 1){
-            timerRun.stop();
+            if(timerRun){
+                //timerRun.stop();
+            }
+
             timerRun = null;
             return;
         }
@@ -258,7 +263,8 @@ app.service('duplicityService', function($http, $timeout) {
 
             })
             // proces next in list
-            loadDuplicity();
+            timerRun = null;
+            self.loadDuplicityTimer();
         });
     }
 

@@ -4,7 +4,7 @@
     var penguinGame = angular.module('milan.world.factory', ['penguin.LocalStorageService','pascalprecht.translate']);
 
     penguinGame.factory('worldFactory', function($http, localStorageService, $translate, $sce, $location) {
-        var BASE = DEBUG_PENGUIN ? 100 : 10;
+        var BASE = DEBUG_PENGUIN ? 100 : 12;
         var self = this;
         self.game = null;
 

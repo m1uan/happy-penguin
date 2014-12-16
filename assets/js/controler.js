@@ -134,7 +134,7 @@ function WordWebCtrl($scope, $rootScope,$http, $routeParams, dialogService, dupl
     this.lang2 = this.params.lang2;
 
     var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile,image.thumb as imagethumb,del,description,flag';
-    wordsLoader($scope, $http, url, duplicityService, this.lang1, this.lang2);
+    wordsLoader($scope, $http, url, duplicityService, null, this.lang1, this.lang2);
 
 
     //var url =  '/words/get/' + this.lesson + '/' + this.lang1 + '/' + this.lang2 + '?fields=link,word as w,lang as n,image.image as imagefile, image.thumb as imagethumb';
