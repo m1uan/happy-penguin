@@ -214,6 +214,12 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
     }
 
     function showFinalResult(){
+        // i put here because if you insted finish sentence
+        // click next the coins you have never up about previous score
+        if($scope.score > 0){
+            worldFactory.addScore({'totalCoins': $scope.score});
+        }
+
         // end of end
         $scope.showFinalResult = true;
         window.setTimeout(function(){
@@ -309,7 +315,7 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
 
         // add score to user game
         if($scope.isTheLastOne()){
-            worldFactory.addScore({'totalCoins': $scope.score});
+
             showFinalResult();
         }
     }

@@ -127,10 +127,20 @@
             }
 
             var rw = [];
+            var same = false;
             do{
                 var w = getFirstWordOrSentenceFromUsedWords(sentencesOnly);
-                rw.push(w);
-            } while(rw.length < setSize)
+                // test if word is already in list
+                same = rw.some(function(included_word){
+                    return included_word.link = w.link;
+                })
+
+                // add just inique
+                if(same){
+                    rw.push(w);
+                }
+
+            } while(rw.length < setSize && !same)
 
             // store to storage for let know
             // usedWord, and words are changed
