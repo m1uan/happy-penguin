@@ -59,28 +59,10 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
         $scope.score = 0;
         $scope.timer = GAME_TIME;
 
-        worldFactory.getCurrentPlaceAsync(function(p){
+        worldFactory.testIsAlowedATest('test', function(p, repeats){
             place = p;
-            // for case the user not yet visit a info
-            // to unlock place's test -> redirect him to info
-            if(worldFactory.redirectToInfoIsTestsUnlockedWithAlert(place)) {
-                // test if the test was not run so offten
-
-                if($scope.getTestsCounts('test') < 1){
-                    var mess = $translate.instant('voc-test-limit-test-max', {count:MAX_TEST_PER_VISIT});
-                    alertify.alert(mess);
-                    $location.path('/map')
-                    return;
-                } else {
-                    startTest();
-                }
-            }
-
-
-
-        });
-
-
+            startTest();
+        })
     }
 
     function startTest(){
