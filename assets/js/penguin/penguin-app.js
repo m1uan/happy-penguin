@@ -354,7 +354,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
     // will miss in $scope like $scope.testsCounts
     worldFactory.update($scope);
 
-
+/*
     $scope.$watch(function () { return worldFactory.getCurrentPlace(); },
         function (successPlace) {
             if(successPlace){
@@ -365,7 +365,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
                 $('#place-controll-img').attr({'src':'/assets/img/orig/'+successPlace.preview});
                 $('#cover-background').css({'background-image':'url(/assets/img/orig/'+successPlace.preview+')'});
 
-                /*$scope.$watch(function () { return worldFactory.getCountOfLeftToPlaceHistory(successPlace,'voc-test'); },
+                $scope.$watch(function () { return worldFactory.getCountOfLeftToPlaceHistory(successPlace,'voc-test'); },
                     function (coins) {
                         $scope.testCount = coins;
                     }
@@ -375,11 +375,12 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
                     function (coins) {
                         $scope.sentencesCount = coins;
                     }
-                );*/
+                );
 
             }
         }
     );
+*/
 
     /*$scope.$watch(function () { return worldFactory.getCoins(); },
         function (coins) {
@@ -388,7 +389,42 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
     );*/
 
 
+    $scope.moveToPlace = function(place){
+        if(worldFactory.game().coins < place.coins){
+            $('#game_resources_golds').css({color:'red'});
+            alertify.error($translate.instant('not_enought', {have:worldFactory.game().coins, need: place.coins}));
+            track("Place-wanted", {placeId: place.id});
+        } else {
 
+            $scope.$apply(function(){
+
+
+
+
+                worldFactory.setPlace(place);
+
+                showPenguin();
+                worldFactory.setupPlacesDistancesAndExp();
+                worldFactory.update($scope);
+                $location.path('/info');
+
+
+                //testEndGame();
+                //element.hide();
+
+                $scope.place = place;
+                $scope.wordsLoading = false;
+                //$scope.testCount = worldFactory.getCountOfLeftToPlaceHistory(successPlace, 'voc-test');
+                $scope.sentenceCount = worldFactory.getCountOfLeftToPlaceHistory(place, 'sentence-test');
+                $('#place-controll-img').attr({'src':'/assets/img/orig/'+place.preview});
+                $('#cover-background').css({'background-image':'url(/assets/img/orig/'+place.preview+')'});
+
+            })
+
+
+            track("Place", {placeId: place.id});
+        }
+    }
 
 
 
@@ -593,33 +629,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
 //            $scope.place = successPlace;
 //        });
 
-        if(worldFactory.game().coins < place.coins){
-            $('#game_resources_golds').css({color:'red'});
-            alertify.error($translate.instant('not_enought', {have:worldFactory.game().coins, need: place.coins}));
-            track("Place-wanted", {placeId: place.id});
-        } else {
-
-            $scope.$apply(function(){
-
-
-
-
-                worldFactory.setPlace(place);
-
-                showPenguin();
-                worldFactory.setupPlacesDistancesAndExp();
-                worldFactory.update($scope);
-                $location.path('/info');
-
-
-                //testEndGame();
-                //element.hide();
-
-            })
-
-
-            track("Place", {placeId: place.id});
-        }
+        $scope.moveToPlace(place);
     }
 
 
