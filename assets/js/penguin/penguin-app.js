@@ -342,7 +342,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
         $translate.use(native);
         //$location.path('/map');
         $scope.currentLang = native;
-        worldFactory.update($scope);
+
         //initTravelLang(native);
     } else {
         worldFactory.setup('fake','fake');
@@ -350,7 +350,10 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
         $location.path('/intro');
 
     }
-
+    // have to be here othervise if is going to intro
+    // the update will be not call at all and some properties
+    // will miss in $scope like $scope.testsCounts
+    worldFactory.update($scope);
 
 
     $scope.$watch(function () { return worldFactory.getCurrentPlace(); },
