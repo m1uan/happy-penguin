@@ -886,7 +886,12 @@ module.exports = (function(){
             function __updateSize(lang){
                 return function(icb2){
                     var info = dataContainer.translates[lang].info;
-                    var infoLength = info.split('\n\n').length;
+                    var infoLength = 0;
+                    info.split('\n\n').forEach(function(infoPart){
+                        if(infoPart.length > 5){
+                            infoLength++;
+                        }
+                    });
                     var sql = SL.SqlLib('pinguin.place_info_size_t');
                     sql.whereAnd('pi=' + dataContainer.pi + ' AND lang=\'' +lang + '\'');
                     var data = {'size':infoLength,'pi': dataContainer.pi, 'lang': lang};

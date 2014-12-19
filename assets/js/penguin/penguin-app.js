@@ -521,7 +521,17 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
 
                     var item = $('<div id="'+placeid+'" data-toggle="tooltip" data-placement="right" >' + '</div>').addClass('place');
 
-                    item.addClass('placesize' + place.size);
+                    if(place.size){
+                        if(place.size > 5){
+                            item.addClass('placesize5');
+                        } else {
+                            item.addClass('placesize' + place.size);
+                        }
+
+                    } else {
+                        item.addClass('placesize0');
+                    }
+
 
 
                     item.appendTo(element);

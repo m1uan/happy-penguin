@@ -25,6 +25,15 @@
     background-size: 100%;*/
 }
 
+.placesize0 {
+    background-color: #fffb00;
+    width:10px;
+    height:10px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius:7px;
+    border-radius: 7px;
+}
+
 .placesize1 {
     background-color:#ffd500;
     width:14px;
@@ -35,18 +44,36 @@
 }
 
 .placesize2 {
-    background-color:orange;
-    width:22px;
-    height:22px;
+    background-color: #ffb600;
+    width:18px;
+    height:18px;
     -moz-border-radius: 11px;
     -webkit-border-radius:11px;
     border-radius: 11px;
 }
 
 .placesize3 {
-    background-color:orangered;
-    width:30px;
-    height:30px;
+    background-color: #ff8b00;
+    width:22px;
+    height:22px;
+    -moz-border-radius: 15px;
+    -webkit-border-radius:15px;
+    border-radius: 15px;
+}
+
+.placesize4 {
+    background-color: #ff6a00;
+    width:28px;
+    height:28px;
+    -moz-border-radius: 15px;
+    -webkit-border-radius:15px;
+    border-radius: 15px;
+}
+
+.placesize5 {
+    background-color: #ff4500;
+    width:32px;
+    height:32px;
     -moz-border-radius: 15px;
     -webkit-border-radius:15px;
     border-radius: 15px;
