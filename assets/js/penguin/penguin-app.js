@@ -216,7 +216,7 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
             return;
         }
 
-        alertify.error('jorney:' + lang + ' native:' + native);
+        //alertify.error('jorney:' + lang + ' native:' + native);
         worldFactory.setup(lang,  native);
         worldFactory.createNewGame();
         $location.path('/place/1');
@@ -519,13 +519,26 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
 
                 if(!item.length){
 
-                    var item = $('<div id="'+placeid+'" data-toggle="tooltip" data-placement="right" >' + '</div>').addClass('place');
+                    var item = $('<span id="'+placeid+'" data-toggle="tooltip" data-placement="right" >' + '</span>').addClass('place');
+
+                    // this if just from welcome, random size
+                    if(!$scope.game.learn || $scope.game.learn == 'fake' || !$scope.game.native || $scope.game.native == 'fake'){
+                        place.size = Math.round((Math.random() *10) %5);
+                    }
 
                     if(place.size){
-                        if(place.size > 5){
+                        var finalSize = place.size;
+
+                        if(place.history && place.history.countVisit){
+                            finalSize = place.history.countVisit < finalSize ? finalSize - place.history.countVisit : 1;
+                        }
+
+
+
+                        if(finalSize > 5){
                             item.addClass('placesize5');
                         } else {
-                            item.addClass('placesize' + place.size);
+                            item.addClass('placesize' + finalSize);
                         }
 
                     } else {

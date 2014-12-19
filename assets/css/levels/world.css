@@ -16,7 +16,7 @@
     color:white;
     font-size: 7px;
     font-weight: bold;
-    padding:2px;
+    padding:0px;
     border-width: 3px;
     border-style: solid;
     border-color: #101010;
@@ -26,9 +26,11 @@
 }
 
 .placesize0 {
+    border-width:1;
     background-color: #fffb00;
-    width:10px;
-    height:10px;
+
+    width:4px;
+    height:4px;
     -moz-border-radius: 7px;
     -webkit-border-radius:7px;
     border-radius: 7px;
@@ -36,8 +38,8 @@
 
 .placesize1 {
     background-color:#ffd500;
-    width:14px;
-    height:14px;
+    width:10px;
+    height:10px;
     -moz-border-radius: 7px;
     -webkit-border-radius:7px;
     border-radius: 7px;
@@ -45,8 +47,8 @@
 
 .placesize2 {
     background-color: #ffb600;
-    width:18px;
-    height:18px;
+    width:16px;
+    height:16px;
     -moz-border-radius: 11px;
     -webkit-border-radius:11px;
     border-radius: 11px;
@@ -74,9 +76,9 @@
     background-color: #ff4500;
     width:32px;
     height:32px;
-    -moz-border-radius: 15px;
-    -webkit-border-radius:15px;
-    border-radius: 15px;
+    -moz-border-radius: 16px;
+    -webkit-border-radius:16px;
+    border-radius: 16px;
 }
 
 .place_step_1 {
