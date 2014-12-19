@@ -151,7 +151,7 @@
                 self.game.placesHistory = {}
             }
 
-            if(self.game.placesHistory[place.id]){
+            if(self.game.placesHistory[place.id] && self.game.placesHistory[place.id].hasOwnProperty('countVisit')){
                 self.game.placesHistory[place.id].countVisit += 1;
             } else {
                 self.game.placesHistory[place.id] = {
