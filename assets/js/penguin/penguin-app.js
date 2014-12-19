@@ -91,7 +91,7 @@ function EmptyCtrl($scope, $timeout, $location, worldFactory){
     if(mygame && mygame.native){
 
     } else {
-        $location.path('/intro/10');
+        $location.path('/intro');
     }
 }
 
@@ -283,16 +283,15 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
 
     });
 
-
     $scope.addCoins = function(coins){
 
-        if(coins < 0 && $scope.coins < Math.abs(coins)){
+        if(coins < 0 && $scope.game.coins < Math.abs(coins)){
             var text = $translate.instant('not-enought-coins');
             alertify.alert(text);
             return false;
         }
 
-        $scope.coins += coins;
+        $scope.game.coins += coins;
         worldFactory.store();
         return true;
     }
@@ -300,15 +299,15 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
     $scope.testCount =
 
     $scope.getTestsCounts = function(name){
-        return $scope.testsCounts[name] || -1;
+        return $scope.game.testsCounts[name] || -1;
     }
 
     $scope.addTestsCounts = function(name, count){
-        if(count < 0 && $scope.testsCounts[name] < Math.abs(count)){
+        if(count < 0 && $scope.game.testsCounts[name] < Math.abs(count)){
             return;
         }
 
-        $scope.testsCounts[name] += count;
+        $scope.game.testsCounts[name] += count;
         worldFactory.store();
     }
 
@@ -323,6 +322,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
             worldFactory.setup(null, lang);
             worldFactory.createNewGame();
             worldFactory.store();
+            worldFactory.update($scope);
             //initTravelLang(native);
 
             $location.path('/map');
@@ -331,7 +331,6 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
 
     }
 
-    $scope.coins = 20;
     // fake place
     $scope.place = {name:'Zlin',preview:'/assets/img/orig/place/1401694785767-184379-bhmmug.jpg'}
 

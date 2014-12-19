@@ -86,7 +86,7 @@
                 _game();
             }
 
-            scope.coins = self.game.coins;
+            //scope.coins = self.game.coins;
 //            scope.fly = self.game.fly;
 //            scope.walk = self.game.walk;
 //            scope.swim = self.game.swim;
@@ -94,7 +94,8 @@
 
             scope.levelInfo = _calcLevelInfo();
 
-            scope.testsCounts = self.game.testsCounts;
+            //scope.testsCounts = self.game.testsCounts;
+            scope.game = self.game;
             _store();
 
             return true;

@@ -61,13 +61,13 @@ html(ng-app="pinguin")
             div#place-controll-line
                 a(href="#/info",translate="menu-info").btn.btn-xs.btn-default.btn-place Curriosity
                 a(href="#/wordstest").btn.btn-xs.btn-default.btn-place
-                    span.badge.badge-important.menu-badge {{testsCounts.test}}
+                    span.badge.badge-important.menu-badge {{game.testsCounts.test}}
                     span(translate="menu-test") Test
 
 
 
                 a(href="#/sentences").btn.btn-default.btn-xs.btn-place
-                    span.badge.badge-important.menu-badge {{testsCounts.sentences}}
+                    span.badge.badge-important.menu-badge {{game.testsCounts.sentences}}
                     span(translate="menu-sentences") Sentences
 
                 a(translate="menu-crosswords").btn.btn-default.btn-xs.btn-place Crosswords
@@ -88,7 +88,7 @@ html(ng-app="pinguin")
 
             div
                 span()#game_resources
-                    span#game_resources_golds {{coins}}
+                    span#game_resources_golds {{game.coins}}
                     img(src="/assets/img/penguin/ic_golds.png").resource_gold_icon
             // it is here because in main-view is disabled
             // shadow screen cover the dialog as well

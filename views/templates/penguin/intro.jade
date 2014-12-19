@@ -2,7 +2,7 @@ link(rel='stylesheet', href='/assets/css/penguin/intro.css')
 div#intro-page
 
     div.content-cell#intro-content-cell
-        div(ng-show="page==0")
+        div()
             div
                 div(ng-repeat="welcome in welcomes",ng-click="changeLang(welcome.flag)",data-dismiss="modal",ng-mouseover="welcomeOver($index,true)",ng-mouseleave="welcomeOver($index,false)").welcome
                     h3
