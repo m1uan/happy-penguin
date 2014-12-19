@@ -3,7 +3,7 @@ var SHOW_EXPERIENCE_POPUP = 'show-experience-popup';
 var SHOW_TRAIN_POPUP = 'show-train-popup';
 var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','penguin.LocalStorageService','milan.place.factory','milan.penguin.factory','milan.world.factory','milan.vocabulary.factory','pascalprecht.translate','ngDraggable'],
     function($routeProvider, $locationProvider, $translateProvider) {
-        $routeProvider.when('/intro/:page', {
+        $routeProvider.when('/intro', {
             templateUrl: '/templates/penguin/intro',
             controller: IntroCtrl
         });
@@ -105,11 +105,11 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
     var PAGEMAX = 1;
 
     $scope.pageMax = PAGEMAX;
-    var stage= parseInt($routeParams.page);
-    if(isNaN(stage) || stage < 1 || stage > PAGEMAX){
-        stage = 0;
+    var stage= 0;// parseInt($routeParams.page);
+    //if(isNaN(stage) || stage < 1 || stage > PAGEMAX){
+    //    stage = 0;
 
-    }
+    //}
     showStage(stage);
 
     $scope.welcomes = [
@@ -347,7 +347,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
     } else {
         worldFactory.setup('fake','fake');
         worldFactory.createNewGame();
-        $location.path('/intro/0');
+        $location.path('/intro');
 
     }
 
@@ -994,7 +994,7 @@ function GameOverCtrl($scope, worldFactory, $location, $translate){
     }
 
     $scope.startNewGame = function(){
-        $location.path('/intro/0');
+        $location.path('/intro');
     }
 
     $scope.facebook = function(){
