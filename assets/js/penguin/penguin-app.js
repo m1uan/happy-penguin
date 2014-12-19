@@ -284,6 +284,35 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
     });
 
 
+    $scope.addCoins = function(coins){
+
+        if(coins < 0 && $scope.coins < Math.abs(coins)){
+            var text = $translate.instant('not-enought-coins');
+            alertify.alert(text);
+            return false;
+        }
+
+        $scope.coins += coins;
+        worldFactory.store();
+        return true;
+    }
+
+    $scope.testCount =
+
+    $scope.getTestsCounts = function(name){
+        return $scope.testsCounts[name] || -1;
+    }
+
+    $scope.addTestsCounts = function(name, count){
+        if(count < 0 && $scope.testsCounts[name] < Math.abs(count)){
+            return;
+        }
+
+        $scope.testsCounts[name] += count;
+        worldFactory.store();
+    }
+
+
 
     $scope.changeLang = function(lang){
         //if($translate.use() != lang){
@@ -334,7 +363,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
                 $('#place-controll-img').attr({'src':'/assets/img/orig/'+successPlace.preview});
                 $('#cover-background').css({'background-image':'url(/assets/img/orig/'+successPlace.preview+')'});
 
-                $scope.$watch(function () { return worldFactory.getCountOfLeftToPlaceHistory(successPlace,'voc-test'); },
+                /*$scope.$watch(function () { return worldFactory.getCountOfLeftToPlaceHistory(successPlace,'voc-test'); },
                     function (coins) {
                         $scope.testCount = coins;
                     }
@@ -344,16 +373,17 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
                     function (coins) {
                         $scope.sentencesCount = coins;
                     }
-                );
+                );*/
 
             }
         }
     );
-    $scope.$watch(function () { return worldFactory.getCoins(); },
+
+    /*$scope.$watch(function () { return worldFactory.getCoins(); },
         function (coins) {
             $scope.coins = coins;
         }
-    );
+    );*/
 
 
 

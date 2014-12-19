@@ -61,13 +61,13 @@ html(ng-app="pinguin")
             div#place-controll-line
                 a(href="#/info",translate="menu-info").btn.btn-xs.btn-default.btn-place Curriosity
                 a(href="#/wordstest").btn.btn-xs.btn-default.btn-place
-                    span.badge.badge-important.menu-badge {{testCount}}
+                    span.badge.badge-important.menu-badge {{testsCounts.test}}
                     span(translate="menu-test") Test
 
 
 
                 a(href="#/sentences").btn.btn-default.btn-xs.btn-place
-                    span.badge.badge-important.menu-badge {{sentencesCount}}
+                    span.badge.badge-important.menu-badge {{testsCounts.sentences}}
                     span(translate="menu-sentences") Sentences
 
                 a(translate="menu-crosswords").btn.btn-default.btn-xs.btn-place Crosswords

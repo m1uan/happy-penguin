@@ -22,7 +22,6 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
     function init(){
         worldFactory.testIsAlowedATest('sentences', function(place, repeats){
             $scope.place = place;
-            $scope.repeats = repeats;
             $scope.showFinalResult = false;
             vocabularyFactory.getVocabularyRandomSet(NUM_WORDS_SET, true, function(sentences){
                 SENTENCES = sentences;
@@ -32,8 +31,8 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
 
                 firstCall();
 
-                $scope.repeats -= 1;
-                worldFactory.putCountOfLeftToPlaceHistory(place, 'sentences', $scope.repeats);
+                $scope.addTestsCounts('sentences', -1);
+
                 //secondCall();
             }, true)
         })

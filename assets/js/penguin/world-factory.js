@@ -5,6 +5,7 @@
 
     penguinGame.factory('worldFactory', function($http, localStorageService, $translate, $sce, $location) {
         var BASE = DEBUG_PENGUIN ? 100 : 12;
+        var MAX_TEST_PER_VISITS = {'sentences':2,'test':3,crosswords:2, quiz: 1}
         var self = this;
         self.game = null;
 
@@ -34,6 +35,12 @@
                 visited : [1],
                 placesHistory : { '1' : {countVisit : 1}},
                 randomScenarios : {},
+                testsCounts : {
+                    test : 0,
+                    sentences : 0,
+                    crosswords : 0,
+                    quiz : 0
+                },
                 stats :{
                     correct : 0,
                     wrong : 0,
@@ -86,6 +93,8 @@
 //            scope.exp = self.game.exp;
 
             scope.levelInfo = _calcLevelInfo();
+
+            scope.testsCounts = self.game.testsCounts;
             _store();
 
             return true;
@@ -292,12 +301,12 @@
             return name + place.history.countVisit;
         }
 
-        function _getCountOfLeftToPlaceHistory(place, name){
+        function _getPlaceHistoryValue(place, name){
             var countVocTest = __generateCountOfLeftHistoryKey(place,name);
             return self.game.placesHistory[place.id][countVocTest] || 0;
         }
 
-        function _putCountOfLeftToPlaceHistory(place, name, value){
+        function _putPlaceHistoryValue(place, name, value){
             var countVocTest = __generateCountOfLeftHistoryKey(place, name);
             if(self.game.placesHistory[place.id][countVocTest] == undefined){
                 self.game.placesHistory[place.id][countVocTest] = value;
@@ -309,7 +318,7 @@
         }
 
         function _redirectToInfoIsTestsUnlockedWithAlert(place){
-            var unlocked = _getCountOfLeftToPlaceHistory(place, 'info');
+            var unlocked = _getPlaceHistoryValue(place, 'info');
 
             if(!unlocked){
                 var mess = $translate.instant('places-test-still-locked');
@@ -322,13 +331,13 @@
         }
 
         function _testIsAlowedATest(testName, startTestCB){
-            var MAX_TEST_PER_VISITS = {'sentences':5,'voc-test':5}
+
             _getCurrentPlaceAsync(function(place){
                 // for case the user not yet visit a info
                 // to unlock place's test -> redirect him to info
                 if(_redirectToInfoIsTestsUnlockedWithAlert(place)) {
                     // test if the test was not run so offten
-                    var repeats = _getCountOfLeftToPlaceHistory(place, testName);
+                    var repeats = self.game.testsCounts[testName];
                     if(repeats < 1){
                         var mess = $translate.instant('voc-test-limit-test-max', {count:MAX_TEST_PER_VISITS[testName]});
                         alertify.alert(mess);
@@ -437,11 +446,12 @@
             ,calcLevelInfo : _calcLevelInfo
             ,getCoins : _getCoins
             ,getCurrentPlaceAsync : _getCurrentPlaceAsync
-            ,putCountOfLeftToPlaceHistory: _putCountOfLeftToPlaceHistory
-            ,getCountOfLeftToPlaceHistory : _getCountOfLeftToPlaceHistory
+            ,putCountOfLeftToPlaceHistory: _putPlaceHistoryValue
+            ,getCountOfLeftToPlaceHistory : _getPlaceHistoryValue
             ,redirectToInfoIsTestsUnlockedWithAlert: _redirectToInfoIsTestsUnlockedWithAlert
             ,testIsAlowedATest : _testIsAlowedATest
-            };
+            ,MAX_TEST_PER_VISITS : MAX_TEST_PER_VISITS
+        };
 
     });
 }).call(this);

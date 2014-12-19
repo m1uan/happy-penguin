@@ -65,8 +65,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             // to unlock place's test -> redirect him to info
             if(worldFactory.redirectToInfoIsTestsUnlockedWithAlert(place)) {
                 // test if the test was not run so offten
-                $scope.repeats = worldFactory.getCountOfLeftToPlaceHistory(place, 'voc-test');
-                if($scope.repeats < 1){
+
+                if($scope.getTestsCounts('test') < 1){
                     var mess = $translate.instant('voc-test-limit-test-max', {count:MAX_TEST_PER_VISIT});
                     alertify.alert(mess);
                     $location.path('/map')
@@ -92,8 +92,8 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
 
             }, 1000, $scope.timer, true)
 
-            $scope.repeats -= 1;
-            worldFactory.putCountOfLeftToPlaceHistory(place, 'voc-test', $scope.repeats);
+            $scope.addTestsCounts('test', -1);
+
 
         })
     }

@@ -88,7 +88,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
 
 
     $scope.wordsLoading = true;
-    $scope.sentences = [{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'},{s:'Hello, how are you',s2:'Ahoj jak se mas?'}]
+    $scope.sentences = []
 
 
 
@@ -102,8 +102,10 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
         }
         // for next time, this is already unlocked once
         worldFactory.putCountOfLeftToPlaceHistory($scope.place,'info', 1);
-        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'voc-test', numUnlock);
-        worldFactory.putCountOfLeftToPlaceHistory($scope.place,'sentences', numUnlock);
+        for(var name in worldFactory.MAX_TEST_PER_VISITS){
+            $scope.addTestsCounts(name, worldFactory.MAX_TEST_PER_VISITS[name]);
+        }
+
 
         var info = $translate.instant('info-tests-unlocked');
         alertify.success(info);
@@ -201,9 +203,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
         }
 
         // no more coins
-        if($scope.game.coins < $scope.price){
-            var text = $translate.instant('not-enought-coins');
-            alertify.alert(text);
+        if(!$scope.addCoins(-$scope.price)){
             return;
         }
 
@@ -211,7 +211,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
             vocabularyFactory.addToTrain(word.possible[0]);
         }
 
-        $scope.game.coins -= $scope.price;
+        //$scope.game.coins -= $scope.price;
 
         // have to be 1 before decrease
         // because if we compring 0 we don't know
