@@ -14,23 +14,38 @@
 
         var cachedPlacesForInfo = {};
 
-        var learn = 'en';
-        var native = 'cz';
 
-        function setup(_learn, _native){
-            learn = _learn;
-            native = _native;
+        function setup(learnLang, nativeLang){
+            var game = _game();
+            if(!game){
+                // posibble recreate game
+                _createNewGame(learnLang, nativeLang)
+            } else {
+                game.learn = learnLang;
+                game.native = nativeLang;
+            }
+
+            // if is language changed remove cached places
+            // it is mainly because if you are in intro
+            // you load sizes for fake language, but after
+            // changed learn and native language you want see real place sizes
+            // but if is fake language don't care
+            if(learnLang && learnLang != 'fake' && nativeLang && nativeLang != 'fake'){
+                placesInWorld = null;
+                placesInWorldIds = null;
+            }
+
         }
 
         function _getCoins(){
             return self.game.coins;
         }
 
-        function _createNewGame(){
+        function _createNewGame(learnLang, nativeLang){
             self.game = {
                 coins: BASE,
-                learn:learn,
-                native: native,
+                learn:learnLang,
+                native: nativeLang,
                 placeId : 1,
                 visited : [1],
                 placesHistory : { '1' : {countVisit : 1}},

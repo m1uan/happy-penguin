@@ -110,6 +110,13 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
     //    stage = 0;
 
     //}
+
+    // in PenguinCtrl in updatePlace to recognize is intro
+    // for generate random sizes of places
+    var game = worldFactory.game();
+    if(game){
+        game.native = null;
+    }
     showStage(stage);
 
     $scope.welcomes = [
@@ -217,8 +224,8 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
         }
 
         //alertify.error('jorney:' + lang + ' native:' + native);
-        worldFactory.setup(lang,  native);
-        worldFactory.createNewGame();
+        //worldFactory.setup();
+        worldFactory.createNewGame(lang,  native);
         $location.path('/place/1');
         track("Start game", {jorney:lang, native: $translate.use()});
     }
@@ -312,18 +319,23 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
     }
 
 
+    $scope.updateMap = function(){
+        setupMap();
+    }
 
-    $scope.changeLang = function(lang){
+    $scope.changeLang = function(nativeLang){
         //if($translate.use() != lang){
-        $translate.use(lang).then(function(data){
-            var translation = $translate.instant('native_lang_changed', {lang:lang});
+        $translate.use(nativeLang).then(function(data){
+            var translation = $translate.instant('native_lang_changed', {lang:nativeLang});
             alertify.success(translation);
 
-            worldFactory.setup(null, lang);
-            worldFactory.createNewGame();
+
+            // game created already in setup
+            worldFactory.createNewGame(null, nativeLang);
             worldFactory.store();
             worldFactory.update($scope);
             //initTravelLang(native);
+
 
             $location.path('/map');
         });
@@ -510,63 +522,59 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
 
     }
 
+    function updatePlaceSize(place, marker){
+        for(var i = 0; i < 6; i++){
+            marker.removeClass('placesize' + i);
+        }
+
+        if(place.size){
+            var finalSize = place.size;
+
+            if(place.history && place.history.countVisit){
+                finalSize = place.history.countVisit < finalSize ? finalSize - place.history.countVisit : 1;
+            }
+
+            if(finalSize > 5){
+                marker.addClass('placesize5');
+            } else {
+                marker.addClass('placesize' + finalSize);
+            }
+
+        } else {
+            marker.addClass('placesize0');
+        }
+    }
+
     function updatePlaces(places){
 
             places.forEach(function(place){
 
                 var placeid = 'placeid_'+place.id;
-                var item = $('#'+placeid);
+                var marker = $('#'+placeid);
 
-                if(!item.length){
-
-                    var item = $('<span id="'+placeid+'" data-toggle="tooltip" data-placement="right" >' + '</span>').addClass('place');
+                if(!marker.length){
+                    marker = $('<span id="'+placeid+'" data-toggle="tooltip" data-placement="right" >' + '</span>').addClass('place');
 
                     // this if just from welcome, random size
                     if(!$scope.game.learn || $scope.game.learn == 'fake' || !$scope.game.native || $scope.game.native == 'fake'){
-                        place.size = Math.round((Math.random() *10) %5);
+                        place.size = Math.round((Math.random() *10) %4) + 1;
                     }
 
-                    if(place.size){
-                        var finalSize = place.size;
-
-                        if(place.history && place.history.countVisit){
-                            finalSize = place.history.countVisit < finalSize ? finalSize - place.history.countVisit : 1;
-                        }
-
-
-
-                        if(finalSize > 5){
-                            item.addClass('placesize5');
-                        } else {
-                            item.addClass('placesize' + finalSize);
-                        }
-
-                    } else {
-                        item.addClass('placesize0');
-                    }
-
-
-
-                    item.appendTo(element);
-                    item.click(function(){
+                    marker.appendTo(element);
+                    marker.click(function(){
 
                         showPopupOfPlace(places, place);
                     });
 
-
-
-
-                    item.popover({trigger:'manual',html:true,title:function(){ return self.generateTitle(place)},content:function(){
+                    marker.popover({trigger:'manual',html:true,title:function(){ return self.generateTitle(place)},content:function(){
                         return self.generateInfo(place);
                     },template:'<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-title"></div><div class="popover-content"></div></div>'});
-
-
-
                 }
 
                 var pos = map.latLngToPoint(place.posx, place.posy);
-                item.css({top: pos.y-4, left: pos.x-4});
+                marker.css({top: pos.y-4, left: pos.x-4});
 
+                updatePlaceSize(place, marker);
 
 //                var marker = {latLng: [pl.posx, pl.posy], name: pl.name, style: {r: 8, fill: 'yellow'}};
 //                markers.push(marker);
