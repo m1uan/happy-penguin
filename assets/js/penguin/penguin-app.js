@@ -420,7 +420,10 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
                 worldFactory.update($scope);
                 $location.path('/info');
 
-
+                // update size of place after visit
+                var placeid = 'placeid_'+place.id;
+                var marker = $('#'+placeid);
+                updatePlaceSize(place, marker);
                 //testEndGame();
                 //element.hide();
 
