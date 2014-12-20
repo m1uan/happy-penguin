@@ -316,11 +316,19 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
 
         $scope.game.testsCounts[name] += count;
         worldFactory.store();
+        // because if is update testCounts
+        // the prices of distances could be changed (infoCoins)
+        // recaunt it for counting end of game and so on
+        worldFactory.setupPlacesDistancesAndExp();
     }
 
 
     $scope.updateMap = function(){
         setupMap();
+    }
+
+    $scope.updateMapPrices = function (){
+        $scope.updateMapPrices();
     }
 
     $scope.changeLang = function(nativeLang){
@@ -402,9 +410,9 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
 
 
     $scope.moveToPlace = function(place){
-        if(worldFactory.game().coins < place.coins){
+        if(worldFactory.game().coins < place.coins + place.infoCoins){
             $('#game_resources_golds').css({color:'red'});
-            alertify.error($translate.instant('not_enought', {have:worldFactory.game().coins, need: place.coins}));
+            alertify.error($translate.instant('not_enought', {have:worldFactory.game().coins, need: place.coins + place.infoCoins}));
             track("Place-wanted", {placeId: place.id});
         } else {
 
@@ -424,13 +432,13 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
                 var placeid = 'placeid_'+place.id;
                 var marker = $('#'+placeid);
                 updatePlaceSize(place, marker);
-                //testEndGame();
+                $scope.testEndGame();
                 //element.hide();
 
                 $scope.place = place;
                 $scope.wordsLoading = false;
                 //$scope.testCount = worldFactory.getCountOfLeftToPlaceHistory(successPlace, 'voc-test');
-                $scope.sentenceCount = worldFactory.getCountOfLeftToPlaceHistory(place, 'sentence-test');
+                //$scope.sentenceCount = worldFactory.getCountOfLeftToPlaceHistory(place, 'sentence-test');
                 $('#place-controll-img').attr({'src':'/assets/img/orig/'+place.preview});
                 $('#cover-background').css({'background-image':'url(/assets/img/orig/'+place.preview+')'});
 
@@ -495,13 +503,27 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
             //+ '<img src="/assets/img/penguin/ic_walk.png" class="resource_icon"/>'
 
             //+ '<span class="popover-title-resources-info">' + place.swim + 'x</span>'
-            //+ '<img src="/assets/img/penguin/ic_swim.png" class="resource_icon"/>'
+            //+ '<img src="/assets/img/penguin/ic_swim.png" class="resource_icon"/>';
 
-            + '<span class="popover-title-resources-info">' + place.coins + '</span>'
-            + '<img src="/assets/img/penguin/ic_golds.png" class="resource_icon"/></span>'
+        // show extra money for unlock the city
+        if(place.infoCoins){
+            title += '<span class="popover-title-resources-info">' + place.coins + '+' + place.infoCoins + '</span>'
+        } else {
+            title += '<span class="popover-title-resources-info">' + place.coins + '</span>'
+        }
+
+
+        title += '<img src="/assets/img/penguin/ic_golds.png" class="resource_icon"/></span>'
             + '</span>';
 
         return title;
+    }
+
+    $scope.hideAllPlacePopovers = function(){
+        worldFactory.loadPlaces(function(places){
+            hideAllPlacePopovers(places);
+        })
+
     }
 
     /**
@@ -549,6 +571,34 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
     }
 
     function updatePlaces(places){
+        // used to by just self.generateTitle(place)
+        // but because after change language the places are removed
+        // and loaded again, and also when is unlock info
+        // the place.infoCoins change as well
+        // and this old self.generateTitle(place) pointing
+        // to wrong part of memory - already not used list of places
+        var getTitleByPlaceId = function(placeid){
+            return function(){
+                var place = null;
+
+                worldFactory.loadPlaces(function(titlePlaces){
+                    titlePlaces.some(function(p){
+                        if(p.id == placeid){
+                            place = p;
+                            return true;
+                        }
+                    })
+                });
+
+                if(!place){
+                    return '';
+                } else {
+                    return self.generateTitle(place)
+                }
+
+            }
+        }
+
 
             places.forEach(function(place){
 
@@ -569,7 +619,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
                         showPopupOfPlace(places, place);
                     });
 
-                    marker.popover({trigger:'manual',html:true,title:function(){ return self.generateTitle(place)},content:function(){
+                    marker.popover({trigger:'manual',html:true,title:getTitleByPlaceId(place.id),content:function(){
                         return self.generateInfo(place);
                     },template:'<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-title"></div><div class="popover-content"></div></div>'});
                 }
@@ -605,9 +655,10 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
         $scope.mapLoading = true;
         worldFactory.loadPlaces(function(iplaces,placesIds){
             places = iplaces;
-            updatePlaces(places);
+
             worldFactory.setupPlacesDistancesAndExp();
-            testEndGame();
+            updatePlaces(places);
+            $scope.testEndGame();
             showPenguin();
             preloadPreviews(places);
             $scope.mapLoading = false;
@@ -667,7 +718,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
     }
 
 
-    function testEndGame(){
+    $scope.testEndGame = function(){
         if(!worldFactory.testEndGame()){
             //alertify.alert('Game over!');
             $location.path('/gameover');

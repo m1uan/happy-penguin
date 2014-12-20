@@ -53,6 +53,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var place;
 
     function init(){
+        $scope.hideAllPlacePopovers();
         $scope.part = 0;
         $scope.allCorrect = true;
         $scope.showResult = false;
@@ -140,6 +141,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
                 showPopup('score-fb', $translate);
             }, 500);
 
+            $scope.testEndGame();
             track('voc-test-score', $scope.score);
         } else {
             $scope.allCorrect = false;

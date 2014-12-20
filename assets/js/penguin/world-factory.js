@@ -4,8 +4,9 @@
     var penguinGame = angular.module('milan.world.factory', ['penguin.LocalStorageService','pascalprecht.translate']);
 
     penguinGame.factory('worldFactory', function($http, localStorageService, $translate, $sce, $location) {
-        var BASE = DEBUG_PENGUIN ? 100 : 12;
-        var MAX_TEST_PER_VISITS = {'sentences':2,'test':3,crosswords:2, quiz: 1}
+        var BASE = DEBUG_PENGUIN ? 12 : 12;
+        var MAX_TEST_PER_VISITS = {'sentences':2,'test':3,crosswords:0, quiz: 0}
+        var NUM_WORDS_FOR_UNLOCK_INFO = 5;
         var self = this;
         self.game = null;
 
@@ -279,6 +280,28 @@
                 var distance = Math.sqrt((xd*xd)+(yd*yd));
                 place.superDistance = Math.round(distance);
                 place.coins = place.superDistance;
+
+
+                var testsCounts = _game() ? _game().testsCounts : {};
+                var canTests = testsCounts && Object.keys(testsCounts).some(function(key) {
+                    return testsCounts[key] > 0;
+                });
+
+                // the player can go the city without unlock
+                // info so charge him extra money
+                if(!canTests){
+                    var pricePerInfo = 1;
+
+                    if(place.history && place.history.countVisit){
+                        pricePerInfo = place.history.countVisit;
+                    }
+
+                    // extra coins for unlock info
+                    place.infoCoins = pricePerInfo * NUM_WORDS_FOR_UNLOCK_INFO;
+                } else {
+                    place.infoCoins = 0;
+                }
+
                 //place.fly = Math.floor(place.superDistance / 9);
                 //place.swim = Math.floor((place.superDistance - (place.fly*6)) / 3);
                 //place.walk = (place.superDistance - (place.fly*5) - (place.swim*2));
@@ -288,11 +311,44 @@
 
 
         function testEndGame(){
-            var canPlay = placesInWorld.some(function(place){
-                return(place.id != self.game.placeId &&  place.coins <= self.game.coins);
+
+            var canPlay = false;
+            var canUnlockInfo = false;
+
+            var testsCounts = _game() ? _game().testsCounts : {};
+            var canTests = testsCounts && Object.keys(testsCounts).some(function(key) {
+                return testsCounts[key] > 0;
             });
 
-            return canPlay;
+            if(canTests){
+                console.info('testGameOver', 'Can do tests');
+                return true;
+            }
+
+
+            canPlay = placesInWorld.some(function(place){
+                return(place.id != self.game.placeId &&  place.coins + place.infoCoins <= self.game.coins);
+            });
+
+            if(canPlay){
+                console.info('testGameOver', 'Can move to another place');
+                return canPlay;
+            }
+
+
+            var place = getCurrentPlace();
+            var infoUnlocked = _getPlaceHistoryValue(place, 'info')
+            if(!infoUnlocked){
+                infoUnlocked = self.game.coins > place.history.countVisit * NUM_WORDS_FOR_UNLOCK_INFO;
+
+                if(infoUnlocked){
+                    console.info('testGameOver', 'can unlock info');
+                }
+
+            }
+
+            console.info('testGameOver', 'sorry');
+            return false;
         }
 
         function __setupPlaceWithHistory(place){
@@ -349,18 +405,18 @@
         function _testIsAlowedATest(testName, startTestCB){
 
             _getCurrentPlaceAsync(function(place){
+                var repeats = self.game.testsCounts[testName];
                 // for case the user not yet visit a info
                 // to unlock place's test -> redirect him to info
-                if(_redirectToInfoIsTestsUnlockedWithAlert(place)) {
+                if(repeats < 1) {
                     // test if the test was not run so offten
-                    var repeats = self.game.testsCounts[testName];
-                    if(repeats < 1){
+                    if(_redirectToInfoIsTestsUnlockedWithAlert(place)){
                         var mess = $translate.instant('voc-test-limit-test-max', {count:MAX_TEST_PER_VISITS[testName]});
                         alertify.alert(mess);
                         $location.path('/map')
-                    } else {
-                        startTestCB(place, repeats);
                     }
+                } else {
+                    startTestCB(place, repeats);
                 }
             });
         }
@@ -467,6 +523,7 @@
             ,redirectToInfoIsTestsUnlockedWithAlert: _redirectToInfoIsTestsUnlockedWithAlert
             ,testIsAlowedATest : _testIsAlowedATest
             ,MAX_TEST_PER_VISITS : MAX_TEST_PER_VISITS
+            ,NUM_WORDS_FOR_UNLOCK_INFO : NUM_WORDS_FOR_UNLOCK_INFO
         };
 
     });

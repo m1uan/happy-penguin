@@ -1,7 +1,7 @@
 function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory, worldFactory, linksFactory, $translate, $timeout, vocabularyFactory, $location){
 
 
-    $scope.unlockCount = 5;
+    $scope.unlockCount = worldFactory.NUM_WORDS_FOR_UNLOCK_INFO;
 
     $scope.travelLangs = $rootScope.travelLangs;
     init();
@@ -49,6 +49,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
     }
 
     function init(){
+        $scope.hideAllPlacePopovers();
         initTravelLang()
         worldFactory.getCurrentPlaceAsync(function(place){
             $scope.place = place;
@@ -109,7 +110,6 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
         for(var name in worldFactory.MAX_TEST_PER_VISITS){
             $scope.addTestsCounts(name, worldFactory.MAX_TEST_PER_VISITS[name]);
         }
-
 
         var info = $translate.instant('info-tests-unlocked');
         alertify.success(info);

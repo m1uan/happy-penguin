@@ -9,7 +9,7 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
     var BONUS_PART1_1 = 2;
     var BONUS_PART1_2 = 5;
 
-    var MAX_PARTS = 4;
+    var MAX_PARTS = 5;
 
     if(DEBUG_PENGUIN){
         BONUS_TIME0 = 10;
@@ -20,6 +20,7 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
     init();
 
     function init(){
+        $scope.hideAllPlacePopovers();
         worldFactory.testIsAlowedATest('sentences', function(place, repeats){
             $scope.place = place;
             $scope.showFinalResult = false;
@@ -224,6 +225,8 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
         window.setTimeout(function(){
             showPopup('score-fb', $translate);
         }, 500);
+
+        $scope.testEndGame();
     }
 
     $scope.btnNextCall = function(part){
