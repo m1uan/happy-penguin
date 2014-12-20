@@ -20,7 +20,7 @@ function SentencesCtrl($scope, vocabularyFactory, worldFactory, $interval, $tran
     init();
 
     function init(){
-        $scope.hideAllPlacePopovers();
+
         worldFactory.testIsAlowedATest('sentences', function(place, repeats){
             $scope.place = place;
             $scope.showFinalResult = false;

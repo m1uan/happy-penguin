@@ -343,6 +343,7 @@
 
                 if(infoUnlocked){
                     console.info('testGameOver', 'can unlock info');
+                    return true;
                 }
 
             }

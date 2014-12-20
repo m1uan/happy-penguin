@@ -226,7 +226,7 @@ function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, 
         //alertify.error('jorney:' + lang + ' native:' + native);
         //worldFactory.setup();
         worldFactory.createNewGame(lang,  native);
-        $location.path('/place/1');
+        $location.path('/map');
         track("Start game", {jorney:lang, native: $translate.use()});
     }
 
@@ -286,7 +286,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
             }
         });
 
-
+        $scope.hideAllPlacePopovers();
 
     });
 
@@ -342,6 +342,11 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
             worldFactory.createNewGame(null, nativeLang);
             worldFactory.store();
             worldFactory.update($scope);
+            // may was game over and user again in intro (welcome) choice
+            // language for new game, so recalculate prices for travel
+            // and show penguin in new place (Zlin)
+            worldFactory.setupPlacesDistancesAndExp();
+            showPenguin();
             //initTravelLang(native);
 
 

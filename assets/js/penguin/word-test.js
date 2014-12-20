@@ -53,7 +53,6 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
     var place;
 
     function init(){
-        $scope.hideAllPlacePopovers();
         $scope.part = 0;
         $scope.allCorrect = true;
         $scope.showResult = false;
