@@ -132,10 +132,10 @@
 
             // first search for this language
             if(!__foundWords[foundLang]) {
-                __foundWords[foundLang] = {};
+                __foundWords[foundLang] = Object.create(null);
             }
 
-            var workList = [];
+            var workList = Object.create(null);
             var workListLinearForSearch = [];
             var resultList = [];
 
@@ -162,6 +162,7 @@
                     if(workList[word.simple]){
                         // add word to worklist
                         // the word is already in search list
+                        console.log(word.simple,workList[word.simple]);
                         workList[word.simple].push(word)
                     } else {
                         workList[word.simple] = [word]

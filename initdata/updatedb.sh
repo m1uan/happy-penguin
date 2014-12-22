@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-#scp 52d58e765973ca465d000199@voc4u-miuan.rhcloud.com:~/app-root/data/dump_img.tar.gz .
+scp 52d58e765973ca465d000199@voc4u-miuan.rhcloud.com:~/app-root/data/dump_img.tar.gz .
 mkdir /tmp/ahoj/
 tar -xvzf dump_img.tar.gz -C /tmp/ahoj/
 mkdir /tmp/ahoj/orig/

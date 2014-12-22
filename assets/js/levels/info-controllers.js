@@ -91,7 +91,12 @@
 
             // remove special characters
             // like simple word for search
-            var simple = word.replace(/[^a-zA-Zěščřžýáíúůñé ]/g, "")
+            var simple = word.replace(/[^a-zA-Zěščřžýáíúůñé .0-9]/g, "")
+
+            if(!simple || simple.length < 1){
+
+                return null;
+            }
 
 
             return {
@@ -113,7 +118,11 @@
                     return;
                 }
 
-                self.words[lang].push(self.createWordAndLink(sentence, w));
+                var w2l = self.createWordAndLink(sentence, w);
+                if(w2l){
+                    self.words[lang].push(w2l);
+                }
+
             })
         }
 
