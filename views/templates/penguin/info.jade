@@ -52,7 +52,7 @@ div.content-cell
         div(ng-show="showLangSelector")#select-your-learn-lang-field
             div
                 div#lang-selector
-                    div(ng-repeat="lang in travelLangs",ng-show="lang.status",ng-click="selectLang(lang)").travel-lang
+                    div(ng-repeat="lang in travelLangs",ng-show="lang.status",ng-click="selectLang('en')").travel-lang
                         h3
                             img(src="/assets/img/flags/flag_{{lang.lang}}.png").travel_flag
                             span {{lang.translate}}

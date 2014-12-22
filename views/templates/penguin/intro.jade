@@ -4,7 +4,7 @@ div#intro-page
     div.content-cell#intro-content-cell
         div()
             div
-                div(ng-repeat="welcome in welcomes",ng-click="changeLang(welcome.flag)",data-dismiss="modal",ng-mouseover="welcomeOver($index,true)",ng-mouseleave="welcomeOver($index,false)").welcome
+                div(ng-repeat="welcome in welcomes",ng-click="changeLang('cz')",data-dismiss="modal",ng-mouseover="welcomeOver($index,true)",ng-mouseleave="welcomeOver($index,false)").welcome
                     h3
                         img(src="/assets/img/flags/flag_{{welcome.flag}}.png").welcome_flag
                         span {{welcome.text}}
