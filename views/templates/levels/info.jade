@@ -1,20 +1,23 @@
 link(rel='stylesheet', href='/assets/css/levels/info.css')
 script(src="/assets/js/libs/jquery.appear.js")
 
-div # {{info.pi}} {{info.translates[current].name}}
-    span(ng-repeat="lang in langs")
-        a(ng-click="changeLang(lang.lang)") {{lang.lang}}
-        span |
-
-
-
-
 div.container-fluid
     div.row
-        div.col-lg-12
+        div.col-lg-2
+            span # {{info.pi}}
+            select(ng-model="info.type", ng-options="c.pit as c.name for c in types",required).input
+        div.col-lg-1
+            button(ng-click="update()").btn.btn-primary.input update
+        div.col-lg-7
             div.input-group
+
                 input(ng-model="info.translates[current].name",size="50",maxlength="70").input
                 button(ng-click="showEditText()").btn.btn-default.input show or hide text
+
+        div.col-lg-2
+            span(ng-repeat="lang in langs")
+                a(ng-click="changeLang(lang.lang)") {{lang.lang}}
+                span |
     div.row
         div(ng-show="show_edit_text").col-lg-5
             textarea(ng-change="infoChange(current)",ng-model="info.translates[current].info",rows="15",cols="180")
@@ -24,6 +27,7 @@ div#lineofwords
 div.clearfix
 div.input-group
     form(ng-submit="alert('ahoj')")
+        button(ng-click="check()").btn.btn-warning.input check
         button(ng-click="checkSelectedWord()").btn.input search word
         input(ng-model="selectedWord.simple").input
         input(type="checkbox",name="search-lang-choice",checked,data-label-text="from",ng-model="searchWordLang").input
@@ -93,7 +97,4 @@ div.container-fluid
                         button(ng-show="sen.l && sen.linked",ng-click="clickSentenceUnlink(sen, selectedWord.link)").btn.btn-xs.btn-default unlink
 div.clearfix
 
-div.input-group
-    select(ng-model="info.type", ng-options="c.pit as c.name for c in types",required).input
-    button(ng-click="check()").btn.btn-primary.input check
-    button(ng-click="update()").btn.btn-primary.input update
+
