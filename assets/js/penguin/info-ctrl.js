@@ -32,7 +32,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
     }
 
     $scope.btnSelectNativeLang = function(){
-        $location.path('/intro');
+        $location.path('/welcome');
     }
 
     $scope.selectLang = function(lang){

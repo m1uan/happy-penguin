@@ -3,9 +3,9 @@ var SHOW_EXPERIENCE_POPUP = 'show-experience-popup';
 var SHOW_TRAIN_POPUP = 'show-train-popup';
 var app = angular.module('pinguin', ['ngRoute', 'milan.levels.links.factory','penguin.LocalStorageService','milan.place.factory','milan.penguin.factory','milan.world.factory','milan.vocabulary.factory','pascalprecht.translate','ngDraggable'],
     function($routeProvider, $locationProvider, $translateProvider) {
-        $routeProvider.when('/intro', {
-            templateUrl: '/templates/penguin/intro',
-            controller: IntroCtrl
+        $routeProvider.when('/welcome', {
+            templateUrl: '/templates/penguin/welcome',
+            controller: WelcomeCtrl
         });
 
         /*$routeProvider.when('/world', {
@@ -91,7 +91,7 @@ function EmptyCtrl($scope, $timeout, $location, worldFactory){
     if(mygame && mygame.native){
 
     } else {
-        $location.path('/intro');
+        $location.path('/welcome');
     }
 }
 
@@ -99,7 +99,7 @@ function EmptyCtrl($scope, $timeout, $location, worldFactory){
 
 } */
 
-function IntroCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate, $timeout) {
+function WelcomeCtrl($scope, $location, $routeParams,penguinFactory,worldFactory, $translate, $timeout) {
     $('#main-view1').css({'background':'none', 'border-width':0})
 
     var PAGEMAX = 1;
@@ -281,7 +281,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
 
 
         cover.slideDown('slow', function(){
-            if(next && next.$$route.originalPath.indexOf('/intro') == -1){
+            if(next && next.$$route.originalPath.indexOf('/welcome') == -1){
                 coverBackground.animate({opacity:1}, 5000);
             }
         });
@@ -371,7 +371,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
     } else {
         worldFactory.setup('fake','fake');
         worldFactory.createNewGame();
-        $location.path('/intro');
+        $location.path('/welcome');
 
     }
     // have to be here othervise if is going to intro
@@ -1096,7 +1096,7 @@ function GameOverCtrl($scope, worldFactory, $location, $translate){
     }
 
     $scope.startNewGame = function(){
-        $location.path('/intro');
+        $location.path('/welcome');
     }
 
     $scope.facebook = function(){
