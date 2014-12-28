@@ -18,13 +18,13 @@
 
 }
 
-#cover-background {
+#cover-background1 {
     margin:0px;
     padding:0px;
     width: 100%;
     height: 100%;
     background-size: 100%, 100%;
-    background-image: url('/assets/img/orig/place/1401694785767-184379-bhmmug.jpg');
+    //background-image: url('/assets/img/orig/place/1401694785767-184379-bhmmug.jpg');
 }
 
 #place-controll {

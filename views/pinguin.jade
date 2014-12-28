@@ -70,9 +70,9 @@ html(ng-app="pinguin")
                     span.badge.badge-important.menu-badge {{game.testsCounts.sentences}}
                     span(translate="menu-sentences") Sentences
 
-                a(translate="menu-crosswords").btn.btn-default.btn-xs.btn-place Crosswords
+                //a(translate="menu-crosswords").btn.btn-default.btn-xs.btn-place Crosswords
 
-                a(translate="menu-quiz").btn.btn-default.btn-xs.btn-place Quiz
+                //a(translate="menu-quiz").btn.btn-default.btn-xs.btn-place Quiz
                 a(href="#/train",translate="menu-train").btn.btn-default.btn-xs.btn-place Memorizing
             div()#place-controll
                 //div(ng-show="wordsLoading").loaidng
@@ -83,7 +83,7 @@ html(ng-app="pinguin")
                 h2 {{place.name}}
                 img(src="/assets/img/orig/place/1401694785767-184379-bhmmug.jpg")#place-controll-img
             div#cover
-                div#cover-background
+                div#cover-background1
                 div(ng-view)#main-view1.column-center
 
             div

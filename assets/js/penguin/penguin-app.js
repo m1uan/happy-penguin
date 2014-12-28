@@ -272,6 +272,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
             mainView.hide();
             coverBackground.stop();
             cover.slideUp('fast');
+            track('map');
             return;
         }
 
@@ -445,7 +446,7 @@ function PenguinCtrl($scope, $rootScope, $location, $http, localStorageService, 
                 //$scope.testCount = worldFactory.getCountOfLeftToPlaceHistory(successPlace, 'voc-test');
                 //$scope.sentenceCount = worldFactory.getCountOfLeftToPlaceHistory(place, 'sentence-test');
                 $('#place-controll-img').attr({'src':'/assets/img/orig/'+place.preview});
-                $('#cover-background').css({'background-image':'url(/assets/img/orig/'+place.preview+')'});
+                //$('#cover-background').css({'background-image':'url(/assets/img/orig/'+place.preview+')'});
 
             })
 

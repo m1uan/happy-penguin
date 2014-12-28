@@ -63,6 +63,7 @@ function WordsTestCtrl($scope, $http, $routeParams, vocabularyFactory, worldFact
             place = p;
             startTest();
         })
+        track('voc-test');
     }
 
     function startTest(){

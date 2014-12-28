@@ -49,6 +49,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
     }
 
     function init(){
+        track('info');
         $scope.hideAllPlacePopovers();
         initTravelLang()
         worldFactory.getCurrentPlaceAsync(function(place){
@@ -113,6 +114,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
 
         var info = $translate.instant('info-tests-unlocked');
         alertify.success(info);
+        track('info-unlocked');
     }
 
     function setupInfo(){
@@ -174,7 +176,7 @@ function InfoCtrl($scope, $rootScope, $routeParams, penguinFactory, placeFactory
 
 
     $scope.clickTranslate = function(word){
-
+        track('info-translate');
         // if the word have no link it is mean is not translatable word
         if(!word.link){
             return;
